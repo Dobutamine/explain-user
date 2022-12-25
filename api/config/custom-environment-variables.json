@@ -1,0 +1,5 @@
+{
+  "mode": "NODE_ENV",
+  "db_pw": "DB_PW",
+  "jwtPrivateKey": "jwtPrivateKey"
+}

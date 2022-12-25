@@ -1,0 +1,7 @@
+{
+  "name": "explain-user",
+  "port": 8081,
+  "db_host": "mongodb+srv://explain-db-5e60470c.mongo.ondigitalocean.com",
+  "db_user": "timothy",
+  "db_database": "zoektbed"
+}
