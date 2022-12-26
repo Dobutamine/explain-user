@@ -14,7 +14,7 @@ if (config.get("mode") === "development") {
   debug.enabled = true;
   // log the requests
   app.use(morgan("tiny"));
-  debug("Morgan enabled.");
+  debug("Morgan enabled!!");
 }
 
 // check whether the environment variables are set

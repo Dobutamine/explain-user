@@ -1,0 +1,18 @@
+FROM node:19-alpine3.16
+
+# define a working directory
+WORKDIR /app
+
+# first install the dependencies for performance issues (this layer doesn't need to be created everytime)
+COPY package*.json .
+RUN npm install
+
+# next copy all other files
+COPY . .
+
+# epxose the port
+EXPOSE 8081
+
+# run the server
+CMD ["npm", "start"]
+
