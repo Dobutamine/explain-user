@@ -8,6 +8,13 @@ const cors = require("cors");
 const _ = require("lodash");
 const { default: mongoose } = require("mongoose");
 
+// import the routes
+const users = require("./routes/users");
+const auth = require("./routes/auth");
+const defs = require("./routes/defs");
+const states = require("./routes/states");
+const error = require("./middleware/error");
+
 // detect the enviroment in which node is running (= same as process.env.NODE_ENV)
 if (config.get("mode") === "development") {
   // enabled the debugger
@@ -40,6 +47,14 @@ app.use(
 
 // serve the static content from the public folder
 app.use(express.static("public"));
+
+// register the routes
+app.use("/api/auth", auth);
+app.use("/api/users", users);
+app.use("/api/defs", defs);
+app.use("/api/states", states);
+// handle errors
+app.use(error);
 
 // secure the request header
 app.use(helmet());

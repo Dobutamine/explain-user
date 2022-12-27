@@ -54,14 +54,14 @@
         <q-btn
           v-if="!newUserEntry"
           class="q-pl-lg q-pr-lg bg-blue-10"
-          @click="getUserId"
+          @click="LogIn"
           style="width: 150px"
           size="sm"
           >LOG IN</q-btn
         >
         <q-btn
           class="q-ml-lg q-pl-lg q-pr-lg bg-blue-10"
-          @click="newUser"
+          @click="showRegistration"
           style="width: 150px"
           size="sm"
           >REGISTER</q-btn
@@ -106,62 +106,6 @@
       <div class="col text-center"></div>
       <div class="col text-center"></div>
     </div>
-    <div class="row justify-center items-start q-ma-lg">
-      <div class="col text-center"></div>
-      <div class="col2 text-center">
-        <q-btn
-          v-if="showChoices"
-          class="q-pl-lg q-pr-lg bg-blue-10"
-          @click="monitor"
-          style="width: 150px"
-          size="md"
-          >MONITOR</q-btn
-        >
-      </div>
-      <div class="col text-center"></div>
-    </div>
-    <div class="row justify-center items-start q-ma-lg">
-      <div class="col text-center"></div>
-      <div class="col2 text-center">
-        <q-btn
-          v-if="showChoices"
-          class="q-pl-lg q-pr-lg bg-blue-10"
-          @click="instructor"
-          style="width: 150px"
-          size="md"
-          >INSTRUCTOR</q-btn
-        >
-      </div>
-      <div class="col text-center"></div>
-    </div>
-    <div class="row justify-center items-start q-ma-lg">
-      <div class="col text-center"></div>
-      <div class="col2 text-center">
-        <q-btn
-          v-if="showChoices"
-          class="q-pl-lg q-pr-lg bg-blue-10"
-          @click="media"
-          style="width: 150px"
-          size="md"
-          >IMAGES</q-btn
-        >
-      </div>
-      <div class="col text-center"></div>
-    </div>
-    <div class="row justify-center items-start q-ma-lg">
-      <div class="col text-center"></div>
-      <div class="col2 text-center">
-        <q-btn
-          v-if="showChoices"
-          class="q-pl-lg q-pr-lg bg-red-10"
-          @click="logout"
-          style="width: 150px"
-          size="md"
-          >LOG OUT</q-btn
-        >
-      </div>
-      <div class="col text-center"></div>
-    </div>
   </q-page>
 </template>
 
@@ -171,14 +115,14 @@ import { useLoggedInUser } from "stores/loggedInUser";
 /* eslint-disable */
 export default {
   setup() {
-    const store = useLoggedInUser();
+    const user = useLoggedInUser();
     return {
-      store,
+      user,
     };
   },
   data() {
     return {
-      apiUrl: "",
+      apiUrl: "http://localhost:8081",
       name: "",
       email: "",
       password: "",
@@ -191,124 +135,113 @@ export default {
     };
   },
   methods: {
-    cancelRegistration() {
-      // this.id = "";
-      // this.newUserEntry = false;
-      // this.showChoices = false;
-      // this.login = true;
-      // this.email = "";
-      // this.password = "";
-      // this.name = "";
+    showRegistration() {
+      if (!this.newUserEntry) {
+        this.newUserEntry = true;
+      } else {
+        this.registerNewUser();
+      }
     },
-    logout() {
-      // this.id = "";
-      // this.$store.commit("dataPool/id", this.id);
-      // this.showChoices = false;
-      // this.login = true;
-      // this.email = "";
-      // this.password = "";
-      // this.name = "";
-      // this.errorText = "";
-      // this.$root.$emit("home");
-      // this.$root.$emit("login", "not logged in");
-      // this.$root.$emit("hide");
+    cancelRegistration() {
+      this.id = "";
+      this.newUserEntry = false;
+      this.login = true;
+      this.email = "";
+      this.password = "";
+      this.name = "";
+    },
+    LogOut() {
+      this.id = "";
+      this.showChoices = false;
+      this.login = true;
+      this.email = "";
+      this.password = "";
+      this.name = "";
+      this.errorText = "";
     },
     pressedEnter() {
-      // if (this.newUserEntry) {
-      //   this.registerNewUser();
-      // } else {
-      //   this.getUserId();
-      // }
+      if (this.newUserEntry) {
+        this.registerNewUser();
+      } else {
+        this.LogIn();
+      }
     },
-    newUser() {
-      // if (!this.newUserEntry) {
-      //   this.newUserEntry = true;
-      // } else {
-      //   this.registerNewUser();
-      // }
+    async registerNewUser() {
+      const url = `${this.apiUrl}/api/users/new_user`;
+      // get the user login data
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          isAdmin: false,
+        }),
+      });
+
+      if (response.status === 200) {
+        // login the user
+        this.LogIn();
+      } else {
+        this.errorText = "Name or email already registered!";
+        // reset the password entry
+        this.password = "";
+      }
     },
-    registerNewUser() {
-      // const url = `${this.apiUrl}/api/users`;
-      // axios
-      //   .post(url, {
-      //     name: this.name,
-      //     email: this.email,
-      //     password: this.password,
-      //   })
-      //   .then((res) => {
-      //     this.errorText = "Thank you for registering. Have fun!";
-      //     this.id = res.data;
-      //     this.login = true;
-      //     this.newUserEntry = false;
-      //   })
-      //   .catch((error) => {
-      //     this.errorText = error.response.data;
-      //     this.id = "";
-      //     this.showChoices = false;
-      //     this.login = true;
-      //     this.newUserEntry = true;
-      //     this.email = "";
-      //     this.password = "";
-      //     this.name = "";
-      //   });
-    },
-    getUserId() {
-      // const url = `${this.apiUrl}/api/auth`;
-      // axios
-      //   .post(url, {
-      //     name: this.name,
-      //     password: this.password,
-      //   })
-      //   .then((res) => {
-      //     this.name = res.data.name;
-      //     this.id = res.data.id;
-      //     this.$store.commit("dataPool/id", this.id);
-      //     this.errorText = `Welcome ${this.name}`;
-      //     this.$root.$emit("login", res.data.name);
-      //     this.showChoices = true;
-      //     this.login = false;
-      //     this.$root.$emit("show");
-      //   })
-      //   .catch((error) => {
-      //     this.errorText = error.response.data;
-      //     this.id = "";
-      //     this.showChoices = false;
-      //     this.login = true;
-      //   });
-    },
-    monitor() {
-      // this.$store.commit("dataPool/id", this.id);
-      // this.$root.$emit("monitor");
-      // this.$router.push("/monitor");
-    },
-    instructor() {
-      // this.$store.commit("dataPool/id", this.id);
-      // this.$root.$emit("instructor");
-      // this.$router.push("/instructor");
-    },
-    media() {
-      // this.$store.commit("dataPool/id", this.id);
-      // this.$root.$emit("images");
-      // this.$router.push("/media");
+    async LogIn() {
+      const url = `${this.apiUrl}/api/auth`;
+      // get the user login data
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: this.name, password: this.password }),
+      });
+
+      if (response.status === 200) {
+        let data = await response.json();
+        this.user.id = data._id;
+        this.user.name = data.name;
+        this.user.email = data.email;
+        this.user.token = data.token;
+        this.user.loggedIn = true;
+        console.log("Log in succesfull!");
+        this.$router.push("/main");
+      } else {
+        this.errorText = "Invalid username or password";
+        // reset the password entry
+        this.password = "";
+        this.user.name = "";
+        this.user.email = "";
+        this.user.isAdmin = false;
+        this.user.token = "";
+        this.user.loggedIn = false;
+      }
     },
   },
   mounted() {
     this.$q.dark.set(true);
-    // set the environmental variables containing to correct URLS
-    // this.$store.commit("dataPool/apiUrl", process.env.API_URL);
-    // this.$store.commit("dataPool/apiWebSocketUrl", process.env.WS_URL);
-
-    // get the apiUrl
-    // this.apiUrl = this.$store.state.dataPool.apiUrl;
     this.id = "";
-    // this.$store.commit("dataPool/id", this.id);
     this.email = "";
     this.password = "";
     this.name = "";
-    // this.$root.$emit("home");
-    // this.$root.$emit("login", "not logged in");
-    // this.$root.$emit("hide");
-    console.log(this.store.userName);
+
+    this.user.name = "";
+    this.user.email = "";
+    this.user.isAdmin = false;
+    this.user.token = "";
+    this.user.loggedIn = false;
+
+    // override development
+    this.password = "y5qkqjed";
+    this.name = "Timothy Antonius";
+    this.LogIn();
   },
 };
 </script>

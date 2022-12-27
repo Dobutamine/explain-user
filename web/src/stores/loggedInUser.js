@@ -7,18 +7,18 @@ export const useLoggedInUser = defineStore("loggedInUser", {
     email: "",
     token: "",
     isAdmin: false,
-    lastLogin: "",
+    loggedIn: true,
   }),
 
   getters: {},
 
   actions: {
     resetUser() {
-      (this.id = ""),
-        (this.name = ""),
-        (this.token = ""),
-        (this.isAdmin = false),
-        (this.lastLogin = "");
+      this.id = "";
+      this.name = "";
+      this.token = "";
+      this.isAdmin = false;
+      this.loggedIn = false;
     },
   },
 });

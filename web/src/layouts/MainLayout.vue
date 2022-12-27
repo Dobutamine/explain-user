@@ -5,9 +5,10 @@
       height-hint="68"
     >
       <q-toolbar>
-        <q-toolbar-title class="text-overline">
+        <q-toolbar-title class="text-subtitle2">
           Explanatory models in neonatology
         </q-toolbar-title>
+        <div class="text-bold text-subtitle2 q-ml-sm">{{ user.name }}</div>
       </q-toolbar>
     </q-header>
 
@@ -26,7 +27,16 @@
 </template>
 
 <script>
-export default {};
+import { useLoggedInUser } from "stores/loggedInUser";
+
+export default {
+  setup() {
+    const user = useLoggedInUser();
+    return {
+      user,
+    };
+  },
+};
 </script>
 
 <style scoped>
