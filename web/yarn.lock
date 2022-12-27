@@ -10,6 +10,20 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@arction/eventer@^1.0.1":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@arction/eventer/-/eventer-1.0.2.tgz#33b1673268547780a30d5d81001b4f10c1adab02"
+  integrity sha512-pn43bapEuf+V//UrAod6J0BuC64XdNIYmaCH/kMjhyVcOh8QGVflcLq30NP4qNhLvCXd5JFdo5ZLwq3qg6HkmQ==
+
+"@arction/lcjs@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@arction/lcjs/-/lcjs-3.4.0.tgz#6afbb401b6a670a36f769b8cb0a9db16fb049663"
+  integrity sha512-L1HVSjcF8wr1SVvSMrNnzBe4kPpupOKXcMIjRv/vE6y/WPyBmVrwXTF/H7KwFRPQZ+xPHQvwFgbN/ktueha3TQ==
+  dependencies:
+    "@arction/eventer" "^1.0.1"
+    earcut "^2.2.2"
+    immutable "^4.0.0-rc.12"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.18.6", "@babel/code-frame@^7.8.3":
   version "7.18.6"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.18.6.tgz#3b25d38c89600baa2dcc219edfa88a74eb2c427a"
@@ -2875,7 +2889,7 @@ duplexer@^0.1.2:
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
   integrity sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==
 
-earcut@^2.2.4:
+earcut@^2.2.2, earcut@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/earcut/-/earcut-2.2.4.tgz#6d02fd4d68160c114825d06890a92ecaae60343a"
   integrity sha512-/pjZsA1b4RPHbeWZQn66SWS8nZZWLQQ23oE3Eam7aroEFGEvwKAsJfZ9ytiEMycfzXWpca4FA9QIOehf7PocBQ==
@@ -3756,6 +3770,11 @@ ignore@^5.1.9, ignore@^5.2.0:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.1.tgz#c2b1f76cb999ede1502f3a226a9310fdfe88d46c"
   integrity sha512-d2qQLzTJ9WxQftPAuEQpSPmKqzxePjzVbpAVv62AQ64NTL+wR4JkrVqR/LqFsFEUsHDAiId52mJteHDFuDkElA==
+
+immutable@^4.0.0-rc.12:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.2.1.tgz#8a4025691018c560a40c67e43d698f816edc44d4"
+  integrity sha512-7WYV7Q5BTs0nlQm7tl92rDYYoyELLKHoDMBKhrxEoiV4mrfVdRz8hzPiYOzH7yWjzoVEamxRuAqhxL2PLRwZYQ==
 
 import-fresh@^3.0.0, import-fresh@^3.1.0, import-fresh@^3.2.1:
   version "3.3.0"
@@ -5518,6 +5537,11 @@ signal-exit@^3.0.2, signal-exit@^3.0.3:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
   integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
+
+simple-statistics@^7.8.0:
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/simple-statistics/-/simple-statistics-7.8.0.tgz#1033d2d613656c7bd34f0e134fd7e69c803e6836"
+  integrity sha512-lTWbfJc0u6GZhBojLOrlHJMTHu6PdUjSsYLrpiH902dVBiYJyWlN/LdSoG8b5VvfG1D30gIBgarqMNeNmU5nAA==
 
 sirv@^1.0.7:
   version "1.0.19"

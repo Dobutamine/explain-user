@@ -11,11 +11,13 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "@arction/lcjs": "^3.4.0",
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.5",
     "pinia": "^2.0.11",
     "pixi.js": "^7.0.5",
     "quasar": "^2.6.0",
+    "simple-statistics": "^7.8.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },

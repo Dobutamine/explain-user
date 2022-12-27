@@ -19,7 +19,7 @@
     <q-footer class="bg-grey-8 text-white footerCustomStyle">
       <q-toolbar>
         <q-toolbar-title class="text-overline">
-          <div>Not loaded</div>
+          <div>No model definition file loaded.</div>
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>

@@ -110,6 +110,8 @@
 </template>
 
 <script>
+import { explain } from "src/boot/explain";
+import { PIXI } from "src/boot/pixi";
 import { useLoggedInUser } from "stores/loggedInUser";
 //import axios from "axios";
 /* eslint-disable */
