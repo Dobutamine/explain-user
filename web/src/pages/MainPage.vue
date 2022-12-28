@@ -8,7 +8,7 @@
           <q-tabs
             v-model="tab"
             dense
-            class="text-grey"
+            class="text-white"
             active-color="primary"
             indicator-color="primary"
             align="justify"
@@ -47,7 +47,28 @@
           </q-tab-panels>
         </div>
 
-        <div class="col-3"></div>
+        <div class="col-3">
+          <q-tabs
+            v-model="tab"
+            dense
+            class="text-white"
+            active-color="primary"
+            indicator-color="primary"
+            align="justify"
+            narrow-indicator
+          >
+            <q-tab name="test" label="" />
+            <q-tab name="circulation" label="" />
+            <q-tab name="respiration" label="" />
+            <q-tab name="ventilator" label="" />
+            <q-tab name="ecmo" label="" />
+          </q-tabs>
+          <q-separator />
+          <HeartMonitor></HeartMonitor>
+          <HemodynamicMonitor></HemodynamicMonitor>
+          <ShuntsMonitor></ShuntsMonitor>
+          <FlowMonitorVue></FlowMonitorVue>
+        </div>
       </div>
     </div>
   </q-page>
@@ -56,6 +77,10 @@
 <script>
 import NonTimeBasedChart from "components/NonTimeBasedChart.vue";
 import TimeBaseChart from "components/TimeBaseChart.vue";
+import HemodynamicMonitor from "src/components/HemodynamicMonitor.vue";
+import HeartMonitor from "src/components/HeartMonitor.vue";
+import ShuntsMonitor from "src/components/ShuntsMonitor.vue";
+import FlowMonitorVue from "src/components/FlowMonitor.vue";
 import { useLoggedInUser } from "stores/loggedInUser";
 
 export default {
@@ -68,6 +93,10 @@ export default {
   components: {
     TimeBaseChart,
     NonTimeBasedChart,
+    HemodynamicMonitor,
+    HeartMonitor,
+    ShuntsMonitor,
+    FlowMonitorVue,
   },
   data() {
     return {

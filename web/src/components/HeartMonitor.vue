@@ -1,10 +1,10 @@
 <template>
-  <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
+  <q-card class="q-pb-xs q-ma-sm" bordered>
     <div
       class="q-mt-es row gutter text-overline justify-center"
       @click="isEnabled = !isEnabled"
     >
-      HEMODYNAMICS
+      HEART
     </div>
 
     <div v-if="isEnabled">
@@ -16,58 +16,18 @@
           stack-label
           style="max-width: 90px"
           squared
-          hint="bpm"
+          hint="/min"
           label="HR"
         />
         <q-input
-          v-model="abp"
+          v-model="rhythm"
           readonly
           dense
           stack-label
           style="max-width: 90px"
           squared
-          hint="mmHg"
-          label="ABP"
-        />
-        <q-input
-          v-model="pap"
-          readonly
-          dense
-          stack-label
-          style="max-width: 90px"
-          squared
-          hint="mmHg"
-          label="PAP"
-        />
-        <q-input
-          v-model="cvp"
-          readonly
-          dense
-          stack-label
-          style="max-width: 90px"
-          squared
-          hint="mmHg"
-          label="CVP"
-        />
-        <q-input
-          v-model="sv"
-          readonly
-          dense
-          stack-label
-          style="max-width: 90px"
-          squared
-          hint="ml/kg"
-          label="SV"
-        />
-        <q-input
-          v-model="co"
-          readonly
-          dense
-          stack-label
-          style="max-width: 90px"
-          squared
-          hint="ml/kg/min"
-          label="CO"
+          hint=""
+          label="RHYTHM"
         />
         <q-input
           v-model="lvo"
@@ -89,45 +49,86 @@
           hint="ml/kg/min"
           label="RVO"
         />
+
         <q-input
-          v-model="ivcFlow"
+          v-model="lvp"
           readonly
           dense
           stack-label
           style="max-width: 90px"
           squared
-          hint="ml/kg/min"
-          label="IVC flow"
+          hint="mmHg"
+          label="LVP"
         />
         <q-input
-          v-model="svcFlow"
+          v-model="rvp"
           readonly
           dense
           stack-label
           style="max-width: 90px"
           squared
-          hint="ml/kg/min"
-          label="SVC flow"
+          hint="mmHg"
+          label="RVP"
         />
         <q-input
-          v-model="myoFlow"
+          v-model="lap"
           readonly
           dense
           stack-label
           style="max-width: 90px"
           squared
-          hint="ml/kg/min"
-          label="MYO flow"
+          hint="mmHg"
+          label="LAP"
         />
         <q-input
-          v-model="brainFlow"
+          v-model="rap"
           readonly
           dense
           stack-label
           style="max-width: 90px"
           squared
-          hint="ml/kg/min"
-          label="BRAIN flow"
+          hint="mmHg"
+          label="RAP"
+        />
+        <q-input
+          v-model="lvv"
+          readonly
+          dense
+          stack-label
+          style="max-width: 90px"
+          squared
+          hint="ml/kg"
+          label="LVV"
+        />
+        <q-input
+          v-model="rvv"
+          readonly
+          dense
+          stack-label
+          style="max-width: 90px"
+          squared
+          hint="ml/kg"
+          label="RVV"
+        />
+        <q-input
+          v-model="lav"
+          readonly
+          dense
+          stack-label
+          style="max-width: 90px"
+          squared
+          hint="ml/kg"
+          label="LAV"
+        />
+        <q-input
+          v-model="rav"
+          readonly
+          dense
+          stack-label
+          style="max-width: 90px"
+          squared
+          hint="ml/kg"
+          label="RAV"
         />
       </div>
     </div>
@@ -139,21 +140,15 @@ export default {
   data() {
     return {
       isEnabled: true,
-      hr: 125,
-      sv: 1.8,
-      co: 225,
-      abp: "60/40",
-      pap: "40/20",
-      cvp: 5,
-      lvo: 225,
-      rvo: 225,
-      ivcFlow: 120,
-      svcFlow: 120,
-      myoFlow: 5,
-      brainFlow: 10,
-      daFlow: 0.0,
-      foFlow: 0.0,
-      vsdFlow: 0.0,
+      rhythm: "sinus",
+      lvp: "60/3",
+      rvp: "40/2",
+      lap: "8/5",
+      rap: "60/40",
+      lvv: "40/20",
+      rvv: "8/5",
+      lav: "7/3",
+      rav: "6/2",
     };
   },
 };
