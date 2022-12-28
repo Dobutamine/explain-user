@@ -58,7 +58,7 @@
 export default {
   data() {
     return {
-      isEnabled: true,
+      isEnabled: false,
       of: 0.0,
       vsd: 0.0,
       da: 0.0,

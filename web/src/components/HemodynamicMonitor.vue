@@ -138,7 +138,7 @@
 export default {
   data() {
     return {
-      isEnabled: true,
+      isEnabled: false,
       hr: 125,
       sv: 1.8,
       co: 225,

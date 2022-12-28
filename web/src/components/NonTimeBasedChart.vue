@@ -1,293 +1,307 @@
 <template>
   <div>
-    <q-separator class="q-mt-sm" size="2px"></q-separator>
-    <div class="row q-mt-sm">
-      <div class="col">
-        <div class="q-gutter-md row justify-center q-mb-sm">
-          <q-select
-            label-color="red-6"
-            v-model="comp_namex"
-            :options="component_names"
-            hide-bottom-space
-            dense
-            label="x"
-            style="width: 100px; font-size: 12px"
-            @update:model-value="selectComponentX"
-          />
-          <q-select
-            v-if="prim_prop_visible_x"
-            label-color="red-6"
-            v-model="selected_prim_prop_name_x"
-            :options="prim_prop_names_x"
-            hide-bottom-space
-            dense
-            label="prop1"
-            style="width: 100px; font-size: 12px"
-            @update:model-value="selectPrimPropX"
-          />
-          <q-select
-            v-if="sec_prop_visible_x"
-            label-color="red-6"
-            v-model="selected_sec_prop_name_x"
-            :options="sec_prop_names_x"
-            hide-bottom-space
-            dense
-            square
-            label="prop2"
-            style="width: 100px; font-size: 12px"
-            @update:model-value="selectSecPropX"
-          />
+    <q-card class="q-pb-xs q-ma-sm" bordered>
+      <div
+        class="q-mt-es row gutter text-overline justify-center"
+        @click="isEnabled = !isEnabled"
+      >
+        XY BASED CHART
+      </div>
+      <div v-if="isEnabled">
+        <div class="row q-mt-sm">
+          <div class="col">
+            <div class="q-gutter-md row justify-center q-mb-sm">
+              <q-select
+                label-color="red-6"
+                v-model="comp_namex"
+                :options="component_names"
+                hide-bottom-space
+                dense
+                label="x"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectComponentX"
+              />
+              <q-select
+                v-if="prim_prop_visible_x"
+                label-color="red-6"
+                v-model="selected_prim_prop_name_x"
+                :options="prim_prop_names_x"
+                hide-bottom-space
+                dense
+                label="prop1"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectPrimPropX"
+              />
+              <q-select
+                v-if="sec_prop_visible_x"
+                label-color="red-6"
+                v-model="selected_sec_prop_name_x"
+                :options="sec_prop_names_x"
+                hide-bottom-space
+                dense
+                square
+                label="prop2"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectSecPropX"
+              />
 
-          <q-select
-            label-color="red-6"
-            v-model="comp_name1"
-            :options="component_names"
-            hide-bottom-space
-            dense
-            label="y"
-            style="width: 100px; font-size: 12px"
-            @update:model-value="selectComponent1"
-          />
-          <q-select
-            v-if="prim_prop_visible1"
-            label-color="red-6"
-            v-model="selected_prim_prop_name1"
-            :options="prim_prop_names1"
-            hide-bottom-space
-            dense
-            label="prop1"
-            style="width: 100px; font-size: 12px"
-            @update:model-value="selectPrimProp1"
-          />
-          <q-select
-            v-if="sec_prop_visible1"
-            label-color="red-6"
-            v-model="selected_sec_prop_name1"
-            :options="sec_prop_names1"
-            hide-bottom-space
-            dense
-            square
-            label="prop2"
-            style="width: 100px; font-size: 12px"
-            @update:model-value="selectSecProp1"
-          />
+              <q-select
+                label-color="red-6"
+                v-model="comp_name1"
+                :options="component_names"
+                hide-bottom-space
+                dense
+                label="y"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectComponent1"
+              />
+              <q-select
+                v-if="prim_prop_visible1"
+                label-color="red-6"
+                v-model="selected_prim_prop_name1"
+                :options="prim_prop_names1"
+                hide-bottom-space
+                dense
+                label="prop1"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectPrimProp1"
+              />
+              <q-select
+                v-if="sec_prop_visible1"
+                label-color="red-6"
+                v-model="selected_sec_prop_name1"
+                :options="sec_prop_names1"
+                hide-bottom-space
+                dense
+                square
+                label="prop2"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectSecProp1"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="chart" :id="chartId"></div>
+
+        <div class="row q-mt-sm">
+          <div class="col">
+            <div class="q-gutter-sm row justify-center">
+              <q-checkbox
+                v-model="show_summary"
+                @update:model-value="analyzeData"
+                dense
+                label="analyze"
+                style="font-size: 12px"
+              />
+              <q-checkbox
+                v-model="autoscale"
+                dense
+                label="autoscale"
+                @update:model-value="autoscaling"
+                style="font-size: 12px"
+              />
+              <q-input
+                v-if="!autoscale"
+                v-model.number="x_min_axis"
+                type="number"
+                @update:model-value="autoscaling"
+                label="x min"
+                filled
+                dense
+                hide-bottom-space
+                style="width: 100px; font-size: 12px"
+              />
+              <q-input
+                v-if="!autoscale"
+                v-model.number="x_max_axis"
+                type="number"
+                @update:model-value="autoscaling"
+                label="x max"
+                filled
+                dense
+                hide-bottom-space
+                style="width: 100px; font-size: 12px"
+              />
+              <q-input
+                v-if="!autoscale"
+                v-model.number="y_min"
+                type="number"
+                @update:model-value="autoscaling"
+                label="y min"
+                filled
+                dense
+                hide-bottom-space
+                style="width: 100px; font-size: 12px"
+              />
+              <q-input
+                v-if="!autoscale"
+                v-model.number="y_max"
+                type="number"
+                @update:model-value="autoscaling"
+                label="y max"
+                filled
+                dense
+                hide-bottom-space
+                style="width: 100px; font-size: 12px"
+              />
+
+              <q-checkbox
+                v-model="scaling"
+                dense
+                label="multipliers"
+                style="font-size: 12px"
+              />
+              <q-input
+                v-if="scaling"
+                v-model.number="chartx_factor"
+                type="number"
+                label="x"
+                outlined
+                dense
+                style="width: 75px; font-size: 10px"
+              />
+              <q-input
+                v-if="scaling"
+                v-model.number="chart1_factor"
+                type="number"
+                label="y"
+                outlined
+                dense
+                style="width: 75px; font-size: 10px"
+              />
+
+              <q-btn color="black" size="sm" @click="exportData">EXPORT</q-btn>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="show_summary" class="q-mt-sm">
+          <div
+            v-if="chart1_enabled"
+            class="q-gutter-xs row justify-center q-mt-xs"
+          >
+            <q-input
+              color="black"
+              v-model="x_max"
+              outlined
+              dense
+              square
+              label="x max"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="x_min"
+              outlined
+              dense
+              square
+              label="x min"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="x_perbeat"
+              outlined
+              dense
+              square
+              label="x max-min"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="x_mean"
+              outlined
+              dense
+              square
+              label="x mean"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="x_sd"
+              outlined
+              dense
+              square
+              label="x sd"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="x_perminute"
+              outlined
+              dense
+              square
+              label="x /min"
+              style="width: 100px; font-size: 12px"
+            />
+          </div>
+          <div
+            v-if="chart1_enabled"
+            class="q-gutter-xs row justify-center q-mt-xs"
+          >
+            <q-input
+              color="black"
+              v-model="y1_max"
+              outlined
+              dense
+              square
+              label="y max"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="y1_min"
+              outlined
+              dense
+              square
+              label="y min"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y1_perbeat"
+              outlined
+              dense
+              square
+              label="y max-min"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y1_mean"
+              outlined
+              dense
+              square
+              label="y mean"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="y1_sd"
+              outlined
+              dense
+              square
+              label="y sd"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y1_perminute"
+              outlined
+              dense
+              square
+              label="y /min"
+              style="width: 100px; font-size: 12px"
+            />
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="chart" :id="chartId"></div>
-
-    <div class="row q-mt-sm">
-      <div class="col">
-        <div class="q-gutter-sm row justify-center">
-          <q-checkbox
-            v-model="show_summary"
-            @update:model-value="analyzeData"
-            dense
-            label="analyze"
-            style="font-size: 12px"
-          />
-          <q-checkbox
-            v-model="autoscale"
-            dense
-            label="autoscale"
-            @update:model-value="autoscaling"
-            style="font-size: 12px"
-          />
-          <q-input
-            v-if="!autoscale"
-            v-model.number="x_min_axis"
-            type="number"
-            @update:model-value="autoscaling"
-            label="x min"
-            filled
-            dense
-            hide-bottom-space
-            style="width: 100px; font-size: 12px"
-          />
-          <q-input
-            v-if="!autoscale"
-            v-model.number="x_max_axis"
-            type="number"
-            @update:model-value="autoscaling"
-            label="x max"
-            filled
-            dense
-            hide-bottom-space
-            style="width: 100px; font-size: 12px"
-          />
-          <q-input
-            v-if="!autoscale"
-            v-model.number="y_min"
-            type="number"
-            @update:model-value="autoscaling"
-            label="y min"
-            filled
-            dense
-            hide-bottom-space
-            style="width: 100px; font-size: 12px"
-          />
-          <q-input
-            v-if="!autoscale"
-            v-model.number="y_max"
-            type="number"
-            @update:model-value="autoscaling"
-            label="y max"
-            filled
-            dense
-            hide-bottom-space
-            style="width: 100px; font-size: 12px"
-          />
-
-          <q-checkbox
-            v-model="scaling"
-            dense
-            label="multipliers"
-            style="font-size: 12px"
-          />
-          <q-input
-            v-if="scaling"
-            v-model.number="chartx_factor"
-            type="number"
-            label="x"
-            outlined
-            dense
-            style="width: 75px; font-size: 10px"
-          />
-          <q-input
-            v-if="scaling"
-            v-model.number="chart1_factor"
-            type="number"
-            label="y"
-            outlined
-            dense
-            style="width: 75px; font-size: 10px"
-          />
-
-          <q-btn color="black" size="sm" @click="exportData">EXPORT</q-btn>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="show_summary" class="q-mt-sm">
-      <div v-if="chart1_enabled" class="q-gutter-xs row justify-center q-mt-xs">
-        <q-input
-          color="black"
-          v-model="x_max"
-          outlined
-          dense
-          square
-          label="x max"
-          style="width: 100px; font-size: 12px"
-        />
-        <q-input
-          color="black"
-          v-model="x_min"
-          outlined
-          dense
-          square
-          label="x min"
-          style="width: 100px; font-size: 12px"
-        />
-
-        <q-input
-          color="black"
-          v-model="x_perbeat"
-          outlined
-          dense
-          square
-          label="x max-min"
-          style="width: 100px; font-size: 12px"
-        />
-        <q-input
-          color="black"
-          v-model="x_mean"
-          outlined
-          dense
-          square
-          label="x mean"
-          style="width: 100px; font-size: 12px"
-        />
-        <q-input
-          color="black"
-          v-model="x_sd"
-          outlined
-          dense
-          square
-          label="x sd"
-          style="width: 100px; font-size: 12px"
-        />
-        <q-input
-          color="black"
-          v-model="x_perminute"
-          outlined
-          dense
-          square
-          label="x /min"
-          style="width: 100px; font-size: 12px"
-        />
-      </div>
-      <div v-if="chart1_enabled" class="q-gutter-xs row justify-center q-mt-xs">
-        <q-input
-          color="black"
-          v-model="y1_max"
-          outlined
-          dense
-          square
-          label="y max"
-          style="width: 100px; font-size: 12px"
-        />
-        <q-input
-          color="black"
-          v-model="y1_min"
-          outlined
-          dense
-          square
-          label="y min"
-          style="width: 100px; font-size: 12px"
-        />
-
-        <q-input
-          color="black"
-          v-model="y1_perbeat"
-          outlined
-          dense
-          square
-          label="y max-min"
-          style="width: 100px; font-size: 12px"
-        />
-
-        <q-input
-          color="black"
-          v-model="y1_mean"
-          outlined
-          dense
-          square
-          label="y mean"
-          style="width: 100px; font-size: 12px"
-        />
-        <q-input
-          color="black"
-          v-model="y1_sd"
-          outlined
-          dense
-          square
-          label="y sd"
-          style="width: 100px; font-size: 12px"
-        />
-
-        <q-input
-          color="black"
-          v-model="y1_perminute"
-          outlined
-          dense
-          square
-          label="y /min"
-          style="width: 100px; font-size: 12px"
-        />
-      </div>
-    </div>
-    <q-separator class="q-mt-sm" size="2px"></q-separator>
+    </q-card>
   </div>
 </template>
 
@@ -317,6 +331,7 @@ export default {
   },
   data() {
     return {
+      isEnabled: true,
       data_source: 0,
       x_min: 0,
       x_max: 0,

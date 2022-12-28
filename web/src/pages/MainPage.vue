@@ -41,8 +41,7 @@
             </q-tab-panel>
 
             <q-tab-panel name="charts">
-              <TimeBaseChart></TimeBaseChart>
-              <NonTimeBasedChart></NonTimeBasedChart>
+              <div class="text-h6">Charts</div>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -67,7 +66,12 @@
           <HeartMonitor></HeartMonitor>
           <HemodynamicMonitor></HemodynamicMonitor>
           <ShuntsMonitor></ShuntsMonitor>
-          <FlowMonitorVue></FlowMonitorVue>
+          <RespirationMonitorVue></RespirationMonitorVue>
+          <LungAndChestwallVue></LungAndChestwallVue>
+          <BloodgasMonitorVue></BloodgasMonitorVue>
+          <EcmoMonitorVue></EcmoMonitorVue>
+          <FlowProbeVue></FlowProbeVue>
+          <PressureProbeVue></PressureProbeVue>
         </div>
       </div>
     </div>
@@ -75,12 +79,15 @@
 </template>
 
 <script>
-import NonTimeBasedChart from "components/NonTimeBasedChart.vue";
-import TimeBaseChart from "components/TimeBaseChart.vue";
 import HemodynamicMonitor from "src/components/HemodynamicMonitor.vue";
+import RespirationMonitorVue from "src/components/RespirationMonitor.vue";
+import BloodgasMonitorVue from "src/components/BloodgasMonitor.vue";
+import LungAndChestwallVue from "src/components/LungsAndChestwallMonitor.vue";
 import HeartMonitor from "src/components/HeartMonitor.vue";
 import ShuntsMonitor from "src/components/ShuntsMonitor.vue";
-import FlowMonitorVue from "src/components/FlowMonitor.vue";
+import FlowProbeVue from "src/components/FlowProbe.vue";
+import PressureProbeVue from "src/components/PressureProbe.vue";
+import EcmoMonitorVue from "src/components/EcmoMonitor.vue";
 import { useLoggedInUser } from "stores/loggedInUser";
 
 export default {
@@ -91,12 +98,15 @@ export default {
     };
   },
   components: {
-    TimeBaseChart,
-    NonTimeBasedChart,
     HemodynamicMonitor,
     HeartMonitor,
     ShuntsMonitor,
-    FlowMonitorVue,
+    FlowProbeVue,
+    PressureProbeVue,
+    RespirationMonitorVue,
+    BloodgasMonitorVue,
+    LungAndChestwallVue,
+    EcmoMonitorVue,
   },
   data() {
     return {
