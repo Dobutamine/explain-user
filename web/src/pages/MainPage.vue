@@ -3,9 +3,37 @@
     <div class="q-pa-md">
       <div class="row">
         <div class="col-3">
-          <div class="text-center bg-grey-9 text-subtitle2">
-            MODEL PARAMETERS
-          </div>
+          <div class="text-center bg-grey-9 text-subtitle2">MODELS</div>
+          <q-tabs
+            v-model="tab_left"
+            dense
+            class="text-white"
+            active-color="primary"
+            indicator-color="primary"
+            align="justify"
+            narrow-indicator
+          >
+            <q-tab name="models" label="models" />
+            <q-tab name="scripts" label="scripts" />
+            <q-tab name="heart" label="shunts" />
+            <q-tab name="heart" label="heart" />
+            <q-tab name="heart" label="heart" />
+            <q-tab name="heart" label="heart" />
+          </q-tabs>
+          <q-separator></q-separator>
+
+          <q-tab-panels v-model="tab_left" animated>
+            <q-tab-panel name="models">
+              <div v-for="(model, index) in models" :key="index">
+                <ModelComponentVue
+                  :title="model.title"
+                  :collapsed="model.collapsed"
+                  :models="model.models"
+                  :properties="model.properties"
+                ></ModelComponentVue>
+              </div>
+            </q-tab-panel>
+          </q-tab-panels>
         </div>
 
         <div class="col-6">
@@ -96,6 +124,7 @@
 </template>
 
 <script>
+import ModelComponentVue from "src/components/ModelComponent.vue";
 import MonitorComponentVue from "src/components/MonitorComponent.vue";
 import ChartComponentVue from "src/components/ChartComponent.vue";
 import TimeBaseChartVue from "src/components/TimeBaseChart.vue";
@@ -117,12 +146,15 @@ export default {
     MonitorComponentVue,
     TimeBaseChartVue,
     NonTimeBasedChartVue,
+    ModelComponentVue,
   },
   data() {
     return {
       tab: "charts",
+      tab_left: "models",
       monitors: [],
       charts: [],
+      models: [],
     };
   },
   mounted() {
@@ -141,6 +173,21 @@ export default {
       if (this.uiConfig.charts[key].enabled) {
         this.charts.push(this.uiConfig.charts[key]);
       }
+    }
+
+    // build the model list
+    for (let key in this.uiConfig.models) {
+      // get the model type
+      let model_type = this.uiConfig.models[key].model_type;
+      // get all the models of this type from the explain model
+      let models = ["LV", "AA", "AAR"];
+      // set all the properties
+      this.models.push({
+        title: this.uiConfig.models[key].label,
+        collapsed: this.uiConfig.models[key].collapsed,
+        models: models,
+        properties: this.uiConfig.models[key].properties,
+      });
     }
   },
 };

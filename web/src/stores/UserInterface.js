@@ -2,6 +2,66 @@ import { defineStore } from "pinia";
 
 export const useUserInterfaceStore = defineStore("userInterface", {
   state: () => ({
+    models: {
+      bloodCompliance: {
+        label: "Blood compliances",
+        collapsed: true,
+        model_type: "BloodCompliance",
+        properties: ["ElBase", "Vol", "UVol", "ElK"],
+      },
+      bloodResistor: {
+        label: "Blood resistors",
+        collapsed: true,
+        model_type: "BloodResistor",
+        properties: [
+          "RFor",
+          "RBack",
+          "Rk",
+          "NoFlow",
+          "NoBackFlow",
+          "CompFrom",
+          "CompTo",
+        ],
+      },
+      bloodTimeVaryingElastance: {
+        label: "Blood time varying elastances",
+        collapsed: true,
+        model_type: "BloodTimeVaryingElastance",
+        properties: ["ElMin", "ElMax", "Vol", "UVol", "ElK"],
+      },
+      gasCompliance: {
+        label: "Gas compliances",
+        collapsed: true,
+        model_type: "GasCompliance",
+        properties: ["ElBase", "Vol", "UVol", "ElK"],
+      },
+      container: {
+        label: "Containers",
+        collapsed: true,
+        model_type: "Container",
+        properties: ["Comps", "Vol", "UVol", "ElBase", "ElK"],
+      },
+      gasResistor: {
+        label: "Gas resistors",
+        collapsed: true,
+        model_type: "GasResistor",
+        properties: [
+          "RFor",
+          "RBack",
+          "Rk",
+          "NoFlow",
+          "NoBackFlow",
+          "CompFrom",
+          "CompTo",
+        ],
+      },
+      gasExchanger: {
+        label: "Gas exchangers",
+        collapsed: true,
+        model_type: "GasExchanger",
+        properties: ["CompBlood", "CompGas", "DifO2", "DifCo2"],
+      },
+    },
     charts: {
       bloodFlowProbe: {
         enabled: true,
