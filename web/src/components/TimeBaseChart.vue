@@ -408,6 +408,7 @@ export default {
   setup() {},
   props: {
     model: String,
+    collapsed: Boolean,
     prim_prop: String,
     sec_prop: String,
   },
@@ -505,7 +506,7 @@ export default {
     toggleVisibility() {
       this.isEnabled = !this.isEnabled;
       if (this.isEnabled) {
-        this.visible = "visibility: visible; height: 300px";
+        this.visible = "visibility: visible; height: 350px";
       } else {
         this.visible = "visibility: collapse; height: 0px";
       }
@@ -1078,7 +1079,6 @@ export default {
         disableAnimations: false,
         responsive: true,
         maintainAspectRatio: false,
-        willReadFrequently: true,
       });
       // chart_object.chart.setTitle(this.title);
       // chart_object.chart.setTitleFont(
@@ -1176,8 +1176,6 @@ export default {
     document.addEventListener("rt", this.rtUpdate);
     document.addEventListener("data", this.dataUpdate);
     document.addEventListener("state", this.stateUpdate);
-    //
-    this.isEnabled = false;
     this.toggleVisibility();
   },
 };

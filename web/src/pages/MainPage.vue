@@ -1,10 +1,17 @@
 <template>
   <q-page>
-    <div class="q-pa-sm">
+    <div class="q-pa-md">
       <div class="row">
-        <div class="col-3"></div>
+        <div class="col-3">
+          <div class="text-center bg-grey-9 text-subtitle2">
+            MODEL PARAMETERS
+          </div>
+        </div>
 
         <div class="col-6">
+          <div class="text-center bg-grey-10 text-subtitle2">
+            MODEL VISUALIZATIONS
+          </div>
           <q-tabs
             v-model="tab"
             dense
@@ -26,7 +33,6 @@
           <q-tab-panels v-model="tab" animated>
             <q-tab-panel name="circulation">
               <div class="text-h6">Circulation</div>
-              <TimeBaseChartVue></TimeBaseChartVue>
             </q-tab-panel>
 
             <q-tab-panel name="respiration">
@@ -42,12 +48,16 @@
             </q-tab-panel>
 
             <q-tab-panel name="charts">
-              <div class="text-h6">Charts</div>
+              <TimeBaseChartVue></TimeBaseChartVue>
+              <NonTimeBasedChartVue></NonTimeBasedChartVue>
             </q-tab-panel>
           </q-tab-panels>
         </div>
 
         <div class="col-3">
+          <div class="text-center bg-grey-9 text-subtitle2">
+            MONITORED PARAMETERS
+          </div>
           <q-tabs
             v-model="tab"
             dense
@@ -89,6 +99,7 @@
 import MonitorComponentVue from "src/components/MonitorComponent.vue";
 import ChartComponentVue from "src/components/ChartComponent.vue";
 import TimeBaseChartVue from "src/components/TimeBaseChart.vue";
+import NonTimeBasedChartVue from "src/components/NonTimeBasedChart.vue";
 import { useLoggedInUser } from "stores/loggedInUser";
 import { useUserInterfaceStore } from "src/stores/UserInterface";
 
@@ -105,6 +116,7 @@ export default {
     ChartComponentVue,
     MonitorComponentVue,
     TimeBaseChartVue,
+    NonTimeBasedChartVue,
   },
   data() {
     return {

@@ -103,7 +103,7 @@ export default {
     toggleVisibility() {
       this.isEnabled = !this.isEnabled;
       if (this.isEnabled) {
-        this.visible = "visibility: visible; height: 300px";
+        this.visible = "visibility: visible; height: 250px";
       } else {
         this.visible = "visibility: collapse; height: 0px";
       }
@@ -213,6 +213,7 @@ export default {
         disableAnimations: false,
         responsive: false,
         maintainAspectRatio: false,
+        height: 200,
       });
       // chart_object.chart.setTitle(this.title);
       // chart_object.chart.setTitleFont(
@@ -304,17 +305,17 @@ export default {
     document.addEventListener("rt", this.rtUpdate);
     document.addEventListener("data", this.dataUpdate);
     document.addEventListener("state", this.stateUpdate);
-    this.isEnabled = !this.collapsed;
+    this.isEnabled = this.collapsed;
     this.toggleVisibility();
   },
 };
 </script>
 
 <style>
-.chart {
+#chart {
   background: black;
   width: 100%;
-  height: 250px;
+  height: 150px;
   align-self: flex-start;
 }
 </style>

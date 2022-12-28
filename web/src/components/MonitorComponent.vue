@@ -13,6 +13,7 @@
             v-model="field.value"
             :label="field.label"
             :hint="field.unit"
+            filled
             readonly
             dense
             stack-label

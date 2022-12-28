@@ -3,11 +3,11 @@
     <q-card class="q-pb-xs q-ma-sm" bordered>
       <div
         class="q-mt-es row gutter text-overline justify-center"
-        @click="isEnabled = !isEnabled"
+        @click="toggleVisibility"
       >
         XY BASED CHART
       </div>
-      <div v-if="isEnabled">
+      <div :style="visible">
         <div class="row q-mt-sm">
           <div class="col">
             <div class="q-gutter-md row justify-center q-mb-sm">
@@ -326,12 +326,14 @@ export default {
   setup() {},
   props: {
     model: String,
+    collapsed: Boolean,
     prim_prop: String,
     sec_prop: String,
   },
   data() {
     return {
       isEnabled: true,
+      visible: "",
       data_source: 0,
       x_min: 0,
       x_max: 0,
@@ -389,6 +391,14 @@ export default {
     };
   },
   methods: {
+    toggleVisibility() {
+      this.isEnabled = !this.isEnabled;
+      if (this.isEnabled) {
+        this.visible = "visibility: visible; height: 350px";
+      } else {
+        this.visible = "visibility: collapse; height: 0px";
+      }
+    },
     resetAnalysisResults() {
       this.x_max = 0;
       this.x_min = 0;
@@ -875,6 +885,7 @@ export default {
     document.addEventListener("rt", this.rtUpdate);
     document.addEventListener("data", this.dataUpdate);
     document.addEventListener("state", this.stateUpdate);
+    this.toggleVisibility();
   },
 };
 </script>

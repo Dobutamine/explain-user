@@ -6,14 +6,14 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       bloodFlowProbe: {
         enabled: true,
         collapsed: true,
-        title: "BLOOD FLOW PROBE",
+        title: "FLOW PROBE",
         model_types: [],
         model_props: [],
       },
       bloodPressureProbe: {
         enabled: true,
         collapsed: true,
-        title: "BLOOD PRESSURE PROBE",
+        title: "PRESSURE PROBE",
         model_types: [],
         model_props: [],
       },
