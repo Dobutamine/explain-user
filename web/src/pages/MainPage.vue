@@ -26,6 +26,7 @@
           <q-tab-panels v-model="tab" animated>
             <q-tab-panel name="circulation">
               <div class="text-h6">Circulation</div>
+              <TimeBaseChartVue></TimeBaseChartVue>
             </q-tab-panel>
 
             <q-tab-panel name="respiration">
@@ -63,15 +64,21 @@
             <q-tab name="ecmo" label="" />
           </q-tabs>
           <q-separator />
-          <HeartMonitor></HeartMonitor>
-          <HemodynamicMonitor></HemodynamicMonitor>
-          <ShuntsMonitor></ShuntsMonitor>
-          <RespirationMonitorVue></RespirationMonitorVue>
-          <LungAndChestwallVue></LungAndChestwallVue>
-          <BloodgasMonitorVue></BloodgasMonitorVue>
-          <EcmoMonitorVue></EcmoMonitorVue>
-          <FlowProbeVue></FlowProbeVue>
-          <PressureProbeVue></PressureProbeVue>
+          <div v-for="(monitor, index) in monitors" :key="index">
+            <MonitorComponentVue
+              :title="monitor.title"
+              :collapsed="monitor.collapsed"
+              :parameters="monitor.parameters"
+            ></MonitorComponentVue>
+          </div>
+          <div v-for="(chart, index) in charts" :key="index">
+            <ChartComponentVue
+              :title="chart.title"
+              :collapsed="chart.collapsed"
+              :model_types="chart.model_types"
+              :props="chart.model_props"
+            ></ChartComponentVue>
+          </div>
         </div>
       </div>
     </div>
@@ -79,44 +86,49 @@
 </template>
 
 <script>
-import HemodynamicMonitor from "src/components/HemodynamicMonitor.vue";
-import RespirationMonitorVue from "src/components/RespirationMonitor.vue";
-import BloodgasMonitorVue from "src/components/BloodgasMonitor.vue";
-import LungAndChestwallVue from "src/components/LungsAndChestwallMonitor.vue";
-import HeartMonitor from "src/components/HeartMonitor.vue";
-import ShuntsMonitor from "src/components/ShuntsMonitor.vue";
-import FlowProbeVue from "src/components/FlowProbe.vue";
-import PressureProbeVue from "src/components/PressureProbe.vue";
-import EcmoMonitorVue from "src/components/EcmoMonitor.vue";
+import MonitorComponentVue from "src/components/MonitorComponent.vue";
+import ChartComponentVue from "src/components/ChartComponent.vue";
+import TimeBaseChartVue from "src/components/TimeBaseChart.vue";
 import { useLoggedInUser } from "stores/loggedInUser";
+import { useUserInterfaceStore } from "src/stores/UserInterface";
 
 export default {
   setup() {
     const user = useLoggedInUser();
+    const uiConfig = useUserInterfaceStore();
     return {
       user,
+      uiConfig,
     };
   },
   components: {
-    HemodynamicMonitor,
-    HeartMonitor,
-    ShuntsMonitor,
-    FlowProbeVue,
-    PressureProbeVue,
-    RespirationMonitorVue,
-    BloodgasMonitorVue,
-    LungAndChestwallVue,
-    EcmoMonitorVue,
+    ChartComponentVue,
+    MonitorComponentVue,
+    TimeBaseChartVue,
   },
   data() {
     return {
       tab: "charts",
+      monitors: [],
+      charts: [],
     };
   },
   mounted() {
     this.$q.dark.set(true);
     if (!this.user.loggedIn) {
       this.$router.push("/login");
+    }
+    // build the monitor list
+    for (let key in this.uiConfig.monitors) {
+      if (this.uiConfig.monitors[key].enabled) {
+        this.monitors.push(this.uiConfig.monitors[key]);
+      }
+    }
+    // build the chart list
+    for (let key in this.uiConfig.charts) {
+      if (this.uiConfig.charts[key].enabled) {
+        this.charts.push(this.uiConfig.charts[key]);
+      }
     }
   },
 };

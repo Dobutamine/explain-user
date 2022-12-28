@@ -1,36 +1,43 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="col">
-        <div class="q-gutter-sm row justify-center q-mb-sm">
-          <q-select
-            label-color="red-6"
-            v-model="comp_name1"
-            :options="component_names"
-            hide-bottom-space
-            dense
-            label="y1"
-            style="width: 100px; font-size: 12px"
-            @update:model-value="selectComponent1"
-          />
+  <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
+    <div
+      class="q-mt-es row gutter text-overline justify-center"
+      @click="toggleVisibility"
+    >
+      {{ title }}
+    </div>
+    <div :style="visible">
+      <div class="row">
+        <div class="col">
+          <div class="q-gutter-sm row justify-center q-mb-sm">
+            <q-select
+              label-color="red-6"
+              v-model="comp_name1"
+              :options="component_names"
+              hide-bottom-space
+              dense
+              label="y1"
+              style="width: 100px; font-size: 12px"
+              @update:model-value="selectComponent1"
+            />
 
-          <q-select
-            class="q-ml-md"
-            label-color="green-6"
-            v-model="comp_name2"
-            :options="component_names"
-            hide-bottom-space
-            dense
-            label="y2"
-            style="width: 100px; font-size: 12px"
-            @update:model-value="selectComponent2"
-          />
+            <q-select
+              class="q-ml-md"
+              label-color="green-6"
+              v-model="comp_name2"
+              :options="component_names"
+              hide-bottom-space
+              dense
+              label="y2"
+              style="width: 100px; font-size: 12px"
+              @update:model-value="selectComponent2"
+            />
+          </div>
         </div>
       </div>
+      <div class="chart" :id="chartId"></div>
     </div>
-
-    <div class="chart" :id="chartId"></div>
-  </div>
+  </q-card>
 </template>
 
 <script>
@@ -55,11 +62,15 @@ import {
 export default {
   setup() {},
   props: {
+    title: String,
+    collapsed: Boolean,
     model_types: Array,
     props: Array,
   },
   data() {
     return {
+      isEnabled: true,
+      visible: "",
       data_source: 0,
 
       first_run: true,
@@ -79,7 +90,6 @@ export default {
       chart1_enabled: false,
       chart2_enabled: false,
 
-      title: "Title",
       lineTitle: "LineTitle",
       yLabel: "",
       xLabel: "time(s)",
@@ -90,6 +100,14 @@ export default {
     };
   },
   methods: {
+    toggleVisibility() {
+      this.isEnabled = !this.isEnabled;
+      if (this.isEnabled) {
+        this.visible = "visibility: visible; height: 300px";
+      } else {
+        this.visible = "visibility: collapse; height: 0px";
+      }
+    },
     selectComponent1(selection) {
       if (selection === "") {
         // remove previous watched value
@@ -286,6 +304,8 @@ export default {
     document.addEventListener("rt", this.rtUpdate);
     document.addEventListener("data", this.dataUpdate);
     document.addEventListener("state", this.stateUpdate);
+    this.isEnabled = !this.collapsed;
+    this.toggleVisibility();
   },
 };
 </script>
