@@ -7,20 +7,36 @@
       {{ title }}
     </div>
     <div class="q-ma-sm">
-      <q-badge color="dark">
-        left heart contractility: {{ contractility }}%
-      </q-badge>
-      <q-slider v-model="contractility" :min="0" :max="500" />
-      <q-badge color="dark">
-        right heart contractility: {{ contractility }}%
-      </q-badge>
-      <q-slider v-model="contractility" :min="0" :max="500" />
+      <DoubleSliderComponentVue
+        caption="heart contractility"
+        unit="%"
+        :min="0"
+        :max="500"
+        :step="1"
+        :connected="true"
+      >
+      </DoubleSliderComponentVue>
+      <DoubleSliderComponentVue
+        caption="heart relaxation"
+        unit="%"
+        :min="0"
+        :max="500"
+        :step="1"
+        :connected="true"
+      >
+      </DoubleSliderComponentVue>
     </div>
   </q-card>
 </template>
 
 <script>
+import DoubleSliderComponentVue from "../ui-elements/DoubleSliderComponent.vue";
+import SliderComponentVue from "../ui-elements/SliderComponent.vue";
+
 export default {
+  components: {
+    DoubleSliderComponentVue,
+  },
   data() {
     return {
       title: "HEART FUNCTION",
