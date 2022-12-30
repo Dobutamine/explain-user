@@ -1176,7 +1176,7 @@ export default {
     document.addEventListener("rt", this.rtUpdate);
     document.addEventListener("data", this.dataUpdate);
     document.addEventListener("state", this.stateUpdate);
-    this.toggleVisibility();
+    //this.toggleVisibility();
   },
 };
 </script>

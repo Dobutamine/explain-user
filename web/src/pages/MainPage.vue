@@ -3,7 +3,6 @@
     <div class="q-pa-md">
       <div class="row">
         <div class="col-3">
-          <div class="text-center bg-grey-9 text-subtitle2">MODELS</div>
           <q-tabs
             v-model="tab_left"
             dense
@@ -13,33 +12,30 @@
             align="justify"
             narrow-indicator
           >
-            <q-tab name="models" label="models" />
+            <q-tab name="file" label="file" />
             <q-tab name="scripts" label="scripts" />
-            <q-tab name="heart" label="shunts" />
-            <q-tab name="heart" label="heart" />
-            <q-tab name="heart" label="heart" />
-            <q-tab name="heart" label="heart" />
+            <q-tab name="play" label="play" />
+            <q-tab name="build" label="build" />
+            <q-tab name="docs" label="docs" />
           </q-tabs>
           <q-separator></q-separator>
 
           <q-tab-panels v-model="tab_left" animated>
-            <q-tab-panel name="models">
-              <div v-for="(model, index) in models" :key="index">
-                <ModelComponentVue
-                  :title="model.title"
-                  :collapsed="model.collapsed"
-                  :models="model.models"
-                  :properties="model.properties"
-                ></ModelComponentVue>
-              </div>
+            <q-tab-panel name="file">
+              <FileComponentVue></FileComponentVue>
+            </q-tab-panel>
+            <q-tab-panel name="scripts">
+              <ScriptComponentVue></ScriptComponentVue>
+              <ModelsComponentVue></ModelsComponentVue>
+            </q-tab-panel>
+            <q-tab-panel name="play"> </q-tab-panel>
+            <q-tab-panel name="build">
+              <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
           </q-tab-panels>
         </div>
 
         <div class="col-6">
-          <div class="text-center bg-grey-10 text-subtitle2">
-            MODEL VISUALIZATIONS
-          </div>
           <q-tabs
             v-model="tab"
             dense
@@ -83,9 +79,6 @@
         </div>
 
         <div class="col-3">
-          <div class="text-center bg-grey-9 text-subtitle2">
-            MONITORED PARAMETERS
-          </div>
           <q-tabs
             v-model="tab"
             dense
@@ -124,7 +117,9 @@
 </template>
 
 <script>
-import ModelComponentVue from "src/components/ModelComponent.vue";
+import FileComponentVue from "src/components/FileComponent.vue";
+import ScriptComponentVue from "src/components/ScriptComponent.vue";
+import ModelsComponentVue from "src/components/ModelsComponent.vue";
 import MonitorComponentVue from "src/components/MonitorComponent.vue";
 import ChartComponentVue from "src/components/ChartComponent.vue";
 import TimeBaseChartVue from "src/components/TimeBaseChart.vue";
@@ -142,16 +137,18 @@ export default {
     };
   },
   components: {
+    FileComponentVue,
+    ScriptComponentVue,
+    ModelsComponentVue,
     ChartComponentVue,
     MonitorComponentVue,
     TimeBaseChartVue,
     NonTimeBasedChartVue,
-    ModelComponentVue,
   },
   data() {
     return {
       tab: "charts",
-      tab_left: "models",
+      tab_left: "file",
       monitors: [],
       charts: [],
       models: [],
@@ -175,20 +172,20 @@ export default {
       }
     }
 
-    // build the model list
-    for (let key in this.uiConfig.models) {
-      // get the model type
-      let model_type = this.uiConfig.models[key].model_type;
-      // get all the models of this type from the explain model
-      let models = ["LV", "AA", "AAR"];
-      // set all the properties
-      this.models.push({
-        title: this.uiConfig.models[key].label,
-        collapsed: this.uiConfig.models[key].collapsed,
-        models: models,
-        properties: this.uiConfig.models[key].properties,
-      });
-    }
+    // // build the model list
+    // for (let key in this.uiConfig.models) {
+    //   // get the model type
+    //   let model_type = this.uiConfig.models[key].model_type;
+    //   // get all the models of this type from the explain model
+    //   let models = ["LV", "AA", "AAR"];
+    //   // set all the properties
+    //   this.models.push({
+    //     title: this.uiConfig.models[key].label,
+    //     collapsed: this.uiConfig.models[key].collapsed,
+    //     models: models,
+    //     properties: this.uiConfig.models[key].properties,
+    //   });
+    // }
   },
 };
 </script>
