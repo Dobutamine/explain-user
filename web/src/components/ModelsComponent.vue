@@ -1,5 +1,11 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
+    <div
+      class="row text-overline justify-center"
+      @click="collapsed = !collapsed"
+    >
+      {{ title }}
+    </div>
     <div v-if="!collapsed">
       <div class="q-mt-es row gutter text-overline justify-center">
         <q-select
@@ -55,6 +61,7 @@ export default {
   },
   data() {
     return {
+      title: "INDIVIDUAL MODEL PROPS",
       collapsed: false,
       relative: true,
       models: [
@@ -65,9 +72,14 @@ export default {
         "Gasexchangers",
         "Containers",
       ],
-      selectedModel: "BloodCompliances",
+      selectedModel: "",
       description: "In this component editing of the raw models is possible",
     };
+  },
+  methods: {
+    cancel() {
+      this.selectedModel = "";
+    },
   },
   mounted() {},
 };
