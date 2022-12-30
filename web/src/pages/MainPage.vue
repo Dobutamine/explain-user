@@ -33,8 +33,8 @@
               <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
             <q-tab-panel name="build">
-              <AddModelComponentVue></AddModelComponentVue>
-              <BuildGrouperComponentVue></BuildGrouperComponentVue>
+              <BuildComponentVue></BuildComponentVue>
+              <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -121,16 +121,17 @@
 </template>
 
 <script>
-import AddModelComponentVue from "src/components/AddModelComponent.vue";
-import BuildGrouperComponentVue from "src/components/BuildGrouperComponent.vue";
-import PlayComponentVue from "src/components/PlayComponent.vue";
-import FileComponentVue from "src/components/FileComponent.vue";
-import ScriptComponentVue from "src/components/ScriptComponent.vue";
-import ModelsComponentVue from "src/components/ModelsComponent.vue";
-import MonitorComponentVue from "src/components/MonitorComponent.vue";
-import ChartComponentVue from "src/components/ChartComponent.vue";
-import TimeBaseChartVue from "src/components/TimeBaseChart.vue";
-import NonTimeBasedChartVue from "src/components/NonTimeBasedChart.vue";
+import BuildComponentVue from "../components/BuildComponent.vue";
+import GroupersComponentVue from "../components/GroupersComponent.vue";
+import FileComponentVue from "../components/FileComponent.vue";
+import ScriptsComponentVue from "../components/ScriptsComponent.vue";
+import ModelsComponentVue from "../components/ModelsComponent.vue";
+import MonitorsComponentVue from "../components/MonitorsComponent.vue";
+
+import ChartComponentVue from "../components/charts/ChartComponent.vue";
+import TimeBaseChartVue from "../components/charts/TimeBaseChart.vue";
+import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
+
 import { useLoggedInUser } from "stores/loggedInUser";
 import { useUserInterfaceStore } from "src/stores/UserInterface";
 
@@ -145,15 +146,14 @@ export default {
   },
   components: {
     FileComponentVue,
-    ScriptComponentVue,
+    ScriptComponentVue: ScriptsComponentVue,
     ModelsComponentVue,
     ChartComponentVue,
-    MonitorComponentVue,
+    MonitorComponentVue: MonitorsComponentVue,
     TimeBaseChartVue,
     NonTimeBasedChartVue,
-    PlayComponentVue,
-    AddModelComponentVue,
-    BuildGrouperComponentVue,
+    PlayComponentVue: GroupersComponentVue,
+    BuildComponentVue,
   },
   data() {
     return {

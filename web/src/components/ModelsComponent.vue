@@ -43,12 +43,12 @@
 </template>
 
 <script>
-import GasExchangerVue from "src/components/GasExchanger.vue";
-import ContainerComponentVue from "src/components/ContainerComponent.vue";
-import BloodComplianceVue from "src/components/BloodCompliance.vue";
-import BloodResistorVue from "src/components/BloodResistor.vue";
-import GasComplianceVue from "src/components/GasCompliance.vue";
-import GasResistorVue from "src/components/GasResistor.vue";
+import GasExchangerVue from "./models/GasExchangerComponent.vue";
+import ContainerComponentVue from "./models/ContainerComponent.vue";
+import BloodComplianceVue from "./models/BloodComplianceComponent.vue";
+import BloodResistorVue from "./models/BloodResistorComponent.vue";
+import GasComplianceVue from "./models/GasComplianceComponent.vue";
+import GasResistorVue from "./models/GasResistorComponent.vue";
 
 export default {
   components: {
@@ -59,10 +59,13 @@ export default {
     GasExchangerVue,
     ContainerComponentVue,
   },
+  props: {
+    mode: Number,
+  },
   data() {
     return {
       title: "INDIVIDUAL MODEL PROPS",
-      collapsed: false,
+      collapsed: true,
       relative: true,
       models: [
         "BloodCompliances",

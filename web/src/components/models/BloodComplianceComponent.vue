@@ -145,6 +145,9 @@
 
 <script>
 export default {
+  props: {
+    mode: Number,
+  },
   data() {
     return {
       collapsed: false,

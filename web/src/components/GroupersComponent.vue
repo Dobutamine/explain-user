@@ -38,10 +38,10 @@
 </template>
 
 <script>
-import HeartRhythmComponentVue from "./HeartRhythmComponent.vue";
-import HeartFunctionComponentVue from "./HeartFunctionComponent.vue";
-import CirculationComponentVue from "./CirculationComponent.vue";
-import ShuntsComponentVue from "./ShuntsComponent.vue";
+import HeartRhythmComponentVue from "./groupers/HeartRhythmGrouperComponent.vue";
+import HeartFunctionComponentVue from "./groupers/HeartFunctionGrouperComponent.vue";
+import CirculationComponentVue from "./groupers/CirculationGrouperComponent.vue";
+import ShuntsComponentVue from "./groupers/ShuntsGrouperComponent.vue";
 
 export default {
   components: {

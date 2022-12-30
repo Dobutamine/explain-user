@@ -1,12 +1,11 @@
 <template>
-  <q-card class="q-pa-xs q-ma-md" bordered>
+  <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
     <div
       class="row text-overline justify-center"
       @click="collapsed = !collapsed"
     >
       {{ title }}
     </div>
-    <div class="q-ma-sm"></div>
   </q-card>
 </template>
 
