@@ -44,7 +44,6 @@
           @click="clearScript"
           >CLEAR</q-btn
         >
-        <q-btn color="blue-10" size="sm" style="width: 70px">DELETE</q-btn>
       </div>
       <div
         class="q-gutter-sm row text-overline justify-center q-mb-xs"

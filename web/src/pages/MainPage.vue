@@ -12,11 +12,10 @@
             align="justify"
             narrow-indicator
           >
-            <q-tab name="file" label="file" />
-            <q-tab name="scripts" label="scripts" />
             <q-tab name="play" label="play" />
-            <q-tab name="build" label="build" />
-            <q-tab name="docs" label="docs" />
+            <q-tab name="scripts" label="script" />
+
+            <q-tab name="docs" label="build" />
           </q-tabs>
           <q-separator></q-separator>
 
@@ -28,7 +27,9 @@
               <ScriptComponentVue></ScriptComponentVue>
               <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
-            <q-tab-panel name="play"> </q-tab-panel>
+            <q-tab-panel name="play">
+              <PlayComponentVue></PlayComponentVue>
+            </q-tab-panel>
             <q-tab-panel name="build">
               <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
@@ -117,6 +118,7 @@
 </template>
 
 <script>
+import PlayComponentVue from "src/components/PlayComponent.vue";
 import FileComponentVue from "src/components/FileComponent.vue";
 import ScriptComponentVue from "src/components/ScriptComponent.vue";
 import ModelsComponentVue from "src/components/ModelsComponent.vue";
@@ -144,11 +146,12 @@ export default {
     MonitorComponentVue,
     TimeBaseChartVue,
     NonTimeBasedChartVue,
+    PlayComponentVue,
   },
   data() {
     return {
       tab: "charts",
-      tab_left: "file",
+      tab_left: "play",
       monitors: [],
       charts: [],
       models: [],
