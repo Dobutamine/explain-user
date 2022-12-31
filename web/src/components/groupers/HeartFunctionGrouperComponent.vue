@@ -7,35 +7,42 @@
       {{ title }}
     </div>
     <div class="q-ma-sm">
-      <DoubleSliderComponentVue
+      <SliderComponentVue
         caption="heart contractility"
+        caption1="L"
+        caption2="R"
         unit="%"
         :min="0"
         :max="500"
         :step="1"
-        :connected="true"
+        :single="true"
+        :splittable="true"
+        :closable="true"
       >
-      </DoubleSliderComponentVue>
-      <DoubleSliderComponentVue
+      </SliderComponentVue>
+      <SliderComponentVue
         caption="heart relaxation"
+        caption1="L"
+        caption2="R"
         unit="%"
         :min="0"
         :max="500"
         :step="1"
-        :connected="true"
+        :single="true"
+        :splittable="false"
+        :closable="false"
       >
-      </DoubleSliderComponentVue>
+      </SliderComponentVue>
     </div>
   </q-card>
 </template>
 
 <script>
-import DoubleSliderComponentVue from "../ui-elements/DoubleSliderComponent.vue";
 import SliderComponentVue from "../ui-elements/SliderComponent.vue";
 
 export default {
   components: {
-    DoubleSliderComponentVue,
+    SliderComponentVue,
   },
   data() {
     return {
