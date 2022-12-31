@@ -17,7 +17,7 @@
         :step="1"
         :single="true"
         :splittable="true"
-        :closable="true"
+        :closable="false"
       >
       </SliderComponentVue>
       <SliderComponentVue
@@ -26,10 +26,10 @@
         caption2="R"
         unit="%"
         :min="0"
-        :max="500"
+        :max="100"
         :step="1"
         :single="true"
-        :splittable="false"
+        :splittable="true"
         :closable="false"
       >
       </SliderComponentVue>

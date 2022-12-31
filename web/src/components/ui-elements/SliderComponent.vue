@@ -157,6 +157,7 @@ export default {
         this.butColor = "secondary";
         this.prefix1 = "";
         this.prefix2 = "";
+        this.value2 = this.value1;
       } else {
         this.butCap = "fa-solid fa-square-share-nodes";
         this.butColor = "negative";
