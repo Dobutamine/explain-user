@@ -19,7 +19,7 @@
     <q-footer class="bg-grey-8 text-white footerCustomStyle">
       <q-toolbar>
         <q-toolbar-title class="text-overline">
-          <div>No model definition file loaded.</div>
+          <div>{{ statusMessage }}</div>
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
@@ -28,6 +28,7 @@
 
 <script>
 import { useLoggedInUser } from "stores/loggedInUser";
+import { explain } from "../boot/explain";
 
 export default {
   setup() {
@@ -35,6 +36,22 @@ export default {
     return {
       user,
     };
+  },
+  data() {
+    return {
+      statusMessage: "No model definition file loaded.",
+    };
+  },
+  methods: {
+    statusUpdate() {
+      this.statusMessage = "STATUS: " + explain.statusMessage;
+    },
+  },
+  beforeUnmount() {
+    document.removeEventListener("status", this.statusUpdate);
+  },
+  mounted() {
+    document.addEventListener("status", this.statusUpdate);
   },
 };
 </script>
