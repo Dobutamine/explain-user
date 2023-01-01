@@ -36,9 +36,6 @@ let model = {
 // declare the model initialization flag
 let modelInitialized = false;
 
-// declare a model data object
-let model_data = [];
-
 // setup the communication channel with the parent
 // the onmessage function is an event handler handling messages posted to the model engine worker thread.
 // e is a MessageEvent object wich contains a data field containing the message
@@ -48,9 +45,58 @@ onmessage = function (e) {
     case "command":
       if (e.data.message == "init") {
         initModel(e.data.payload[0]);
+        break;
       }
       break;
+    case "get":
+      if (e.data.message == "state") {
+        getModelState();
+        break;
+      }
+      if (e.data.message == "data") {
+        getModelData();
+        break;
+      }
+      break;
+    case "set":
+      if ((e.data.message = "prop")) {
+      }
   }
+};
+
+const setProperty = function (m, p, v) {};
+
+const getProperty = function (m, p) {
+  let value = model.Models[m][p];
+  if (value) {
+    postMessage({
+      type: "state",
+      message: "",
+      payload: [{ model: m, prop: p, value: value }],
+    });
+  } else {
+    postMessage({
+      type: "error",
+      message: m + "." + p + " not found!",
+      payload: [],
+    });
+  }
+};
+
+const getModelState = function () {
+  postMessage({
+    type: "state",
+    message: "",
+    payload: [model],
+  });
+};
+
+const getModelData = function () {
+  postMessage({
+    type: "data",
+    message: "",
+    payload: [""],
+  });
 };
 
 const initModel = function (modelDefinition) {
@@ -113,13 +159,12 @@ const initModel = function (modelDefinition) {
       postMessage({
         type: "status",
         message: "Model engine initialized",
-        payload: [],
+        payload: [model],
       });
     }
   } catch (e) {
     // if error signal the parent that there was an error
     modelInitialized = false;
-    console.log(e);
     postMessage({
       type: "error",
       message: "Invalid model definition",

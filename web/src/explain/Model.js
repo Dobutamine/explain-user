@@ -142,7 +142,6 @@ export default class Model {
             break;
           case "state":
             this.modelState = e.data.payload[0];
-            // reaise com ready event
             document.dispatchEvent(this.state_event);
             break;
           case "rt":
