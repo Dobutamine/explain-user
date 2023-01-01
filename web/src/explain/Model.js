@@ -125,6 +125,7 @@ export default class Model {
             }
             // raise a status event
             document.dispatchEvent(this.status_event);
+            console.log(this.statusMessage);
             break;
           case "error":
             this.errorMessage = e.data.message;
@@ -134,6 +135,7 @@ export default class Model {
             }
             // raise error event
             document.dispatchEvent(this.error_event);
+            console.log(this.errorMessage);
             break;
           case "data":
             this.modelData = e.data.payload;

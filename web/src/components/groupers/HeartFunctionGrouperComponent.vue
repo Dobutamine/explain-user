@@ -33,16 +33,64 @@
         :closable="false"
       >
       </SliderComponentVue>
+      <SliderComponentVue
+        caption="aortic valve resistance"
+        caption1="L"
+        caption2="R"
+        unit="%"
+        :min="10"
+        :max="1000"
+        :step="1"
+        :single="true"
+        :splittable="false"
+        :closable="true"
+      >
+      </SliderComponentVue>
+      <NumberInputComponentVue
+        caption="LV pressure"
+        unit="mmHg"
+        :min="0.1"
+        :max="1000.0"
+        :step="0.1"
+        :relative="false"
+      >
+      </NumberInputComponentVue>
+      <KnobComponentVue
+        caption="LV pressure"
+        unit="mmHg"
+        :min="0"
+        :max="100.0"
+        :step="1"
+        :startValue="50"
+      >
+      </KnobComponentVue>
+      <NumberOutputComponentVue
+        caption="LV pressure"
+        unit="mmHg"
+        :value1="60"
+        :value2="40"
+        :relative="false"
+        :single="false"
+      >
+      </NumberOutputComponentVue>
+      <ModelPropSelectorComponentVue></ModelPropSelectorComponentVue>
     </div>
   </q-card>
 </template>
 
 <script>
+import ModelPropSelectorComponentVue from "../ui-elements/ModelPropSelectorComponent.vue";
+import KnobComponentVue from "../ui-elements/KnobComponent.vue";
 import SliderComponentVue from "../ui-elements/SliderComponent.vue";
-
+import NumberOutputComponentVue from "../ui-elements/NumberOutputComponent.vue";
+import NumberInputComponentVue from "../ui-elements/NumberInputComponent.vue";
 export default {
   components: {
     SliderComponentVue,
+    NumberOutputComponentVue,
+    NumberInputComponentVue,
+    KnobComponentVue,
+    ModelPropSelectorComponentVue,
   },
   data() {
     return {

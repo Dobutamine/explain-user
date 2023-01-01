@@ -90,6 +90,8 @@ export default {
   },
   data() {
     return {
+      value1_caption: "",
+      value2_caption: "",
       closed1: false,
       butClosedColor1: "secondary",
       butClosedCap1: "fa-solid fa-lock-open",

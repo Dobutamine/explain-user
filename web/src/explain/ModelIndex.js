@@ -1,10 +1,12 @@
+import ModelBaseClass from "./helpers/ModelBaseClass";
+
 export { ArtificialWhomb } from "./core_models/ArtificialWhomb";
 export { AutonomicNervousSystem } from "./core_models/AutonomicNervousSystem";
 export { Birth } from "./core_models/Birth";
 export { Blood } from "./core_models/Blood";
 export { BloodCompliance } from "./core_models/BloodCompliance";
 export { BloodResistor } from "./core_models/BloodResistor";
-export { BloodTimeVaryingResistance } from "./core_models/BloodTimeVaryingElastance";
+export { BloodTimeVaryingElastance } from "./core_models/BloodTimeVaryingElastance";
 export { Breathing } from "./core_models/Breathing";
 export { ChestCompressions } from "./core_models/ChestCompressions";
 export { Container } from "./core_models/Container";
@@ -13,6 +15,7 @@ export { Drugs } from "./core_models/Drugs";
 export { ECMO } from "./core_models/ECMO";
 export { Gas } from "./core_models/Gas";
 export { GasCompliance } from "./core_models/GasCompliance";
+export { GasResistor } from "./core_models/GasResistor";
 export { GasExchanger } from "./core_models/GasExchanger";
 export { Heart } from "./core_models/Heart";
 export { IntrathoracicPressure } from "./core_models/IntrathoracicPressure";
