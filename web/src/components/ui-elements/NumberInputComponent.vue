@@ -13,7 +13,7 @@
         dense
         dark
         stack-label
-        style="max-width: 70px; font-size: 10px"
+        style="max-width: 70px; font-size: 12px"
         @update:model-value="updateParent"
       />
     </div>
@@ -32,22 +32,27 @@ export default {
     unit: String,
     min: Number,
     step: Number,
+    displayFactor: Number,
   },
   watch: {
     value(nv, ov) {
-      this.newValue = nv;
+      this.newValue = nv * this.displayFactor;
     },
   },
   data() {
     return {
       newValue: 0.0,
       fontSize: "8px",
-      unitClass: "row bg-secondary",
+      unitClass: "row bg-indigo-10",
     };
   },
   methods: {
     updateParent() {
-      this.$emit("propupdate", this.modelProp, parseFloat(this.newValue));
+      this.$emit(
+        "propupdate",
+        this.modelProp,
+        parseFloat(this.newValue) / this.displayFactor
+      );
     },
   },
 };

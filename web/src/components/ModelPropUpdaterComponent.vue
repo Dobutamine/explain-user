@@ -10,19 +10,23 @@
           hide-bottom-space
           dense
           label="compliance"
-          style="width: 50%; font-size: 12px"
+          style="width: 100%; font-size: 12px"
           @update:model-value="modelSelected"
         />
-        <q-toggle
-          class="q-ml-xs q-mt-md"
-          size="xs"
-          v-model="IsEnabled"
-          label="Enabled"
-          style="font-size: 10px"
-        />
       </div>
-
-      <div class="q-ma-sm q-gutter-sm row items-center">
+      <div class="q-ma-sm q-gutter-xs row">
+        <div v-for="(prop, index) in props" :key="index">
+          <BooleanInputComponentVue
+            v-if="prop.typeProp == 'boolean'"
+            :caption="prop.caption"
+            :modelProp="prop.modelProp"
+            :value="propValues[prop.modelProp]"
+            @propupdate="updatePropFromChild"
+          >
+          </BooleanInputComponentVue>
+        </div>
+      </div>
+      <div class="q-ma-sm q-gutter-sm row justify-left">
         <div v-for="(prop, index) in props" :key="index">
           <NumberInputComponentVue
             v-if="prop.typeProp == 'numeric'"
@@ -32,6 +36,7 @@
             :min="prop.min"
             :step="prop.step"
             :value="propValues[prop.modelProp]"
+            :displayFactor="prop.displayFactor"
             @propupdate="updatePropFromChild"
           >
           </NumberInputComponentVue>
@@ -49,7 +54,7 @@
           @click="addToScript"
           >SCRIPT</q-btn
         >
-        <q-btn color="blue-10" size="sm" style="width: 70px">CANCEL</q-btn>
+        <q-btn color="indigo-10" size="sm" style="width: 70px">CANCEL</q-btn>
       </div>
       <div
         class="q-gutter-sm row text-overline justify-center q-mb-xs"
@@ -63,16 +68,21 @@
 
 <script>
 import { explain } from "../boot/explain";
+import BooleanInputComponentVue from "./ui-elements/BooleanInputComponent.vue";
 import NumberInputComponentVue from "./ui-elements/NumberInputComponent.vue";
 export default {
   components: {
     NumberInputComponentVue,
+    BooleanInputComponentVue,
   },
   props: {
     modelType: String,
     props: Array,
   },
   watch: {
+    props(np, op) {
+      this.propValues = {};
+    },
     modelType(nmt, omt) {
       this.selectedModel = "";
       this.processModelState();
@@ -84,7 +94,6 @@ export default {
       models: [],
       selectedModel: "",
       statusMessage: "",
-      IsEnabled: true,
       propValues: {},
     };
   },
@@ -103,6 +112,7 @@ export default {
     },
     modelSelected() {
       // update the values of the props
+      this.propValues = [];
       this.props.forEach((p) => {
         this.propValues[p.modelProp] =
           explain.modelState.Models[this.selectedModel][p.modelProp];

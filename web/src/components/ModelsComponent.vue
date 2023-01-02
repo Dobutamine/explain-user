@@ -41,9 +41,6 @@ export default {
   components: {
     ModelPropUpdaterComponentVue,
   },
-  props: {
-    mode: Number,
-  },
   setup() {
     const uiConfig = useUserInterfaceStore();
     return {
