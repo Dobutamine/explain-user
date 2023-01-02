@@ -17,69 +17,52 @@
           dense
           label="models"
           style="width: 90%; font-size: 12px"
+          @update:model-value="modelSelected"
         />
       </div>
 
       <div class="q-ma-sm q-gutter-sm row items-center">
-        <BloodComplianceVue
-          v-if="selectedModel == 'BloodCompliances'"
-        ></BloodComplianceVue>
-        <BloodResistorVue
-          v-if="selectedModel == 'BloodResistors'"
-        ></BloodResistorVue>
-        <GasComplianceVue
-          v-if="selectedModel == 'GasCompliances'"
-        ></GasComplianceVue>
-        <GasResistorVue v-if="selectedModel == 'GasResistors'"></GasResistorVue>
-        <GasExchangerVue
-          v-if="selectedModel == 'Gasexchangers'"
-        ></GasExchangerVue>
-        <ContainerComponentVue
-          v-if="selectedModel == 'Containers'"
-        ></ContainerComponentVue>
+        <ModelPropUpdaterComponentVue
+          v-if="selectedModel"
+          :modelType="selectedModel"
+          :props="props"
+          style="width: 100%"
+        ></ModelPropUpdaterComponentVue>
       </div>
     </div>
   </q-card>
 </template>
 
 <script>
-import GasExchangerVue from "./models/GasExchangerComponent.vue";
-import ContainerComponentVue from "./models/ContainerComponent.vue";
-import BloodComplianceVue from "./BloodComplianceComponent.vue";
-import BloodResistorVue from "./models/BloodResistorComponent.vue";
-import GasComplianceVue from "./models/GasComplianceComponent.vue";
-import GasResistorVue from "./models/GasResistorComponent.vue";
+import ModelPropUpdaterComponentVue from "./ModelPropUpdaterComponent.vue";
+import { useUserInterfaceStore } from "src/stores/UserInterface";
 
 export default {
   components: {
-    BloodComplianceVue,
-    BloodResistorVue,
-    GasComplianceVue,
-    GasResistorVue,
-    GasExchangerVue,
-    ContainerComponentVue,
+    ModelPropUpdaterComponentVue,
   },
   props: {
     mode: Number,
+  },
+  setup() {
+    const uiConfig = useUserInterfaceStore();
+    return {
+      uiConfig,
+    };
   },
   data() {
     return {
       title: "INDIVIDUAL MODEL PROPS",
       collapsed: true,
-      relative: true,
-      models: [
-        "BloodCompliances",
-        "BloodResistors",
-        "GasCompliances",
-        "GasResistors",
-        "Gasexchangers",
-        "Containers",
-      ],
+      models: ["BloodCompliance", "BloodResistor"],
+      props: [],
       selectedModel: "",
-      description: "In this component editing of the raw models is possible",
     };
   },
   methods: {
+    modelSelected() {
+      this.props = this.uiConfig.models[this.selectedModel].properties;
+    },
     cancel() {
       this.selectedModel = "";
     },

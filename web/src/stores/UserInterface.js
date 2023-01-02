@@ -3,24 +3,70 @@ import { defineStore } from "pinia";
 export const useUserInterfaceStore = defineStore("userInterface", {
   state: () => ({
     models: {
-      bloodCompliance: {
-        label: "Blood compliances",
-        collapsed: true,
-        model_type: "BloodCompliance",
-        properties: ["ElBase", "Vol", "UVol", "ElK"],
-      },
-      bloodResistor: {
-        label: "Blood resistors",
-        collapsed: true,
-        model_type: "BloodResistor",
+      BloodCompliance: {
         properties: [
-          "RFor",
-          "RBack",
-          "Rk",
-          "NoFlow",
-          "NoBackFlow",
-          "CompFrom",
-          "CompTo",
+          {
+            caption: "IsEnabled",
+            modelProp: "IsEnabled",
+            typeProp: "boolean",
+          },
+          {
+            modelProp: "Vol",
+            typeProp: "numeric",
+            caption: "volume",
+            unit: "L",
+            min: 0.0,
+            step: 0.001,
+          },
+          {
+            modelProp: "UVol",
+            caption: "UVol",
+            typeProp: "numeric",
+            unit: "L",
+            min: 0.0,
+            step: 0.001,
+          },
+          {
+            caption: "ElBase",
+            modelProp: "ElBase",
+            typeProp: "numeric",
+            unit: "mmHg/L",
+            min: 0.0,
+            step: 0.001,
+          },
+          {
+            caption: "ElK",
+            modelProp: "ElK",
+            typeProp: "numeric",
+            unit: "mmHg/L",
+            min: 0.0,
+            step: 0.001,
+          },
+        ],
+      },
+      BloodResistor: {
+        properties: [
+          {
+            caption: "NoFlow",
+            modelProp: "NoFlow",
+            typeProp: "boolean",
+          },
+          {
+            caption: "RFor",
+            modelProp: "RFor",
+            typeProp: "numeric",
+            unit: "l/mmHg*s",
+            min: 0.001,
+            step: 0.001,
+          },
+          {
+            caption: "RBack",
+            modelProp: "RBack",
+            typeProp: "numeric",
+            unit: "l/mmHg*s",
+            min: 0.001,
+            step: 0.001,
+          },
         ],
       },
       bloodTimeVaryingElastance: {

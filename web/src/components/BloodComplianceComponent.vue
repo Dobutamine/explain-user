@@ -163,7 +163,6 @@ export default {
         },
       ];
 
-      console.log(updatePropList);
       // set the new  properties
       explain.setModelProperties(updatePropList);
 

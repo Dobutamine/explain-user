@@ -616,7 +616,7 @@
       "Description": "ventricular septal defect",
       "ModelType": "BloodResistor",
       "IsEnabled": false,
-      "NoFlow": false,
+      "NoFlow": true,
       "NoBackFlow": false,
       "CompFrom": "LV",
       "CompTo": "RV",

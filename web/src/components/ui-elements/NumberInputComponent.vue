@@ -9,7 +9,6 @@
         hide-hint
         type="number"
         :min="min"
-        :max="max"
         :step="step"
         dense
         dark
@@ -28,10 +27,10 @@
 export default {
   props: {
     caption: String,
+    modelProp: String,
     value: Number,
     unit: String,
     min: Number,
-    max: Number,
     step: Number,
   },
   watch: {
@@ -48,7 +47,7 @@ export default {
   },
   methods: {
     updateParent() {
-      this.$emit(this.caption.toLowerCase(), this.newValue);
+      this.$emit("propupdate", this.modelProp, parseFloat(this.newValue));
     },
   },
 };
