@@ -47,6 +47,18 @@ onmessage = function (e) {
         initModel(e.data.payload[0]);
         break;
       }
+      if (e.data.message == "start") {
+        start();
+        break;
+      }
+      if (e.data.message == "stop") {
+        stop();
+        break;
+      }
+      if (e.data.message == "calculate") {
+        calculate(e.data.payload[0]);
+        break;
+      }
       break;
     case "get":
       if (e.data.message == "state") {
@@ -57,14 +69,43 @@ onmessage = function (e) {
         getModelData();
         break;
       }
+      if (e.data.message == "prop") {
+        getProperty(payload[0], payload[1]);
+        break;
+      }
       break;
     case "set":
       if ((e.data.message = "prop")) {
+        setProperty(payload[0], payload[1], payload[2]);
+        break;
       }
   }
 };
 
-const setProperty = function (m, p, v) {};
+const start = function () {
+  // start the model in realtime
+};
+
+const stop = function () {
+  // stop the realtime model
+};
+
+const calculate = function (timeToCalculate) {
+  // calculate a number of seconds of the model
+};
+
+const setProperty = function (m, p, v) {
+  let current_value = model.Models[m][p];
+  if (current_value) {
+    model.Models[m][p] = v;
+  } else {
+    postMessage({
+      type: "error",
+      message: m + "." + p + " not found!",
+      payload: [],
+    });
+  }
+};
 
 const getProperty = function (m, p) {
   let value = model.Models[m][p];
@@ -172,3 +213,7 @@ const initModel = function (modelDefinition) {
     });
   }
 };
+
+const modelStep = function () {};
+
+const modelStepRt = function () {};
