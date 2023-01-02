@@ -80,6 +80,7 @@
               <NonTimeBasedChartVue></NonTimeBasedChartVue>
             </q-tab-panel>
           </q-tab-panels>
+          <ModelControlComponentVue></ModelControlComponentVue>
         </div>
 
         <div class="col-3">
@@ -121,6 +122,7 @@
 </template>
 
 <script>
+import ModelControlComponentVue from "src/components/ModelControlComponent.vue";
 import BuildComponentVue from "../components/BuildComponent.vue";
 import GroupersComponentVue from "../components/GroupersComponent.vue";
 import FileComponentVue from "../components/FileComponent.vue";
@@ -145,6 +147,7 @@ export default {
     };
   },
   components: {
+    ModelControlComponentVue,
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
     ModelsComponentVue,

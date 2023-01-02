@@ -24,7 +24,7 @@ import Oxygenation from "./core_models/Oxygenation";
 import DataCollector from "./helpers/DataCollector";
 import Interface from "./helpers/Interface";
 
-// store all imported models in a list
+// store all imported models in a list to be able to instantiate them dynamically
 const available_models = [];
 Object.values(models).forEach((model) => available_models.push(model));
 
@@ -33,8 +33,15 @@ let model = {
   Models: {},
 };
 
+// declare a model data object
+let modelData = {};
+
 // declare the model initialization flag
 let modelInitialized = false;
+
+// set the realtime updateinterval
+let rtInterval = 0.015;
+let rtClock = null;
 
 // setup the communication channel with the parent
 // the onmessage function is an event handler handling messages posted to the model engine worker thread.
@@ -84,14 +91,68 @@ onmessage = function (e) {
 
 const start = function () {
   // start the model in realtime
+  if (modelInitialized) {
+    // call the modelStep every rt_interval seconds
+    rtClock = setInterval(modelStepRt, rtInterval * 1000.0);
+    // send status update
+    postMessage({
+      type: "status",
+      message: `realtime model started.`,
+      payload: [],
+    });
+  } else {
+    postMessage({
+      type: "status",
+      message: `model not initialized.`,
+      payload: [],
+    });
+  }
 };
 
 const stop = function () {
   // stop the realtime model
+  if (modelInitialized) {
+    clearInterval(rtClock);
+    rtClock = null;
+    postMessage({
+      type: "status",
+      message: `realtime model stopped.`,
+      payload: [],
+    });
+  }
 };
 
-const calculate = function (timeToCalculate) {
+const calculate = function (timeToCalculate = 10.0) {
   // calculate a number of seconds of the model
+  if (modelInitialized) {
+    let noOfSteps = timeToCalculate / model.ModelingStepsize;
+    postMessage({
+      type: "status",
+      message: `calculating ${timeToCalculate} sec. in ${noOfSteps} steps.`,
+      payload: [],
+    });
+    const start = performance.now();
+    for (let i = 0; i < noOfSteps; i++) {
+      modelStep();
+    }
+    const end = performance.now();
+    const step_time = (end - start) / noOfSteps;
+    postMessage({
+      type: "status",
+      message: `calculation ready (execution time: ${(end - start).toFixed(
+        1
+      )} ms, model step: ${step_time.toFixed(4)} ms)`,
+      payload: [],
+    });
+    // get the model data from the engine
+    getModelData();
+  } else {
+    postMessage({
+      type: "status",
+      message: `model not initialized.`,
+      payload: [],
+    });
+  }
 };
 
 const setProperty = function (m, p, v) {
@@ -136,7 +197,7 @@ const getModelData = function () {
   postMessage({
     type: "data",
     message: "",
-    payload: [""],
+    payload: [modelData],
   });
 };
 
@@ -216,4 +277,12 @@ const initModel = function (modelDefinition) {
 
 const modelStep = function () {};
 
-const modelStepRt = function () {};
+const modelStepRt = function () {
+  // so the rt_interval determines how often the model is calculated
+  const noOfSteps = rtInterval / model.ModelingStepsize;
+  for (let i = 0; i < noOfSteps; i++) {
+    modelStep();
+  }
+  // get model data
+  getModelData();
+};
