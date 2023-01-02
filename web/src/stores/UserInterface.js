@@ -3,6 +3,60 @@ import { defineStore } from "pinia";
 export const useUserInterfaceStore = defineStore("userInterface", {
   state: () => ({
     models: {
+      BloodTimeVaryingElastance: {
+        properties: [
+          {
+            modelProp: "Vol",
+            typeProp: "numeric",
+            caption: "volume",
+            unit: "mL",
+            min: 0.0,
+            step: 0.1,
+            displayFactor: 1000.0,
+          },
+          {
+            modelProp: "UVol",
+            caption: "UVol",
+            typeProp: "numeric",
+            unit: "mL",
+            min: 0.0,
+            step: 0.1,
+            displayFactor: 1000.0,
+          },
+          {
+            caption: "ElMin",
+            modelProp: "ElMin",
+            typeProp: "numeric",
+            unit: "mmHg/mL",
+            min: 0.0,
+            step: 0.1,
+            displayFactor: 0.001,
+          },
+          {
+            caption: "ElMax",
+            modelProp: "ElMax",
+            typeProp: "numeric",
+            unit: "mmHg/mL",
+            min: 0.0,
+            step: 0.1,
+            displayFactor: 0.001,
+          },
+          {
+            caption: "ElK",
+            modelProp: "ElK",
+            typeProp: "numeric",
+            unit: "mmHg/mL",
+            min: 0.0,
+            step: 0.1,
+            displayFactor: 0.001,
+          },
+          {
+            caption: "Enabled",
+            modelProp: "IsEnabled",
+            typeProp: "boolean",
+          },
+        ],
+      },
       BloodCompliance: {
         properties: [
           {
@@ -94,12 +148,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           },
         ],
       },
-      bloodTimeVaryingElastance: {
-        label: "Blood time varying elastances",
-        collapsed: true,
-        model_type: "BloodTimeVaryingElastance",
-        properties: ["ElMin", "ElMax", "Vol", "UVol", "ElK"],
-      },
+
       gasCompliance: {
         label: "Gas compliances",
         collapsed: true,

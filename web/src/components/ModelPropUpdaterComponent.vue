@@ -9,7 +9,7 @@
           :options="models"
           hide-bottom-space
           dense
-          label="compliance"
+          label="sub model"
           style="width: 100%; font-size: 12px"
           @update:model-value="modelSelected"
         />
@@ -106,7 +106,20 @@ export default {
       setTimeout(() => (this.statusMessage = ""), 1000);
     },
     updateProps() {
-      console.log(this.propValues);
+      // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
+      let updatePropObject = [];
+      for (let pv in this.propValues) {
+        updatePropObject.push({
+          m: this.selectedModel,
+          p: pv,
+          v: this.propValues[pv],
+          at: 0.0,
+          it: 0.0,
+        });
+      }
+
+      explain.setModelProperties(updatePropObject);
+
       this.statusMessage = "property updated";
       setTimeout(() => (this.statusMessage = ""), 1000);
     },

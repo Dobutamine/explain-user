@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { explain } from "../boot/explain";
 import ModelPropUpdaterComponentVue from "./ModelPropUpdaterComponent.vue";
 import { useUserInterfaceStore } from "src/stores/UserInterface";
 
@@ -51,20 +52,42 @@ export default {
     return {
       title: "INDIVIDUAL MODEL PROPS",
       collapsed: true,
-      models: ["BloodCompliance", "BloodResistor"],
+      models: [],
       props: [],
       selectedModel: "",
     };
   },
   methods: {
     modelSelected() {
-      this.props = this.uiConfig.models[this.selectedModel].properties;
+      try {
+        this.props = this.uiConfig.models[this.selectedModel].properties;
+      } catch {
+        this.props = [];
+      }
     },
     cancel() {
       this.selectedModel = "";
     },
+    processModelState() {
+      let modelTypes = [];
+      for (let model in explain.modelState.Models) {
+        modelTypes.push(explain.modelState.Models[model].ModelType);
+      }
+      // remove duplicates
+      this.models = [...new Set(modelTypes)];
+    },
   },
-  mounted() {},
+  beforeUnmount() {
+    // remove the model state event listener
+    document.removeEventListener("state", this.processModelState);
+  },
+  mounted() {
+    // add an event listener for when the model state is ready
+    document.addEventListener("state", this.processModelState);
+
+    // get the model state
+    explain.getModelState();
+  },
 };
 </script>
 
