@@ -22,6 +22,7 @@ import * as models from "./ModelIndex";
 import AcidBase from "./core_models/AcidBase";
 import Oxygenation from "./core_models/Oxygenation";
 import DataCollector from "./helpers/DataCollector";
+import TaskScheduler from "./helpers/TaskScheduler";
 import Interface from "./helpers/Interface";
 
 // store all imported models in a list to be able to instantiate them dynamically
@@ -77,13 +78,13 @@ onmessage = function (e) {
         break;
       }
       if (e.data.message == "prop") {
-        getProperty(payload[0], payload[1]);
+        getProperty(e.data.payload[0], e.data.payload[1]);
         break;
       }
       break;
     case "set":
       if ((e.data.message = "prop")) {
-        setProperty(payload[0], payload[1], payload[2]);
+        setProperties(e.data.payload);
         break;
       }
   }
@@ -155,17 +156,23 @@ const calculate = function (timeToCalculate = 10.0) {
   }
 };
 
-const setProperty = function (m, p, v) {
-  let current_value = model.Models[m][p];
-  if (current_value) {
-    model.Models[m][p] = v;
-  } else {
-    postMessage({
-      type: "error",
-      message: m + "." + p + " not found!",
-      payload: [],
-    });
-  }
+const setProperties = function (payload) {
+  // process the new model properties list
+  payload.forEach((newProp) => {
+    // hand the property change to the task scheduler
+    if (newProp.at === 0 && newProp.it === 0) {
+      model.Models[newProp.m][newProp.p] = newProp.v;
+    } else {
+      model["TaskScheduler"].PropChange(newProp);
+    }
+  });
+  postMessage({
+    type: "status",
+    message: `properties updated.`,
+    payload: [],
+  });
+  // refresh the model state on the model instance
+  getModelState();
 };
 
 const getProperty = function (m, p) {
@@ -176,16 +183,11 @@ const getProperty = function (m, p) {
       message: "",
       payload: [{ model: m, prop: p, value: value }],
     });
-  } else {
-    postMessage({
-      type: "error",
-      message: m + "." + p + " not found!",
-      payload: [],
-    });
   }
 };
 
 const getModelState = function () {
+  // refresh the model state on the model instance
   postMessage({
     type: "state",
     message: "",
@@ -194,6 +196,7 @@ const getModelState = function () {
 };
 
 const getModelData = function () {
+  // refresh the model data on the model instance
   postMessage({
     type: "data",
     message: "",
@@ -224,6 +227,9 @@ const initModel = function (modelDefinition) {
     }
     // add a datacollector instance to the model object
     model["DataCollector"] = new DataCollector(model);
+
+    // add a task scheduler instance to the model object
+    model["TaskScheduler"] = new TaskScheduler(model);
 
     // initialize all model components
     Object.values(modelDefinition.Models).forEach((component) => {

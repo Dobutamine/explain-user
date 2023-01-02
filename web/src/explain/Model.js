@@ -84,6 +84,15 @@ export default class Model {
     });
   }
 
+  setModelProperties(newProperties) {
+    // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
+    this.sendMessage({
+      type: "set",
+      message: "prop",
+      payload: newProperties,
+    });
+  }
+
   getModelState() {
     this.sendMessage({
       type: "get",

@@ -45,7 +45,7 @@
 <script>
 import GasExchangerVue from "./models/GasExchangerComponent.vue";
 import ContainerComponentVue from "./models/ContainerComponent.vue";
-import BloodComplianceVue from "./models/BloodComplianceComponent.vue";
+import BloodComplianceVue from "./BloodComplianceComponent.vue";
 import BloodResistorVue from "./models/BloodResistorComponent.vue";
 import GasComplianceVue from "./models/GasComplianceComponent.vue";
 import GasResistorVue from "./models/GasResistorComponent.vue";

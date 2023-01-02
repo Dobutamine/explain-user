@@ -2,8 +2,7 @@
   <div>
     <div class="row">
       <q-input
-        v-if="!relative"
-        v-model="value"
+        v-model="newValue"
         :label="caption"
         filled
         square
@@ -15,38 +14,12 @@
         dense
         dark
         stack-label
-        style="max-width: 90px"
-      />
-      <q-input
-        v-if="relative"
-        v-model="value"
-        :label="caption"
-        filled
-        type="number"
-        min="1"
-        max="1000000"
-        step="1"
-        dense
-        dark
-        stack-label
-        style="max-width: 90px"
+        style="max-width: 70px; font-size: 10px"
+        @update:model-value="updateParent"
       />
     </div>
-    <div
-      v-if="!relative"
-      :class="unitClass"
-      :style="{ 'font-size': fontSize, width: '87px' }"
-    >
-      <div class="col q-ml-sm text-left">abs</div>
+    <div :class="unitClass" :style="{ 'font-size': fontSize, width: '70px' }">
       <div class="col q-mr-sm text-right">{{ unit }}</div>
-    </div>
-    <div
-      v-if="relative"
-      class="row bg-negative"
-      :style="{ 'font-size': fontSize, width: '89px' }"
-    >
-      <div class="col q-ml-sm text-left">rel</div>
-      <div class="col q-mr-sm text-right">%</div>
     </div>
   </div>
 </template>
@@ -55,21 +28,28 @@
 export default {
   props: {
     caption: String,
+    value: Number,
     unit: String,
     min: Number,
     max: Number,
     step: Number,
-    relative: Boolean,
+  },
+  watch: {
+    value(nv, ov) {
+      this.newValue = nv;
+    },
   },
   data() {
     return {
-      value: 0.0,
+      newValue: 0.0,
       fontSize: "8px",
       unitClass: "row bg-secondary",
     };
   },
-  mounted() {
-    this.value = this.min;
+  methods: {
+    updateParent() {
+      this.$emit(this.caption.toLowerCase(), this.newValue);
+    },
   },
 };
 </script>
