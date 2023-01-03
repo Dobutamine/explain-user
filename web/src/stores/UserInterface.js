@@ -202,6 +202,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             caption: "contained models",
             modelProp: "ContainedModels",
             typeProp: "list",
+            options: ["AA", "AAR", "AD", "RLB", "RUB", "RA", "RV"],
           },
         ],
       },

@@ -49,6 +49,7 @@
             :caption="prop.caption"
             :modelProp="prop.modelProp"
             :value="propValues[prop.modelProp]"
+            :options="prop.options"
             @propupdate="updatePropFromChild"
           >
           </ListInputComponentVue>
