@@ -19,7 +19,9 @@
       />
     </div>
     <div :class="unitClass" :style="{ 'font-size': fontSize, width: '70px' }">
-      <div class="col q-mr-sm text-right">{{ unit }}</div>
+      <div class="col q-mr-sm text-right">
+        {{ initValue * displayFactor }} {{ unit }}
+      </div>
     </div>
   </div>
 </template>
@@ -30,6 +32,7 @@ export default {
     caption: String,
     modelProp: String,
     value: Number,
+    initValue: Number,
     unit: String,
     min: Number,
     step: Number,

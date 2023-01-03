@@ -36,6 +36,7 @@
             :min="prop.min"
             :step="prop.step"
             :value="propValues[prop.modelProp]"
+            :initValue="initPropValues[prop.modelProp]"
             :displayFactor="prop.displayFactor"
             @propupdate="updatePropFromChild"
           >
@@ -100,8 +101,15 @@ import MultipleListInputComponentVue from "./ui-elements/MultipleListInputCompon
 import ListInputComponentVue from "./ui-elements/ListInputComponent.vue";
 import BooleanInputComponentVue from "./ui-elements/BooleanInputComponent.vue";
 import NumberInputComponentVue from "./ui-elements/NumberInputComponent.vue";
+import { useScriptStore } from "stores/script";
 
 export default {
+  setup() {
+    const script = useScriptStore();
+    return {
+      script,
+    };
+  },
   components: {
     MultipleListInputComponentVue,
     ListInputComponentVue,
@@ -128,17 +136,37 @@ export default {
       selectedModel: "",
       statusMessage: "",
       propValues: {},
+      initPropValues: {},
     };
   },
   methods: {
     cancel() {
       this.selectedModel = "";
       this.propValues = {};
+      this.initPropValues = {};
     },
     updatePropFromChild(propName, propValue) {
       this.propValues[propName] = propValue;
     },
     addToScript() {
+      // only script the changed values
+      for (let pv in this.propValues) {
+        if (this.propValues[pv] != this.initPropValues[pv]) {
+          // build script event
+          this.script.scriptLines.push({
+            m: this.selectedModel,
+            p: pv,
+            o: this.initPropValues[pv],
+            v: this.propValues[pv],
+            it: 5.0,
+            at: 15.0,
+            state: "pending",
+          });
+          // prevent updating again
+          this.initPropValues[pv] = this.propValues[pv];
+        }
+      }
+
       this.statusMessage = "property change added to script";
       setTimeout(() => (this.statusMessage = ""), 1000);
     },
@@ -167,9 +195,12 @@ export default {
     },
     modelSelected() {
       // update the values of the props
-      this.propValues = [];
+      this.propValues = {};
+      this.initPropValues = {};
       this.props.forEach((p) => {
         this.propValues[p.modelProp] =
+          explain.modelState.Models[this.selectedModel][p.modelProp];
+        this.initPropValues[p.modelProp] =
           explain.modelState.Models[this.selectedModel][p.modelProp];
       });
     },

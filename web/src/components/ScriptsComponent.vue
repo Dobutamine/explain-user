@@ -14,20 +14,21 @@
         />
       </div>
 
-      <q-card v-if="script.length > 0" class="q-pb-xs q-pt-xs q-ma-md">
+      <q-card
+        v-if="script.scriptLines.length > 0"
+        class="q-pb-xs q-pt-xs q-ma-md"
+      >
         <q-list bordered separator dark>
-          <div v-for="(script_line, index) in script" :key="index">
+          <div v-for="(script_line, index) in script.scriptLines" :key="index">
             <q-item clickable v-ripple>
               <q-item-section>
                 <q-item-label
-                  >{{ script_line.model }}.{{
-                    script_line.property
-                  }}</q-item-label
+                  >{{ script_line.m }}.{{ script_line.p }}</q-item-label
                 >
                 <q-item-label caption
-                  >set to {{ script_line.target }} from
-                  {{ script_line.current }} in {{ script_line.timeIn }} sec. at
-                  {{ script_line.timeAt }} sec.</q-item-label
+                  >set to {{ script_line.v }} from {{ script_line.o }} in
+                  {{ script_line.it }} sec. at
+                  {{ script_line.at }} sec.</q-item-label
                 >
               </q-item-section>
             </q-item>
@@ -56,7 +57,15 @@
 </template>
 
 <script>
+import { useScriptStore } from "stores/script";
+
 export default {
+  setup() {
+    const script = useScriptStore();
+    return {
+      script,
+    };
+  },
   components: {},
   data() {
     return {
@@ -65,26 +74,6 @@ export default {
       script_names: ["PDA"],
       selectedScript: "PDA",
       statusMessage: "",
-      script: [
-        {
-          model: "AA",
-          property: "ElBase",
-          current: 1000,
-          target: 1000,
-          timeIn: 30,
-          timeAt: 60,
-          admitted: false,
-        },
-        {
-          model: "PDA",
-          property: "Diameter",
-          current: 5.0,
-          target: 0.0,
-          timeIn: 60,
-          timeAt: 0,
-          admitted: false,
-        },
-      ],
     };
   },
   methods: {
@@ -92,6 +81,7 @@ export default {
       this.selectedScript = "";
       this.script = [];
     },
+    updateScriptFromStore() {},
   },
   mounted() {},
 };
