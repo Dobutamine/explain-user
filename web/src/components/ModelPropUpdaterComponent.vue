@@ -138,6 +138,8 @@ export default {
     updateProps() {
       // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
       let updatePropObject = [];
+
+      // iterate over all props and build an prop update object
       for (let pv in this.propValues) {
         updatePropObject.push({
           m: this.selectedModel,
@@ -147,6 +149,8 @@ export default {
           it: 0.0,
         });
       }
+
+      console.log(updatePropObject);
 
       explain.setModelProperties(updatePropObject);
 

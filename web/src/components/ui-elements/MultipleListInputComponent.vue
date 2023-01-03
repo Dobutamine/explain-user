@@ -10,6 +10,7 @@
         multiple
         :label="caption"
         style="width: 150px; font-size: 12px"
+        @update:model-value="updateParent"
       />
     </div>
   </div>
@@ -38,7 +39,7 @@ export default {
   },
   methods: {
     updateParent() {
-      this.$emit("propupdate", this.modelProp, this.newValue);
+      this.$emit("propupdate", this.modelProp, this.currentSelection);
     },
   },
 };

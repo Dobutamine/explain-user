@@ -9,6 +9,7 @@
         dense
         :label="caption"
         style="width: 100px; font-size: 12px"
+        @update:model-value="updateParent"
       />
     </div>
   </div>
@@ -31,13 +32,13 @@ export default {
     return {
       fontSize: "8px",
       unitClass: "row bg-indigo-10",
-      currentSelection: [],
+      currentSelection: "",
       listOptions: [],
     };
   },
   methods: {
     updateParent() {
-      this.$emit("propupdate", this.modelProp, this.newValue);
+      this.$emit("propupdate", this.modelProp, this.currentSelection);
     },
   },
 };
