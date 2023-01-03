@@ -9,6 +9,7 @@
         dense
         multiple
         :label="caption"
+        :readonly="locked"
         style="width: 150px; font-size: 12px"
         @update:model-value="updateParent"
       />
@@ -23,6 +24,7 @@ export default {
     modelProp: String,
     value: Array,
     options: Array,
+    locked: Boolean,
   },
   watch: {
     value(nv, ov) {

@@ -21,7 +21,7 @@
             :caption="prop.caption"
             :modelProp="prop.modelProp"
             :value="propValues[prop.modelProp]"
-            @propupdate="updatePropFromChild"
+            :locked="true"
           >
           </BooleanInputComponentVue>
         </div>
@@ -37,7 +37,7 @@
             :step="prop.step"
             :value="propValues[prop.modelProp]"
             :displayFactor="prop.displayFactor"
-            @propupdate="updatePropFromChild"
+            :locked="true"
           >
           </NumberInputComponentVue>
         </div>
@@ -50,7 +50,7 @@
             :modelProp="prop.modelProp"
             :value="propValues[prop.modelProp]"
             :options="prop.options"
-            @propupdate="updatePropFromChild"
+            :locked="true"
           >
           </ListInputComponentVue>
         </div>
@@ -63,22 +63,22 @@
             :modelProp="prop.modelProp"
             :value="propValues[prop.modelProp]"
             :options="prop.options"
-            @propupdate="updatePropFromChild"
+            :locked="true"
           >
           </MultipleListInputComponentVue>
         </div>
       </div>
 
       <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
-        <q-btn color="red-10" size="sm" style="width: 70px" @click="updateProps"
-          >UPDATE</q-btn
+        <q-btn color="red-10" size="sm" style="width: 70px" @click="deleteModel"
+          >DELETE</q-btn
         >
         <q-btn
           color="secondary"
           size="sm"
           style="width: 70px"
-          @click="addToScript"
-          >SCRIPT</q-btn
+          @click="deactivateModel"
+          >DEACTIVATE</q-btn
         >
         <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
           >CANCEL</q-btn
@@ -135,36 +135,18 @@ export default {
       this.selectedModel = "";
       this.propValues = {};
     },
-    updatePropFromChild(propName, propValue) {
-      this.propValues[propName] = propValue;
-    },
-    addToScript() {
-      this.statusMessage = "property change added to script";
+
+    deactivateModel() {
+      explain.deactivateModelComponent(this.selectedModel);
+      this.statusMessage = "component deactivated";
       setTimeout(() => (this.statusMessage = ""), 1000);
     },
-    updateProps() {
-      // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
-      let updatePropObject = [];
-
-      // iterate over all props and build an prop update object
-      for (let pv in this.propValues) {
-        updatePropObject.push({
-          m: this.selectedModel,
-          p: pv,
-          v: this.propValues[pv],
-          at: 0.0,
-          it: 0.0,
-        });
-      }
-
-      console.log(updatePropObject);
-
-      // set the new model properties on the model
-      explain.setModelProperties(updatePropObject);
-
-      this.statusMessage = "property updated";
+    deleteModel() {
+      explain.deleteModelComponent(this.selectedModel);
+      this.statusMessage = "component deleted";
       setTimeout(() => (this.statusMessage = ""), 1000);
     },
+
     modelSelected() {
       // update the values of the props
       this.propValues = [];

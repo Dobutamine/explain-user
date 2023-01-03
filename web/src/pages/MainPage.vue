@@ -35,6 +35,7 @@
             <q-tab-panel name="build">
               <BuildComponentVue></BuildComponentVue>
               <ModelsComponentVue></ModelsComponentVue>
+              <DeleteComponentVue></DeleteComponentVue>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -124,6 +125,7 @@
 <script>
 import ModelControlComponentVue from "src/components/ModelControlComponent.vue";
 import BuildComponentVue from "../components/BuildComponent.vue";
+import DeleteComponentVue from "src/components/DeleteComponent.vue";
 import GroupersComponentVue from "../components/GroupersComponent.vue";
 import FileComponentVue from "../components/FileComponent.vue";
 import ScriptsComponentVue from "../components/ScriptsComponent.vue";
@@ -157,6 +159,7 @@ export default {
     NonTimeBasedChartVue,
     PlayComponentVue: GroupersComponentVue,
     BuildComponentVue,
+    DeleteComponentVue,
   },
   data() {
     return {

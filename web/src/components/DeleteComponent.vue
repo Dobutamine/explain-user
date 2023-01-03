@@ -15,19 +15,19 @@
           :options="models"
           hide-bottom-space
           dense
-          label="select component type"
+          label="models"
           style="width: 90%; font-size: 12px"
           @update:model-value="modelSelected"
         />
       </div>
 
       <div class="q-ma-sm q-gutter-sm row items-center">
-        <ModelPropBuildComponentVue
+        <ModelPropDeleterComponentVue
           v-if="selectedModel"
           :modelType="selectedModel"
           :props="props"
           style="width: 100%"
-        ></ModelPropBuildComponentVue>
+        ></ModelPropDeleterComponentVue>
       </div>
     </div>
   </q-card>
@@ -35,12 +35,12 @@
 
 <script>
 import { explain } from "../boot/explain";
-import ModelPropBuildComponentVue from "./ModelPropBuildComponent.vue";
+import ModelPropDeleterComponentVue from "./ModelPropDeleterComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 
 export default {
   components: {
-    ModelPropBuildComponentVue,
+    ModelPropDeleterComponentVue,
   },
   setup() {
     const uiConfig = useUserInterfaceStore();
@@ -50,7 +50,7 @@ export default {
   },
   data() {
     return {
-      title: "NEW MODEL COMPONENT",
+      title: "DELETE MODEL COMPONENT",
       collapsed: true,
       models: [],
       props: [],
@@ -68,9 +68,7 @@ export default {
           if (
             p.modelProp == "ContainedModels" ||
             p.modelProp == "CompFrom" ||
-            p.modelProp == "CompTo" ||
-            p.modelProp == "CompBlood" ||
-            p.modelProp == "CompGas"
+            p.modelProp == "CompTo"
           ) {
             // iterate over the optionalModels property
             p.optionalModels.forEach((om) => {

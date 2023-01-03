@@ -7,6 +7,7 @@
         :options="options"
         hide-bottom-space
         dense
+        :readonly="locked"
         :label="caption"
         style="width: 100px; font-size: 12px"
         @update:model-value="updateParent"
@@ -22,6 +23,7 @@ export default {
     modelProp: String,
     value: String,
     options: Array,
+    locked: Boolean,
   },
   watch: {
     value(nv, ov) {

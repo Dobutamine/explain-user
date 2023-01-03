@@ -13,6 +13,7 @@
         dense
         dark
         stack-label
+        :readonly="locked"
         style="max-width: 70px; font-size: 12px"
         @update:model-value="updateParent"
       />
@@ -33,6 +34,7 @@ export default {
     min: Number,
     step: Number,
     displayFactor: Number,
+    locked: Boolean,
   },
   watch: {
     value(nv, ov) {

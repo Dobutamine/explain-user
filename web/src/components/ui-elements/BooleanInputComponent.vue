@@ -9,6 +9,7 @@
         dark
         v-model="newValue"
         style="font-size: 10px"
+        :disable="locked"
         @update:model-value="updateParent"
       />
     </div>
@@ -21,6 +22,7 @@ export default {
     caption: String,
     modelProp: String,
     value: Boolean,
+    locked: Boolean,
   },
   watch: {
     value(nv, ov) {

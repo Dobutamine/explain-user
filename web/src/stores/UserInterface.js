@@ -349,7 +349,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             caption: "Blood",
             modelProp: "CompBlood",
             typeProp: "list",
-            optionalModels: ["BloodCompliance"],
+            optionalModels: ["BloodCompliance", "BloodTimeVaryingElastance"],
           },
         ],
       },

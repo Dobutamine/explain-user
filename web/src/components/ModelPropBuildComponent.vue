@@ -2,16 +2,14 @@
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
     <div>
       <div class="q-mt-xs row gutter text-overline justify-left">
-        <q-select
+        <q-input
           class="q-ml-md q-mr-md"
           label-color="red-6"
           v-model="selectedModel"
-          :options="models"
           hide-bottom-space
           dense
-          label="sub model"
+          label="new component name"
           style="width: 100%; font-size: 12px"
-          @update:model-value="modelSelected"
         />
       </div>
       <div class="q-ma-sm q-gutter-xs row">
@@ -70,15 +68,8 @@
       </div>
 
       <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
-        <q-btn color="red-10" size="sm" style="width: 70px" @click="updateProps"
-          >UPDATE</q-btn
-        >
-        <q-btn
-          color="secondary"
-          size="sm"
-          style="width: 70px"
-          @click="addToScript"
-          >SCRIPT</q-btn
+        <q-btn color="red-10" size="sm" style="width: 70px" @click="addToModels"
+          >SAVE</q-btn
         >
         <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
           >CANCEL</q-btn
@@ -131,18 +122,15 @@ export default {
     };
   },
   methods: {
+    updatePropFromChild(propName, propValue) {
+      this.propValues[propName] = propValue;
+    },
     cancel() {
       this.selectedModel = "";
       this.propValues = {};
     },
-    updatePropFromChild(propName, propValue) {
-      this.propValues[propName] = propValue;
-    },
-    addToScript() {
-      this.statusMessage = "property change added to script";
-      setTimeout(() => (this.statusMessage = ""), 1000);
-    },
-    updateProps() {
+
+    addToModels() {
       // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
       let updatePropObject = [];
 
@@ -160,19 +148,12 @@ export default {
       console.log(updatePropObject);
 
       // set the new model properties on the model
-      explain.setModelProperties(updatePropObject);
+      //explain.setModelProperties(updatePropObject);
 
-      this.statusMessage = "property updated";
+      this.statusMessage = "model created";
       setTimeout(() => (this.statusMessage = ""), 1000);
     },
-    modelSelected() {
-      // update the values of the props
-      this.propValues = [];
-      this.props.forEach((p) => {
-        this.propValues[p.modelProp] =
-          explain.modelState.Models[this.selectedModel][p.modelProp];
-      });
-    },
+
     processModelState() {
       // get all the blood compliances
       this.models = [];

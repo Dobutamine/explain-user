@@ -101,6 +101,22 @@ export default class Model {
     });
   }
 
+  deactivateModelComponent(model) {
+    this.sendMessage({
+      type: "deactivate",
+      message: "",
+      payload: [model],
+    });
+  }
+
+  deleteModelComponent(model) {
+    this.sendMessage({
+      type: "del",
+      message: "",
+      payload: [model],
+    });
+  }
+
   getModelData() {
     this.sendMessage({
       type: "get",

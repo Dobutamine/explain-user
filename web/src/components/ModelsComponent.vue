@@ -50,7 +50,7 @@ export default {
   },
   data() {
     return {
-      title: "INDIVIDUAL MODEL PROPS",
+      title: "ADJUST MODEL COMPONENT",
       collapsed: true,
       models: [],
       props: [],
