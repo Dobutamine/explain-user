@@ -42,6 +42,18 @@
           </NumberInputComponentVue>
         </div>
       </div>
+      <div class="q-ma-sm row justify-left">
+        <div v-for="(prop, index) in props" :key="index">
+          <ListInputComponentVue
+            v-if="prop.typeProp == 'list'"
+            :caption="prop.caption"
+            :modelProp="prop.modelProp"
+            :value="propValues[prop.modelProp]"
+            @propupdate="updatePropFromChild"
+          >
+          </ListInputComponentVue>
+        </div>
+      </div>
 
       <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
         <q-btn color="red-10" size="sm" style="width: 70px" @click="updateProps"
@@ -68,10 +80,12 @@
 
 <script>
 import { explain } from "../boot/explain";
+import ListInputComponentVue from "./ui-elements/ListInputComponent.vue";
 import BooleanInputComponentVue from "./ui-elements/BooleanInputComponent.vue";
 import NumberInputComponentVue from "./ui-elements/NumberInputComponent.vue";
 export default {
   components: {
+    ListInputComponentVue,
     NumberInputComponentVue,
     BooleanInputComponentVue,
   },

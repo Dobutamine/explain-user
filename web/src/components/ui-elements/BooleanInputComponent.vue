@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div :style="{ 'font-size': '10px', width: '70px' }">
+      <div class="col q-mr-sm text-left">{{ caption }}</div>
+    </div>
     <div class="row">
       <q-toggle
         size="xs"
@@ -8,9 +11,6 @@
         style="font-size: 10px"
         @update:model-value="updateParent"
       />
-    </div>
-    <div :style="{ 'font-size': '10px', width: '70px' }">
-      <div class="col q-mr-sm text-left">{{ caption }}</div>
     </div>
   </div>
 </template>
