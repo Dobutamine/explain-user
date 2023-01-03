@@ -7,8 +7,9 @@
         :options="options"
         hide-bottom-space
         dense
+        multiple
         :label="caption"
-        style="width: 100px; font-size: 12px"
+        style="width: 150px; font-size: 12px"
       />
     </div>
   </div>
@@ -19,7 +20,7 @@ export default {
   props: {
     caption: String,
     modelProp: String,
-    value: String,
+    value: Array,
     options: Array,
   },
   watch: {

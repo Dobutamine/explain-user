@@ -146,6 +146,18 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             modelProp: "NoBackFlow",
             typeProp: "boolean",
           },
+          {
+            caption: "from",
+            modelProp: "CompFrom",
+            typeProp: "list",
+            optionalModels: ["BloodCompliance", "BloodTimeVaryingElastance"],
+          },
+          {
+            caption: "to",
+            modelProp: "CompTo",
+            typeProp: "list",
+            optionalModels: ["BloodCompliance", "BloodTimeVaryingElastance"],
+          },
         ],
       },
 
@@ -201,8 +213,13 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           {
             caption: "contained models",
             modelProp: "ContainedModels",
-            typeProp: "list",
-            options: ["AA", "AAR", "AD", "RLB", "RUB", "RA", "RV"],
+            typeProp: "multilist",
+            optionalModels: [
+              "BloodCompliance",
+              "BloodTimeVaryingElastance",
+              "GasCompliance",
+              "Container",
+            ],
           },
         ],
       },

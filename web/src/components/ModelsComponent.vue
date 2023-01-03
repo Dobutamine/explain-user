@@ -54,14 +54,36 @@ export default {
       collapsed: true,
       models: [],
       props: [],
+      options: [],
       selectedModel: "",
     };
   },
   methods: {
     modelSelected() {
       try {
+        let found_options = [];
         this.props = this.uiConfig.models[this.selectedModel].properties;
-      } catch {
+        // if the selected model is a container then process the property with the optional models
+        this.props.forEach((p) => {
+          if (
+            p.modelProp == "ContainedModels" ||
+            p.modelProp == "CompFrom" ||
+            p.modelProp == "CompTo"
+          ) {
+            // iterate over the optionalModels property
+            p.optionalModels.forEach((om) => {
+              // iterate over all models to find the names
+              for (let model in explain.modelState.Models) {
+                if (explain.modelState.Models[model].ModelType == om) {
+                  found_options.push(model);
+                }
+              }
+            });
+            p["options"] = found_options;
+          }
+        });
+      } catch (e) {
+        console.log(e);
         this.props = [];
       }
     },
