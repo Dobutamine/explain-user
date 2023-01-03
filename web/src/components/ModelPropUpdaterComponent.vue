@@ -98,6 +98,7 @@ import MultipleListInputComponentVue from "./ui-elements/MultipleListInputCompon
 import ListInputComponentVue from "./ui-elements/ListInputComponent.vue";
 import BooleanInputComponentVue from "./ui-elements/BooleanInputComponent.vue";
 import NumberInputComponentVue from "./ui-elements/NumberInputComponent.vue";
+
 export default {
   components: {
     MultipleListInputComponentVue,
