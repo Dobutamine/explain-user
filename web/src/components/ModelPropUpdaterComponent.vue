@@ -152,6 +152,7 @@ export default {
 
       console.log(updatePropObject);
 
+      // set the new model properties on the model
       explain.setModelProperties(updatePropObject);
 
       this.statusMessage = "property updated";

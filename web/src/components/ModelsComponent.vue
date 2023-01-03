@@ -36,7 +36,7 @@
 <script>
 import { explain } from "../boot/explain";
 import ModelPropUpdaterComponentVue from "./ModelPropUpdaterComponent.vue";
-import { useUserInterfaceStore } from "src/stores/UserInterface";
+import { useUserInterfaceStore } from "src/stores/userInterface";
 
 export default {
   components: {

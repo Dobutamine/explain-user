@@ -332,7 +332,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           },
           {
             caption: "DifCo2",
-            modelProp: "DiCo2",
+            modelProp: "DifCo2",
             typeProp: "numeric",
             unit: "mmol/mmHg",
             min: 0.0,

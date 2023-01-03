@@ -135,7 +135,7 @@ import TimeBaseChartVue from "../components/charts/TimeBaseChart.vue";
 import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
 
 import { useLoggedInUser } from "stores/loggedInUser";
-import { useUserInterfaceStore } from "src/stores/UserInterface";
+import { useUserInterfaceStore } from "src/stores/userInterface";
 
 export default {
   setup() {
