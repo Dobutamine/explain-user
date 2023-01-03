@@ -5,6 +5,16 @@
       @click="collapsed = !collapsed"
     >
       {{ title }}
+      <q-icon
+        v-if="collapsed"
+        class="q-ml-sm q-mt-sm"
+        name="fa-solid fa-chevron-down"
+      ></q-icon>
+      <q-icon
+        v-if="!collapsed"
+        class="q-ml-sm q-mt-sm"
+        name="fa-solid fa-chevron-up"
+      ></q-icon>
     </div>
     <div v-if="!collapsed">
       <div class="q-mt-es row gutter text-overline justify-center">

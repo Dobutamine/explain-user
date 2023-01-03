@@ -6,6 +6,16 @@
         @click="toggleVisibility"
       >
         XY BASED CHART
+        <q-icon
+          v-if="!isEnabled"
+          class="q-ml-sm q-mt-sm"
+          name="fa-solid fa-chevron-down"
+        ></q-icon>
+        <q-icon
+          v-if="isEnabled"
+          class="q-ml-sm q-mt-sm"
+          name="fa-solid fa-chevron-up"
+        ></q-icon>
       </div>
       <div :style="visible">
         <div class="row q-mt-sm">
