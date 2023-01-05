@@ -139,6 +139,7 @@
         </div>
         <div class="row">
           <q-input
+            v-if="typeof selectedNewValue == 'number'"
             class="col q-ma-sm"
             v-model="selectedNewValue"
             label-color="negative"
@@ -154,6 +155,37 @@
             stack-label
             style="max-width: 100px; font-size: 12px"
           />
+          <q-input
+            v-if="typeof selectedNewValue == 'string'"
+            class="col q-ma-sm"
+            v-model="selectedNewValue"
+            label-color="negative"
+            label="new value"
+            filled
+            square
+            hide-hint
+            dense
+            dark
+            stack-label
+            style="max-width: 100px; font-size: 12px"
+          />
+          <div
+            v-if="typeof selectedNewValue == 'boolean'"
+            class="col q-ma-sm bg-grey-10"
+          >
+            <div :style="{ 'font-size': '10px', width: '70px' }">
+              <div class="col text-center text-negative">new value</div>
+            </div>
+            <div class="col row justify-center">
+              <q-toggle
+                size="xs"
+                dark
+                v-model="selectedNewValue"
+                style="font-size: 10px"
+              />
+            </div>
+          </div>
+
           <q-input
             class="col q-ma-sm"
             label-color="red-10"

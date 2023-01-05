@@ -214,7 +214,6 @@ export default {
         this.user.isAdmin = data.isAdmin;
         this.user.token = data.token;
         this.user.loggedIn = true;
-        console.log("Log in succesfull!");
         this.$router.push("/main");
       } else {
         this.errorText = "Invalid username or password";

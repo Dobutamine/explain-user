@@ -149,17 +149,19 @@ export default {
       this.propValues[propName] = propValue;
     },
     addToScript() {
+      let counter = 0;
       // only script the changed values
       for (let pv in this.propValues) {
         if (this.propValues[pv] != this.initPropValues[pv]) {
           // build script event
-          this.script.scriptLines.push({
+          counter += 1;
+          this.script.script.push({
             m: this.selectedModel,
             p: pv,
             o: this.initPropValues[pv],
             v: this.propValues[pv],
-            it: 5.0,
-            at: 15.0,
+            it: 0.0,
+            at: 0.0,
             state: "pending",
           });
           // prevent updating again
@@ -167,8 +169,13 @@ export default {
         }
       }
 
-      this.statusMessage = "property change added to script";
-      setTimeout(() => (this.statusMessage = ""), 1000);
+      if (counter > 0) {
+        this.statusMessage = "property change added to script";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      } else {
+        this.statusMessage = "nothing has changed!";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      }
     },
     updateProps() {
       // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
@@ -183,10 +190,9 @@ export default {
           at: 0.0,
           it: 0.0,
         });
+        // update also the initial values
+        this.initPropValues[pv] = this.propValues[pv];
       }
-
-      console.log(updatePropObject);
-
       // set the new model properties on the model
       explain.setModelProperties(updatePropObject);
 

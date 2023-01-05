@@ -19,8 +19,13 @@
       />
     </div>
     <div :class="unitClass" :style="{ 'font-size': fontSize, width: '70px' }">
-      <div class="col q-mr-sm text-right">
-        {{ initValue * displayFactor }} {{ unit }}
+      <div class="col q-mr-xs text-right">
+        {{ (initValue * displayFactor).toFixed(4) }}
+      </div>
+    </div>
+    <div :class="unitClass" :style="{ 'font-size': fontSize, width: '70px' }">
+      <div class="col q-mr-xs text-right">
+        {{ unit }}
       </div>
     </div>
   </div>
