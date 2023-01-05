@@ -7,6 +7,103 @@ const _ = require("lodash");
 const router = express.Router();
 
 // save a new model state
+router.post("/delete_script", auth, async (req, res) => {
+  // validate the request
+  const { error } = validate(req.body);
+  // if not validate return error message
+  if (error) return res.status(400).send(error.details[0].message);
+
+  try {
+    // is this script already registered?
+    let newScript = await Script.deleteOne({
+      name: req.body.name,
+      user: req.body.user,
+      protected: false,
+    });
+    if (!newScript) return res.status(400).send("Scriptname does not exist.");
+
+    // send a response to the client without the password or account and with a header containing the webtoken
+    res.send(`User ${req.body.name} deleted`);
+  } catch (ex) {
+    console.log(ex);
+    res.status(500).send("Internal server error.");
+  }
+});
+
+router.post("/update_script", auth, async (req, res) => {
+  // validate the request
+  const { error } = validate(req.body);
+  // if not validate return error message
+  if (error) return res.status(400).send(error.details[0].message);
+
+  try {
+    // is this script already registered?
+    let newScript = await Script.findOne({
+      name: req.body.name,
+      user: req.body.user,
+    });
+
+    if (!newScript) {
+      // this script does not exist yet so make a new one
+      // we have a valid user object so we need to store it in the database
+      newScript = new Script(
+        _.pick(req.body, [
+          "_id",
+          "user",
+          "name",
+          "script",
+          "protected",
+          "shared",
+        ])
+      );
+
+      // add the creation date
+      newScript["dateCreated"] = Date.now();
+      newScript["dateUpdated"] = Date.now();
+
+      // save the model definition to the database
+      await newScript.save();
+
+      res.send(
+        _.pick(newScript, [
+          "_id",
+          "user",
+          "name",
+          "script",
+          "protected",
+          "shared",
+        ])
+      );
+
+      return;
+    }
+
+    // save the model definition to the database
+    await newScript.updateOne({
+      script: req.body.script,
+      protected: req.body.protected,
+      shared: req.body.shared,
+      dateUpdated: Date.now(),
+    });
+
+    // send a response to the client without the password or account and with a header containing the webtoken
+    res.send(
+      _.pick(newScript, [
+        "_id",
+        "user",
+        "name",
+        "script",
+        "protected",
+        "shared",
+      ])
+    );
+  } catch (ex) {
+    console.log(ex);
+    res.status(500).send("Internal server error.");
+  }
+});
+
+// save a new model state
 router.post("/new_script", auth, async (req, res) => {
   // validate the request
   const { error } = validate(req.body);

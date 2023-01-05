@@ -40,7 +40,7 @@
         <q-list bordered separator dark style="font-size: 12px">
           <div v-for="(script_line, index) in script.script" :key="index">
             <div class="row">
-              <q-item class="col-8" clickable v-ripple>
+              <q-item class="col-7" clickable v-ripple>
                 <q-item-section>
                   <q-item-label
                     >{{ script_line.m }}.{{ script_line.p }}
@@ -103,6 +103,7 @@
           size="sm"
           style="width: 50px"
           icon="fa-solid fa-upload"
+          @click="saveScriptToServer"
         ></q-btn>
         <q-btn
           color="red-10"
@@ -224,20 +225,26 @@
             :options="availableScriptsOnServer"
             hide-bottom-space
             dense
-            label="models"
+            label="available scripts"
             style="width: 90%; font-size: 12px"
-            @update:model-value="downloadScriptFromServer"
           />
         </div>
         <div
           class="q-gutter-sm row text-overline justify-center q-mt-xs q-mb-sm"
         >
           <q-btn
-            color="red-10"
+            color="primary"
             size="sm"
             style="width: 50px"
             @click="getScriptFromServer"
             icon="fa-solid fa-download"
+          ></q-btn>
+          <q-btn
+            color="red-10"
+            size="sm"
+            style="width: 50px"
+            @click="deleteScriptFromServer"
+            icon="fa-solid fa-delete-left"
           ></q-btn>
           <q-btn
             color="indigo-10"
@@ -289,6 +296,51 @@ export default {
     };
   },
   methods: {
+    async saveScriptToServer() {
+      // check if script is not protected
+      if (this.script.protected) {
+        alert("Script is protected!");
+        return;
+      }
+
+      const url = `${this.apiUrl}/api/scripts/update_script?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.script.name,
+          user: this.user.name,
+          script: this.script.script,
+          protected: this.script.protected,
+          shared: this.script.shared,
+        }),
+      });
+      if (response.status === 200) {
+        console.log(response);
+      }
+      this.showPopUpServer = false;
+    },
+    async deleteScriptFromServer() {
+      // do a server request
+      const url = `${this.apiUrl}/api/scripts/delete_script?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.selectedScriptOnServer,
+          user: this.user.name,
+        }),
+      });
+      if (response.status === 200) {
+      }
+      this.getAllScriptsFromUser();
+    },
     async getScriptFromServer() {
       // do a server request
       const url = `${this.apiUrl}/api/scripts/get_script?token=${this.user.token}`;
@@ -332,7 +384,7 @@ export default {
         // returns an array with all scripts of this user
         if (data.length > 0) {
           this.availableScriptsOnServer = data.map((script) => script.name);
-          this.selectedScriptOnServer = this.availableScriptsOnServer[0];
+          this.selectedScriptOnServer = "";
         } else {
           this.availableScriptsOnServer = [];
         }
@@ -345,7 +397,7 @@ export default {
     closeServerCommunication() {
       this.showPopUpServer = false;
     },
-    downloadScriptFromServer(scriptName) {},
+
     saveScriptLineFromPopUp(n, o) {
       this.script.script[this.selectedIndex]["v"] = this.selectedNewValue;
       this.script.script[this.selectedIndex]["it"] = this.selectedInTime;
