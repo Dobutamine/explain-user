@@ -63,7 +63,7 @@ export default {
   data() {
     return {
       title: "GROUPED MODEL PROPS",
-      collapsed: false,
+      collapsed: true,
       relative: true,
       groupers: [
         "heart rhythm",

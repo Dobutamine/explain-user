@@ -25,7 +25,7 @@ router.post("/new_state", auth, async (req, res) => {
     await state.save();
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    res.send(_.pick(definition, ["_id", "name", "model", "state"]));
+    res.send(_.pick(state, ["_id", "name", "model", "state"]));
   } catch (ex) {
     console.log(ex);
     res.status(500).send("Internal server error.");

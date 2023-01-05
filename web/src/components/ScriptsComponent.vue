@@ -1,12 +1,28 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
+    <div
+      class="row text-overline justify-center"
+      @click="collapsed = !collapsed"
+    >
+      SCRIPT
+      <q-icon
+        v-if="collapsed"
+        class="q-ml-sm q-mt-sm"
+        name="fa-solid fa-chevron-down"
+      ></q-icon>
+      <q-icon
+        v-if="!collapsed"
+        class="q-ml-sm q-mt-sm"
+        name="fa-solid fa-chevron-up"
+      ></q-icon>
+    </div>
     <div v-if="!collapsed">
       <div class="q-mt-es row justify-center">
         <q-input
           class="q-ml-md q-mr-md q-mt-sm"
-          v-model="script.scriptName"
+          v-model="script.name"
           label-color="red"
-          label="current script"
+          label="script name"
           filled
           square
           hide-hint
@@ -18,11 +34,11 @@
       </div>
 
       <q-card
-        v-if="script.scriptLines.length > 0"
+        v-if="script.script.length > 0"
         class="q-pb-xs q-pt-xs q-ma-md q-mt-xs"
       >
-        <q-list bordered separator dark style="font-size: 10px">
-          <div v-for="(script_line, index) in script.scriptLines" :key="index">
+        <q-list bordered separator dark style="font-size: 12px">
+          <div v-for="(script_line, index) in script.script" :key="index">
             <div class="row">
               <q-item class="col-8" clickable v-ripple>
                 <q-item-section>
@@ -37,25 +53,21 @@
               </q-item>
               <q-btn
                 size="xs"
-                dense
                 icon="fa-solid fa-edit"
-                @click="scriptLineSelected(index)"
+                @click="scriptelected(index)"
               ></q-btn>
               <q-btn
                 size="xs"
-                dense
                 icon="fa-solid fa-trash"
                 @click="scriptLineDelete(index)"
               ></q-btn>
               <q-btn
                 size="xs"
-                dense
                 icon="fa-solid fa-angle-up"
                 @click="scriptLineUp(index)"
               ></q-btn>
               <q-btn
                 size="xs"
-                dense
                 icon="fa-solid fa-angle-down"
                 @click="scriptLineDown(index)"
               ></q-btn>
@@ -63,26 +75,49 @@
           </div>
         </q-list>
       </q-card>
-      <div
-        v-if="script.scriptLines.length > 0"
-        class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-sm"
-      >
+      <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
+        <q-checkbox
+          label="protected"
+          dense
+          v-model="this.script.protected"
+        ></q-checkbox>
+        <q-checkbox
+          label="shared"
+          dense
+          v-model="this.script.shared"
+        ></q-checkbox>
+      </div>
+      <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-sm">
         <q-btn
+          v-if="script.script.length > 0"
           color="secondary"
+          dense
           size="sm"
-          style="width: 70px"
+          style="width: 50px"
           icon="fa-solid fa-play"
         ></q-btn>
         <q-btn
+          v-if="script.script.length > 0"
           color="red-10"
+          dense
           size="sm"
-          style="width: 70px"
+          style="width: 50px"
           icon="fa-solid fa-upload"
         ></q-btn>
         <q-btn
+          color="red-10"
+          dense
+          size="sm"
+          style="width: 50px"
+          icon="fa-solid fa-download"
+          @click="openServerCommunication"
+        ></q-btn>
+        <q-btn
+          v-if="script.script.length > 0"
           color="grey-14"
           size="xs"
-          style="width: 70px"
+          dense
+          style="width: 50px"
           @click="clearScript"
           icon="fa-solid fa-delete-left"
         ></q-btn>
@@ -170,28 +205,77 @@
         </div>
       </q-card>
     </q-popup-edit>
+
+    <q-popup-edit
+      v-if="showPopUpServer"
+      fit
+      touch-position
+      model-value="sylisgek"
+    >
+      <q-card bordered dark style="width: 300px">
+        <div class="row text-overline justify-center">
+          available scripts on server
+        </div>
+        <div class="row">
+          <q-select
+            class="q-ml-md q-mr-md"
+            label-color="red-6"
+            v-model="selectedScriptOnServer"
+            :options="availableScriptsOnServer"
+            hide-bottom-space
+            dense
+            label="models"
+            style="width: 90%; font-size: 12px"
+            @update:model-value="downloadScriptFromServer"
+          />
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mt-xs q-mb-sm"
+        >
+          <q-btn
+            color="red-10"
+            size="sm"
+            style="width: 50px"
+            @click="getScriptFromServer"
+            icon="fa-solid fa-download"
+          ></q-btn>
+          <q-btn
+            color="indigo-10"
+            size="sm"
+            style="width: 50px"
+            @click="closeServerCommunication"
+            icon="fa-solid fa-xmark"
+          ></q-btn>
+        </div>
+      </q-card>
+    </q-popup-edit>
   </q-card>
 </template>
 
 <script>
 import { useScriptStore } from "stores/script";
+import { useLoggedInUser } from "stores/loggedInUser";
 
 export default {
   setup() {
     const script = useScriptStore();
+    const user = useLoggedInUser();
     return {
       script,
+      user,
     };
   },
   components: {},
   data() {
     return {
+      apiUrl: "http://localhost:8081",
       collapsed: false,
       relative: true,
       script_names: [],
       currentScriptName: "",
       selectedScript: "",
       showPopUp: false,
+      showPopUpServer: false,
       sylisgek: true,
       statusMessage: "",
       input: "",
@@ -200,24 +284,83 @@ export default {
       selectedNewValue: 0.0,
       selectedInTime: 0.0,
       selectedAtTime: 0.0,
+      availableScriptsOnServer: ["PDA"],
+      selectedScriptOnServer: "",
     };
   },
   methods: {
+    async getScriptFromServer() {
+      // do a server request
+      const url = `${this.apiUrl}/api/scripts/get_script?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.selectedScriptOnServer,
+          user: this.user.name,
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        // process the result
+        this.script.user = data.user;
+        this.script.name = data.name;
+        this.script.script = data.script;
+        this.script.protected = data.protected;
+        this.script.shared = data.shared;
+        this.script.dateUpdated = data.dateUpdated;
+        this.script.dateCreated = data.dateCreated;
+      }
+      this.showPopUpServer = false;
+    },
+    async getAllScriptsFromUser() {
+      // do a server request
+      const url = `${this.apiUrl}/api/scripts/get_scripts?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user: this.user.name }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        // returns an array with all scripts of this user
+        if (data.length > 0) {
+          this.availableScriptsOnServer = data.map((script) => script.name);
+          this.selectedScriptOnServer = this.availableScriptsOnServer[0];
+        } else {
+          this.availableScriptsOnServer = [];
+        }
+      }
+    },
+    openServerCommunication() {
+      this.showPopUpServer = true;
+      this.getAllScriptsFromUser();
+    },
+    closeServerCommunication() {
+      this.showPopUpServer = false;
+    },
+    downloadScriptFromServer(scriptName) {},
     saveScriptLineFromPopUp(n, o) {
-      this.script.scriptLines[this.selectedIndex]["v"] = this.selectedNewValue;
-      this.script.scriptLines[this.selectedIndex]["it"] = this.selectedInTime;
-      this.script.scriptLines[this.selectedIndex]["at"] = this.selectedAtTime;
+      this.script.script[this.selectedIndex]["v"] = this.selectedNewValue;
+      this.script.script[this.selectedIndex]["it"] = this.selectedInTime;
+      this.script.script[this.selectedIndex]["at"] = this.selectedAtTime;
       this.showPopUp = false;
     },
     cancelPopUp() {
       this.showPopUp = false;
     },
-    scriptLineSelected(index) {
+    scriptelected(index) {
       this.showPopUp = true;
       this.selectedIndex = index;
-      this.selectedNewValue = this.script.scriptLines[index]["v"];
-      this.selectedInTime = this.script.scriptLines[index]["it"];
-      this.selectedAtTime = this.script.scriptLines[index]["at"];
+      this.selectedNewValue = this.script.script[index]["v"];
+      this.selectedInTime = this.script.script[index]["it"];
+      this.selectedAtTime = this.script.script[index]["at"];
 
       //this.showPopUp = true;
     },
@@ -226,24 +369,24 @@ export default {
       if (index === 0) {
         return;
       }
-      [this.script.scriptLines[index], this.script.scriptLines[index - 1]] = [
-        this.script.scriptLines[index - 1],
-        this.script.scriptLines[index],
+      [this.script.script[index], this.script.script[index - 1]] = [
+        this.script.script[index - 1],
+        this.script.script[index],
       ];
     },
     scriptLineDown(index) {
       console.log("down ", index);
-      if (index === this.script.scriptLines.length - 1) {
+      if (index === this.script.script.length - 1) {
         return;
       }
 
-      [this.script.scriptLines[index], this.script.scriptLines[index + 1]] = [
-        this.script.scriptLines[index + 1],
-        this.script.scriptLines[index],
+      [this.script.script[index], this.script.script[index + 1]] = [
+        this.script.script[index + 1],
+        this.script.script[index],
       ];
     },
     scriptLineDelete(index) {
-      this.script.scriptLines.splice(index, 1);
+      this.script.script.splice(index, 1);
     },
     clearScript() {
       this.selectedScript = "";

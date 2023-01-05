@@ -21,6 +21,36 @@
         <q-toolbar-title class="text-overline">
           <div>{{ statusMessage }}</div>
         </q-toolbar-title>
+        <q-btn
+          flat
+          round
+          dense
+          size="sm"
+          :icon="butIcon"
+          :color="butColor"
+          class="q-mr-sm"
+          @click="togglePlay"
+        />
+        <q-btn
+          flat
+          round
+          dense
+          icon="fa-solid fa-calculator"
+          size="sm"
+          @click="calculate"
+          :color="butCalcColor"
+          class="q-mr-sm"
+        />
+        <q-select
+          class="q-ml-md q-mr-md"
+          label-color="white"
+          v-model="selectedDuration"
+          :options="durations"
+          hide-bottom-space
+          dense
+          label="calculate (sec.)"
+          style="width: 130px; font-size: 12px"
+        />
       </q-toolbar>
     </q-footer>
   </q-layout>
@@ -39,12 +69,52 @@ export default {
   },
   data() {
     return {
+      calcRunning: false,
+      rtState: false,
+      butCaption: "PLAY",
+      butColor: "white",
+      butIcon: "fa-solid fa-play",
+      butCalcCaption: "CALCULATE",
+      butCalcColor: "white",
       statusMessage: "No model definition file loaded.",
+      selectedDuration: 5,
+      durations: [1, 3, 5, 10, 20, 30, 60, 120, 240, 360, 600, 1200, 1800],
     };
   },
   methods: {
     statusUpdate() {
       this.statusMessage = "STATUS: " + explain.statusMessage;
+      this.calculationReady();
+    },
+    togglePlay() {
+      this.rtState = !this.rtState;
+      if (this.rtState) {
+        explain.start();
+        this.butColor = "negative";
+        this.butIcon = "fa-solid fa-stop";
+        this.butCaption = "STOP";
+      } else {
+        explain.stop();
+        this.butColor = "white";
+        this.butIcon = "fa-solid fa-play";
+        this.butCaption = "PLAY";
+      }
+    },
+    calculate() {
+      this.calcRunning = !this.calcRunning;
+      if (this.calcRunning) {
+        this.butCalcCaption = "RUNNING";
+        this.butCalcColor = "negative";
+        explain.calculate(parseInt(this.selectedDuration));
+      } else {
+        this.butCalcCaption = "CALCULATE";
+        this.butCalcColor = "white";
+      }
+    },
+    calculationReady() {
+      this.calcRunning = false;
+      this.butCalcCaption = "CALCULATE";
+      this.butCalcColor = "white";
     },
   },
   beforeUnmount() {

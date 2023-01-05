@@ -24,7 +24,6 @@
               <FileComponentVue></FileComponentVue>
             </q-tab-panel>
             <q-tab-panel name="scripts">
-              <ScriptComponentVue></ScriptComponentVue>
               <PlayComponentVue></PlayComponentVue>
               <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
@@ -50,6 +49,7 @@
             align="justify"
             narrow-indicator
           >
+            <q-tab name="scripts" label="Scripts" />
             <q-tab name="charts" label="Charts" />
             <q-tab name="circulation" label="Circulation" />
             <q-tab name="respiration" label="Respiration" />
@@ -60,6 +60,9 @@
           <q-separator />
 
           <q-tab-panels v-model="tab" animated>
+            <q-tab-panel name="scripts">
+              <ScriptComponentVue></ScriptComponentVue>
+            </q-tab-panel>
             <q-tab-panel name="circulation">
               <div class="text-h6">Circulation</div>
             </q-tab-panel>
@@ -81,7 +84,6 @@
               <NonTimeBasedChartVue></NonTimeBasedChartVue>
             </q-tab-panel>
           </q-tab-panels>
-          <ModelControlComponentVue></ModelControlComponentVue>
         </div>
 
         <div class="col-3">
@@ -123,7 +125,6 @@
 </template>
 
 <script>
-import ModelControlComponentVue from "src/components/ModelControlComponent.vue";
 import BuildComponentVue from "../components/BuildComponent.vue";
 import DeleteComponentVue from "src/components/DeleteComponent.vue";
 import GroupersComponentVue from "../components/GroupersComponent.vue";
@@ -149,7 +150,6 @@ export default {
     };
   },
   components: {
-    ModelControlComponentVue,
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
     ModelsComponentVue,
@@ -163,7 +163,7 @@ export default {
   },
   data() {
     return {
-      tab: "charts",
+      tab: "scripts",
       tab_left: "play",
       monitors: [],
       charts: [],
