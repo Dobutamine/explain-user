@@ -77,6 +77,7 @@
       </q-card>
       <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
         <q-checkbox
+          v-if="user.isAdmin"
           label="protected"
           dense
           v-model="this.script.protected"
@@ -254,6 +255,12 @@
             icon="fa-solid fa-xmark"
           ></q-btn>
         </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-xs"
+          style="font-size: 10px"
+        >
+          {{ statusMessage }}
+        </div>
       </q-card>
     </q-popup-edit>
   </q-card>
@@ -319,7 +326,16 @@ export default {
         }),
       });
       if (response.status === 200) {
-        console.log(response);
+        let data = await response.json();
+        switch (data.message) {
+          case "new":
+            this.statusMessage = "new script created on server.";
+            break;
+          case "update":
+            this.statusMessage = "script is updated on server.";
+            break;
+        }
+        setTimeout(() => (this.statusMessage = ""), 1500);
       }
       this.showPopUpServer = false;
     },
@@ -338,6 +354,16 @@ export default {
         }),
       });
       if (response.status === 200) {
+        let data = await response.json();
+        switch (data.message) {
+          case "error":
+            this.statusMessage = "script could not be deleted!";
+            break;
+          case "success":
+            this.statusMessage = "script is deleted.";
+            break;
+        }
+        setTimeout(() => (this.statusMessage = ""), 1500);
       }
       this.getAllScriptsFromUser();
     },

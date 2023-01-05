@@ -20,10 +20,14 @@ router.post("/delete_script", auth, async (req, res) => {
       user: req.body.user,
       protected: false,
     });
-    if (!newScript) return res.status(400).send("Scriptname does not exist.");
+    console.log(newScript);
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    res.send(`User ${req.body.name} deleted`);
+    if (newScript.deletedCount === 0) {
+      res.send('{ "message" : "error" }');
+    } else {
+      res.send('{ "message" : "success" }');
+    }
   } catch (ex) {
     console.log(ex);
     res.status(500).send("Internal server error.");
@@ -64,16 +68,7 @@ router.post("/update_script", auth, async (req, res) => {
       // save the model definition to the database
       await newScript.save();
 
-      res.send(
-        _.pick(newScript, [
-          "_id",
-          "user",
-          "name",
-          "script",
-          "protected",
-          "shared",
-        ])
-      );
+      res.send('{ "message" : "new" }');
 
       return;
     }
@@ -87,16 +82,7 @@ router.post("/update_script", auth, async (req, res) => {
     });
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    res.send(
-      _.pick(newScript, [
-        "_id",
-        "user",
-        "name",
-        "script",
-        "protected",
-        "shared",
-      ])
-    );
+    res.send('{ "message" : "update" }');
   } catch (ex) {
     console.log(ex);
     res.status(500).send("Internal server error.");

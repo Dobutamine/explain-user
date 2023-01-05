@@ -211,6 +211,7 @@ export default {
         this.user.id = data._id;
         this.user.name = data.name;
         this.user.email = data.email;
+        this.user.isAdmin = data.isAdmin;
         this.user.token = data.token;
         this.user.loggedIn = true;
         console.log("Log in succesfull!");
