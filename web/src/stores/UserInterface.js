@@ -506,6 +506,42 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         parameters: [],
       },
     },
+    groupedProperties: {
+      Heart: {
+        rhythm: {
+          properties: [
+            {
+              model: "Heart",
+              modelProp: "RhythmType",
+            },
+          ],
+        },
+        contraction: {
+          properties: [
+            {
+              model: "LV",
+              modelProp: "ElMax",
+            },
+            {
+              model: "RV",
+              modelProp: "ElMax",
+            },
+          ],
+        },
+        relaxation: {
+          properties: [
+            {
+              model: "LV",
+              modelProp: "ElMin",
+            },
+            {
+              model: "RV",
+              modelProp: "ElMin",
+            },
+          ],
+        },
+      },
+    },
   }),
 
   getters: {},
