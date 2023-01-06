@@ -20,7 +20,7 @@
     </div>
     <div :class="unitClass" :style="{ 'font-size': fontSize, width: '70px' }">
       <div class="col q-mr-xs text-right">
-        {{ (initValue * displayFactor).toFixed(4) }}
+        {{ (initValue * displayFactor).toFixed(displayRounding) }}
       </div>
     </div>
     <div :class="unitClass" :style="{ 'font-size': fontSize, width: '70px' }">
@@ -42,11 +42,12 @@ export default {
     min: Number,
     step: Number,
     displayFactor: Number,
+    displayRounding: Number,
     locked: Boolean,
   },
   watch: {
     value(nv, ov) {
-      this.newValue = nv * this.displayFactor;
+      this.newValue = (nv * this.displayFactor).toFixed(this.displayRounding);
     },
   },
   data() {
@@ -58,6 +59,7 @@ export default {
   },
   methods: {
     updateParent() {
+      console.log(this.step);
       this.$emit(
         "propupdate",
         this.modelProp,

@@ -38,6 +38,7 @@
             :value="propValues[prop.modelProp]"
             :initValue="initPropValues[prop.modelProp]"
             :displayFactor="prop.displayFactor"
+            :displayRounding="prop.displayRounding"
             @propupdate="updatePropFromChild"
           >
           </NumberInputComponentVue>

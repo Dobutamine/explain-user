@@ -11,8 +11,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             caption: "volume",
             unit: "mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             modelProp: "UVol",
@@ -20,8 +21,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             caption: "ElMin",
@@ -29,8 +31,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "ElMax",
@@ -38,8 +41,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "ElK",
@@ -47,8 +51,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "Enabled",
@@ -65,8 +70,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             caption: "volume",
             unit: "mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             modelProp: "UVol",
@@ -74,8 +80,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             caption: "ElBase",
@@ -83,8 +90,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "ElK",
@@ -92,8 +100,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "Enabled",
@@ -109,27 +118,30 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             modelProp: "RFor",
             typeProp: "numeric",
             unit: "mL/mmHg*s",
-            min: 0.001,
+            min: 0.02,
             step: 0.1,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "RBack",
             modelProp: "RBack",
             typeProp: "numeric",
             unit: "mL/mmHg*s",
-            min: 0.001,
+            min: 0.02,
             step: 0.1,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "Rk",
             modelProp: "Rk",
             typeProp: "numeric",
             unit: "mL/mmHg*s",
-            min: 0.001,
-            step: 0.1,
+            min: 0.02,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "Enabled",
@@ -168,8 +180,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             caption: "volume",
             unit: "mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             modelProp: "UVol",
@@ -177,8 +190,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             caption: "ElBase",
@@ -186,8 +200,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "ElK",
@@ -195,8 +210,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "Enabled",
@@ -213,8 +229,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             caption: "volume",
             unit: "mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             modelProp: "UVol",
@@ -222,8 +239,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             caption: "ElBase",
@@ -231,8 +249,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "ElK",
@@ -240,8 +259,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmHg/mL",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "Enabled",
@@ -269,8 +289,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mL/mmHg*s",
             min: 0.001,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "RBack",
@@ -278,8 +299,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mL/mmHg*s",
             min: 0.001,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "Rk",
@@ -287,8 +309,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mL/mmHg*s",
             min: 0.001,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 0.001,
+            displayRounding: 2,
           },
           {
             caption: "Enabled",
@@ -327,8 +350,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmol/mmHg",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             caption: "DifCo2",
@@ -336,8 +360,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "numeric",
             unit: "mmol/mmHg",
             min: 0.0,
-            step: 0.1,
+            step: 0.01,
             displayFactor: 1000.0,
+            displayRounding: 2,
           },
           {
             caption: "Gas",
@@ -353,21 +378,288 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           },
         ],
       },
+      ArtificialWhomb: {},
+      AutonomicNervousSystem: {},
+      Birth: {},
+      Blood: {},
+      Breathing: {},
+      ChestCompressions: {},
+      Cvvh: {},
+      Drugs: {},
+      ECMO: {},
+      Gas: {},
+      Heart: {},
+      IntrathoracicPressure: {},
+      Kidneys: {},
+      MechanicalVentilator: {},
+      Metabolism: {},
+      Myocardium: {},
+      Oxygenation: {},
+      Pda: {},
+      Placenta: {},
+      Raas: {},
+      Resuscitation: {},
+    },
+    groupers: {
+      heart: {
+        rhythm: {
+          caption: "Heart rhythm",
+          caption1: "",
+          caption2: "",
+          value: 1.0,
+          min: 0.0,
+          max: 10.0,
+          closable: false,
+          splittable: false,
+          single: true,
+          properties: [
+            {
+              model: "Heart",
+              modelProp: "RhythmType",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+          ],
+        },
+        contraction: {
+          caption: "Contraction",
+          caption1: "LV",
+          caption2: "RV",
+          min: 0.0,
+          max: 500.0,
+          closable: false,
+          splittable: true,
+          single: true,
+          properties: [
+            {
+              model: "LV",
+              modelProp: "ElMax",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+            {
+              model: "RV",
+              modelProp: "ElMax",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+          ],
+        },
+        relaxation: {
+          caption: "Relaxation",
+          value: 100.0,
+          min: 0.0,
+          max: 1000.0,
+          properties: [
+            {
+              model: "LV",
+              modelProp: "ElMin",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+            {
+              model: "RV",
+              modelProp: "ElMin",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+          ],
+        },
+      },
+      valves: {
+        aorticValveStenosis: {
+          properties: [
+            {
+              model: "LV_AA",
+              modelProp: "RFor",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+          ],
+        },
+        aorticValveRegurgitation: {
+          properties: [
+            {
+              model: "LV_AA",
+              modelProp: "RBack",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+            {
+              model: "LV_AA",
+              modelProp: "NoBackflow",
+              typeProp: "boolean",
+              factor: 1.0,
+            },
+          ],
+        },
+        pulmonaryValveStenosis: {
+          properties: [
+            {
+              model: "RV_PA",
+              modelProp: "RFor",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+          ],
+        },
+        pulmonaryValveRegurgitation: {
+          properties: [
+            {
+              model: "RV_PA",
+              modelProp: "RBack",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+            {
+              model: "RV_PA",
+              modelProp: "NoBackflow",
+              typeProp: "boolean",
+              factor: 1.0,
+            },
+          ],
+        },
+        mitralValveStenosis: {
+          properties: [
+            {
+              model: "LA_LV",
+              modelProp: "RFor",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+          ],
+        },
+        mitralValveRegurgitation: {
+          properties: [
+            {
+              model: "LA_LV",
+              modelProp: "RBack",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+            {
+              model: "RV_PA",
+              modelProp: "NoBackflow",
+              typeProp: "boolean",
+              factor: 1.0,
+            },
+          ],
+        },
+        tricuspidValveStenosis: {
+          properties: [
+            {
+              model: "RA_RV",
+              modelProp: "RFor",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+          ],
+        },
+        tricuspidValveRegurgitation: {
+          properties: [
+            {
+              model: "RA_RV",
+              modelProp: "RBack",
+              typeProp: "numeric",
+              factor: 1.0,
+            },
+            {
+              model: "RA_RV",
+              modelProp: "NoBackflow",
+              typeProp: "boolean",
+              factor: 1.0,
+            },
+          ],
+        },
+      },
+      pericardium: {},
+      circulation: {
+        intravascularVolume: {
+          properties: [{}],
+        },
+        systemicVascularResistance: {
+          properties: [{}],
+        },
+        pulmonaryVascularResistance: {
+          properties: [{}],
+        },
+        coronaryVascularResistance: {
+          properties: [{}],
+        },
+        venousPooling: {
+          properties: [{}],
+        },
+        arterialCompliance: {
+          properties: [{}],
+        },
+        venousCompliance: {
+          properties: [{}],
+        },
+      },
+      shunts: {
+        pdaSize: {
+          properties: [{}],
+        },
+        ofoSize: { properties: [{}] },
+        vsdSize: {
+          properties: [{}],
+        },
+        lungShuntSize: {
+          properties: [{}],
+        },
+      },
+      airways: {},
+      breathing: {},
+      ventilation: {},
+      lungs: {},
+      chestwall: {},
+      gasexchange: {},
+      intrathoracicPressure: {},
+      mechanicalVentilator: {},
+      metabolism: {},
+      autonomicNervousSystem: {},
+      acidbase: {},
+      oxygenation: {},
+      blood: {},
+      gas: {},
+      ecmo: {},
+      artificialWhomb: {},
+      drugs: {},
+      kidneys: {},
+      resuscitation: {},
+      cvvh: {},
+      placenta: {},
+      raas: {},
+      birth: {},
     },
     charts: {
+      gasFlowProbe: {
+        enabled: true,
+        collapsed: true,
+        title: "GAS FLOW PROBE",
+        models: [],
+        modelProps: [],
+      },
+      gasPressureProbe: {
+        enabled: true,
+        collapsed: true,
+        title: "GAS PRESSURE PROBE",
+        models: [],
+        modelProps: [],
+      },
       bloodFlowProbe: {
         enabled: true,
         collapsed: true,
-        title: "FLOW PROBE",
-        model_types: [],
-        model_props: [],
+        title: "BLOOD FLOW PROBE",
+        models: [],
+        modelProps: [],
       },
       bloodPressureProbe: {
         enabled: true,
         collapsed: true,
-        title: "PRESSURE PROBE",
-        model_types: [],
-        model_props: [],
+        title: "BLOOD PRESSURE PROBE",
+        models: [],
+        modelProps: [],
       },
     },
     monitors: {
@@ -504,42 +796,6 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         collapsed: true,
         title: "MECHANICAL VENTILATOR",
         parameters: [],
-      },
-    },
-    groupedProperties: {
-      Heart: {
-        rhythm: {
-          properties: [
-            {
-              model: "Heart",
-              modelProp: "RhythmType",
-            },
-          ],
-        },
-        contraction: {
-          properties: [
-            {
-              model: "LV",
-              modelProp: "ElMax",
-            },
-            {
-              model: "RV",
-              modelProp: "ElMax",
-            },
-          ],
-        },
-        relaxation: {
-          properties: [
-            {
-              model: "LV",
-              modelProp: "ElMin",
-            },
-            {
-              model: "RV",
-              modelProp: "ElMin",
-            },
-          ],
-        },
       },
     },
   }),

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div :style="{ 'font-size': '12px', width: '90%' }">
     <q-separator dark size="1px" color="grey-12"></q-separator>
-    <div class="q-mt-sm row items-left">
+    <div class="q-mt-sm items-left row">
       <q-badge class="q-mt-sm col" color="dark">
         {{ prefix1 }} {{ caption }}: {{ value1 }} {{ unit }}
       </q-badge>
