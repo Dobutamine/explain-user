@@ -2,29 +2,19 @@
   <div :style="{ 'font-size': '12px', width: '100%' }">
     <div class="q-mt-sm items-left row">
       <q-badge class="q-mt-sm col" color="dark" @click="toggleVisibility">
-        {{ prefix1 }} {{ grouperItem.caption }}: {{ value1 }}
+        {{ grouperItem.caption }}: {{ value }}
         {{ grouperItem.unit }}
       </q-badge>
       <div v-if="visible" class="col text-right">
         <q-btn
           float-right
-          v-if="grouperItem.splittable"
-          :color="butColor"
-          class="q-pa-xs q-mt-xs"
-          dense
-          size="xs"
-          @click="toggleSplit"
-          :icon="butCap"
-        ></q-btn>
-        <q-btn
-          float-right
           v-if="grouperItem.closable"
-          :color="butClosedColor1"
+          :color="butClosedColor"
           class="q-ml-sm q-mt-xs q-pa-xs"
           dense
           size="xs"
-          :icon="butClosedCap1"
-          @click="toggleClose1"
+          :icon="butClosedCap"
+          @click="toggleClose"
         >
         </q-btn>
       </div>
@@ -32,47 +22,16 @@
     <q-slider
       v-if="visible"
       class="q-mt-xs"
-      v-model="value1"
+      v-model="value"
       :min="grouperItem.min"
       :max="grouperItem.max"
       :step="grouperItem.step"
       dark
-      :readonly="closed1"
-      :color="butClosedColor1"
-      @update:model-value="update_value1"
+      :readonly="closed"
+      :color="butClosedColor"
+      @update:model-value="update_value"
     />
 
-    <div v-if="!combined && visible">
-      <div class="row items-left">
-        <q-badge color="dark col">
-          {{ prefix2 }} {{ grouperItem.caption }}: {{ value2 }}
-          {{ grouperItem.unit }}
-        </q-badge>
-        <div class="col text-right">
-          <q-btn
-            float-right
-            v-if="grouperItem.closable"
-            :color="butClosedColor2"
-            class="q-mt-xs q-pa-xs"
-            dense
-            size="xs"
-            :icon="butClosedCap2"
-            @click="toggleClose2"
-          ></q-btn>
-        </div>
-      </div>
-      <q-slider
-        class="q-mt-xs"
-        v-model="value2"
-        :min="grouperItem.min"
-        :max="grouperItem.max"
-        :step="grouperItem.step"
-        :readonly="closed2"
-        dark
-        :color="butClosedColor2"
-        @update:model-value="update_value2"
-      />
-    </div>
     <q-separator
       class="q-mt-sm"
       dark
@@ -92,26 +51,14 @@ export default {
   data() {
     return {
       visible: true,
-      value1_caption: "",
-      value2_caption: "",
-      closed1: false,
-      butClosedColor1: "secondary",
-      butClosedCap1: "fa-solid fa-lock-open",
-      closed2: false,
-      butClosedColor2: "secondary",
-      butClosedCap2: "fa-solid fa-lock-open",
+      value_caption: "",
+      closed: false,
+      butClosedColor: "secondary",
+      butClosedCap: "fa-solid fa-lock-open",
       butColor: "negative",
       butCap: "",
-      prefix1_set: "",
-      prefix2_set: "",
-      prefix1: "",
-      prefix2: "",
       value: 100,
-      value1: 100,
-      prev_value1: 100,
-      value2: 100,
-      prev_value2: 100,
-      combined: false,
+      prev_value: 100,
     };
   },
   methods: {
@@ -120,100 +67,33 @@ export default {
         "grouperItemUpdate",
         this.grouper,
         this.grouperItemName,
-        this.value1,
-        this.value2,
-        this.combined
+        this.value
       );
     },
     toggleVisibility() {
       this.visible = !this.visible;
     },
-    toggleClose1() {
-      this.closed1 = !this.closed1;
-      if (this.closed1) {
-        this.prev_value1 = this.value1;
-        this.value1 = this.max;
-        this.butClosedColor1 = "negative";
-        this.butClosedCap1 = "fa-solid fa-lock";
-        if (this.combined) {
-          this.closed2 = true;
-          this.prev_value2 = this.prev_value1;
-          this.value2 = this.max;
-          this.butClosedColor2 = "negative";
-          this.butClosedCap2 = "fa-solid fa-lock";
-        }
+    toggleClose() {
+      this.closed = !this.closed;
+      if (this.closed) {
+        this.prev_value = this.value;
+        this.value = this.max;
+        this.butClosedColor = "negative";
+        this.butClosedCap = "fa-solid fa-lock";
       } else {
-        this.value1 = this.prev_value1;
-        this.butClosedColor1 = "secondary";
-        this.butClosedCap1 = "fa-solid fa-lock-open";
-        if (this.combined) {
-          this.closed2 = false;
-          this.value2 = this.prev_value2;
-          this.butClosedColor2 = "secondary";
-          this.butClosedCap2 = "fa-solid fa-lock-open";
-        }
+        this.value = this.prev_value;
+        this.butClosedColor = "secondary";
+        this.butClosedCap = "fa-solid fa-lock-open";
       }
     },
-    toggleClose2() {
-      this.closed2 = !this.closed2;
-      if (this.closed2) {
-        this.prev_value2 = this.value2;
-        this.value2 = this.max;
-        this.butClosedColor2 = "negative";
-        this.butClosedCap2 = "fa-solid fa-lock";
-      } else {
-        this.value2 = this.prev_value2;
-        this.butClosedColor2 = "secondary";
-        this.butClosedCap2 = "fa-solid fa-lock-open";
-      }
-    },
-    toggleSplit() {
-      this.combined = !this.combined;
-      if (this.combined) {
-        this.butCap = "fa-solid fa-square-minus";
-        this.butColor = "secondary";
-        this.prefix1 = "";
-        this.prefix2 = "";
-        this.value2 = this.value1;
-      } else {
-        this.butCap = "fa-solid fa-square-share-nodes";
-        this.butColor = "negative";
-        this.prefix1 = this.prefix1_set;
-        this.prefix2 = this.prefix2_set;
-      }
+    update_value(e) {
       this.updateParent();
-    },
-
-    update_value1(e) {
-      if (this.combined) {
-        this.value2 = e;
-      }
-      this.updateParent();
-    },
-    update_value2(e) {
-      if (!this.combined) {
-        this.updateParent();
-      }
     },
   },
   mounted() {
-    this.combined = this.grouperItem.single;
-    this.prefix1_set = this.grouperItem.caption1;
-    this.prefix2_set = this.grouperItem.caption2;
-    this.value1 = this.grouperItem.value1;
-    this.value2 = this.grouperItem.value2;
-
-    if (this.combined) {
-      this.butCap = "fa-solid fa-square-minus";
-      this.butColor = "secondary";
-      this.prefix1 = "";
-      this.prefix2 = "";
-    } else {
-      this.butCap = "fa-solid fa-square-share-nodes";
-      this.butColor = "negative";
-      this.prefix1 = this.prefix1_set;
-      this.prefix2 = this.prefix2_set;
-    }
+    this.value = this.grouperItem.value;
+    this.butCap = "fa-solid fa-square-share-nodes";
+    this.butColor = "negative";
   },
 };
 </script>

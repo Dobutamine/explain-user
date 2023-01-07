@@ -81,62 +81,63 @@ export default {
   methods: {
     addToScript() {
       for (let changedGrouper in this.changedGroupers) {
+        console.log(this.changedGroupers[changedGrouper]);
         // process the changedGrouper list
         let model_prop = changedGrouper.split(".");
+
         const model = model_prop[0];
         const prop = model_prop[1];
-        let newValue1 = this.changedGroupers[changedGrouper].value1;
-        let newValue2 = this.changedGroupers[changedGrouper].value2;
+        let newValue = this.changedGroupers[changedGrouper].value;
         // update the script and ui store
-        if (this.uiConfig.groupers[model][prop].value1) {
+
+        if (this.uiConfig.groupers[model][prop].value) {
           this.script.script.push({
             m: model,
             p: prop,
-            o: this.uiConfig.groupers[model][prop].value1,
-            v: newValue1,
+            o: this.uiConfig.groupers[model][prop].value,
+            v: newValue,
             it: 0.0,
             at: 0.0,
             state: "pending",
           });
-
-          this.uiConfig.groupers[model][prop].value1 = newValue1;
         }
       }
 
       // reset the changeGrouper
       this.changedGroupers = {};
     },
-    updateGrouperItemFromChild(grouper, grouperItem, value1, value2, combined) {
+    updateGrouperItemFromChild(grouper, grouperItem, value) {
       let key = grouper + "." + grouperItem;
-      this.changedGroupers[key] = { value1: value1, value2: value2 };
-
-      // this.uiConfig.groupers[this.grouper][grouperItem].value1 = value1;
-      // this.uiConfig.groupers[this.grouper][grouperItem].value2 = value2;
-      this.uiConfig.groupers[grouper][grouperItem].single = combined;
+      this.changedGroupers[key] = {
+        value: value,
+      };
     },
     cancel() {
       this.grouperItems = [];
     },
     newGrouperSelected() {
       // check for all the grouperItems if the initial value should be set other then 100%
-      // for (let grouperItem in this.uiConfig.groupers[this.grouper]) {
-      //   // check whether the initialValue index is not -1
-      //   let initialValueIndex =
-      //     this.uiConfig.groupers[this.grouper][grouperItem].initialValueIndex;
-      //   if (initialValueIndex > -1) {
-      //     // set the initial value
-      //     let model =
-      //       this.uiConfig.groupers[this.grouper][grouperItem].properties[
-      //         initialValueIndex
-      //       ].model;
-      //     let modelProp =
-      //       this.uiConfig.groupers[this.grouper][grouperItem].properties[
-      //         initialValueIndex
-      //       ].modelProp;
-      //     let value = explain.modelState.Models[model][modelProp];
-      //     this.uiConfig.groupers[this.grouper][grouperItem].value1 = value;
-      //   }
-      // }
+      for (let g in this.groupers) {
+        let grouper = this.groupers[g];
+        for (let grouperItem in this.uiConfig.groupers[grouper]) {
+          // check whether the initialValue index is not -1
+          let initialValueIndex =
+            this.uiConfig.groupers[grouper][grouperItem].initialValueIndex;
+          if (initialValueIndex > -1) {
+            // set the initial value
+            let model =
+              this.uiConfig.groupers[grouper][grouperItem].properties[
+                initialValueIndex
+              ].model;
+            let modelProp =
+              this.uiConfig.groupers[grouper][grouperItem].properties[
+                initialValueIndex
+              ].modelProp;
+            let value = explain.modelState.Models[model][modelProp];
+            this.uiConfig.groupers[grouper][grouperItem].value = value;
+          }
+        }
+      }
     },
   },
   mounted() {

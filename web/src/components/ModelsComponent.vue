@@ -17,27 +17,52 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
-      <div class="q-mt-es row gutter text-overline justify-center">
-        <q-select
-          class="q-ml-md q-mr-md"
-          label-color="red-6"
-          v-model="selectedModel"
-          :options="models"
-          hide-bottom-space
-          dense
-          label="models"
-          style="width: 90%; font-size: 12px"
-          @update:model-value="modelSelected"
-        />
-      </div>
+      <div class="q-mt-xs q-mb-sm row text-overline justify-center">
+        <q-btn
+          color="secondary"
+          dark
+          label="select model"
+          style="width: 80%"
+          size="sm"
+        >
+          <q-menu dark>
+            <q-list dense>
+              <div v-for="(model, index) in modelsTree" :key="index">
+                <q-item clickable dense>
+                  <q-item-section>
+                    {{ model.model }}
+                  </q-item-section>
+                  <q-item-section side>
+                    <q-icon name="keyboard_arrow_right" />
+                  </q-item-section>
 
+                  <q-menu dark anchor="top end" self="top start">
+                    <q-list dense>
+                      <div v-for="(prop, i) in model.props" :key="i">
+                        <q-item clickable dense>
+                          <q-item-section
+                            clickable
+                            v-close-popup
+                            @click="addModelProp(model.model, prop)"
+                          >
+                            {{ prop }}
+                          </q-item-section>
+                        </q-item>
+                      </div>
+                    </q-list>
+                  </q-menu>
+                </q-item>
+              </div>
+            </q-list>
+          </q-menu>
+        </q-btn>
+      </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
-        <ModelPropUpdaterComponentVue
-          v-if="selectedModel"
-          :modelType="selectedModel"
-          :props="props"
+        <GrouperUpdaterComponentVue
+          v-if="!notyet"
+          :groupers="selectedGroupers"
           style="width: 100%"
-        ></ModelPropUpdaterComponentVue>
+        ></GrouperUpdaterComponentVue>
       </div>
     </div>
   </q-card>
@@ -45,12 +70,11 @@
 
 <script>
 import { explain } from "../boot/explain";
-import ModelPropUpdaterComponentVue from "./ModelPropUpdaterComponent.vue";
+import GrouperUpdaterComponentVue from "./GrouperUpdaterComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
-
 export default {
   components: {
-    ModelPropUpdaterComponentVue,
+    GrouperUpdaterComponentVue,
   },
   setup() {
     const uiConfig = useUserInterfaceStore();
@@ -60,65 +84,83 @@ export default {
   },
   data() {
     return {
-      title: "ADJUST MODEL COMPONENT",
+      notyet: true,
+      title: "MODEL PROPS",
       collapsed: true,
-      models: [],
-      props: [],
-      options: [],
-      selectedModel: "",
+      modelsTree: {},
+      selectedModelItems: [],
     };
   },
   methods: {
-    modelSelected() {
-      try {
-        let found_options = [];
-        this.props = this.uiConfig.models[this.selectedModel].properties;
-        // if the selected model is a container then process the property with the optional models
-        this.props.forEach((p) => {
-          if (
-            p.modelProp == "ContainedModels" ||
-            p.modelProp == "CompFrom" ||
-            p.modelProp == "CompTo"
-          ) {
-            // iterate over the optionalModels property
-            p.optionalModels.forEach((om) => {
-              // iterate over all models to find the names
-              for (let model in explain.modelState.Models) {
-                if (explain.modelState.Models[model].ModelType == om) {
-                  found_options.push(model);
-                }
-              }
-            });
-            p["options"] = found_options;
-          }
+    removeModelProp(model, prop) {
+      // make sure the object does exits
+      let index = -1;
+      for (let gi in this.selectedModelItems) {
+        if (
+          this.selectedModelItems[gi].model == model &&
+          this.selectedModelItems[gi].modelProp == prop
+        ) {
+          index = gi;
+        }
+      }
+      // if the grouperItem is found then remove it from the list
+      if (index > -1) {
+        this.selectedModelItems.splice(index, 1);
+      }
+
+      console.log(this.selectedModelItems);
+    },
+    addModelProp(model, prop) {
+      // make sure the object doesn't exist
+      let index = -1;
+      for (let gi in this.selectedModelItems) {
+        if (
+          this.selectedModelItems[gi].model == model &&
+          this.selectedModelItems[gi].prop == prop
+        ) {
+          index = gi;
+        }
+      }
+      // if the grouperItem is not found add it the list
+      if (index < 0) {
+        this.selectedModelItems.push({
+          model: model,
+          prop: prop,
         });
-      } catch (e) {
-        console.log(e);
-        this.props = [];
       }
+
+      console.log(this.selectedModelItems);
     },
-    cancel() {
-      this.selectedModel = "";
-    },
-    processModelState() {
-      let modelTypes = [];
+    buildGrouperItemTree() {
+      // build the grouperItem tree from the ui store
+      this.modelsTree = {};
+      // first find all models
+
+      console.log("buif");
       for (let model in explain.modelState.Models) {
-        modelTypes.push(explain.modelState.Models[model].ModelType);
+        let modelType = explain.modelState.Models[model].ModelType;
+        let props = [];
+        if (this.uiConfig.models[modelType]) {
+          for (let prop in this.uiConfig.models[modelType].properties) {
+            props.push(
+              this.uiConfig.models[modelType].properties[prop].modelProp
+            );
+          }
+          this.modelsTree[model] = { model: model, props: props };
+        }
       }
-      // remove duplicates
-      this.models = [...new Set(modelTypes)];
     },
   },
   beforeUnmount() {
     // remove the model state event listener
-    document.removeEventListener("state", this.processModelState);
+    document.removeEventListener("state", this.buildGrouperItemTree);
   },
   mounted() {
     // add an event listener for when the model state is ready
-    document.addEventListener("state", this.processModelState);
-
+    document.addEventListener("state", this.buildGrouperItemTree);
     // get the model state
     explain.getModelState();
+    console.log("yep");
   },
 };
 </script>

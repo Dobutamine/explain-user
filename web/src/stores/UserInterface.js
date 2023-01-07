@@ -406,30 +406,23 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           typeGrouper: "slider",
           initialValueIndex: -1,
           caption: "Contraction",
-          caption1: "LV",
-          caption2: "RV",
-          value1: 100.0,
-          value2: 100.0,
+          value: 100.0,
           unit: "%",
           step: 1.0,
           min: 0.0,
           max: 500.0,
           closable: false,
-          splittable: true,
-          single: true,
           properties: [
             {
               model: "LV",
               modelProp: "ElMax",
               typeProp: "numeric",
-              input: "value1",
               factor: 1.0,
             },
             {
               model: "RV",
               modelProp: "ElMax",
               typeProp: "numeric",
-              input: "value2",
               factor: 1.0,
             },
           ],
@@ -438,30 +431,23 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           typeGrouper: "slider",
           initialValueIndex: -1,
           caption: "Relaxation",
-          caption1: "LV",
-          caption2: "RV",
-          value1: 100.0,
-          value2: 100.0,
+          value: 100.0,
           unit: "%",
           step: 1.0,
           min: 0.0,
           max: 500.0,
           closable: false,
-          splittable: true,
-          single: true,
           properties: [
             {
               model: "LV",
               modelProp: "ElMin",
               typeProp: "numeric",
-              input: "value1",
               factor: 1.0,
             },
             {
               model: "RV",
               modelProp: "ElMin",
               typeProp: "numeric",
-              input: "value2",
               factor: 1.0,
             },
           ],
@@ -477,8 +463,6 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           max: 10.0,
           step: 1.0,
           closable: false,
-          splittable: false,
-          single: true,
           options: ["sinus", "svt", "vt", "vf"],
           properties: [
             {
@@ -493,131 +477,23 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           typeGrouper: "slider",
           caption: "pq time",
           initialValueIndex: 0,
-          value1: 0.1,
+          value: 0.3,
           unit: "sec",
           step: 0.01,
           min: 0.01,
           max: 1.0,
           closable: false,
-          splittable: false,
-          single: true,
           properties: [
             {
               model: "Heart",
               modelProp: "PqTime",
               typeProp: "numeric",
-              input: "value1",
               factor: 1.0,
             },
           ],
         },
       },
-      valves: {
-        aorticValveStenosis: {
-          properties: [
-            {
-              model: "LV_AA",
-              modelProp: "RFor",
-              typeProp: "numeric",
-              factor: 1.0,
-            },
-          ],
-        },
-        aorticValveRegurgitation: {
-          properties: [
-            {
-              model: "LV_AA",
-              modelProp: "RBack",
-              typeProp: "numeric",
-              factor: 1.0,
-            },
-            {
-              model: "LV_AA",
-              modelProp: "NoBackflow",
-              typeProp: "boolean",
-              factor: 1.0,
-            },
-          ],
-        },
-        pulmonaryValveStenosis: {
-          properties: [
-            {
-              model: "RV_PA",
-              modelProp: "RFor",
-              typeProp: "numeric",
-              factor: 1.0,
-            },
-          ],
-        },
-        pulmonaryValveRegurgitation: {
-          properties: [
-            {
-              model: "RV_PA",
-              modelProp: "RBack",
-              typeProp: "numeric",
-              factor: 1.0,
-            },
-            {
-              model: "RV_PA",
-              modelProp: "NoBackflow",
-              typeProp: "boolean",
-              factor: 1.0,
-            },
-          ],
-        },
-        mitralValveStenosis: {
-          properties: [
-            {
-              model: "LA_LV",
-              modelProp: "RFor",
-              typeProp: "numeric",
-              factor: 1.0,
-            },
-          ],
-        },
-        mitralValveRegurgitation: {
-          properties: [
-            {
-              model: "LA_LV",
-              modelProp: "RBack",
-              typeProp: "numeric",
-              factor: 1.0,
-            },
-            {
-              model: "RV_PA",
-              modelProp: "NoBackflow",
-              typeProp: "boolean",
-              factor: 1.0,
-            },
-          ],
-        },
-        tricuspidValveStenosis: {
-          properties: [
-            {
-              model: "RA_RV",
-              modelProp: "RFor",
-              typeProp: "numeric",
-              factor: 1.0,
-            },
-          ],
-        },
-        tricuspidValveRegurgitation: {
-          properties: [
-            {
-              model: "RA_RV",
-              modelProp: "RBack",
-              typeProp: "numeric",
-              factor: 1.0,
-            },
-            {
-              model: "RA_RV",
-              modelProp: "NoBackflow",
-              typeProp: "boolean",
-              factor: 1.0,
-            },
-          ],
-        },
-      },
+      valves: {},
       pericardium: {},
       circulation: {
         intravascularVolume: {

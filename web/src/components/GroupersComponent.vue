@@ -17,22 +17,49 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
-      <div class="q-mt-xs q-mb-sm row gutter text-overline justify-center">
-        <q-select
-          class="q-ml-md q-mr-md"
-          label-color="red-6"
-          v-model="selectedGroupers"
-          :options="groupers"
-          multiple
-          hide-bottom-space
-          dense
-          label="grouper"
-          style="width: 90%; font-size: 12px"
-        />
+      <div class="q-mt-xs q-mb-sm row text-overline justify-center">
+        <q-btn
+          color="secondary"
+          dark
+          label="select grouper"
+          style="width: 80%"
+          size="sm"
+        >
+          <q-menu dark>
+            <q-list dense>
+              <div v-for="(grouper, index) in groupersTree" :key="index">
+                <q-item clickable dense>
+                  <q-item-section>
+                    {{ grouper.group }}
+                  </q-item-section>
+                  <q-item-section side>
+                    <q-icon name="keyboard_arrow_right" />
+                  </q-item-section>
+
+                  <q-menu dark anchor="top end" self="top start">
+                    <q-list dense>
+                      <div v-for="(grouperItem, i) in grouper.items" :key="i">
+                        <q-item clickable dense>
+                          <q-item-section
+                            clickable
+                            v-close-popup
+                            @click="addGrouperItem(grouper.group, grouperItem)"
+                          >
+                            {{ grouperItem }}
+                          </q-item-section>
+                        </q-item>
+                      </div>
+                    </q-list>
+                  </q-menu>
+                </q-item>
+              </div>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
         <GrouperUpdaterComponentVue
-          v-if="selectedGroupers.length > 0"
+          v-if="!notyet"
           :groupers="selectedGroupers"
           style="width: 100%"
         ></GrouperUpdaterComponentVue>
@@ -42,7 +69,6 @@
 </template>
 
 <script>
-import { explain } from "../boot/explain";
 import GrouperUpdaterComponentVue from "./GrouperUpdaterComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 export default {
@@ -57,19 +83,67 @@ export default {
   },
   data() {
     return {
-      title: "GROUPED MODEL PROPS",
+      notyet: true,
+      title: "GROUPED PROPERTIES",
       collapsed: true,
-      groupers: [],
-      selectedGroupers: [],
+      groupersTree: {},
+      selectedGrouperItems: [],
     };
   },
-  methods: {},
+  methods: {
+    removeGrouperItem(group, grouperItem) {
+      // make sure the object does exits
+      let index = -1;
+      for (let gi in this.selectedGrouperItems) {
+        if (
+          this.selectedGrouperItems[gi].group == group &&
+          this.selectedGrouperItems[gi].grouperItem == grouperItem
+        ) {
+          index = gi;
+        }
+      }
+      // if the grouperItem is found then remove it from the list
+      if (index > -1) {
+        this.selectedGrouperItems.splice(index, 1);
+      }
+
+      console.log(this.selectedGrouperItems);
+    },
+    addGrouperItem(group, grouperItem) {
+      // make sure the object doesn't exist
+      let index = -1;
+      for (let gi in this.selectedGrouperItems) {
+        if (
+          this.selectedGrouperItems[gi].group == group &&
+          this.selectedGrouperItems[gi].grouperItem == grouperItem
+        ) {
+          index = -1;
+        }
+      }
+      // if the grouperItem is not found add it the list
+      if (index > -1) {
+        this.selectedGrouperItems.push({
+          group: group,
+          grouperItem: grouperItem,
+        });
+      }
+
+      console.log(this.selectedGrouperItems);
+    },
+    buildGrouperItemTree() {
+      // build the grouperItem tree from the ui store
+      this.groupersTree = {};
+      for (let grouper in this.uiConfig.groupers) {
+        let groupersItems = [];
+        for (let grouperItem in this.uiConfig.groupers[grouper]) {
+          groupersItems.push(grouperItem);
+        }
+        this.groupersTree[grouper] = { group: grouper, items: groupersItems };
+      }
+    },
+  },
   mounted() {
-    // get all the groupers from the store
-    this.groupers = [];
-    for (let grouper in this.uiConfig.groupers) {
-      this.groupers.push(grouper);
-    }
+    this.buildGrouperItemTree();
   },
 };
 </script>
