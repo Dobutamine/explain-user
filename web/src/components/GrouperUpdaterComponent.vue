@@ -1,15 +1,25 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
     <div class="q-ma-sm">
-      <div
-        v-for="(grouperItem, key) in uiConfig.groupers[grouper]"
-        :key="grouperItem.caption"
-      >
-        <SliderComponentVue
-          :grouperItem="grouperItem"
-          :grouperItemName="key"
-          @grouperItemUpdate="updateGrouperItemFromChild"
-        ></SliderComponentVue>
+      <div v-for="(grouper, index) in groupers" :key="index">
+        <div
+          v-for="(grouperItem, key) in uiConfig.groupers[grouper]"
+          :key="grouperItem.caption"
+        >
+          <HeartRhythmGrouperComponentVue
+            v-if="grouperItem.typeGrouper == 'heartRhythmGrouper'"
+            :grouperItem="grouperItem"
+            :grouperItemName="key"
+            @grouperItemUpdate="updateGrouperItemFromChild"
+          >
+          </HeartRhythmGrouperComponentVue>
+          <SliderComponentVue
+            v-if="grouperItem.typeGrouper == 'slider'"
+            :grouperItem="grouperItem"
+            :grouperItemName="key"
+            @grouperItemUpdate="updateGrouperItemFromChild"
+          ></SliderComponentVue>
+        </div>
       </div>
     </div>
 
@@ -28,7 +38,9 @@
 </template>
 
 <script>
-import SliderComponentVue from "./ui-elements/SliderComponent.vue";
+import { explain } from "../boot/explain";
+import HeartRhythmGrouperComponentVue from "./groupers/HeartRhythmGrouperComponent.vue";
+import SliderComponentVue from "./groupers/SliderComponent.vue";
 import { useScriptStore } from "stores/script";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 
@@ -41,12 +53,12 @@ export default {
       uiConfig,
     };
   },
-  components: { SliderComponentVue },
+  components: { SliderComponentVue, HeartRhythmGrouperComponentVue },
   props: {
-    grouper: String,
+    groupers: Array,
   },
   watch: {
-    grouper(ng, og) {
+    groupers(ng, og) {
       this.newGrouperSelected();
     },
   },
@@ -58,23 +70,34 @@ export default {
     };
   },
   methods: {
-    updateGrouperItemFromChild(grouperItem, value1, value2) {
-      console.log(grouperItem);
-      console.log(value1);
-      console.log(value2);
+    updateGrouperItemFromChild(grouperItem, value1, value2, combined) {
+      // this.uiConfig.groupers[this.grouper][grouperItem].value1 = value1;
+      // this.uiConfig.groupers[this.grouper][grouperItem].value2 = value2;
+      this.uiConfig.groupers[this.grouper][grouperItem].single = combined;
     },
     cancel() {
       this.grouperItems = [];
     },
     newGrouperSelected() {
-      // this.grouperItems = [];
-      // for (let grouperItemName in this.uiConfig.groupers[this.grouper]) {
-      //   this.grouperItems[(
-      //     this.uiConfig.groupers[this.grouper][grouperItemName]
-      //   );
-      //   this.grouperValues[grouperItemName] = { value1: 100.0, value2: 100.0 };
+      // check for all the grouperItems if the initial value should be set other then 100%
+      // for (let grouperItem in this.uiConfig.groupers[this.grouper]) {
+      //   // check whether the initialValue index is not -1
+      //   let initialValueIndex =
+      //     this.uiConfig.groupers[this.grouper][grouperItem].initialValueIndex;
+      //   if (initialValueIndex > -1) {
+      //     // set the initial value
+      //     let model =
+      //       this.uiConfig.groupers[this.grouper][grouperItem].properties[
+      //         initialValueIndex
+      //       ].model;
+      //     let modelProp =
+      //       this.uiConfig.groupers[this.grouper][grouperItem].properties[
+      //         initialValueIndex
+      //       ].modelProp;
+      //     let value = explain.modelState.Models[model][modelProp];
+      //     this.uiConfig.groupers[this.grouper][grouperItem].value1 = value;
+      //   }
       // }
-      // console.log(this.grouperValues);
     },
   },
   mounted() {

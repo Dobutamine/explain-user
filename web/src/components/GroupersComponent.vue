@@ -21,8 +21,9 @@
         <q-select
           class="q-ml-md q-mr-md"
           label-color="red-6"
-          v-model="selectedGrouper"
+          v-model="selectedGroupers"
           :options="groupers"
+          multiple
           hide-bottom-space
           dense
           label="grouper"
@@ -31,8 +32,8 @@
       </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
         <GrouperUpdaterComponentVue
-          v-if="selectedGrouper"
-          :grouper="selectedGrouper"
+          v-if="selectedGroupers.length > 0"
+          :groupers="selectedGroupers"
           style="width: 100%"
         ></GrouperUpdaterComponentVue>
       </div>
@@ -59,7 +60,7 @@ export default {
       title: "GROUPED MODEL PROPS",
       collapsed: true,
       groupers: [],
-      selectedGrouper: "",
+      selectedGroupers: [],
     };
   },
   methods: {},

@@ -1,6 +1,5 @@
 <template>
-  <div :style="{ 'font-size': '12px', width: '90%' }">
-    <q-separator dark size="1px" color="grey-12"></q-separator>
+  <div :style="{ 'font-size': '12px', width: '100%' }">
     <div class="q-mt-sm items-left row">
       <q-badge class="q-mt-sm col" color="dark">
         {{ prefix1 }} {{ grouperItem.caption }}: {{ value1 }}
@@ -35,6 +34,7 @@
       v-model="value1"
       :min="grouperItem.min"
       :max="grouperItem.max"
+      :step="grouperItem.step"
       dark
       :readonly="closed1"
       :color="butClosedColor1"
@@ -65,12 +65,14 @@
         v-model="value2"
         :min="grouperItem.min"
         :max="grouperItem.max"
+        :step="grouperItem.step"
         :readonly="closed2"
         dark
         :color="butClosedColor2"
         @update:model-value="update_value2"
       />
     </div>
+    <q-separator dark size="1px" color="grey-12"></q-separator>
   </div>
 </template>
 
@@ -110,7 +112,8 @@ export default {
         "grouperItemUpdate",
         this.grouperItemName,
         this.value1,
-        this.value2
+        this.value2,
+        this.combined
       );
     },
     toggleClose1() {
@@ -166,6 +169,7 @@ export default {
         this.prefix1 = this.prefix1_set;
         this.prefix2 = this.prefix2_set;
       }
+      this.updateParent();
     },
 
     update_value1(e) {
@@ -184,6 +188,9 @@ export default {
     this.combined = this.grouperItem.single;
     this.prefix1_set = this.grouperItem.caption1;
     this.prefix2_set = this.grouperItem.caption2;
+    this.value1 = this.grouperItem.value1;
+    this.value2 = this.grouperItem.value2;
+
     if (this.combined) {
       this.butCap = "fa-solid fa-square-minus";
       this.butColor = "secondary";

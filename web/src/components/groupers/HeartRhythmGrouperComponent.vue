@@ -1,31 +1,24 @@
 <template>
-  <q-card class="q-pa-xs q-ma-md" bordered>
-    <div
-      class="row text-overline justify-center"
-      @click="collapsed = !collapsed"
-    >
-      {{ title }}
-    </div>
-    <div v-if="!collapsed" class="q-ma-sm">
-      <q-select
-        class="q-ma-sm"
-        v-model="selection"
-        :options="options"
-        hide-bottom-space
-        dense
-        label="heart rhythm"
-        style="width: 90%; font-size: 12px"
-      />
-    </div>
-  </q-card>
+  <div>
+    <q-select
+      v-model="selection"
+      :options="grouperItem.options"
+      hide-bottom-space
+      dense
+      label="heart rhythm"
+      style="width: 100%; font-size: 12px"
+    />
+  </div>
 </template>
 
 <script>
 export default {
+  props: {
+    grouperItem: Object,
+    grouperItemName: String,
+  },
   data() {
     return {
-      title: "HEART RHYTHM",
-      collapsed: false,
       options: ["sinus", "svt", "vt"],
       selection: "sinus",
     };
