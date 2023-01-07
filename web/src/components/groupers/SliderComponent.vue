@@ -1,11 +1,11 @@
 <template>
   <div :style="{ 'font-size': '12px', width: '100%' }">
     <div class="q-mt-sm items-left row">
-      <q-badge class="q-mt-sm col" color="dark">
+      <q-badge class="q-mt-sm col" color="dark" @click="toggleVisibility">
         {{ prefix1 }} {{ grouperItem.caption }}: {{ value1 }}
         {{ grouperItem.unit }}
       </q-badge>
-      <div class="col text-right">
+      <div v-if="visible" class="col text-right">
         <q-btn
           float-right
           v-if="grouperItem.splittable"
@@ -30,6 +30,7 @@
       </div>
     </div>
     <q-slider
+      v-if="visible"
       class="q-mt-xs"
       v-model="value1"
       :min="grouperItem.min"
@@ -41,7 +42,7 @@
       @update:model-value="update_value1"
     />
 
-    <div v-if="!combined">
+    <div v-if="!combined && visible">
       <div class="row items-left">
         <q-badge color="dark col">
           {{ prefix2 }} {{ grouperItem.caption }}: {{ value2 }}
@@ -72,18 +73,25 @@
         @update:model-value="update_value2"
       />
     </div>
-    <q-separator dark size="1px" color="grey-12"></q-separator>
+    <q-separator
+      class="q-mt-sm"
+      dark
+      size="0.1px"
+      color="grey-12"
+    ></q-separator>
   </div>
 </template>
 
 <script>
 export default {
   props: {
+    grouper: String,
     grouperItem: Object,
     grouperItemName: String,
   },
   data() {
     return {
+      visible: true,
       value1_caption: "",
       value2_caption: "",
       closed1: false,
@@ -110,11 +118,15 @@ export default {
     updateParent() {
       this.$emit(
         "grouperItemUpdate",
+        this.grouper,
         this.grouperItemName,
         this.value1,
         this.value2,
         this.combined
       );
+    },
+    toggleVisibility() {
+      this.visible = !this.visible;
     },
     toggleClose1() {
       this.closed1 = !this.closed1;

@@ -1,6 +1,7 @@
 <template>
   <div>
     <q-select
+      class="q-mt-sm"
       v-model="selection"
       :options="grouperItem.options"
       hide-bottom-space
@@ -14,6 +15,7 @@
 <script>
 export default {
   props: {
+    grouper: String,
     grouperItem: Object,
     grouperItemName: String,
   },
