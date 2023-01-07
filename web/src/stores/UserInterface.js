@@ -403,10 +403,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
     groupers: {
       heart: {
         rhythm: {
-          caption: "Heart rhythm",
-          caption1: "",
-          caption2: "",
-          value: 1.0,
+          caption: "Rhythm",
+          value1: 100.0,
+          unit: "%",
           min: 0.0,
           max: 10.0,
           closable: false,
@@ -425,6 +424,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           caption: "Contraction",
           caption1: "LV",
           caption2: "RV",
+          value1: 100.0,
+          value2: 100.0,
+          unit: "%",
           min: 0.0,
           max: 500.0,
           closable: false,
@@ -447,9 +449,15 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         },
         relaxation: {
           caption: "Relaxation",
-          value: 100.0,
+          caption1: "LV",
+          caption2: "RV",
+          value1: 100.0,
+          value2: 100.0,
+          unit: "%",
           min: 0.0,
           max: 1000.0,
+          value1: 100.0,
+          value2: 100.0,
           properties: [
             {
               model: "LV",

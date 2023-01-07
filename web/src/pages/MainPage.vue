@@ -80,8 +80,8 @@
             </q-tab-panel>
 
             <q-tab-panel name="charts">
-              <TimeBaseChartVue></TimeBaseChartVue>
-              <NonTimeBasedChartVue></NonTimeBasedChartVue>
+              <!-- <TimeBaseChartVue></TimeBaseChartVue>
+              <NonTimeBasedChartVue></NonTimeBasedChartVue> -->
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -111,12 +111,12 @@
             ></MonitorComponentVue>
           </div>
           <div v-for="(chart, index) in charts" :key="index">
-            <ChartComponentVue
+            <!-- <ChartComponentVue
               :title="chart.title"
               :collapsed="chart.collapsed"
               :model_types="chart.model_types"
               :props="chart.model_props"
-            ></ChartComponentVue>
+            ></ChartComponentVue> -->
           </div>
         </div>
       </div>
@@ -153,10 +153,7 @@ export default {
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
     ModelsComponentVue,
-    ChartComponentVue,
     MonitorComponentVue: MonitorsComponentVue,
-    TimeBaseChartVue,
-    NonTimeBasedChartVue,
     PlayComponentVue: GroupersComponentVue,
     BuildComponentVue,
     DeleteComponentVue,

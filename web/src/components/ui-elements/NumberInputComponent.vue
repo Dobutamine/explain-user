@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     updateParent() {
-      console.log(this.step);
       this.$emit(
         "propupdate",
         this.modelProp,

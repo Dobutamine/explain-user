@@ -1,17 +1,14 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
     <div class="q-ma-sm">
-      <div v-for="(grouperItem, index) in grouperItems" :key="index">
+      <div
+        v-for="(grouperItem, key) in uiConfig.groupers[grouper]"
+        :key="grouperItem.caption"
+      >
         <SliderComponentVue
-          :caption="grouperItem.caption"
-          :caption1="grouperItem.caption1"
-          :caption2="grouperItem.caption2"
-          :min="grouperItem.min"
-          :max="grouperItem.max"
-          unit="%"
-          :closable="grouperItem.closable"
-          :splittable="grouperItem.splittable"
-          :single="grouperItem.single"
+          :grouperItem="grouperItem"
+          :grouperItemName="key"
+          @grouperItemUpdate="updateGrouperItemFromChild"
         ></SliderComponentVue>
       </div>
     </div>
@@ -56,21 +53,28 @@ export default {
   data() {
     return {
       collapsed: false,
-      grouperItems: [],
+      grouperItems: {},
       statusMessage: "",
     };
   },
   methods: {
+    updateGrouperItemFromChild(grouperItem, value1, value2) {
+      console.log(grouperItem);
+      console.log(value1);
+      console.log(value2);
+    },
     cancel() {
       this.grouperItems = [];
     },
     newGrouperSelected() {
-      this.grouperItems = [];
-      for (let grouperItemName in this.uiConfig.groupers[this.grouper]) {
-        this.grouperItems.push(
-          this.uiConfig.groupers[this.grouper][grouperItemName]
-        );
-      }
+      // this.grouperItems = [];
+      // for (let grouperItemName in this.uiConfig.groupers[this.grouper]) {
+      //   this.grouperItems[(
+      //     this.uiConfig.groupers[this.grouper][grouperItemName]
+      //   );
+      //   this.grouperValues[grouperItemName] = { value1: 100.0, value2: 100.0 };
+      // }
+      // console.log(this.grouperValues);
     },
   },
   mounted() {

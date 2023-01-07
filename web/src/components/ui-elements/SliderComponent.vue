@@ -3,12 +3,13 @@
     <q-separator dark size="1px" color="grey-12"></q-separator>
     <div class="q-mt-sm items-left row">
       <q-badge class="q-mt-sm col" color="dark">
-        {{ prefix1 }} {{ caption }}: {{ value1 }} {{ unit }}
+        {{ prefix1 }} {{ grouperItem.caption }}: {{ value1 }}
+        {{ grouperItem.unit }}
       </q-badge>
       <div class="col text-right">
         <q-btn
           float-right
-          v-if="splittable"
+          v-if="grouperItem.splittable"
           :color="butColor"
           class="q-pa-xs q-mt-xs"
           dense
@@ -18,7 +19,7 @@
         ></q-btn>
         <q-btn
           float-right
-          v-if="closable"
+          v-if="grouperItem.closable"
           :color="butClosedColor1"
           class="q-ml-sm q-mt-xs q-pa-xs"
           dense
@@ -32,9 +33,8 @@
     <q-slider
       class="q-mt-xs"
       v-model="value1"
-      :min="min"
-      :max="max"
-      :step="step"
+      :min="grouperItem.min"
+      :max="grouperItem.max"
       dark
       :readonly="closed1"
       :color="butClosedColor1"
@@ -44,12 +44,13 @@
     <div v-if="!combined">
       <div class="row items-left">
         <q-badge color="dark col">
-          {{ prefix2 }} {{ caption }}: {{ value2 }} {{ unit }}
+          {{ prefix2 }} {{ grouperItem.caption }}: {{ value2 }}
+          {{ grouperItem.unit }}
         </q-badge>
         <div class="col text-right">
           <q-btn
             float-right
-            v-if="closable"
+            v-if="grouperItem.closable"
             :color="butClosedColor2"
             class="q-mt-xs q-pa-xs"
             dense
@@ -62,12 +63,12 @@
       <q-slider
         class="q-mt-xs"
         v-model="value2"
-        :min="min"
-        :max="max"
-        :step="step"
+        :min="grouperItem.min"
+        :max="grouperItem.max"
         :readonly="closed2"
         dark
         :color="butClosedColor2"
+        @update:model-value="update_value2"
       />
     </div>
   </div>
@@ -76,17 +77,8 @@
 <script>
 export default {
   props: {
-    caption: String,
-    caption1: String,
-    caption2: String,
-    unit: String,
-    min: Number,
-    max: Number,
-    step: Number,
-    single: Boolean,
-    splittable: Boolean,
-    closable: Boolean,
-    log: Boolean,
+    grouperItem: Object,
+    grouperItemName: String,
   },
   data() {
     return {
@@ -113,6 +105,14 @@ export default {
     };
   },
   methods: {
+    updateParent() {
+      this.$emit(
+        "grouperItemUpdate",
+        this.grouperItemName,
+        this.value1,
+        this.value2
+      );
+    },
     toggleClose1() {
       this.closed1 = !this.closed1;
       if (this.closed1) {
@@ -172,12 +172,18 @@ export default {
       if (this.combined) {
         this.value2 = e;
       }
+      this.updateParent();
+    },
+    update_value2(e) {
+      if (!this.combined) {
+        this.updateParent();
+      }
     },
   },
   mounted() {
-    this.combined = this.single;
-    this.prefix1_set = this.caption1;
-    this.prefix2_set = this.caption2;
+    this.combined = this.grouperItem.single;
+    this.prefix1_set = this.grouperItem.caption1;
+    this.prefix2_set = this.grouperItem.caption2;
     if (this.combined) {
       this.butCap = "fa-solid fa-square-minus";
       this.butColor = "secondary";
