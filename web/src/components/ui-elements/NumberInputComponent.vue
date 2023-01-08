@@ -1,9 +1,14 @@
 <template>
-  <div class="row" :style="{ width: '100%' }">
+  <div class="row q-mt-sm" :style="{ width: '100%' }">
+    <div
+      class="bg-indigo-10 row"
+      :style="{ 'font-size': '12px', width: '100%' }"
+    >
+      <div class="col q-mr-xs text-left">{{ title }} ({{ unit }})</div>
+    </div>
     <q-input
       class="col-9"
       v-model="newValue"
-      :label="title"
       square
       hide-hint
       type="number"
@@ -23,15 +28,6 @@
       icon="fa-solid fa-delete-left"
       @click="deleteMe"
     ></q-btn>
-
-    <div
-      class="bg-indigo-10 row"
-      :style="{ 'font-size': '10px', width: '100%' }"
-    >
-      <div class="col q-mr-xs text-center">
-        {{ (initValue * displayFactor).toFixed(displayRounding) }} {{ unit }}
-      </div>
-    </div>
   </div>
 </template>
 

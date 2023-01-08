@@ -1,5 +1,13 @@
 <template>
-  <div class="row" :style="{ width: '100%' }">
+  <div class="row q-mt-sm" :style="{ width: '100%' }">
+    <div
+      class="bg-indigo-10 row"
+      :style="{ 'font-size': '12px', width: '100%' }"
+    >
+      <div class="col q-mr-xs text-left">
+        {{ title }}
+      </div>
+    </div>
     <q-select
       class="col-9"
       label-color="grey-4"
@@ -9,8 +17,7 @@
       dense
       multiple
       :readonly="locked"
-      :label="caption"
-      style="font-size: 10px"
+      style="font-size: 12px"
       @update:model-value="updateParent"
     />
     <q-btn
@@ -22,14 +29,6 @@
       icon="fa-solid fa-delete-left"
       @click="deleteMe"
     ></q-btn>
-    <div
-      class="bg-indigo-10 row"
-      :style="{ 'font-size': '10px', width: '100%' }"
-    >
-      <div class="col q-mr-xs text-center">
-        {{ title }}
-      </div>
-    </div>
   </div>
 </template>
 
