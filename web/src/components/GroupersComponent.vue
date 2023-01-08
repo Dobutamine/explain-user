@@ -19,7 +19,8 @@
     <div v-if="!collapsed">
       <div class="q-mt-xs q-mb-sm row text-overline justify-center">
         <q-btn
-          color="secondary"
+          color="grey-3"
+          outline
           dark
           label="select grouper"
           style="width: 80%"
