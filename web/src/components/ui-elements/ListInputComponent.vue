@@ -1,34 +1,33 @@
 <template>
-  <div class="row q-mt-sm" :style="{ width: '100%' }">
-    <div
-      class="bg-indigo-10 row"
-      :style="{ 'font-size': '12px', width: '100%' }"
-    >
-      <div class="col q-mr-xs text-left">
-        {{ title }}
+  <q-card bordered dark :style="{ width: '100%' }">
+    <div class="row q-pa-sm" :style="{ width: '100%' }">
+      <div class="row" :style="{ 'font-size': '12px', width: '100%' }">
+        <div class="col q-mr-xs text-left text-bold">
+          {{ title }}
+        </div>
       </div>
+      <q-select
+        class="col-9"
+        label-color="grey-4"
+        v-model="currentSelection"
+        :options="listOptions"
+        hide-bottom-space
+        dense
+        :readonly="locked"
+        style="font-size: 12px"
+        @update:model-value="updateParent"
+      />
+      <q-btn
+        class="q-ma-sm col"
+        color="grey-9"
+        outline
+        size="xs"
+        dense
+        icon="fa-solid fa-delete-left"
+        @click="deleteMe"
+      ></q-btn>
     </div>
-    <q-select
-      class="col-9"
-      label-color="grey-4"
-      v-model="currentSelection"
-      :options="listOptions"
-      hide-bottom-space
-      dense
-      :readonly="locked"
-      style="font-size: 12px"
-      @update:model-value="updateParent"
-    />
-    <q-btn
-      class="q-ma-sm col"
-      color="grey-9"
-      outline
-      size="xs"
-      dense
-      icon="fa-solid fa-delete-left"
-      @click="deleteMe"
-    ></q-btn>
-  </div>
+  </q-card>
 </template>
 
 <script>

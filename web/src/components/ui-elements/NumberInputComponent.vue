@@ -1,34 +1,35 @@
 <template>
-  <div class="row q-mt-sm" :style="{ width: '100%' }">
-    <div
-      class="bg-indigo-10 row"
-      :style="{ 'font-size': '12px', width: '100%' }"
-    >
-      <div class="col q-mr-xs text-left">{{ title }} ({{ unit }})</div>
+  <q-card bordered dark :style="{ width: '100%' }">
+    <div class="row q-pa-sm" :style="{ width: '100%' }">
+      <div class="row" :style="{ 'font-size': '12px', width: '100%' }">
+        <div class="col q-mr-xs text-left text-bold">
+          {{ title }} ({{ unit }})
+        </div>
+      </div>
+      <q-input
+        class="col-9"
+        v-model="newValue"
+        square
+        hide-hint
+        type="number"
+        :min="min"
+        :step="step"
+        dense
+        dark
+        stack-label
+        @update:model-value="updateParent"
+      />
+      <q-btn
+        class="q-ma-sm col"
+        color="grey-9"
+        outline
+        size="xs"
+        dense
+        icon="fa-solid fa-delete-left"
+        @click="deleteMe"
+      ></q-btn>
     </div>
-    <q-input
-      class="col-9"
-      v-model="newValue"
-      square
-      hide-hint
-      type="number"
-      :min="min"
-      :step="step"
-      dense
-      dark
-      stack-label
-      @update:model-value="updateParent"
-    />
-    <q-btn
-      class="q-ma-sm col"
-      color="grey-9"
-      outline
-      size="xs"
-      dense
-      icon="fa-solid fa-delete-left"
-      @click="deleteMe"
-    ></q-btn>
-  </div>
+  </q-card>
 </template>
 
 <script>

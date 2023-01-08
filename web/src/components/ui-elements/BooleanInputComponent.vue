@@ -1,40 +1,39 @@
 <template>
-  <div class="row q-mt-sm" :style="{ width: '100%' }">
-    <div
-      class="bg-indigo-10 row"
-      :style="{ 'font-size': '12px', width: '100%' }"
-    >
-      <div class="col q-mr-xs text-left">
-        {{ title }}
+  <q-card bordered dark :style="{ width: '100%' }">
+    <div class="row q-pa-sm" :style="{ width: '100%' }">
+      <div class="row" :style="{ 'font-size': '12px', width: '100%' }">
+        <div class="col q-mr-xs text-left text-bold">
+          {{ title }}
+        </div>
       </div>
+      <q-btn-toggle
+        class="q-ma-sm col-9"
+        v-model="newValue"
+        size="sm"
+        dark
+        spread
+        dense
+        no-caps
+        toggle-color="blue-grey-6"
+        color="grey-9"
+        text-color="black"
+        :options="[
+          { label: 'Enabled', value: true },
+          { label: 'Disabled', value: false },
+        ]"
+        @update:model-value="updateParent"
+      />
+      <q-btn
+        class="q-ma-sm q-mb-xs col"
+        color="grey-9"
+        outline
+        size="xs"
+        dense
+        icon="fa-solid fa-delete-left"
+        @click="deleteMe"
+      ></q-btn>
     </div>
-    <q-btn-toggle
-      class="q-ma-sm col-9"
-      v-model="newValue"
-      size="sm"
-      dark
-      spread
-      dense
-      no-caps
-      toggle-color="blue-grey-6"
-      color="grey-9"
-      text-color="black"
-      :options="[
-        { label: 'Enabled', value: true },
-        { label: 'Disabled', value: false },
-      ]"
-      @update:model-value="updateParent"
-    />
-    <q-btn
-      class="q-ma-sm q-mb-xs col"
-      color="grey-9"
-      outline
-      size="xs"
-      dense
-      icon="fa-solid fa-delete-left"
-      @click="deleteMe"
-    ></q-btn>
-  </div>
+  </q-card>
 </template>
 
 <script>
