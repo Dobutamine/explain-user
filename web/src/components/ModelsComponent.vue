@@ -43,9 +43,11 @@
                           <q-item-section
                             clickable
                             v-close-popup
-                            @click="addModelProp(model.model, prop)"
+                            @click="
+                              addModelProp(model.model, model.modelType, prop)
+                            "
                           >
-                            {{ prop }}
+                            {{ prop.propName }}
                           </q-item-section>
                         </q-item>
                       </div>
@@ -58,11 +60,10 @@
         </q-btn>
       </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
-        <GrouperUpdaterComponentVue
-          v-if="!notyet"
-          :groupers="selectedGroupers"
+        <ModelPropEditComponentVue
+          :selectedModelItems="selectedModelItems"
           style="width: 100%"
-        ></GrouperUpdaterComponentVue>
+        ></ModelPropEditComponentVue>
       </div>
     </div>
   </q-card>
@@ -70,11 +71,11 @@
 
 <script>
 import { explain } from "../boot/explain";
-import GrouperUpdaterComponentVue from "./GrouperUpdaterComponent.vue";
+import ModelPropEditComponentVue from "./ModelPropEditComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 export default {
   components: {
-    GrouperUpdaterComponentVue,
+    ModelPropEditComponentVue,
   },
   setup() {
     const uiConfig = useUserInterfaceStore();
@@ -107,10 +108,8 @@ export default {
       if (index > -1) {
         this.selectedModelItems.splice(index, 1);
       }
-
-      console.log(this.selectedModelItems);
     },
-    addModelProp(model, prop) {
+    addModelProp(model, modelType, prop) {
       // make sure the object doesn't exist
       let index = -1;
       for (let gi in this.selectedModelItems) {
@@ -123,44 +122,53 @@ export default {
       }
       // if the grouperItem is not found add it the list
       if (index < 0) {
+        // find the current value
         this.selectedModelItems.push({
           model: model,
+          modelType: modelType,
           prop: prop,
+          value: explain.modelState.Models[model][prop.propSettings.modelProp],
         });
       }
-
-      console.log(this.selectedModelItems);
     },
-    buildGrouperItemTree() {
+
+    buildModelItemTree() {
       // build the grouperItem tree from the ui store
       this.modelsTree = {};
       // first find all models
-
-      console.log("buif");
       for (let model in explain.modelState.Models) {
         let modelType = explain.modelState.Models[model].ModelType;
         let props = [];
         if (this.uiConfig.models[modelType]) {
           for (let prop in this.uiConfig.models[modelType].properties) {
-            props.push(
-              this.uiConfig.models[modelType].properties[prop].modelProp
-            );
+            let propName =
+              this.uiConfig.models[modelType].properties[prop].modelProp;
+            let propSettings = this.uiConfig.models[modelType].properties[prop];
+            props.push({
+              propName: propName,
+              propSettings: propSettings,
+            });
           }
-          this.modelsTree[model] = { model: model, props: props };
+
+          this.modelsTree[model] = {
+            model: model,
+            modelType: modelType,
+            props: props,
+            value: "",
+          };
         }
       }
     },
   },
   beforeUnmount() {
     // remove the model state event listener
-    document.removeEventListener("state", this.buildGrouperItemTree);
+    document.removeEventListener("state", this.buildModelItemTree);
   },
   mounted() {
     // add an event listener for when the model state is ready
-    document.addEventListener("state", this.buildGrouperItemTree);
+    document.addEventListener("state", this.buildModelItemTree);
     // get the model state
     explain.getModelState();
-    console.log("yep");
   },
 };
 </script>

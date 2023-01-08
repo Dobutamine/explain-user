@@ -66,6 +66,11 @@ export default {
       );
     },
   },
+  mounted() {
+    this.newValue = (this.value * this.displayFactor).toFixed(
+      this.displayRounding
+    );
+  },
 };
 </script>
 
