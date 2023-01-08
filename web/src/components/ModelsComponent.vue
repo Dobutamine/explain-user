@@ -63,6 +63,7 @@
         <ModelPropEditComponentVue
           :selectedModelItems="selectedModelItems"
           style="width: 100%"
+          @propdelete="deleteProp"
         ></ModelPropEditComponentVue>
       </div>
     </div>
@@ -93,13 +94,13 @@ export default {
     };
   },
   methods: {
-    removeModelProp(model, prop) {
+    deleteProp(model, prop) {
       // make sure the object does exits
       let index = -1;
       for (let gi in this.selectedModelItems) {
         if (
           this.selectedModelItems[gi].model == model &&
-          this.selectedModelItems[gi].modelProp == prop
+          this.selectedModelItems[gi].prop.propName == prop
         ) {
           index = gi;
         }

@@ -1,35 +1,83 @@
 <template>
-  <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
-    <div v-for="(selectedModelItem, index) in selectedModelItems" :key="index">
+  <q-card class="q-ma-sm" bordered>
+    <div class="q-ma-sm">
       <div
-        v-if="selectedModelItem.prop.propSettings.typeProp == 'numeric'"
-        class="q-ma-sm q-gutter-sm row justify-left"
+        v-for="(selectedModelItem, index) in selectedModelItems"
+        :key="index"
       >
-        <NumberInputComponentVue
-          :caption="selectedModelItem.prop.propSettings.caption"
-          :modelProp="selectedModelItem.prop.propSettings.modelProp"
-          :unit="selectedModelItem.prop.propSettings.unit"
-          :min="selectedModelItem.prop.propSettings.min"
-          :step="selectedModelItem.prop.propSettings.step"
-          :value="selectedModelItem.value"
-          :displayFactor="selectedModelItem.prop.propSettings.displayFactor"
-          :displayRounding="selectedModelItem.prop.propSettings.displayRounding"
-          @propupdate="updatePropFromChild"
+        <div
+          v-if="selectedModelItem.prop.propSettings.typeProp == 'numeric'"
+          class="row q-mt-sm"
         >
-        </NumberInputComponentVue>
+          <NumberInputComponentVue
+            :modelName="selectedModelItem.model"
+            :caption="selectedModelItem.prop.propSettings.caption"
+            :modelProp="selectedModelItem.prop.propSettings.modelProp"
+            :unit="selectedModelItem.prop.propSettings.unit"
+            :min="selectedModelItem.prop.propSettings.min"
+            :step="selectedModelItem.prop.propSettings.step"
+            :value="selectedModelItem.value"
+            :initValue="selectedModelItem.value"
+            :displayFactor="selectedModelItem.prop.propSettings.displayFactor"
+            :displayRounding="
+              selectedModelItem.prop.propSettings.displayRounding
+            "
+            @propupdate="updatePropFromChild"
+            @propdelete="deleteProp"
+          >
+          </NumberInputComponentVue>
+        </div>
+        <div
+          v-if="selectedModelItem.prop.propSettings.typeProp == 'boolean'"
+          class="row q-mt-sm"
+        >
+          <BooleanInputComponentVue
+            :caption="selectedModelItem.prop.propSettings.caption"
+            :modelName="selectedModelItem.model"
+            :modelProp="selectedModelItem.prop.propSettings.modelProp"
+            :value="selectedModelItem.value"
+            :initValue="selectedModelItem.value"
+            @propupdate="updatePropFromChild"
+            @propdelete="deleteProp"
+          >
+          </BooleanInputComponentVue>
+        </div>
+        <div
+          v-if="selectedModelItem.prop.propSettings.typeProp == 'list'"
+          class="row q-mt-sm"
+        >
+          <ListInputComponentVue
+            :caption="selectedModelItem.prop.propSettings.caption"
+            :modelName="selectedModelItem.model"
+            :modelProp="selectedModelItem.prop.propSettings.modelProp"
+            :options="selectedModelItem.prop.propSettings.optionalModels"
+            :value="selectedModelItem.value"
+            :initValue="selectedModelItem.value"
+            @propupdate="updatePropFromChild"
+            @propdelete="deleteProp"
+          >
+          </ListInputComponentVue>
+        </div>
+        <div
+          v-if="selectedModelItem.prop.propSettings.typeProp == 'multilist'"
+          class="row q-mt-sm"
+        >
+          <MultipleListInputComponentVue
+            :caption="selectedModelItem.prop.propSettings.caption"
+            :modelName="selectedModelItem.model"
+            :modelProp="selectedModelItem.prop.propSettings.modelProp"
+            :options="selectedModelItem.prop.propSettings.optionalModels"
+            :value="selectedModelItem.value"
+            :initValue="selectedModelItem.value"
+            @propupdate="updatePropFromChild"
+            @propdelete="deleteProp"
+          >
+          </MultipleListInputComponentVue>
+        </div>
       </div>
     </div>
 
-    <!-- <div class="q-ma-sm q-gutter-xs row">
-        <BooleanInputComponentVue
-          v-if="prop.typeProp == 'boolean'"
-          :caption="prop.caption"
-          :modelProp="prop.modelProp"
-          :value="propValues[prop.modelProp]"
-          @propupdate="updatePropFromChild"
-        >
-        </BooleanInputComponentVue>
-      </div>
+    <!--
 
       <div class="q-ma-sm row justify-left">
         <ListInputComponentVue
@@ -96,10 +144,10 @@ export default {
     };
   },
   components: {
-    // MultipleListInputComponentVue,
-    // ListInputComponentVue,
+    MultipleListInputComponentVue,
+    ListInputComponentVue,
     NumberInputComponentVue,
-    // BooleanInputComponentVue,
+    BooleanInputComponentVue,
   },
   props: {
     selectedModelItems: Array,
@@ -116,6 +164,10 @@ export default {
     };
   },
   methods: {
+    deleteProp(model, prop) {
+      // propagate the message
+      this.$emit("propdelete", model, prop);
+    },
     cancel() {},
     updatePropFromChild(propName, propValue) {
       //this.propValues[propName] = propValue;

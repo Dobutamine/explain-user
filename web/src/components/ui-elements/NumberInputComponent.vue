@@ -1,31 +1,35 @@
 <template>
-  <div>
-    <div class="row">
-      <q-input
-        v-model="newValue"
-        :label="caption"
-        filled
-        square
-        hide-hint
-        type="number"
-        :min="min"
-        :step="step"
-        dense
-        dark
-        stack-label
-        :readonly="locked"
-        style="max-width: 70px; font-size: 12px"
-        @update:model-value="updateParent"
-      />
-    </div>
-    <div :class="unitClass" :style="{ 'font-size': fontSize, width: '70px' }">
-      <div class="col q-mr-xs text-right">
-        {{ (initValue * displayFactor).toFixed(displayRounding) }}
-      </div>
-    </div>
-    <div :class="unitClass" :style="{ 'font-size': fontSize, width: '70px' }">
-      <div class="col q-mr-xs text-right">
-        {{ unit }}
+  <div class="row" :style="{ width: '100%' }">
+    <q-input
+      class="col-9"
+      v-model="newValue"
+      :label="title"
+      square
+      hide-hint
+      type="number"
+      :min="min"
+      :step="step"
+      dense
+      dark
+      stack-label
+      @update:model-value="updateParent"
+    />
+    <q-btn
+      class="q-ma-sm col"
+      color="grey-9"
+      outline
+      size="xs"
+      dense
+      icon="fa-solid fa-delete-left"
+      @click="deleteMe"
+    ></q-btn>
+
+    <div
+      class="bg-indigo-10 row"
+      :style="{ 'font-size': '10px', width: '100%' }"
+    >
+      <div class="col q-mr-xs text-center">
+        {{ (initValue * displayFactor).toFixed(displayRounding) }} {{ unit }}
       </div>
     </div>
   </div>
@@ -34,6 +38,7 @@
 <script>
 export default {
   props: {
+    modelName: String,
     caption: String,
     modelProp: String,
     value: Number,
@@ -52,12 +57,15 @@ export default {
   },
   data() {
     return {
+      title: "",
       newValue: 0.0,
-      fontSize: "8px",
-      unitClass: "row bg-indigo-10",
+      unitClass: "bg-indigo-10 col-9",
     };
   },
   methods: {
+    deleteMe() {
+      this.$emit("propdelete", this.modelName, this.modelProp);
+    },
     updateParent() {
       this.$emit(
         "propupdate",
@@ -70,6 +78,7 @@ export default {
     this.newValue = (this.value * this.displayFactor).toFixed(
       this.displayRounding
     );
+    this.title = this.modelName + "." + this.caption;
   },
 };
 </script>

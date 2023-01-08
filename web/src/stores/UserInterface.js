@@ -56,7 +56,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             displayRounding: 2,
           },
           {
-            caption: "Enabled",
+            caption: "general state",
             modelProp: "IsEnabled",
             typeProp: "boolean",
           },
@@ -159,13 +159,13 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             typeProp: "boolean",
           },
           {
-            caption: "from",
+            caption: "CompFrom",
             modelProp: "CompFrom",
             typeProp: "list",
             optionalModels: ["BloodCompliance", "BloodTimeVaryingElastance"],
           },
           {
-            caption: "to",
+            caption: "CompTo",
             modelProp: "CompTo",
             typeProp: "list",
             optionalModels: ["BloodCompliance", "BloodTimeVaryingElastance"],
