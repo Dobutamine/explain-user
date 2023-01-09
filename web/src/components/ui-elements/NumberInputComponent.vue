@@ -66,6 +66,7 @@ export default {
     updateParent() {
       this.$emit(
         "propupdate",
+        this.modelName,
         this.modelProp,
         parseFloat(this.newValue) / this.displayFactor
       );

@@ -67,7 +67,7 @@ export default {
       this.$emit("propdelete", this.modelName, this.modelProp);
     },
     updateParent() {
-      this.$emit("propupdate", this.modelProp, this.newValue);
+      this.$emit("propupdate", this.modelName, this.modelProp, this.newValue);
     },
   },
   mounted() {

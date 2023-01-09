@@ -79,7 +79,9 @@
 
     <div v-if="selectedModelItems.length > 0">
       <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
-        <q-btn color="red-10" size="sm" style="width: 70px">UPDATE</q-btn>
+        <q-btn color="red-10" size="sm" style="width: 70px" @click="updateProps"
+          >UPDATE</q-btn
+        >
         <q-btn
           color="secondary"
           size="sm"
@@ -137,6 +139,7 @@ export default {
     return {
       statusMessage: "",
       displayList: [],
+      updateList: {},
     };
   },
   methods: {
@@ -145,56 +148,66 @@ export default {
       this.$emit("propdelete", model, prop);
     },
     cancel() {},
-    updatePropFromChild(propName, propValue) {
-      //this.propValues[propName] = propValue;
+    updatePropFromChild(modelName, propName, propValue) {
+      let key = modelName + "." + propName;
+      this.updateList[key] = propValue;
     },
     addToScript() {
-      // let counter = 0;
-      // // only script the changed values
-      // for (let pv in this.propValues) {
-      //   if (this.propValues[pv] != this.initPropValues[pv]) {
-      //     // build script event
-      //     counter += 1;
-      //     this.script.script.push({
-      //       m: this.selectedModel,
-      //       p: pv,
-      //       o: this.initPropValues[pv],
-      //       v: this.propValues[pv],
-      //       it: 0.0,
-      //       at: 0.0,
-      //       state: "pending",
-      //     });
-      //     // prevent updating again
-      //     this.initPropValues[pv] = this.propValues[pv];
-      //   }
-      // }
-      // if (counter > 0) {
-      //   this.statusMessage = "property change added to script";
-      //   setTimeout(() => (this.statusMessage = ""), 1500);
-      // } else {
-      //   this.statusMessage = "nothing has changed!";
-      //   setTimeout(() => (this.statusMessage = ""), 1500);
-      // }
+      let counter = 0;
+      for (let item in this.updateList) {
+        let processed_item = item.split(".");
+        let model = processed_item[0];
+        let prop = processed_item[1];
+
+        // get the current value
+        let currentValue = explain.modelState.Models[model][prop];
+        if (this.updateList[item] != currentValue) {
+          counter += 1;
+          this.script.script.push({
+            m: model,
+            p: prop,
+            o: currentValue,
+            v: this.updateList[item],
+            it: 0.0,
+            at: 0.0,
+            state: "pending",
+          });
+        }
+      }
+      if (counter > 0) {
+        this.statusMessage = "property change added to script";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      } else {
+        this.statusMessage = "nothing changed!";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      }
     },
     updateProps() {
-      // // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
-      // let updatePropObject = [];
-      // // iterate over all props and build an prop update object
-      // for (let pv in this.propValues) {
-      //   updatePropObject.push({
-      //     m: this.selectedModel,
-      //     p: pv,
-      //     v: this.propValues[pv],
-      //     at: 0.0,
-      //     it: 0.0,
-      //   });
-      //   // update also the initial values
-      //   this.initPropValues[pv] = this.propValues[pv];
-      // }
-      // // set the new model properties on the model
-      // explain.setModelProperties(updatePropObject);
-      // this.statusMessage = "property updated";
-      // setTimeout(() => (this.statusMessage = ""), 1000);
+      // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
+      let updatePropObject = [];
+      // iterate over all props and build an prop update object
+      for (let item in this.updateList) {
+        let processed_item = item.split(".");
+        let model = processed_item[0];
+        let prop = processed_item[1];
+
+        updatePropObject.push({
+          m: model,
+          p: prop,
+          v: this.updateList[item],
+          at: 0.0,
+          it: 0.0,
+        });
+      }
+      // set the new model properties on the model
+      explain.setModelProperties(updatePropObject);
+
+      // display the status message
+      this.statusMessage = "properties updated";
+      setTimeout(() => (this.statusMessage = ""), 1000);
+
+      // reset the updateProps list
+      this.updateList = {};
     },
   },
   beforeUnmount() {
