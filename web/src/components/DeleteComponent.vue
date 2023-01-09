@@ -28,10 +28,14 @@
         >
           <q-menu dark>
             <q-list dense>
-              <div v-for="(modelType, index) in modelTypes" :key="index">
+              <div v-for="(model, index) in modelsTree" :key="index">
                 <q-item clickable dense>
-                  <q-item-section clickable v-close-popup>
-                    {{ modelType }}
+                  <q-item-section
+                    clickable
+                    v-close-popup
+                    @click="modelSelected(model.model)"
+                  >
+                    {{ model.model }}
                   </q-item-section>
                 </q-item>
               </div>
@@ -39,13 +43,39 @@
           </q-menu>
         </q-btn>
       </div>
-      <div class="q-ma-sm q-gutter-sm row items-center">
-        <!-- <ModelPropEditComponentVue
-          :selectedModelItems="selectedModelItems"
-          style="width: 100%"
-          @propdelete="deleteProp"
-          @removeallprops="removeAllProps"
-        ></ModelPropEditComponentVue> -->
+      <div class="row justify-center">
+        <q-input
+          v-if="selectedModel !== ''"
+          class="row q-ma-sm"
+          dense
+          :value="selectedModel"
+          v-model="selectedModel"
+          readonly
+          label="selected model"
+          :style="{ 'font-size': '12px', width: '90%' }"
+        />
+      </div>
+      <div v-if="selectedModel !== ''">
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm"
+        >
+          <q-btn
+            color="red-10"
+            size="sm"
+            style="width: 70px"
+            @click="deleteModel"
+            >DELETE</q-btn
+          >
+          <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
+            >CANCEL</q-btn
+          >
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-xs"
+          style="font-size: 10px"
+        >
+          {{ statusMessage }}
+        </div>
       </div>
     </div>
   </q-card>
@@ -53,11 +83,11 @@
 
 <script>
 import { explain } from "../boot/explain";
-import ModelPropEditComponentVue from "./ModelPropEditComponent.vue";
+import BuildPropEditComponent from "./BuildPropEditComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 export default {
   components: {
-    //ModelPropEditComponentVue,
+    //BuildPropEditComponent,
   },
   setup() {
     const uiConfig = useUserInterfaceStore();
@@ -68,56 +98,23 @@ export default {
   data() {
     return {
       notyet: true,
-      title: "DELETE MODEL COMPONENT",
+      title: "DELETE MODEL ELEMENT",
       collapsed: true,
       modelsTree: {},
-      selectedModelType: [],
       modelTypes: [],
+      selectedModel: "",
+      models: [],
+      statusMessage: "",
     };
   },
   methods: {
-    removeAllProps() {
-      // this.selectedModelItems = [];
+    deleteModel() {},
+    cancel() {
+      this.selectedModel = "";
     },
-    deleteProp(model, prop) {
-      // // make sure the object does exits
-      // let index = -1;
-      // for (let gi in this.selectedModelItems) {
-      //   if (
-      //     this.selectedModelItems[gi].model == model &&
-      //     this.selectedModelItems[gi].prop.propName == prop
-      //   ) {
-      //     index = gi;
-      //   }
-      // }
-      // // if the grouperItem is found then remove it from the list
-      // if (index > -1) {
-      //   this.selectedModelItems.splice(index, 1);
-      // }
+    modelSelected(model) {
+      this.selectedModel = model;
     },
-    addModelProp(model, modelType, prop) {
-      // // make sure the object doesn't exist
-      // let index = -1;
-      // for (let gi in this.selectedModelItems) {
-      //   if (
-      //     this.selectedModelItems[gi].model == model &&
-      //     this.selectedModelItems[gi].prop == prop
-      //   ) {
-      //     index = gi;
-      //   }
-      // }
-      // // if the grouperItem is not found add it the list
-      // if (index < 0) {
-      //   // find the current value
-      //   this.selectedModelItems.push({
-      //     model: model,
-      //     modelType: modelType,
-      //     prop: prop,
-      //     value: explain.modelState.Models[model][prop.propSettings.modelProp],
-      //   });
-      // }
-    },
-
     buildModelItemTree() {
       // build the grouperItem tree from the ui store
       this.modelsTree = {};

@@ -3,7 +3,7 @@
     <div class="row q-pa-sm" :style="{ width: '100%' }">
       <div class="row" :style="{ 'font-size': '12px', width: '100%' }">
         <div class="col q-mr-xs text-left text-bold">
-          {{ title }}
+          {{ modelName }} {{ caption }}
         </div>
       </div>
       <q-btn-toggle
@@ -46,7 +46,6 @@ export default {
   },
   watch: {
     value(nv, ov) {
-      console.log(nv);
       if (typeof nv === "boolean") {
         this.newValue = nv;
       } else {
@@ -72,7 +71,6 @@ export default {
   },
   mounted() {
     this.newValue = this.value;
-    this.title = this.modelName + " " + this.caption;
   },
 };
 </script>

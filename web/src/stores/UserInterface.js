@@ -17,7 +17,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           },
           {
             modelProp: "UVol",
-            caption: "UVol",
+            caption: "unstressed volume",
             typeProp: "numeric",
             unit: "mL",
             min: 0.0,

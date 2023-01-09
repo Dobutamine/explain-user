@@ -30,7 +30,11 @@
             <q-list dense>
               <div v-for="(modelType, index) in modelTypes" :key="index">
                 <q-item clickable dense>
-                  <q-item-section clickable v-close-popup>
+                  <q-item-section
+                    clickable
+                    v-close-popup
+                    @click="selectModelType(modelType)"
+                  >
                     {{ modelType }}
                   </q-item-section>
                 </q-item>
@@ -40,12 +44,11 @@
         </q-btn>
       </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
-        <!-- <ModelPropEditComponentVue
+        <BuildPropEditComponent
           :selectedModelItems="selectedModelItems"
-          style="width: 100%"
-          @propdelete="deleteProp"
-          @removeallprops="removeAllProps"
-        ></ModelPropEditComponentVue> -->
+          @cancelbuild="cancelBuild"
+        >
+        </BuildPropEditComponent>
       </div>
     </div>
   </q-card>
@@ -53,11 +56,11 @@
 
 <script>
 import { explain } from "../boot/explain";
-import ModelPropEditComponentVue from "./ModelPropEditComponent.vue";
+import BuildPropEditComponent from "./BuildPropEditComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 export default {
   components: {
-    //ModelPropEditComponentVue,
+    BuildPropEditComponent,
   },
   setup() {
     const uiConfig = useUserInterfaceStore();
@@ -68,56 +71,27 @@ export default {
   data() {
     return {
       notyet: true,
-      title: "MODEL TYPES",
+      title: "BUILD NEW MODEL ELEMENT",
       collapsed: true,
       modelsTree: {},
       selectedModelType: [],
+      selectedModelItems: [],
       modelTypes: [],
     };
   },
   methods: {
+    cancelBuild() {
+      this.selectedModelItems = [];
+    },
+    selectModelType(modeltype) {
+      // search the properties needed for this modeltype in the uiconfig
+      this.selectedModelItems = [];
+      this.selectedModelItems = this.uiConfig.models[modeltype].properties;
+      console.log(this.selectedModelItems);
+    },
     removeAllProps() {
       // this.selectedModelItems = [];
     },
-    deleteProp(model, prop) {
-      // // make sure the object does exits
-      // let index = -1;
-      // for (let gi in this.selectedModelItems) {
-      //   if (
-      //     this.selectedModelItems[gi].model == model &&
-      //     this.selectedModelItems[gi].prop.propName == prop
-      //   ) {
-      //     index = gi;
-      //   }
-      // }
-      // // if the grouperItem is found then remove it from the list
-      // if (index > -1) {
-      //   this.selectedModelItems.splice(index, 1);
-      // }
-    },
-    addModelProp(model, modelType, prop) {
-      // // make sure the object doesn't exist
-      // let index = -1;
-      // for (let gi in this.selectedModelItems) {
-      //   if (
-      //     this.selectedModelItems[gi].model == model &&
-      //     this.selectedModelItems[gi].prop == prop
-      //   ) {
-      //     index = gi;
-      //   }
-      // }
-      // // if the grouperItem is not found add it the list
-      // if (index < 0) {
-      //   // find the current value
-      //   this.selectedModelItems.push({
-      //     model: model,
-      //     modelType: modelType,
-      //     prop: prop,
-      //     value: explain.modelState.Models[model][prop.propSettings.modelProp],
-      //   });
-      // }
-    },
-
     buildModelItemTree() {
       // build the grouperItem tree from the ui store
       this.modelsTree = {};

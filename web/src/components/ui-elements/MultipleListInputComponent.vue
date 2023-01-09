@@ -3,7 +3,7 @@
     <div class="row q-pa-sm" :style="{ width: '100%' }">
       <div class="row" :style="{ 'font-size': '12px', width: '100%' }">
         <div class="col q-mr-xs text-left text-bold">
-          {{ title }}
+          {{ modelName }} {{ caption }}
         </div>
       </div>
       <q-select
@@ -44,6 +44,9 @@ export default {
     locked: Boolean,
   },
   watch: {
+    options(no, oo) {
+      this.fillSelectors();
+    },
     value(nv, ov) {
       this.currentSelection = nv;
     },
@@ -69,18 +72,25 @@ export default {
         this.currentSelection
       );
     },
-  },
-  mounted() {
-    this.title = this.modelName + "." + this.caption;
-    // we now have to find all the optionals
-    for (let model in explain.modelState.Models) {
-      if (this.options.includes(explain.modelState.Models[model].ModelType)) {
-        this.listOptions.push(model);
+    fillSelectors() {
+      // we now have to find all the optionals
+      for (let model in explain.modelState.Models) {
+        if (this.options.includes(explain.modelState.Models[model].ModelType)) {
+          this.listOptions.push(model);
+        }
       }
-    }
-    // now find the current value
-    this.currentSelection =
-      explain.modelState.Models[this.modelName][this.modelProp];
+      // now find the current value
+      try {
+        this.currentSelection =
+          explain.modelState.Models[this.modelName][this.modelProp];
+      } catch {
+        this.currentSelection = "";
+      }
+    },
+  },
+
+  mounted() {
+    this.fillSelectors();
   },
 };
 </script>

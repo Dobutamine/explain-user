@@ -3,7 +3,7 @@
     <div class="row q-pa-sm" :style="{ width: '100%' }">
       <div class="row" :style="{ 'font-size': '12px', width: '100%' }">
         <div class="col q-mr-xs text-left text-bold">
-          {{ title }} ({{ unit }})
+          {{ modelName }} {{ caption }} ({{ unit }})
         </div>
       </div>
       <q-input
@@ -76,7 +76,6 @@ export default {
     this.newValue = (this.value * this.displayFactor).toFixed(
       this.displayRounding
     );
-    this.title = this.modelName + "." + this.caption;
   },
 };
 </script>
