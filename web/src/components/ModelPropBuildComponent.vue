@@ -1,85 +1,51 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
-    <div>
-      <div class="q-mt-xs row gutter text-overline justify-left">
-        <q-input
-          class="q-ml-md q-mr-md"
-          label-color="red-6"
-          v-model="selectedModel"
-          hide-bottom-space
-          dense
-          label="new component name"
-          style="width: 100%; font-size: 12px"
-        />
-      </div>
-      <div class="q-ma-sm q-gutter-xs row">
-        <div v-for="(prop, index) in props" :key="index">
-          <BooleanInputComponentVue
-            v-if="prop.typeProp == 'boolean'"
-            :caption="prop.caption"
-            :modelProp="prop.modelProp"
-            :value="propValues[prop.modelProp]"
-            @propupdate="updatePropFromChild"
-          >
-          </BooleanInputComponentVue>
-        </div>
-      </div>
-      <div class="q-ma-sm q-gutter-sm row justify-left">
-        <div v-for="(prop, index) in props" :key="index">
-          <NumberInputComponentVue
-            v-if="prop.typeProp == 'numeric'"
-            :caption="prop.caption"
-            :modelProp="prop.modelProp"
-            :unit="prop.unit"
-            :min="prop.min"
-            :step="prop.step"
-            :value="propValues[prop.modelProp]"
-            :displayFactor="prop.displayFactor"
-            @propupdate="updatePropFromChild"
-          >
-          </NumberInputComponentVue>
-        </div>
-      </div>
-      <div class="q-ma-sm row justify-left">
-        <div v-for="(prop, index) in props" :key="index">
-          <ListInputComponentVue
-            v-if="prop.typeProp == 'list'"
-            :caption="prop.caption"
-            :modelProp="prop.modelProp"
-            :value="propValues[prop.modelProp]"
-            :options="prop.options"
-            @propupdate="updatePropFromChild"
-          >
-          </ListInputComponentVue>
-        </div>
-      </div>
-      <div class="q-ma-sm row justify-left">
-        <div v-for="(prop, index) in props" :key="index">
-          <MultipleListInputComponentVue
-            v-if="prop.typeProp == 'multilist'"
-            :caption="prop.caption"
-            :modelProp="prop.modelProp"
-            :value="propValues[prop.modelProp]"
-            :options="prop.options"
-            @propupdate="updatePropFromChild"
-          >
-          </MultipleListInputComponentVue>
-        </div>
-      </div>
-
-      <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
-        <q-btn color="red-10" size="sm" style="width: 70px" @click="addToModels"
-          >SAVE</q-btn
+    <div
+      class="row text-overline justify-center"
+      @click="collapsed = !collapsed"
+    >
+      {{ title }}
+      <q-icon
+        v-if="collapsed"
+        class="q-ml-sm q-mt-sm"
+        name="fa-solid fa-chevron-down"
+      ></q-icon>
+      <q-icon
+        v-if="!collapsed"
+        class="q-ml-sm q-mt-sm"
+        name="fa-solid fa-chevron-up"
+      ></q-icon>
+    </div>
+    <div v-if="!collapsed">
+      <div class="q-mt-xs q-mb-sm row text-overline justify-center">
+        <q-btn
+          color="grey-3"
+          outline
+          dark
+          label="select model type"
+          style="width: 80%"
+          size="sm"
         >
-        <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
-          >CANCEL</q-btn
-        >
+          <q-menu dark>
+            <q-list dense>
+              <div v-for="(modelType, index) in modelTypes" :key="index">
+                <q-item clickable dense>
+                  <q-item-section clickable v-close-popup>
+                    {{ modelType }}
+                  </q-item-section>
+                </q-item>
+              </div>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </div>
-      <div
-        class="q-gutter-sm row text-overline justify-center q-mb-xs"
-        style="font-size: 10px"
-      >
-        {{ statusMessage }}
+      <div class="q-ma-sm q-gutter-sm row items-center">
+        <ModelPropEditComponentVue
+          :selectedModelItems="selectedModelItems"
+          style="width: 100%"
+          @propdelete="deleteProp"
+          @removeallprops="removeAllProps"
+        ></ModelPropEditComponentVue>
       </div>
     </div>
   </q-card>
@@ -87,91 +53,109 @@
 
 <script>
 import { explain } from "../boot/explain";
-import MultipleListInputComponentVue from "./ui-elements/MultipleListInputComponent.vue";
-import ListInputComponentVue from "./ui-elements/ListInputComponent.vue";
-import BooleanInputComponentVue from "./ui-elements/BooleanInputComponent.vue";
-import NumberInputComponentVue from "./ui-elements/NumberInputComponent.vue";
-
+import ModelPropEditComponentVue from "./ModelPropEditComponent.vue";
+import { useUserInterfaceStore } from "src/stores/userInterface";
 export default {
   components: {
-    MultipleListInputComponentVue,
-    ListInputComponentVue,
-    NumberInputComponentVue,
-    BooleanInputComponentVue,
+    ModelPropEditComponentVue,
   },
-  props: {
-    modelType: String,
-    props: Array,
-  },
-  watch: {
-    props(np, op) {
-      this.propValues = {};
-    },
-    modelType(nmt, omt) {
-      this.selectedModel = "";
-      this.processModelState();
-    },
+  setup() {
+    const uiConfig = useUserInterfaceStore();
+    return {
+      uiConfig,
+    };
   },
   data() {
     return {
-      collapsed: false,
-      models: [],
-      selectedModel: "",
-      statusMessage: "",
-      propValues: {},
+      notyet: true,
+      title: "EDIT MODEL PROPS",
+      collapsed: true,
+      modelsTree: {},
+      selectedModelType: [],
+      modelTypes: [],
     };
   },
   methods: {
-    updatePropFromChild(propName, propValue) {
-      this.propValues[propName] = propValue;
+    removeAllProps() {
+      // this.selectedModelItems = [];
     },
-    cancel() {
-      this.selectedModel = "";
-      this.propValues = {};
+    deleteProp(model, prop) {
+      // // make sure the object does exits
+      // let index = -1;
+      // for (let gi in this.selectedModelItems) {
+      //   if (
+      //     this.selectedModelItems[gi].model == model &&
+      //     this.selectedModelItems[gi].prop.propName == prop
+      //   ) {
+      //     index = gi;
+      //   }
+      // }
+      // // if the grouperItem is found then remove it from the list
+      // if (index > -1) {
+      //   this.selectedModelItems.splice(index, 1);
+      // }
+    },
+    addModelProp(model, modelType, prop) {
+      // // make sure the object doesn't exist
+      // let index = -1;
+      // for (let gi in this.selectedModelItems) {
+      //   if (
+      //     this.selectedModelItems[gi].model == model &&
+      //     this.selectedModelItems[gi].prop == prop
+      //   ) {
+      //     index = gi;
+      //   }
+      // }
+      // // if the grouperItem is not found add it the list
+      // if (index < 0) {
+      //   // find the current value
+      //   this.selectedModelItems.push({
+      //     model: model,
+      //     modelType: modelType,
+      //     prop: prop,
+      //     value: explain.modelState.Models[model][prop.propSettings.modelProp],
+      //   });
+      // }
     },
 
-    addToModels() {
-      // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
-      let updatePropObject = [];
-
-      // iterate over all props and build an prop update object
-      for (let pv in this.propValues) {
-        updatePropObject.push({
-          m: this.selectedModel,
-          p: pv,
-          v: this.propValues[pv],
-          at: 0.0,
-          it: 0.0,
-        });
-      }
-
-      console.log(updatePropObject);
-
-      // set the new model properties on the model
-      //explain.setModelProperties(updatePropObject);
-
-      this.statusMessage = "model created";
-      setTimeout(() => (this.statusMessage = ""), 1000);
-    },
-
-    processModelState() {
-      // get all the blood compliances
-      this.models = [];
+    buildModelItemTree() {
+      // build the grouperItem tree from the ui store
+      this.modelsTree = {};
+      // first find all models
       for (let model in explain.modelState.Models) {
-        if (explain.modelState.Models[model].ModelType === this.modelType) {
-          this.models.push(model);
+        let modelType = explain.modelState.Models[model].ModelType;
+        if (!this.modelTypes.includes(modelType)) {
+          this.modelTypes.push(modelType);
+        }
+        let props = [];
+        if (this.uiConfig.models[modelType]) {
+          for (let prop in this.uiConfig.models[modelType].properties) {
+            let propName =
+              this.uiConfig.models[modelType].properties[prop].modelProp;
+            let propSettings = this.uiConfig.models[modelType].properties[prop];
+            props.push({
+              propName: propName,
+              propSettings: propSettings,
+            });
+          }
+
+          this.modelsTree[model] = {
+            model: model,
+            modelType: modelType,
+            props: props,
+            value: "",
+          };
         }
       }
     },
   },
   beforeUnmount() {
     // remove the model state event listener
-    document.removeEventListener("state", this.processModelState);
+    document.removeEventListener("state", this.buildModelItemTree);
   },
   mounted() {
     // add an event listener for when the model state is ready
-    document.addEventListener("state", this.processModelState);
-
+    document.addEventListener("state", this.buildModelItemTree);
     // get the model state
     explain.getModelState();
   },

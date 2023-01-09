@@ -17,27 +17,35 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
-      <div class="q-mt-es row gutter text-overline justify-center">
-        <q-select
-          class="q-ml-md q-mr-md"
-          label-color="red-6"
-          v-model="selectedModel"
-          :options="models"
-          hide-bottom-space
-          dense
-          label="models"
-          style="width: 90%; font-size: 12px"
-          @update:model-value="modelSelected"
-        />
+      <div class="q-mt-xs q-mb-sm row text-overline justify-center">
+        <q-btn
+          color="grey-3"
+          outline
+          dark
+          label="select model type"
+          style="width: 80%"
+          size="sm"
+        >
+          <q-menu dark>
+            <q-list dense>
+              <div v-for="(modelType, index) in modelTypes" :key="index">
+                <q-item clickable dense>
+                  <q-item-section clickable v-close-popup>
+                    {{ modelType }}
+                  </q-item-section>
+                </q-item>
+              </div>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </div>
-
       <div class="q-ma-sm q-gutter-sm row items-center">
-        <ModelPropDeleterComponentVue
-          v-if="selectedModel"
-          :modelType="selectedModel"
-          :props="props"
+        <!-- <ModelPropEditComponentVue
+          :selectedModelItems="selectedModelItems"
           style="width: 100%"
-        ></ModelPropDeleterComponentVue>
+          @propdelete="deleteProp"
+          @removeallprops="removeAllProps"
+        ></ModelPropEditComponentVue> -->
       </div>
     </div>
   </q-card>
@@ -45,12 +53,11 @@
 
 <script>
 import { explain } from "../boot/explain";
-import ModelPropDeleterComponentVue from "./ModelPropDeleterComponent.vue";
+import ModelPropEditComponentVue from "./ModelPropEditComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
-
 export default {
   components: {
-    ModelPropDeleterComponentVue,
+    //ModelPropEditComponentVue,
   },
   setup() {
     const uiConfig = useUserInterfaceStore();
@@ -60,63 +67,95 @@ export default {
   },
   data() {
     return {
+      notyet: true,
       title: "DELETE MODEL COMPONENT",
       collapsed: true,
-      models: [],
-      props: [],
-      options: [],
-      selectedModel: "",
+      modelsTree: {},
+      selectedModelType: [],
+      modelTypes: [],
     };
   },
   methods: {
-    modelSelected() {
-      try {
-        let found_options = [];
-        this.props = this.uiConfig.models[this.selectedModel].properties;
-        // if the selected model is a container then process the property with the optional models
-        this.props.forEach((p) => {
-          if (
-            p.modelProp == "ContainedModels" ||
-            p.modelProp == "CompFrom" ||
-            p.modelProp == "CompTo"
-          ) {
-            // iterate over the optionalModels property
-            p.optionalModels.forEach((om) => {
-              // iterate over all models to find the names
-              for (let model in explain.modelState.Models) {
-                if (explain.modelState.Models[model].ModelType == om) {
-                  found_options.push(model);
-                }
-              }
-            });
-            p["options"] = found_options;
-          }
-        });
-      } catch (e) {
-        console.log(e);
-        this.props = [];
-      }
+    removeAllProps() {
+      // this.selectedModelItems = [];
     },
-    cancel() {
-      this.selectedModel = "";
+    deleteProp(model, prop) {
+      // // make sure the object does exits
+      // let index = -1;
+      // for (let gi in this.selectedModelItems) {
+      //   if (
+      //     this.selectedModelItems[gi].model == model &&
+      //     this.selectedModelItems[gi].prop.propName == prop
+      //   ) {
+      //     index = gi;
+      //   }
+      // }
+      // // if the grouperItem is found then remove it from the list
+      // if (index > -1) {
+      //   this.selectedModelItems.splice(index, 1);
+      // }
     },
-    processModelState() {
-      let modelTypes = [];
+    addModelProp(model, modelType, prop) {
+      // // make sure the object doesn't exist
+      // let index = -1;
+      // for (let gi in this.selectedModelItems) {
+      //   if (
+      //     this.selectedModelItems[gi].model == model &&
+      //     this.selectedModelItems[gi].prop == prop
+      //   ) {
+      //     index = gi;
+      //   }
+      // }
+      // // if the grouperItem is not found add it the list
+      // if (index < 0) {
+      //   // find the current value
+      //   this.selectedModelItems.push({
+      //     model: model,
+      //     modelType: modelType,
+      //     prop: prop,
+      //     value: explain.modelState.Models[model][prop.propSettings.modelProp],
+      //   });
+      // }
+    },
+
+    buildModelItemTree() {
+      // build the grouperItem tree from the ui store
+      this.modelsTree = {};
+      // first find all models
       for (let model in explain.modelState.Models) {
-        modelTypes.push(explain.modelState.Models[model].ModelType);
+        let modelType = explain.modelState.Models[model].ModelType;
+        let props = [];
+        if (!this.modelTypes.includes(modelType)) {
+          this.modelTypes.push(modelType);
+        }
+        if (this.uiConfig.models[modelType]) {
+          for (let prop in this.uiConfig.models[modelType].properties) {
+            let propName =
+              this.uiConfig.models[modelType].properties[prop].modelProp;
+            let propSettings = this.uiConfig.models[modelType].properties[prop];
+            props.push({
+              propName: propName,
+              propSettings: propSettings,
+            });
+          }
+
+          this.modelsTree[model] = {
+            model: model,
+            modelType: modelType,
+            props: props,
+            value: "",
+          };
+        }
       }
-      // remove duplicates
-      this.models = [...new Set(modelTypes)];
     },
   },
   beforeUnmount() {
     // remove the model state event listener
-    document.removeEventListener("state", this.processModelState);
+    document.removeEventListener("state", this.buildModelItemTree);
   },
   mounted() {
     // add an event listener for when the model state is ready
-    document.addEventListener("state", this.processModelState);
-
+    document.addEventListener("state", this.buildModelItemTree);
     // get the model state
     explain.getModelState();
   },
