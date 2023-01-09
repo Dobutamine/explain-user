@@ -65,6 +65,7 @@
           :selectedModelItems="selectedModelItems"
           style="width: 100%"
           @propdelete="deleteProp"
+          @removeallprops="removeAllProps"
         ></ModelPropEditComponentVue>
       </div>
     </div>
@@ -95,6 +96,9 @@ export default {
     };
   },
   methods: {
+    removeAllProps() {
+      this.selectedModelItems = [];
+    },
     deleteProp(model, prop) {
       // make sure the object does exits
       let index = -1;

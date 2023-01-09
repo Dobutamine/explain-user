@@ -147,7 +147,9 @@ export default {
       // propagate the message
       this.$emit("propdelete", model, prop);
     },
-    cancel() {},
+    cancel() {
+      this.$emit("removeallprops");
+    },
     updatePropFromChild(modelName, propName, propValue) {
       let key = modelName + "." + propName;
       this.updateList[key] = propValue;
@@ -162,6 +164,8 @@ export default {
         // get the current value
         let currentValue = explain.modelState.Models[model][prop];
         if (this.updateList[item] != currentValue) {
+          // delete the prop as the prop is moved to the script, otherwise we get state problems
+          this.deleteProp(model, prop);
           counter += 1;
           this.script.script.push({
             m: model,
@@ -181,6 +185,9 @@ export default {
         this.statusMessage = "nothing changed!";
         setTimeout(() => (this.statusMessage = ""), 1500);
       }
+
+      // reset the updateProps list
+      this.updateList = {};
     },
     updateProps() {
       // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
