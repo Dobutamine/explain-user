@@ -1,32 +1,24 @@
 <template>
-  <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
+  <q-card class="q-ma-sm">
     <div class="q-ma-sm">
-      <div v-for="(grouper, index) in groupers" :key="index">
-        <div
-          v-for="(grouperItem, key) in uiConfig.groupers[grouper]"
-          :key="grouperItem.caption"
-        >
-          <HeartRhythmGrouperComponentVue
-            v-if="grouperItem.typeGrouper == 'heartRhythmGrouper'"
-            :grouper="grouper"
-            :grouperItem="grouperItem"
-            :grouperItemName="key"
-            @grouperItemUpdate="updateGrouperItemFromChild"
-          >
-          </HeartRhythmGrouperComponentVue>
-          <SliderComponentVue
-            v-if="grouperItem.typeGrouper == 'slider'"
-            :grouper="grouper"
-            :grouperItem="grouperItem"
-            :grouperItemName="key"
-            @grouperItemUpdate="updateGrouperItemFromChild"
-          ></SliderComponentVue>
-        </div>
+      <div v-for="(grouperItem, index) in grouperItems" :key="index">
+        <SliderComponentVue
+          v-if="grouperItem.properties.typeGrouper == 'slider'"
+          :grouperItem="grouperItem"
+          @grouperItemUpdate="updateGrouperItemFromChild"
+          @removegrouperitem="removeGrouperItem"
+        ></SliderComponentVue>
       </div>
     </div>
 
     <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
-      <q-btn color="red-10" size="sm" style="width: 70px">UPDATE</q-btn>
+      <q-btn
+        color="red-10"
+        size="sm"
+        style="width: 70px"
+        @click="updateGroupers"
+        >UPDATE</q-btn
+      >
       <q-btn
         color="secondary"
         size="sm"
@@ -34,7 +26,9 @@
         @click="addToScript"
         >SCRIPT</q-btn
       >
-      <q-btn color="indigo-10" size="sm" style="width: 70px">CANCEL</q-btn>
+      <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
+        >CANCEL</q-btn
+      >
     </div>
     <div
       class="q-gutter-sm row text-overline justify-center q-mb-xs"
@@ -47,11 +41,9 @@
 
 <script>
 import { explain } from "../boot/explain";
-import HeartRhythmGrouperComponentVue from "./groupers/HeartRhythmGrouperComponent.vue";
-import SliderComponentVue from "./groupers/SliderComponent.vue";
 import { useScriptStore } from "stores/script";
 import { useUserInterfaceStore } from "src/stores/userInterface";
-
+import SliderComponentVue from "./groupers/SliderComponent.vue";
 export default {
   setup() {
     const script = useScriptStore();
@@ -61,24 +53,23 @@ export default {
       uiConfig,
     };
   },
-  components: { SliderComponentVue, HeartRhythmGrouperComponentVue },
-  props: {
-    groupers: Array,
+  components: {
+    SliderComponentVue,
   },
-  watch: {
-    groupers(ng, og) {
-      this.newGrouperSelected();
-    },
+  props: {
+    grouperItems: Array,
   },
   data() {
     return {
       collapsed: false,
-      grouperItems: {},
       statusMessage: "",
-      changedGroupers: {},
+      grouperItemsList: [],
+      processedGrouperItems: {},
+      updateList: {},
     };
   },
   methods: {
+    updateGroupers() {},
     addToScript() {
       for (let changedGrouper in this.changedGroupers) {
         console.log(this.changedGroupers[changedGrouper]);
@@ -108,17 +99,23 @@ export default {
     },
     updateGrouperItemFromChild(grouper, grouperItem, value) {
       let key = grouper + "." + grouperItem;
-      this.changedGroupers[key] = {
-        value: value,
-      };
+      this.updateList[key] = value;
+    },
+    removeGrouperItem(grouper, grouperItem) {
+      let key = grouper + "." + grouperItem;
+      // delete from updatelist
+      delete this.updateList[key];
+      //propagate
+      this.$emit("removegrouperitem", grouper, grouperItem);
     },
     cancel() {
-      this.grouperItems = [];
+      this.updateList = {};
+      this.$emit("removeallgroupers");
     },
     newGrouperSelected() {
       // check for all the grouperItems if the initial value should be set other then 100%
-      for (let g in this.groupers) {
-        let grouper = this.groupers[g];
+      for (let g in this.grouperItems) {
+        let grouper = this.grouperItems[g];
         for (let grouperItem in this.uiConfig.groupers[grouper]) {
           // check whether the initialValue index is not -1
           let initialValueIndex =
@@ -140,9 +137,7 @@ export default {
       }
     },
   },
-  mounted() {
-    this.newGrouperSelected();
-  },
+  mounted() {},
 };
 </script>
 

@@ -130,15 +130,9 @@ export default {
   props: {
     selectedModelItems: Array,
   },
-  watch: {
-    selectedModelItems(n, o) {
-      this.displayList = this.selectedModelItems;
-    },
-  },
   data() {
     return {
       statusMessage: "",
-      displayList: [],
       updateList: {},
     };
   },

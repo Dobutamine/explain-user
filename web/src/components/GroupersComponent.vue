@@ -58,11 +58,12 @@
           </q-menu>
         </q-btn>
       </div>
-      <div class="q-ma-sm q-gutter-sm row items-center">
+      <div class="q-ma-sm row items-center">
         <GrouperUpdaterComponentVue
-          v-if="!notyet"
-          :groupers="selectedGroupers"
+          :grouperItems="selectedGrouperItems"
           style="width: 100%"
+          @removeallgroupers="removeAllGroupers"
+          @removegrouperitem="removeGrouperItem"
         ></GrouperUpdaterComponentVue>
       </div>
     </div>
@@ -84,14 +85,17 @@ export default {
   },
   data() {
     return {
-      notyet: true,
-      title: "GROUPED PROPERTIES",
+      title: "EDIT GROUPED PROPERTIES",
+      test: true,
       collapsed: true,
       groupersTree: {},
       selectedGrouperItems: [],
     };
   },
   methods: {
+    removeAllGroupers() {
+      this.selectedGrouperItems = [];
+    },
     removeGrouperItem(group, grouperItem) {
       // make sure the object does exits
       let index = -1;
@@ -107,29 +111,26 @@ export default {
       if (index > -1) {
         this.selectedGrouperItems.splice(index, 1);
       }
-
-      console.log(this.selectedGrouperItems);
     },
     addGrouperItem(group, grouperItem) {
-      // make sure the object doesn't exist
+      // make sure the object doesn't exist in the current list
       let index = -1;
       for (let gi in this.selectedGrouperItems) {
         if (
           this.selectedGrouperItems[gi].group == group &&
           this.selectedGrouperItems[gi].grouperItem == grouperItem
         ) {
-          index = -1;
+          index = gi;
         }
       }
       // if the grouperItem is not found add it the list
-      if (index > -1) {
+      if (index < 0) {
         this.selectedGrouperItems.push({
           group: group,
           grouperItem: grouperItem,
+          properties: this.uiConfig.groupers[group][grouperItem],
         });
       }
-
-      console.log(this.selectedGrouperItems);
     },
     buildGrouperItemTree() {
       // build the grouperItem tree from the ui store

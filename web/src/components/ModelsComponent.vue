@@ -60,7 +60,7 @@
           </q-menu>
         </q-btn>
       </div>
-      <div class="q-ma-sm q-gutter-sm row items-center">
+      <div class="q-ma-sm row items-center">
         <ModelPropEditComponentVue
           :selectedModelItems="selectedModelItems"
           style="width: 100%"
