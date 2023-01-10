@@ -71,13 +71,27 @@ export default {
   },
   methods: {
     updateGroupers() {
+      let counter = 0;
       for (let item in this.updateList) {
+        counter += 1;
         let processedItem = item.split(".");
         let group = processedItem[0];
         let prop = processedItem[1];
         let value = this.updateList[item];
         this.uiConfig.groupers[group][prop].value = value;
       }
+      if (counter > 0) {
+        // display the status message
+        this.statusMessage = "groupers updated";
+        setTimeout(() => (this.statusMessage = ""), 1000);
+      } else {
+        // display the status message
+        this.statusMessage = "nothing changed";
+        setTimeout(() => (this.statusMessage = ""), 1000);
+      }
+
+      // reset the updateProps list
+      this.updateList = {};
     },
     addToScript() {
       let counter = 0;
