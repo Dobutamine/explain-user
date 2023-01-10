@@ -44,6 +44,7 @@ import { explain } from "../boot/explain";
 import { useScriptStore } from "stores/script";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 import SliderComponentVue from "./groupers/SliderComponent.vue";
+
 export default {
   setup() {
     const script = useScriptStore();
@@ -69,33 +70,51 @@ export default {
     };
   },
   methods: {
-    updateGroupers() {},
+    updateGroupers() {
+      for (let item in this.updateList) {
+        let processedItem = item.split(".");
+        let group = processedItem[0];
+        let prop = processedItem[1];
+        let value = this.updateList[item];
+        this.uiConfig.groupers[group][prop].value = value;
+      }
+    },
     addToScript() {
-      for (let changedGrouper in this.changedGroupers) {
-        console.log(this.changedGroupers[changedGrouper]);
-        // process the changedGrouper list
-        let model_prop = changedGrouper.split(".");
+      let counter = 0;
+      for (let item in this.updateList) {
+        let processedItem = item.split(".");
+        let group = processedItem[0];
+        let prop = processedItem[1];
+        let newValue = this.updateList[item];
 
-        const model = model_prop[0];
-        const prop = model_prop[1];
-        let newValue = this.changedGroupers[changedGrouper].value;
-        // update the script and ui store
-
-        if (this.uiConfig.groupers[model][prop].value) {
+        // get the current value
+        if (newValue != this.uiConfig.groupers[group][prop].value) {
+          // delete the prop as the prop is moved to the script, otherwise we get state problems
+          this.removeGrouperItem(group, prop);
+          counter += 1;
+          // update the script and ui store
           this.script.script.push({
-            m: model,
+            m: group,
             p: prop,
-            o: this.uiConfig.groupers[model][prop].value,
+            o: this.uiConfig.groupers[group][prop].value,
             v: newValue,
             it: 0.0,
             at: 0.0,
+            t: "grouper",
             state: "pending",
           });
         }
       }
+      if (counter > 0) {
+        this.statusMessage = "property change added to script";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      } else {
+        this.statusMessage = "nothing changed!";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      }
 
       // reset the changeGrouper
-      this.changedGroupers = {};
+      this.updateGroupers = {};
     },
     updateGrouperItemFromChild(grouper, grouperItem, value) {
       let key = grouper + "." + grouperItem;

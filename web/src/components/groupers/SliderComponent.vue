@@ -111,6 +111,7 @@ export default {
     // this.value = this.grouperItem.value;
     this.butCap = "fa-solid fa-square-share-nodes";
     this.butColor = "negative";
+    this.value = this.grouperItem.properties.value;
   },
 };
 </script>

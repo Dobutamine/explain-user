@@ -168,6 +168,7 @@ export default {
             v: this.updateList[item],
             it: 0.0,
             at: 0.0,
+            t: "model",
             state: "pending",
           });
         }
