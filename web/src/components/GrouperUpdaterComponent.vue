@@ -11,30 +11,32 @@
       </div>
     </div>
 
-    <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
-      <q-btn
-        color="red-10"
-        size="sm"
-        style="width: 70px"
-        @click="updateGroupers"
-        >UPDATE</q-btn
+    <div v-if="grouperItems.length > 0">
+      <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
+        <q-btn
+          color="red-10"
+          size="sm"
+          style="width: 70px"
+          @click="updateGroupers"
+          >UPDATE</q-btn
+        >
+        <q-btn
+          color="secondary"
+          size="sm"
+          style="width: 70px"
+          @click="addToScript"
+          >SCRIPT</q-btn
+        >
+        <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
+          >CANCEL</q-btn
+        >
+      </div>
+      <div
+        class="q-gutter-sm row text-overline justify-center q-mb-xs"
+        style="font-size: 10px"
       >
-      <q-btn
-        color="secondary"
-        size="sm"
-        style="width: 70px"
-        @click="addToScript"
-        >SCRIPT</q-btn
-      >
-      <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
-        >CANCEL</q-btn
-      >
-    </div>
-    <div
-      class="q-gutter-sm row text-overline justify-center q-mb-xs"
-      style="font-size: 10px"
-    >
-      {{ statusMessage }}
+        {{ statusMessage }}
+      </div>
     </div>
   </q-card>
 </template>
@@ -126,9 +128,6 @@ export default {
         this.statusMessage = "nothing changed!";
         setTimeout(() => (this.statusMessage = ""), 1500);
       }
-
-      // reset the changeGrouper
-      this.updateGroupers = {};
     },
     updateGrouperItemFromChild(grouper, grouperItem, value) {
       let key = grouper + "." + grouperItem;
