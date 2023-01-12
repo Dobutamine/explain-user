@@ -13,7 +13,6 @@
             narrow-indicator
           >
             <q-tab name="play" label="play" />
-            <q-tab name="scripts" label="script" />
 
             <q-tab name="build" label="build" />
           </q-tabs>
@@ -23,18 +22,15 @@
             <q-tab-panel name="file">
               <FileComponentVue></FileComponentVue>
             </q-tab-panel>
-            <q-tab-panel name="scripts">
-              <PlayComponentVue></PlayComponentVue>
-              <ModelsComponentVue></ModelsComponentVue>
-            </q-tab-panel>
             <q-tab-panel name="play">
               <PlayComponentVue></PlayComponentVue>
               <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
             <q-tab-panel name="build">
               <BuildComponentVue></BuildComponentVue>
-              <ModelsComponentVue></ModelsComponentVue>
               <DeleteComponentVue></DeleteComponentVue>
+              <GroupersEditorComponent></GroupersEditorComponent>
+              <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -64,7 +60,7 @@
               <ScriptComponentVue></ScriptComponentVue>
             </q-tab-panel>
             <q-tab-panel name="circulation">
-              <div class="text-h6">Circulation</div>
+              <ModelDiagramComponentVue></ModelDiagramComponentVue>
             </q-tab-panel>
 
             <q-tab-panel name="respiration">
@@ -127,12 +123,13 @@
 <script>
 import BuildComponentVue from "../components/BuildComponent.vue";
 import DeleteComponentVue from "src/components/DeleteComponent.vue";
+import GroupersEditorComponent from "src/components/GroupersEditorComponent.vue";
 import GroupersComponentVue from "../components/GroupersComponent.vue";
 import FileComponentVue from "../components/FileComponent.vue";
 import ScriptsComponentVue from "../components/ScriptsComponent.vue";
 import ModelsComponentVue from "../components/ModelsComponent.vue";
 import MonitorsComponentVue from "../components/MonitorsComponent.vue";
-
+import ModelDiagramComponentVue from "src/components/ModelDiagramComponent.vue";
 import ChartComponentVue from "../components/charts/ChartComponent.vue";
 import TimeBaseChartVue from "../components/charts/TimeBaseChart.vue";
 import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
@@ -155,8 +152,10 @@ export default {
     ModelsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,
     PlayComponentVue: GroupersComponentVue,
+    GroupersEditorComponent,
     BuildComponentVue,
     DeleteComponentVue,
+    ModelDiagramComponentVue,
   },
   data() {
     return {
