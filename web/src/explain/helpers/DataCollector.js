@@ -1,1 +1,3 @@
-export default class DataCollector {}
+export default class DataCollector {
+  CollectData(modeltime) {}
+}

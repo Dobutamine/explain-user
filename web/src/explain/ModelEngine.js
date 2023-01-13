@@ -145,6 +145,8 @@ const calculate = function (timeToCalculate = 10.0) {
       )} ms, model step: ${step_time.toFixed(4)} ms)`,
       payload: [],
     });
+    console.log(model.Models["AA"].PresMax);
+    console.log(model.Models["AA"].PresMin);
     // get the model data from the engine
     getModelData();
   } else {
@@ -246,7 +248,7 @@ const initModel = function (modelDefinition) {
           args.push({ key, value });
         }
         // instantiate the new component with the args array and a reference to the model object
-        let newComponent = new available_models[index](args, model);
+        let newComponent = new available_models[index](args);
 
         // add the new component to the model object
         model.Models[component.Name] = newComponent;
@@ -264,9 +266,16 @@ const initModel = function (modelDefinition) {
     if (!error) {
       // if no error signal the parent that everything went ok
       modelInitialized = true;
+
+      // now initiliaze all the models
+      Object.values(model.Models).forEach((model_comp) => {
+        model_comp.InitModel(model);
+      });
+
+      // update the status
       postMessage({
         type: "status",
-        message: "Model engine initialized",
+        message: "Model engine initialized!",
         payload: [model],
       });
     }
@@ -281,7 +290,18 @@ const initModel = function (modelDefinition) {
   }
 };
 
-const modelStep = function () {};
+const modelStep = function () {
+  // iterate over all models
+  Object.values(model.Models).forEach((model_component) => {
+    model_component.StepModel();
+  });
+
+  // update the data collector
+  //this.DataCollector.CollectData(this.model.ModelTimeTotal);
+
+  // increase the model time
+  model.ModelTimeTotal += model.ModelingStepsize;
+};
 
 const modelStepRt = function () {
   // so the rt_interval determines how often the model is calculated

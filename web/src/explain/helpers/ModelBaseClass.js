@@ -11,13 +11,29 @@ export default class ModelBaseClass {
   _t = 0.0005;
   _is_initialized = false;
 
-  constructor(args, model_ref) {
-    // store a reference to the model object
-    this._model = model_ref;
-
+  constructor(args) {
     // process the arguments/parameters
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
   }
+
+  // model initializer
+  InitModel(model_ref) {
+    // store a reference to the model object
+    this._modelEngine = model_ref;
+
+    // set the flag to model is initialized
+    this._is_initialized = true;
+  }
+
+  // model step
+  StepModel() {
+    if (this.IsEnabled && this._is_initialized) {
+      this.CalcModel();
+    }
+  }
+
+  // calculate step
+  CalcModel() {}
 }
