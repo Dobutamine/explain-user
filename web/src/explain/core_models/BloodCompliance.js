@@ -81,17 +81,17 @@ export class BloodCompliance extends ModelBaseClass {
     this.Vol += dvol;
 
     // calculate the change in To2 and Tco2
-    // let dTo2 = (modelFrom.To2 - this.To2) * dvol;
-    // this.To2 = (this.To2 * this.Vol + dTo2) / this.Vol;
+    let dTo2 = (modelFrom.To2 - this.To2) * dvol;
+    this.To2 = (this.To2 * this.Vol + dTo2) / this.Vol;
 
-    // let dTco2 = (modelFrom.Tco2 - this.Tco2) * dvol;
-    // this.Tco2 = (this.Tco2 * this.Vol + dTco2) / this.Vol;
+    let dTco2 = (modelFrom.Tco2 - this.Tco2) * dvol;
+    this.Tco2 = (this.Tco2 * this.Vol + dTco2) / this.Vol;
 
     // calculate the change in solutes concentrations
-    // Object.values(this.Solutes).forEach((solute) => {
-    //   dSol = modelFrom.Solutes[] - value) * dvol
-    //   this.Solutes[solute] = ((value * this.Vol) + dSol) / this.Vol
-    // });
+    for (const key in this.Solutes) {
+      let dSol = (modelFrom.Solutes[key] - this.Solutes[key]) * dvol;
+      this.Solutes[key] = (this.Solutes[key] * this.Vol + dSol) / this.Vol;
+    }
   }
   VolumeOut(dvol) {
     // declare a volume deficit
