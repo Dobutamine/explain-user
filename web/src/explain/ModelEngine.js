@@ -145,10 +145,7 @@ const calculate = function (timeToCalculate = 10.0) {
       )} ms, model step: ${step_time.toFixed(4)} ms)`,
       payload: [],
     });
-    console.log(model.Models["AA"].PresMax);
-    console.log(model.Models["AA"].PresMin);
-    console.log(model.Models["AA"].Solutes);
-    console.log(model.Models["Heart"].HeartRate);
+
     // get the model data from the engine
     getModelData();
   } else {

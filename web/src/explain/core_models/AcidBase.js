@@ -41,7 +41,7 @@ export default class AcidBase {
 
     // find the hp concentration
     let r = Brent(
-      this.net_charge_plasma,
+      (hp) => this.net_charge_plasma(hp),
       this._left_hp,
       this._right_hp,
       this._max_iterations,
@@ -61,6 +61,31 @@ export default class AcidBase {
     _result.Hco3 = this._hco3;
 
     return _result;
+  }
+  net_charge_plasma(h) {
+    // calculate the plasma co2 concentration based on the total co2 in the plasma, hydrogen concentration and the constants Kc and Kd
+    this._cco2 =
+      this._tco2 /
+      (1.0 + this._kc / h + (this._kc * this._kd) / Math.pow(h, 2.0));
+    // calculate the plasma hco3(-) concentration (bicarbonate)
+    this._hco3 = (this._kc * this._cco2) / h; // Eq.3
+    // calculate the plasma co3(2-) concentration (carbonate)
+    this._cco3 = (this._kd * this._hco3) / h; // Eq.4
+    // calculate the plasma OH(-) concentration (water dissociation)
+    this._oh = this._kw / h; // Eq.7
+    // calculate the pco2 of the plasma
+    this._pco2 = this._cco2 / this.AlphaCo2P; // Eq.13
+    // calculate the pH
+    this._ph = -Math.log10(h / 1000.0); // Eq. 9
+    // calculate the weak acids (albumin and phosphates)
+    let a =
+      this._albumin * (0.123 * this._ph - 0.631) +
+      this._phosphates * (0.309 * this._ph - 0.469); //Eq.8
+    let ac = h - this._hco3 - a - this._oh - 2.0 * this._cco3; // Eq.10
+    // calculate the net charge of the plasma. If the netcharge is zero than the current hp_estimate is the correct one.
+    let nc = ac + this._sid - this._uma; // Eq. 12
+    // return the net charge
+    return nc;
   }
 }
 

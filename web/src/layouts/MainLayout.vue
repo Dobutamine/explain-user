@@ -35,7 +35,7 @@
           flat
           round
           dense
-          icon="fa-solid fa-calculator"
+          :icon="butCalcIcon"
           size="sm"
           @click="calculate"
           :color="butCalcColor"
@@ -73,9 +73,10 @@ export default {
       rtState: false,
       butCaption: "PLAY",
       butColor: "white",
-      butIcon: "fa-solid fa-play",
-      butCalcCaption: "CALCULATE",
       butCalcColor: "white",
+      butIcon: "fa-solid fa-play",
+      butCalcIcon: "fa-solid fa-calculator",
+      butCalcCaption: "CALCULATE",
       statusMessage: "No model definition file loaded.",
       selectedDuration: 5,
       durations: [1, 3, 5, 10, 20, 30, 60, 120, 240, 360, 600, 1200, 1800],
@@ -103,18 +104,16 @@ export default {
     calculate() {
       this.calcRunning = !this.calcRunning;
       if (this.calcRunning) {
-        this.butCalcCaption = "RUNNING";
         this.butCalcColor = "negative";
         explain.calculate(parseInt(this.selectedDuration));
-      } else {
+      }
+    },
+    calculationReady(e) {
+      if (this.statusMessage.includes("calculation ready")) {
+        this.calcRunning = false;
         this.butCalcCaption = "CALCULATE";
         this.butCalcColor = "white";
       }
-    },
-    calculationReady() {
-      this.calcRunning = false;
-      this.butCalcCaption = "CALCULATE";
-      this.butCalcColor = "white";
     },
   },
   beforeUnmount() {

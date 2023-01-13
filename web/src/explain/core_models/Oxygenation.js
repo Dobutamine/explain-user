@@ -51,7 +51,7 @@ export default class Oxygenation {
 
     // the brent root finding returns a tuple (result: float, iterations: float, error: bool)
     let r = Brent(
-      this.oxygen_content,
+      (po2) => this.oxygen_content(po2),
       this._left_o2,
       this._right_o2,
       this._max_iterations,
@@ -112,7 +112,7 @@ export default class Oxygenation {
     let k = 0.5343;
     let x = Math.log(po2, Math.E);
     let y = x - x0 + h0 * Math.tanh(k * (x - x0)) + y0;
-    return 1.0 / (Math.pow(math.e, -y) + 1.0);
+    return 1.0 / (Math.pow(Math.E, -y) + 1.0);
   }
 }
 

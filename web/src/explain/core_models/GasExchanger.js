@@ -33,10 +33,10 @@ export class GasExchanger extends ModelBaseClass {
     this._modelEngine.Models[this.CompBlood].Pco2 = pco2_blood;
 
     // get the partial pressures from the gas components
-    co2_gas = this._modelEngine.Models[this.CompGas].Co2;
-    cco2_gas = this._modelEngine.Models[this.CompGas].Cco2;
-    po2_gas = this._modelEngine.Models[this.CompGas].Po2;
-    pco2_gas = this._modelEngine.Models[this.CompGas].Pco2;
+    let co2_gas = this._modelEngine.Models[this.CompGas].Co2;
+    let cco2_gas = this._modelEngine.Models[this.CompGas].Cco2;
+    let po2_gas = this._modelEngine.Models[this.CompGas].Po2;
+    let pco2_gas = this._modelEngine.Models[this.CompGas].Pco2;
 
     // calculate the O2 flux from the blood to the gas compartment
     this._flux_o2 = (po2_blood - po2_gas) * this.DifO2 * this._t;

@@ -10,7 +10,7 @@
         >{{ butCaption }}</q-btn
       >
       <q-btn
-        icon="fa-solid fa-calculator"
+        :icon="butCalcIcon"
         :color="butCalcColor"
         size="sm"
         :style="{ width: '70px' }"
@@ -41,6 +41,7 @@ export default {
       butCaption: "PLAY",
       butColor: "secondary",
       butIcon: "fa-solid fa-play",
+      butCalcIcon: "fa-solid fa-play",
       butCalcCaption: "CALCULATE",
       butCalcColor: "primary",
       selectedDuration: 5,
@@ -65,12 +66,15 @@ export default {
     calculate() {
       this.calcRunning = !this.calcRunning;
       if (this.calcRunning) {
+        console.log("yep");
         this.butCalcCaption = "RUNNING";
         this.butCalcColor = "negative";
+        this.butCalcIcon = "fa-solid fa-stop";
         explain.calculate(parseInt(this.selectedDuration));
       } else {
         this.butCalcCaption = "CALCULATE";
         this.butCalcColor = "primary";
+        this.butCalcIcon = "fa-solid fa-play";
       }
     },
     calculationReady() {
