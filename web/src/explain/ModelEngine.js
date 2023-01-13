@@ -229,6 +229,12 @@ const initModel = function (modelDefinition) {
         model[key] = value;
       }
     }
+    // initialize the acid base model
+    model["AcidBase"] = new AcidBase();
+
+    // initialize the oxygenation model
+    model["Oxygenation"] = new Oxygenation();
+
     // add a datacollector instance to the model object
     model["DataCollector"] = new DataCollector(model);
 

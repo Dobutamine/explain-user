@@ -1,3 +1,60 @@
 import ModelBaseClass from "../helpers/ModelBaseClass";
+import { SetAirComposition } from "../helpers/AirComposition";
 
-export class Gas extends ModelBaseClass {}
+export class Gas extends ModelBaseClass {
+  // local parameters
+  GasConstant = 62.36367;
+
+  InitModel(model_ref) {
+    // initialize the baseclass
+    super.InitModel(model_ref);
+
+    // set the temperatures
+    this.SetTemperatures();
+
+    // // set the humidities
+    this.SetHumidity();
+
+    // // initialize the gas compliances holding the inspired air
+    this.SetInspiredAir();
+  }
+
+  SetTemperatures() {
+    // set the temperatures
+    Object.entries(this.TempSettings).forEach(([model, temp]) => {
+      this._modelEngine.Models[model].Temp = temp;
+      this._modelEngine.Models[model].TargetTemp = temp;
+    });
+  }
+
+  SetHumidity() {
+    // set the humidities
+    Object.entries(this.HumiditySettings).forEach(([model, hum]) => {
+      this._modelEngine.Models[model].Humidity = hum;
+    });
+  }
+
+  SetInspiredAir() {
+    Object.values(this._modelEngine.Models).forEach((model) => {
+      if (model.ModelType == "GasCompliance") {
+        // set the atmospheric pressure
+        model.Pres0 = this.PresAtm;
+
+        // first calculate the pressures
+        model.StepModel();
+
+        // set the inspired air composition to all gas compliances
+
+        SetAirComposition(
+          model,
+          model.Humidity,
+          model.Temp,
+          this.DryAir["Fo2"],
+          this.DryAir["Fco2"],
+          this.DryAir["Fn2"],
+          this.DryAir["Fother"]
+        );
+      }
+    });
+  }
+}
