@@ -37,6 +37,7 @@ export class MechanicalVentilator extends ModelBaseClass {
   _internal_volume_counter = 0;
   _etco2_sensor = {};
   _insp_valve_flow_reduction = 1.0;
+
   InitModel(model_ref) {
     // initialize the baseclass
     super.InitModel(model_ref);
