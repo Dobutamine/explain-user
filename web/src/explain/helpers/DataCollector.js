@@ -14,7 +14,7 @@ export default class DataCollector {
     // define the watch list
     this.watch_list = [];
     // define the data sample interval
-    this.sample_interval = 0.015;
+    this.sample_interval = 0.005;
     this._interval_counter = 0;
     // get the modeling stepsize from the model
     this._t = this._modelEngine.ModelingStepsize;

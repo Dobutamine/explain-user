@@ -67,6 +67,16 @@ onmessage = function (e) {
         calculate(e.data.payload[0]);
         break;
       }
+      if (e.data.message == "watch") {
+        let prop = {
+          label: e.data.payload[0] + "." + e.data.payload[1],
+          model: model.Models[e.data.payload[0]],
+          prop: e.data.payload[1],
+        };
+        model.DataCollector.add_to_watchlist(prop);
+        console.log(prop);
+        break;
+      }
       break;
     case "get":
       if (e.data.message == "state") {

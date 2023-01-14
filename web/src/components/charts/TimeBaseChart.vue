@@ -403,6 +403,7 @@
 let chartsXY = {};
 import { explain } from "src/boot/explain";
 import * as Stat from "simple-statistics";
+import { useUserInterfaceStore } from "src/stores/userInterface";
 import {
   lightningChart,
   emptyFill,
@@ -415,7 +416,12 @@ import {
   Themes,
 } from "@arction/lcjs";
 export default {
-  setup() {},
+  setup() {
+    const uiConfig = useUserInterfaceStore();
+    return {
+      uiConfig,
+    };
+  },
   props: {
     model: String,
     collapsed: Boolean,
