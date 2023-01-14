@@ -206,6 +206,17 @@ const getModelState = function () {
   });
 };
 
+const getModelDataRt = function () {
+  // refresh the model data on the model instance
+  modelData = model.DataCollector.get_model_data();
+
+  // send data to the ui
+  postMessage({
+    type: "rt",
+    message: "",
+    payload: [modelData],
+  });
+};
 const getModelData = function () {
   // refresh the model data on the model instance
   modelData = model.DataCollector.get_model_data();
@@ -328,5 +339,5 @@ const modelStepRt = function () {
     modelStep();
   }
   // get model data
-  getModelData();
+  getModelDataRt();
 };

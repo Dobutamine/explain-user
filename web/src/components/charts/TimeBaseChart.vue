@@ -961,7 +961,7 @@ export default {
       this.data_source = 0;
     },
     dataUpdate() {
-      if (this.data_source === 0) {
+      if (this.data_source == 0) {
         this.chartData1 = [];
         this.chartData2 = [];
         this.chartData3 = [];
@@ -989,7 +989,6 @@ export default {
           postFix1 = "conc";
         }
       }
-      console.log(prop1);
       let prop2 = "";
       let postFix2 = "";
       this.chart2_enabled = false;
@@ -1061,6 +1060,7 @@ export default {
           }
         }
       });
+
       if (this.chart1_enabled) {
         this.lineSeries1.add(this.chartData1);
       }
@@ -1194,6 +1194,9 @@ export default {
     document.addEventListener("data", this.dataUpdate);
     document.addEventListener("state", this.stateUpdate);
     //this.toggleVisibility();
+    this.chartData1 = [];
+    this.chartData2 = [];
+    this.chartData3 = [];
   },
 };
 </script>

@@ -170,7 +170,7 @@ export default class Model {
             document.dispatchEvent(this.state_event);
             break;
           case "rt":
-            this.modelData = e.data.payload;
+            this.modelData = e.data.payload[0];
             document.dispatchEvent(this.rt_event);
             break;
         }
