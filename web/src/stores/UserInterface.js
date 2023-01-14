@@ -555,7 +555,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       birth: {},
     },
     charts: {
-      watchedProps: [],
+      watchedProps: {},
       gasFlowProbe: {
         enabled: true,
         collapsed: true,

@@ -669,6 +669,7 @@ export default {
         chartsXY[this.chartId].chartYAxis.setInterval(this.y_min, this.y_max);
       }
     },
+
     selectSecProp1() {
       if (this.selected_component_name1 && this.selected_prim_prop_name1) {
         explain.watchModelProperty(
@@ -710,6 +711,8 @@ export default {
         this.sec_prop_visible1 = false;
         // add to the watcher
         if (this.selected_component_name1 && this.selected_prim_prop_name1) {
+          // update the watched property list on the userinterface
+          this.updateWatchedProps();
           explain.watchModelProperty(
             this.selected_component_name1,
             this.selected_prim_prop_name1,
@@ -718,8 +721,10 @@ export default {
         }
       }
     },
+
     selectSecProp2() {
       if (this.selected_component_name2 && this.selected_prim_prop_name2) {
+        this.updateWatchedProps();
         explain.watchModelProperty(
           this.selected_component_name2,
           this.selected_prim_prop_name2,
@@ -759,6 +764,7 @@ export default {
         this.sec_prop_visible2 = false;
         // add to the watcher
         if (this.selected_component_name2 && this.selected_prim_prop_name2) {
+          this.updateWatchedProps();
           explain.watchModelProperty(
             this.selected_component_name2,
             this.selected_prim_prop_name2,
@@ -767,8 +773,10 @@ export default {
         }
       }
     },
+
     selectSecProp3() {
       if (this.selected_component_name3 && this.selected_prim_prop_name3) {
+        this.updateWatchedProps();
         explain.watchModelProperty(
           this.selected_component_name3,
           this.selected_prim_prop_name3,
@@ -808,6 +816,7 @@ export default {
         this.sec_prop_visible3 = false;
         // add to the watcher
         if (this.selected_component_name3 && this.selected_prim_prop_name3) {
+          this.updateWatchedProps();
           explain.watchModelProperty(
             this.selected_component_name3,
             this.selected_prim_prop_name3,
@@ -816,6 +825,7 @@ export default {
         }
       }
     },
+
     selectComponent1(selection) {
       if (selection === "") {
         if (this.selected_component_name1 && this.selected_prim_prop_name1) {
@@ -902,6 +912,7 @@ export default {
           );
         }
       }
+      this.selected_component_name3 = selection;
       // component1 has been selected, clear the primary and secundary property lists
       this.prim_prop_names3 = [];
       this.sec_prop_names3 = [];
@@ -928,6 +939,50 @@ export default {
           this.prim_prop_visible3 = true;
         }
       }
+    },
+
+    updateWatchedProps() {
+      let id1 = { label: "", model: "", prim_prop: "", sec_prop: "" };
+      if (this.selected_component_name1 && this.selected_prim_prop_name1) {
+        id1.label =
+          this.selected_component_name1 + "." + this.selected_prim_prop_name1;
+        if (this.selected_sec_prop_name1 !== "") {
+          id1.label += "." + this.selected_sec_prop_name1;
+        }
+        id1.model = this.selected_component_name1;
+        id1.prim_prop = this.selected_prim_prop_name1;
+        id1.sec_prop = this.selected_sec_prop_name1;
+        // add to watched props
+        this.uiConfig.charts.watchedProps[id1.label] = id1;
+      }
+      let id2 = { label: "", model: "", prim_prop: "", sec_prop: "" };
+      if (this.selected_component_name2 && this.selected_prim_prop_name2) {
+        id2.label =
+          this.selected_component_name2 + "." + this.selected_prim_prop_name2;
+        if (this.selected_sec_prop_name2 !== "") {
+          id2.label += "." + this.selected_sec_prop_name2;
+        }
+        id2.model = this.selected_component_name2;
+        id2.prim_prop = this.selected_prim_prop_name2;
+        id2.sec_prop = this.selected_sec_prop_name2;
+        // add to watched props
+        this.uiConfig.charts.watchedProps[id2.label] = id2;
+      }
+      let id3 = { label: "", model: "", prim_prop: "", sec_prop: "" };
+      if (this.selected_component_name3 && this.selected_prim_prop_name3) {
+        id3.label =
+          this.selected_component_name3 + "." + this.selected_prim_prop_name3;
+        if (this.selected_sec_prop_name3 !== "") {
+          id3.label += "." + this.selected_sec_prop_name3;
+        }
+        id3.model = this.selected_component_name3;
+        id3.prim_prop = this.selected_prim_prop_name3;
+        id3.sec_prop = this.selected_sec_prop_name3;
+        // add to watched props
+        this.uiConfig.charts.watchedProps[id3.label] = id3;
+      }
+
+      console.log(this.uiConfig.charts.watchedProps);
     },
     stateUpdate() {
       // reset the component names as the model state is updated

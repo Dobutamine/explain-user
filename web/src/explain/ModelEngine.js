@@ -74,7 +74,6 @@ onmessage = function (e) {
           prop: e.data.payload[1],
         };
         model.DataCollector.add_to_watchlist(prop);
-        console.log(prop);
         break;
       }
       break;
