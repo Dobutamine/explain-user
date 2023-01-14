@@ -115,6 +115,9 @@ export default {
         this.butCalcColor = "white";
       }
     },
+    dataUpdate(e) {
+      console.log(explain.modelData);
+    },
   },
   beforeUnmount() {
     document.removeEventListener("status", this.statusUpdate);

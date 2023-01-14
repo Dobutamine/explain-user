@@ -161,7 +161,7 @@ export default class Model {
             document.dispatchEvent(this.error_event);
             break;
           case "data":
-            this.modelData = e.data.payload;
+            this.modelData = e.data.payload[0];
             // raise data ready event
             document.dispatchEvent(this.data_event);
             break;

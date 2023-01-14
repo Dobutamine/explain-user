@@ -76,6 +76,7 @@
             </q-tab-panel>
 
             <q-tab-panel name="charts">
+              <TimeBaseChartVue></TimeBaseChartVue>
               <!-- <TimeBaseChartVue></TimeBaseChartVue>
               <NonTimeBasedChartVue></NonTimeBasedChartVue> -->
             </q-tab-panel>
@@ -147,6 +148,7 @@ export default {
     };
   },
   components: {
+    TimeBaseChartVue,
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
     ModelsComponentVue,

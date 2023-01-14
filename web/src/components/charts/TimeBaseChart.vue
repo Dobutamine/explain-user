@@ -679,13 +679,13 @@ export default {
       this.selected_sec_prop_name1 = "";
       // find any secondary property names
       Object.keys(
-        explain.modelState[this.selected_component_name1][selection]
+        explain.modelState.Models[this.selected_component_name1][selection]
       ).forEach((key) => {
         if (
-          typeof explain.modelState[this.selected_component_name1][
+          typeof explain.modelState.Models[this.selected_component_name1][
             selection
           ] !== "string" &&
-          typeof explain.modelState[this.selected_component_name1][
+          typeof explain.modelState.Models[this.selected_component_name1][
             selection
           ] !== "boolean"
         ) {
@@ -728,13 +728,13 @@ export default {
       this.selected_sec_prop_name2 = "";
       // find any secondary property names
       Object.keys(
-        explain.modelState[this.selected_component_name2][selection]
+        explain.modelState.Models[this.selected_component_name2][selection]
       ).forEach((key) => {
         if (
-          typeof explain.modelState[this.selected_component_name2][
+          typeof explain.modelState.Models[this.selected_component_name2][
             selection
           ] !== "string" &&
-          typeof explain.modelState[this.selected_component_name2][
+          typeof explain.modelState.Models[this.selected_component_name2][
             selection
           ] !== "boolean"
         ) {
@@ -777,13 +777,13 @@ export default {
       this.selected_sec_prop_name3 = "";
       // find any secondary property names
       Object.keys(
-        explain.modelState[this.selected_component_name3][selection]
+        explain.modelState.Models[this.selected_component_name3][selection]
       ).forEach((key) => {
         if (
-          typeof explain.modelState[this.selected_component_name3][
+          typeof explain.modelState.Models[this.selected_component_name3][
             selection
           ] !== "string" &&
-          typeof explain.modelState[this.selected_component_name3][
+          typeof explain.modelState.Models[this.selected_component_name3][
             selection
           ] !== "boolean"
         ) {
@@ -832,10 +832,10 @@ export default {
       this.prim_prop_visible1 = false;
       // find the primary properties of the selected component
       if (selection) {
-        Object.keys(explain.modelState[selection]).forEach((key) => {
+        Object.keys(explain.modelState.Models[selection]).forEach((key) => {
           if (
-            typeof explain.modelState[selection][key] !== "string" &&
-            typeof explain.modelState[selection][key] !== "boolean"
+            typeof explain.modelState.Models[selection][key] !== "string" &&
+            typeof explain.modelState.Models[selection][key] !== "boolean"
           ) {
             this.prim_prop_names1.push(key);
           }
@@ -871,10 +871,10 @@ export default {
       this.prim_prop_visible2 = false;
       if (selection) {
         // find the primary properties of the selected component
-        Object.keys(explain.modelState[selection]).forEach((key) => {
+        Object.keys(explain.modelState.Models[selection]).forEach((key) => {
           if (
-            typeof explain.modelState[selection][key] !== "string" &&
-            typeof explain.modelState[selection][key] !== "boolean"
+            typeof explain.modelState.Models[selection][key] !== "string" &&
+            typeof explain.modelState.Models[selection][key] !== "boolean"
           ) {
             this.prim_prop_names2.push(key);
           }
@@ -908,10 +908,10 @@ export default {
       this.prim_prop_visible3 = false;
       if (selection) {
         // find the primary properties of the selected component
-        Object.keys(explain.modelState[selection]).forEach((key) => {
+        Object.keys(explain.modelState.Models[selection]).forEach((key) => {
           if (
-            typeof explain.modelState[selection][key] !== "string" &&
-            typeof explain.modelState[selection][key] !== "boolean"
+            typeof explain.modelState.Models[selection][key] !== "string" &&
+            typeof explain.modelState.Models[selection][key] !== "boolean"
           ) {
             this.prim_prop_names3.push(key);
           }
@@ -927,7 +927,7 @@ export default {
       // reset the component names as the model state is updated
       this.component_names = [""];
       // read all model components
-      Object.keys(explain.modelState).forEach((key) => {
+      Object.keys(explain.modelState.Models).forEach((key) => {
         this.component_names.push(key);
       });
       // sort the model components alphabetically
@@ -983,6 +983,7 @@ export default {
           postFix1 = "conc";
         }
       }
+      console.log(prop1);
       let prop2 = "";
       let postFix2 = "";
       this.chart2_enabled = false;

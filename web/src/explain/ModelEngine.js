@@ -198,6 +198,9 @@ const getModelState = function () {
 
 const getModelData = function () {
   // refresh the model data on the model instance
+  modelData = model.DataCollector.get_model_data();
+
+  // send data to the ui
   postMessage({
     type: "data",
     message: "",
@@ -232,12 +235,6 @@ const initModel = function (modelDefinition) {
     // initialize the oxygenation model
     model["Oxygenation"] = new Oxygenation();
 
-    // add a datacollector instance to the model object
-    model["DataCollector"] = new DataCollector(model);
-
-    // add a task scheduler instance to the model object
-    model["TaskScheduler"] = new TaskScheduler(model);
-
     // initialize all model components
     Object.values(modelDefinition.Models).forEach((component) => {
       // check if the model is available in the available model list
@@ -269,6 +266,12 @@ const initModel = function (modelDefinition) {
     });
 
     if (!error) {
+      // add a datacollector instance to the model object
+      model["DataCollector"] = new DataCollector(model);
+
+      // add a task scheduler instance to the model object
+      model["TaskScheduler"] = new TaskScheduler(model);
+
       // if no error signal the parent that everything went ok
       modelInitialized = true;
 
@@ -302,7 +305,7 @@ const modelStep = function () {
   });
 
   // update the data collector
-  //this.DataCollector.CollectData(this.model.ModelTimeTotal);
+  model["DataCollector"].collect_data(model.ModelTimeTotal);
 
   // increase the model time
   model.ModelTimeTotal += model.ModelingStepsize;
