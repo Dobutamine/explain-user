@@ -76,7 +76,26 @@ onmessage = function (e) {
         model.DataCollector.add_to_watchlist(prop);
         break;
       }
+      if (e.data.message == "watch_props") {
+        e.data.payload.forEach((prop) => {
+          let propsSplit = prop.split(".");
+          let secProp = "";
+          if (propsSplit.length == 3) {
+            secProp = propsSplit[2];
+          }
+          let processedProp = {
+            label: prop,
+            model: model.Models[propsSplit[0]],
+            prop: propsSplit[1],
+            secProp: secProp,
+          };
+          model.DataCollector.add_to_watchlist(processedProp);
+        });
+
+        break;
+      }
       break;
+
     case "get":
       if (e.data.message == "state") {
         getModelState();

@@ -752,7 +752,6 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       let id3 = "";
 
       Object.values(this.charts).forEach((chart) => {
-        console.log(chart);
         if (chart.selectedModel1 && chart.selectedPrimProp1) {
           id1 = chart.selectedModel1 + "." + chart.selectedPrimProp1;
         }
@@ -819,7 +818,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           }
         }
       });
-      console.log(propIds);
+      explain.watchModelProperties(propIds);
     },
   },
 });

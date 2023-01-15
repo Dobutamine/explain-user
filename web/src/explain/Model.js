@@ -68,6 +68,14 @@ export default class Model {
     });
   }
 
+  watchModelProperties(propsArray) {
+    this.sendMessage({
+      type: "command",
+      message: "watch_props",
+      payload: propsArray,
+    });
+  }
+
   watchModelProperty(model, prim_prop, sec_prop) {
     this.sendMessage({
       type: "command",

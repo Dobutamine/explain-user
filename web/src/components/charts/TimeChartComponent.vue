@@ -977,11 +977,14 @@ export default {
       this.sec_prop_visible5 = false;
     },
     rtUpdate() {
+      if (!this.isEnabled) return;
       this.data_source = 1;
       this.dataUpdate();
       this.data_source = 0;
     },
     dataUpdate() {
+      if (!this.isEnabled) return;
+
       if (this.data_source == 0) {
         this.chartData1 = [];
         this.chartData2 = [];
@@ -1223,7 +1226,6 @@ export default {
     // get the visibilty
     this.isEnabled = this.collapsed;
     this.toggleVisibility();
-    console.log(this.id);
   },
 };
 </script>
