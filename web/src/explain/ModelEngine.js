@@ -37,11 +37,16 @@ let model = {
 // declare a model data object
 let modelData = {};
 
+// declare a model data object
+let modelDataSlow = {};
+
 // declare the model initialization flag
 let modelInitialized = false;
 
 // set the realtime updateinterval
 let rtInterval = 0.015;
+let rtSlowInterval = 1.0;
+let rtSlowCounter = 0.0;
 let rtClock = null;
 
 // setup the communication channel with the parent
@@ -90,6 +95,24 @@ onmessage = function (e) {
             secProp: secProp,
           };
           model.DataCollector.add_to_watchlist(processedProp);
+        });
+
+        break;
+      }
+      if (e.data.message == "watch_props_slow") {
+        e.data.payload.forEach((prop) => {
+          let propsSplit = prop.split(".");
+          let secProp = "";
+          if (propsSplit.length == 3) {
+            secProp = propsSplit[2];
+          }
+          let processedProp = {
+            label: prop,
+            model: model.Models[propsSplit[0]],
+            prop: propsSplit[1],
+            secProp: secProp,
+          };
+          model.DataCollector.add_to_watchlist_slow(processedProp);
         });
 
         break;
@@ -176,6 +199,7 @@ const calculate = function (timeToCalculate = 10.0) {
 
     // get the model data from the engine
     getModelData();
+    getModelDataSlow();
   } else {
     postMessage({
       type: "status",
@@ -235,6 +259,19 @@ const getModelDataRt = function () {
     payload: [modelData],
   });
 };
+
+const getModelDataRtSlow = function () {
+  // refresh the model data on the model instance
+  modelDataSlow = model.DataCollector.get_model_data_slow();
+
+  // send data to the ui
+  postMessage({
+    type: "rt",
+    message: "",
+    payload: [modelDataSlow],
+  });
+};
+
 const getModelData = function () {
   // refresh the model data on the model instance
   modelData = model.DataCollector.get_model_data();
@@ -244,6 +281,18 @@ const getModelData = function () {
     type: "data",
     message: "",
     payload: [modelData],
+  });
+};
+
+const getModelDataSlow = function () {
+  // refresh the model data on the model instance
+  modelDataSlow = model.DataCollector.get_model_data_slow();
+
+  // send data to the ui
+  postMessage({
+    type: "data_slow",
+    message: "",
+    payload: [modelDataSlow],
   });
 };
 
@@ -358,4 +407,12 @@ const modelStepRt = function () {
   }
   // get model data
   getModelDataRt();
+
+  // get slow model data
+  if (rtSlowCounter > rtSlowInterval) {
+    rtSlowCounter = 0;
+    getModelDataSlow();
+    console.log("now");
+  }
+  rtSlowCounter += rtInterval;
 };
