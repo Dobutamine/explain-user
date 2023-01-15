@@ -32,7 +32,7 @@
                 @update:model-value="selectComponent1"
               />
               <q-select
-                v-if="prim_prop_visible1"
+                v-if="prim_prop_visible1 && prim_prop_names1.length > 1"
                 label-color="red-6"
                 v-model="selected_prim_prop_name1"
                 :options="prim_prop_names1"
@@ -67,7 +67,7 @@
               />
 
               <q-select
-                v-if="prim_prop_visible2"
+                v-if="prim_prop_visible2 && prim_prop_names2.length > 1"
                 label-color="green-6"
                 v-model="selected_prim_prop_name2"
                 :options="prim_prop_names2"
@@ -103,7 +103,7 @@
               />
 
               <q-select
-                v-if="prim_prop_visible3"
+                v-if="prim_prop_visible3 && prim_prop_names3.length > 1"
                 label-color="blue-6"
                 v-model="selected_prim_prop_name3"
                 :options="prim_prop_names3"
@@ -857,6 +857,10 @@ export default {
           // show the primary properties as we selected a component
           this.prim_prop_visible1 = true;
         }
+        if (this.prim_prop_names1.length == 1) {
+          this.selected_prim_prop_name1 = this.prim_prop_names1[0];
+          this.selectPrimProp1(this.selected_prim_prop_name1);
+        }
       }
     },
     selectComponent2(selection) {
@@ -899,6 +903,10 @@ export default {
           this.prim_prop_names2.sort();
           this.prim_prop_visible2 = true;
         }
+        if (this.prim_prop_names2.length == 1) {
+          this.selected_prim_prop_name2 = this.prim_prop_names2[0];
+          this.selectPrimProp2(this.selected_prim_prop_name2);
+        }
       }
     },
     selectComponent3(selection) {
@@ -939,6 +947,10 @@ export default {
         if (this.prim_prop_names3.length > 0) {
           this.prim_prop_names3.sort();
           this.prim_prop_visible3 = true;
+        }
+        if (this.prim_prop_names3.length == 1) {
+          this.selected_prim_prop_name3 = this.prim_prop_names3[0];
+          this.selectPrimProp3(this.selected_prim_prop_name3);
         }
       }
     },

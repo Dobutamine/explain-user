@@ -82,8 +82,8 @@ export default {
       butCalcIcon: "fa-solid fa-calculator",
       butCalcCaption: "CALCULATE",
       statusMessage: "No model definition file loaded.",
-      selectedDuration: 5,
-      durations: [1, 3, 5, 10, 20, 30, 60, 120, 240, 360, 600, 1200, 1800],
+      selectedDuration: 3,
+      durations: [1, 2, 3, 5, 10, 20, 30, 60, 120, 240, 360, 600, 1200, 1800],
     };
   },
   methods: {

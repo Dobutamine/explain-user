@@ -101,7 +101,6 @@ export default class DataCollector {
               this.watch_list[i].secProp
             ];
         }
-
         // // if the watched prop is volume (expressed per weight) or flow (expressed per minute)
         // if (this.watch_list[i].prop == "Flow") {
         //   value = (value / this._modelEngine.Weight) * 60.0;
