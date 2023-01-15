@@ -7,6 +7,7 @@ export default class Model {
 
   // declare an object holding the model data coming from the engine
   modelData = [];
+  modelDataSlow = [];
 
   // declare an object holding the model components coming from the engine
   modelState = [];
@@ -17,6 +18,7 @@ export default class Model {
   // declare the events
   rt_event = new CustomEvent("rt");
   data_event = new CustomEvent("data");
+  data_slow_event = new CustomEvent("data_slow");
   state_event = new CustomEvent("state");
   status_event = new CustomEvent("status");
   error_event = new CustomEvent("error");
@@ -172,6 +174,11 @@ export default class Model {
             this.modelData = e.data.payload[0];
             // raise data ready event
             document.dispatchEvent(this.data_event);
+            break;
+          case "data_slow":
+            this.modelDataSlow = e.data.payload[0];
+            // raise data ready event
+            document.dispatchEvent(this.data_slow_event);
             break;
           case "state":
             this.modelState = e.data.payload[0];

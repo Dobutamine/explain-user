@@ -412,7 +412,6 @@ const modelStepRt = function () {
   if (rtSlowCounter > rtSlowInterval) {
     rtSlowCounter = 0;
     getModelDataSlow();
-    console.log("now");
   }
   rtSlowCounter += rtInterval;
 };

@@ -8,7 +8,7 @@
     </div>
     <div v-if="parameters.length > 0 && isEnabled">
       <div class="q-ma-sm q-gutter-xs row items-center">
-        <div v-for="(field, index) in parameters" :key="index">
+        <div v-for="(field, index) in mutableParameters" :key="index">
           <q-input
             v-model="field.value"
             :label="field.label"
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { explain } from "../boot/explain";
 export default {
   props: {
     title: String,
@@ -36,10 +37,30 @@ export default {
   data() {
     return {
       isEnabled: true,
+      currentData: {},
+      mutableParameters: [],
     };
+  },
+  methods: {
+    dataUpdate() {
+      this.currentData =
+        explain.modelDataSlow[explain.modelDataSlow.length - 1];
+
+      this.mutableParameters.forEach((param) => {
+        param.value = this.currentData[param.prop].toFixed(param.rounding);
+      });
+    },
+    stateUpdate() {},
+  },
+  beforeUnmount() {
+    document.removeEventListener("data_slow", this.dataUpdate);
+    document.removeEventListener("state", this.stateUpdate);
   },
   mounted() {
     this.isEnabled = !this.collapsed;
+    this.mutableParameters = [...this.parameters];
+    document.addEventListener("data_slow", this.dataUpdate);
+    document.addEventListener("state", this.stateUpdate);
   },
 };
 </script>
