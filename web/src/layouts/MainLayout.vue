@@ -72,6 +72,7 @@ export default {
   },
   data() {
     return {
+      playArmed: false,
       calcRunning: false,
       rtState: false,
       butCaption: "PLAY",
@@ -94,7 +95,8 @@ export default {
       this.rtState = !this.rtState;
       if (this.rtState) {
         this.uiConfig.updateDataCollector();
-        explain.start();
+        this.playArmed = true;
+        this.calculate();
         this.butColor = "negative";
         this.butIcon = "fa-solid fa-stop";
         this.butCaption = "STOP";
@@ -118,6 +120,10 @@ export default {
         this.calcRunning = false;
         this.butCalcCaption = "CALCULATE";
         this.butCalcColor = "white";
+        if (this.playArmed) {
+          this.playArmed = false;
+          explain.start();
+        }
       }
     },
     dataUpdate(e) {

@@ -181,7 +181,7 @@ export default {
   },
   data() {
     return {
-      tab: "scripts",
+      tab: "charts",
       tab_left: "play",
       monitors: [],
       charts: [],

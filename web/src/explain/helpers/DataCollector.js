@@ -95,6 +95,13 @@ export default class DataCollector {
       // iterate over the watchlist
       for (let i = 0; i < this.watch_list.length; i++) {
         let value = this.watch_list[i].model[this.watch_list[i].prop];
+        if (this.watch_list[i].secProp) {
+          value =
+            this.watch_list[i].model[this.watch_list[i].prop][
+              this.watch_list[i].secProp
+            ];
+        }
+
         // // if the watched prop is volume (expressed per weight) or flow (expressed per minute)
         // if (this.watch_list[i].prop == "Flow") {
         //   value = (value / this._modelEngine.Weight) * 60.0;
