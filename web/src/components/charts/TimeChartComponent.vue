@@ -5,7 +5,7 @@
         class="q-mt-es row gutter text-overline justify-center"
         @click="toggleVisibility"
       >
-        TIME BASED CHART
+        {{ caption }}
         <q-icon
           v-if="!isEnabled"
           class="q-ml-sm q-mt-sm"
@@ -54,6 +54,7 @@
                 @update:model-value="selectSecProp1"
               />
               <q-select
+                v-if="this.channels > 1"
                 class="q-ml-md"
                 label-color="green-6"
                 v-model="comp_name2"
@@ -89,6 +90,7 @@
               />
 
               <q-select
+                v-if="this.channels > 2"
                 class="q-ml-md"
                 label-color="blue-6"
                 v-model="comp_name3"
@@ -132,6 +134,7 @@
           <div class="col">
             <div class="q-gutter-sm row justify-center">
               <q-checkbox
+                v-if="analysisEnabled"
                 v-model="show_summary"
                 @update:model-value="analyzeData"
                 dense
@@ -139,6 +142,7 @@
                 style="font-size: 12px"
               />
               <q-checkbox
+                v-if="autoscaleEnabled"
                 v-model="autoscale"
                 dense
                 label="autoscale"
@@ -169,6 +173,7 @@
               />
 
               <q-checkbox
+                v-if="multipliersEnabled"
                 v-model="scaling"
                 dense
                 label="multipliers"
@@ -202,7 +207,13 @@
                 style="width: 75px; font-size: 10px"
               />
 
-              <q-btn color="black" size="sm" @click="exportData">EXPORT</q-btn>
+              <q-btn
+                v-if="exportEnabled"
+                color="black"
+                size="sm"
+                @click="exportData"
+                >EXPORT</q-btn
+              >
             </div>
           </div>
         </div>
@@ -423,10 +434,16 @@ export default {
     };
   },
   props: {
-    model: String,
+    caption: String,
+    models: Array,
+    props: Array,
+    channels: Number,
     collapsed: Boolean,
-    prim_prop: String,
-    sec_prop: String,
+    enabled: Boolean,
+    analysisEnabled: Boolean,
+    autoscaleEnabled: Boolean,
+    multipliersEnabled: Boolean,
+    exportEnabled: Boolean,
   },
   data() {
     return {
@@ -672,11 +689,7 @@ export default {
 
     selectSecProp1() {
       if (this.selected_component_name1 && this.selected_prim_prop_name1) {
-        explain.watchModelProperty(
-          this.selected_component_name1,
-          this.selected_prim_prop_name1,
-          this.selected_sec_prop_name1
-        );
+        this.uiConfig.updateDataCollector();
       }
     },
     selectPrimProp1(selection) {
@@ -712,24 +725,14 @@ export default {
         // add to the watcher
         if (this.selected_component_name1 && this.selected_prim_prop_name1) {
           // update the watched property list on the userinterface
-          this.updateWatchedProps();
-          explain.watchModelProperty(
-            this.selected_component_name1,
-            this.selected_prim_prop_name1,
-            this.selected_sec_prop_name1
-          );
+          this.uiConfig.updateDataCollector();
         }
       }
     },
 
     selectSecProp2() {
       if (this.selected_component_name2 && this.selected_prim_prop_name2) {
-        this.updateWatchedProps();
-        explain.watchModelProperty(
-          this.selected_component_name2,
-          this.selected_prim_prop_name2,
-          this.selected_sec_prop_name2
-        );
+        this.uiConfig.updateDataCollector();
       }
     },
     selectPrimProp2(selection) {
@@ -764,24 +767,14 @@ export default {
         this.sec_prop_visible2 = false;
         // add to the watcher
         if (this.selected_component_name2 && this.selected_prim_prop_name2) {
-          this.updateWatchedProps();
-          explain.watchModelProperty(
-            this.selected_component_name2,
-            this.selected_prim_prop_name2,
-            this.selected_sec_prop_name2
-          );
+          this.uiConfig.updateDataCollector();
         }
       }
     },
 
     selectSecProp3() {
       if (this.selected_component_name3 && this.selected_prim_prop_name3) {
-        this.updateWatchedProps();
-        explain.watchModelProperty(
-          this.selected_component_name3,
-          this.selected_prim_prop_name3,
-          this.selected_sec_prop_name3
-        );
+        this.uiConfig.updateDataCollector();
       }
     },
     selectPrimProp3(selection) {
@@ -816,26 +809,12 @@ export default {
         this.sec_prop_visible3 = false;
         // add to the watcher
         if (this.selected_component_name3 && this.selected_prim_prop_name3) {
-          this.updateWatchedProps();
-          explain.watchModelProperty(
-            this.selected_component_name3,
-            this.selected_prim_prop_name3,
-            this.selected_sec_prop_name3
-          );
+          this.uiConfig.updateDataCollector();
         }
       }
     },
 
     selectComponent1(selection) {
-      if (selection === "") {
-        if (this.selected_component_name1 && this.selected_prim_prop_name1) {
-          explain.unwatchModelProperty(
-            this.selected_component_name1,
-            this.selected_prim_prop_name1,
-            this.selected_sec_prop_name1
-          );
-        }
-      }
       this.selected_component_name1 = selection;
       // component1 has been selected, clear the primary and secundary property lists
       this.prim_prop_names1 = [];
@@ -853,7 +832,13 @@ export default {
             typeof explain.modelState.Models[selection][key] !== "string" &&
             typeof explain.modelState.Models[selection][key] !== "boolean"
           ) {
-            this.prim_prop_names1.push(key);
+            if (this.props.length > 0) {
+              if (this.props.includes(key)) {
+                this.prim_prop_names1.push(key);
+              }
+            } else {
+              this.prim_prop_names1.push(key);
+            }
           }
         });
         // if the propery list is not empty then sort the list alphabetically
@@ -865,15 +850,6 @@ export default {
       }
     },
     selectComponent2(selection) {
-      if (selection === "") {
-        if (this.selected_component_name2 && this.selected_prim_prop_name2) {
-          explain.unwatchModelProperty(
-            this.selected_component_name2,
-            this.selected_prim_prop_name2,
-            this.selected_sec_prop_name2
-          );
-        }
-      }
       this.selected_component_name2 = selection;
       // component1 has been selected, clear the primary and secundary property lists
       this.prim_prop_names2 = [];
@@ -892,7 +868,13 @@ export default {
             typeof explain.modelState.Models[selection][key] !== "string" &&
             typeof explain.modelState.Models[selection][key] !== "boolean"
           ) {
-            this.prim_prop_names2.push(key);
+            if (this.props.length > 0) {
+              if (this.props.includes(key)) {
+                this.prim_prop_names2.push(key);
+              }
+            } else {
+              this.prim_prop_names2.push(key);
+            }
           }
         });
         // if the propery list is not empty then sort the list alphabetically
@@ -903,15 +885,6 @@ export default {
       }
     },
     selectComponent3(selection) {
-      if (selection === "") {
-        if (this.selected_component_name3 && this.selected_prim_prop_name3) {
-          explain.unwatchModelProperty(
-            this.selected_component_name3,
-            this.selected_prim_prop_name3,
-            this.selected_sec_prop_name3
-          );
-        }
-      }
       this.selected_component_name3 = selection;
       // component1 has been selected, clear the primary and secundary property lists
       this.prim_prop_names3 = [];
@@ -930,7 +903,13 @@ export default {
             typeof explain.modelState.Models[selection][key] !== "string" &&
             typeof explain.modelState.Models[selection][key] !== "boolean"
           ) {
-            this.prim_prop_names3.push(key);
+            if (this.props.length > 0) {
+              if (this.props.includes(key)) {
+                this.prim_prop_names3.push(key);
+              }
+            } else {
+              this.prim_prop_names3.push(key);
+            }
           }
         });
         // if the propery list is not empty then sort the list alphabetically
@@ -981,15 +960,21 @@ export default {
         // add to watched props
         this.uiConfig.charts.watchedProps[id3.label] = id3;
       }
-
-      console.log(this.uiConfig.charts.watchedProps);
+      this.uiConfig.updateDataCollector([id1, id2, id3]);
     },
     stateUpdate() {
       // reset the component names as the model state is updated
       this.component_names = [""];
       // read all model components
       Object.keys(explain.modelState.Models).forEach((key) => {
-        this.component_names.push(key);
+        let mt = explain.modelState.Models[key].ModelType;
+        if (this.models.length > 0) {
+          if (this.models.includes(mt)) {
+            this.component_names.push(key);
+          }
+        } else {
+          this.component_names.push(key);
+        }
       });
       // sort the model components alphabetically
       this.component_names.sort();
@@ -1137,6 +1122,7 @@ export default {
       }
       this.resetAnalysisResults();
     },
+
     createChart() {
       let chart_object = {
         chart: null,
@@ -1191,18 +1177,7 @@ export default {
           a.setMinorTickStyle((b) => b.setLabelFont((font) => font.setSize(8)))
         )
         .setScrollStrategy(AxisScrollStrategies.fitting);
-      //.setAnimationScroll(false);
-      /*  Axis.setScrollStrategy | configure automatic scrolling behavior.
-          Axis.setInterval | configure active axis interval.
-          Axis.getInterval | get active axis interval.
-          Axis.fit | fit axis interval to contain all attached series boundaries.
-          Axis.stop | stop automatic scrolling momentarily.
-          Axis.onScaleChange | trigger a custom action whenever axis scale changes.
-          Axis.setAnimationScroll | Enable/disable automatic scrolling animation.
-          Axis.disableAnimations | Disable all animations for the Axis.
-      */
-      // https://lightningchart.com/lightningchart-js-api-documentation/v3.4.0/classes/axis.html
-      //   dummy data
+
       this.lineSeries1 = chart_object.chart
         .addLineSeries()
         .setName(this.lineTitle);
@@ -1210,21 +1185,27 @@ export default {
       this.lineSeries1.setStrokeStyle((style) =>
         style.setFillStyle(new SolidFill({ color: ColorRGBA(200, 0, 0) }))
       );
-      this.lineSeries2 = chart_object.chart
-        .addLineSeries()
-        .setName(this.lineTitle);
-      this.lineSeries2.setStrokeStyle((style) => style.setThickness(2));
-      this.lineSeries2.setStrokeStyle((style) =>
-        style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
-      );
-      this.lineSeries3 = chart_object.chart
-        .addLineSeries()
-        .setName(this.lineTitle);
-      this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
-      this.lineSeries3.setStrokeStyle((style) =>
-        style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 0, 200) }))
-      );
-      //this.lineSeries.add(this.points);
+
+      if (this.channels > 1) {
+        this.lineSeries2 = chart_object.chart
+          .addLineSeries()
+          .setName(this.lineTitle);
+        this.lineSeries2.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries2.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
+        );
+      }
+
+      if (this.channels > 2) {
+        this.lineSeries3 = chart_object.chart
+          .addLineSeries()
+          .setName(this.lineTitle);
+        this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries3.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 0, 200) }))
+        );
+      }
+
       // add the chart to the global chartsXY array
       chartsXY[this.chartId] = chart_object;
     },
@@ -1252,6 +1233,9 @@ export default {
     this.chartData1 = [];
     this.chartData2 = [];
     this.chartData3 = [];
+    // get the visibilty
+    this.isEnabled = this.collapsed;
+    this.toggleVisibility();
   },
 };
 </script>

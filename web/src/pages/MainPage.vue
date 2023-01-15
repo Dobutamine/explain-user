@@ -76,9 +76,21 @@
             </q-tab-panel>
 
             <q-tab-panel name="charts">
-              <TimeBaseChartVue></TimeBaseChartVue>
-              <!-- <TimeBaseChartVue></TimeBaseChartVue>
-              <NonTimeBasedChartVue></NonTimeBasedChartVue> -->
+              <div v-for="(chart, index) in charts" :key="index">
+                <TimeChartComponentVue
+                  v-if="chart.position === 2"
+                  :caption="chart.caption"
+                  :models="chart.models"
+                  :props="chart.props"
+                  :channels="chart.channels"
+                  :collapsed="chart.collapsed"
+                  :enabled="chart.enabled"
+                  :analysisEnabled="chart.analysisEnabled"
+                  :autoscaleEnabled="chart.autoscaleEnabled"
+                  :multipliersEnabled="chart.multipliersEnabled"
+                  :exportEnabled="chart.exportEnabled"
+                ></TimeChartComponentVue>
+              </div>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -108,12 +120,19 @@
             ></MonitorComponentVue>
           </div>
           <div v-for="(chart, index) in charts" :key="index">
-            <!-- <ChartComponentVue
-              :title="chart.title"
+            <TimeChartComponentVue
+              v-if="chart.position === 3"
+              :caption="chart.caption"
+              :models="chart.models"
+              :props="chart.props"
+              :channels="chart.channels"
               :collapsed="chart.collapsed"
-              :model_types="chart.model_types"
-              :props="chart.model_props"
-            ></ChartComponentVue> -->
+              :enabled="chart.enabled"
+              :analysisEnabled="chart.analysisEnabled"
+              :autoscaleEnabled="chart.autoscaleEnabled"
+              :multipliersEnabled="chart.multipliersEnabled"
+              :exportEnabled="chart.exportEnabled"
+            ></TimeChartComponentVue>
           </div>
         </div>
       </div>
@@ -131,8 +150,7 @@ import ScriptsComponentVue from "../components/ScriptsComponent.vue";
 import ModelsComponentVue from "../components/ModelsComponent.vue";
 import MonitorsComponentVue from "../components/MonitorsComponent.vue";
 import ModelDiagramComponentVue from "src/components/ModelDiagramComponent.vue";
-import ChartComponentVue from "../components/charts/ChartComponent.vue";
-import TimeBaseChartVue from "../components/charts/TimeBaseChart.vue";
+import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
 
 import { useLoggedInUser } from "stores/loggedInUser";
@@ -148,7 +166,6 @@ export default {
     };
   },
   components: {
-    TimeBaseChartVue,
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
     ModelsComponentVue,
@@ -158,6 +175,7 @@ export default {
     BuildComponentVue,
     DeleteComponentVue,
     ModelDiagramComponentVue,
+    TimeChartComponentVue,
   },
   data() {
     return {

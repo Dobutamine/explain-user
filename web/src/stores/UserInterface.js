@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { explain } from "src/boot/explain";
 
 export const useUserInterfaceStore = defineStore("userInterface", {
   state: () => ({
@@ -555,34 +556,43 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       birth: {},
     },
     charts: {
-      watchedProps: {},
-      gasFlowProbe: {
+      general: {
         enabled: true,
-        collapsed: true,
-        title: "GAS FLOW PROBE",
+        caption: "TIME BASED CHART",
+        channels: 3,
+        collapsed: false,
+        position: 2,
+        analysisEnabled: true,
+        autoscaleEnabled: true,
+        multipliersEnabled: true,
+        exportEnabled: true,
         models: [],
-        modelProps: [],
+        props: [],
+        selectedModel1: "",
+        selectedProp1: "",
+        selectedModel2: "",
+        selectedProp2: "",
+        selectedModel3: "",
+        selectedProp3: "",
       },
-      gasPressureProbe: {
+      gasFlowChart: {
         enabled: true,
-        collapsed: true,
-        title: "GAS PRESSURE PROBE",
-        models: [],
-        modelProps: [],
-      },
-      bloodFlowProbe: {
-        enabled: true,
-        collapsed: true,
-        title: "BLOOD FLOW PROBE",
-        models: [],
-        modelProps: [],
-      },
-      bloodPressureProbe: {
-        enabled: true,
-        collapsed: true,
-        title: "BLOOD PRESSURE PROBE",
-        models: [],
-        modelProps: [],
+        caption: "GAS FLOWS",
+        channels: 2,
+        collapsed: false,
+        position: 3,
+        analysisEnabled: false,
+        autoscaleEnabled: false,
+        multipliersEnabled: false,
+        exportEnabled: false,
+        models: ["GasResistor", "GasCompliance"],
+        props: ["Flow", "Pres"],
+        selectedModel1: "",
+        selectedProp1: "",
+        selectedModel2: "",
+        selectedProp2: "",
+        selectedModel3: "",
+        selectedProp3: "",
       },
     },
     monitors: {
@@ -725,5 +735,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
 
   getters: {},
 
-  actions: {},
+  actions: {
+    updateDataCollector(propsArray) {},
+  },
 });
