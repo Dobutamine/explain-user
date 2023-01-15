@@ -79,6 +79,7 @@
               <div v-for="(chart, index) in charts" :key="index">
                 <TimeChartComponentVue
                   v-if="chart.position === 2"
+                  :id="chart._id"
                   :caption="chart.caption"
                   :models="chart.models"
                   :props="chart.props"
@@ -122,6 +123,7 @@
           <div v-for="(chart, index) in charts" :key="index">
             <TimeChartComponentVue
               v-if="chart.position === 3"
+              :id="chart._id"
               :caption="chart.caption"
               :models="chart.models"
               :props="chart.props"
@@ -203,21 +205,6 @@ export default {
         this.charts.push(this.uiConfig.charts[key]);
       }
     }
-
-    // // build the model list
-    // for (let key in this.uiConfig.models) {
-    //   // get the model type
-    //   let model_type = this.uiConfig.models[key].model_type;
-    //   // get all the models of this type from the explain model
-    //   let models = ["LV", "AA", "AAR"];
-    //   // set all the properties
-    //   this.models.push({
-    //     title: this.uiConfig.models[key].label,
-    //     collapsed: this.uiConfig.models[key].collapsed,
-    //     models: models,
-    //     properties: this.uiConfig.models[key].properties,
-    //   });
-    // }
   },
 };
 </script>

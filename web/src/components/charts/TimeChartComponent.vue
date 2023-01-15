@@ -434,6 +434,7 @@ export default {
     };
   },
   props: {
+    id: String,
     caption: String,
     models: Array,
     props: Array,
@@ -532,6 +533,7 @@ export default {
       first_run: true,
       lineSeries1: null,
       lineSeries2: null,
+      lineSeries3: null,
       exportFileName: "data.csv",
     };
   },
@@ -539,7 +541,7 @@ export default {
     toggleVisibility() {
       this.isEnabled = !this.isEnabled;
       if (this.isEnabled) {
-        this.visible = "visibility: visible; height: 350px";
+        this.visible = "visibility: visible;";
       } else {
         this.visible = "visibility: collapse; height: 0px";
       }
@@ -688,15 +690,19 @@ export default {
     },
 
     selectSecProp1() {
-      if (this.selected_component_name1 && this.selected_prim_prop_name1) {
-        this.uiConfig.updateDataCollector();
-      }
+      this.uiConfig.charts[this.id].selectedSecProp1 =
+        this.selected_sec_prop_name1;
     },
     selectPrimProp1(selection) {
+      // store the current selection
+      this.uiConfig.charts[this.id].selectedPrimProp1 =
+        this.selected_prim_prop_name1;
       // reset the secondary property names
       this.sec_prop_names1 = [];
       // clear the currently selected secundary prop name
       this.selected_sec_prop_name1 = "";
+      // update the store
+      this.uiConfig.charts[this.id].selectedSecProp1 = "";
       // find any secondary property names
       Object.keys(
         explain.modelState.Models[this.selected_component_name1][selection]
@@ -722,24 +728,23 @@ export default {
       } else {
         // hide the secundary property
         this.sec_prop_visible1 = false;
-        // add to the watcher
-        if (this.selected_component_name1 && this.selected_prim_prop_name1) {
-          // update the watched property list on the userinterface
-          this.uiConfig.updateDataCollector();
-        }
       }
     },
 
     selectSecProp2() {
-      if (this.selected_component_name2 && this.selected_prim_prop_name2) {
-        this.uiConfig.updateDataCollector();
-      }
+      this.uiConfig.charts[this.id].selectedSecProp2 =
+        this.selected_sec_prop_name2;
     },
     selectPrimProp2(selection) {
+      // store the current selection
+      this.uiConfig.charts[this.id].selectedPrimProp2 =
+        this.selected_prim_prop_name2;
       // reset the secondary property names
       this.sec_prop_names2 = [];
       // clear the currently selected secundary prop name
       this.selected_sec_prop_name2 = "";
+      // update the store
+      this.uiConfig.charts[this.id].selectedSecProp2 = "";
       // find any secondary property names
       Object.keys(
         explain.modelState.Models[this.selected_component_name2][selection]
@@ -765,23 +770,24 @@ export default {
       } else {
         // hide the secundary property
         this.sec_prop_visible2 = false;
-        // add to the watcher
-        if (this.selected_component_name2 && this.selected_prim_prop_name2) {
-          this.uiConfig.updateDataCollector();
-        }
       }
     },
 
     selectSecProp3() {
-      if (this.selected_component_name3 && this.selected_prim_prop_name3) {
-        this.uiConfig.updateDataCollector();
-      }
+      this.uiConfig.charts[this.id].selectedSecProp2 =
+        this.selected_sec_prop_name2;
     },
     selectPrimProp3(selection) {
+      // store the current selection
+      this.uiConfig.charts[this.id].selectedPrimProp3 =
+        this.selected_prim_prop_name3;
       // reset the secondary property names
       this.sec_prop_names3 = [];
+
       // clear the currently selected secundary prop name
       this.selected_sec_prop_name3 = "";
+      // update the store
+      this.uiConfig.charts[this.id].selectedSecProp3 = "";
       // find any secondary property names
       Object.keys(
         explain.modelState.Models[this.selected_component_name3][selection]
@@ -808,20 +814,24 @@ export default {
         // hide the secundary property
         this.sec_prop_visible3 = false;
         // add to the watcher
-        if (this.selected_component_name3 && this.selected_prim_prop_name3) {
-          this.uiConfig.updateDataCollector();
-        }
       }
     },
 
     selectComponent1(selection) {
       this.selected_component_name1 = selection;
       // component1 has been selected, clear the primary and secundary property lists
+      this.uiConfig.charts[this.id].selectedModel1 =
+        this.selected_component_name1;
+
       this.prim_prop_names1 = [];
       this.sec_prop_names1 = [];
       // component1 has been selected, clear the primary and secundary selected properties
       this.selected_prim_prop_name1 = "";
       this.selected_sec_prop_name1 = "";
+      this.uiConfig.charts[this.id].selectedPrimProp1 =
+        this.selected_prim_prop_name1;
+      this.uiConfig.charts[this.id].selectedSecProp1 =
+        this.selected_sec_prop_name1;
       // hide secondary properties as we don't know if they exist yet
       this.sec_prop_visible1 = false;
       this.prim_prop_visible1 = false;
@@ -851,12 +861,19 @@ export default {
     },
     selectComponent2(selection) {
       this.selected_component_name2 = selection;
+      this.uiConfig.charts[this.id].selectedModel2 =
+        this.selected_component_name2;
+
       // component1 has been selected, clear the primary and secundary property lists
       this.prim_prop_names2 = [];
       this.sec_prop_names2 = [];
       // component1 has been selected, clear the primary and secundary selected properties
       this.selected_prim_prop_name2 = "";
       this.selected_sec_prop_name2 = "";
+      this.uiConfig.charts[this.id].selectedPrimProp2 =
+        this.selected_prim_prop_name2;
+      this.uiConfig.charts[this.id].selectedSecProp2 =
+        this.selected_sec_prop_name2;
       // hide secondary properties as we don't know if they exist yet
       this.sec_prop_visible2 = false;
       // show the primary properties as we selected a component
@@ -886,12 +903,18 @@ export default {
     },
     selectComponent3(selection) {
       this.selected_component_name3 = selection;
+      this.uiConfig.charts[this.id].selectedModel3 =
+        this.selected_component_name3;
       // component1 has been selected, clear the primary and secundary property lists
       this.prim_prop_names3 = [];
       this.sec_prop_names3 = [];
       // component1 has been selected, clear the primary and secundary selected properties
       this.selected_prim_prop_name3 = "";
       this.selected_sec_prop_name3 = "";
+      this.uiConfig.charts[this.id].selectedPrimProp3 =
+        this.selected_prim_prop_name3;
+      this.uiConfig.charts[this.id].selectedSecProp3 =
+        this.selected_sec_prop_name3;
       // hide secondary properties as we don't know if they exist yet
       this.sec_prop_visible3 = false;
       // show the primary properties as we selected a component
@@ -920,48 +943,6 @@ export default {
       }
     },
 
-    updateWatchedProps() {
-      let id1 = { label: "", model: "", prim_prop: "", sec_prop: "" };
-      if (this.selected_component_name1 && this.selected_prim_prop_name1) {
-        id1.label =
-          this.selected_component_name1 + "." + this.selected_prim_prop_name1;
-        if (this.selected_sec_prop_name1 !== "") {
-          id1.label += "." + this.selected_sec_prop_name1;
-        }
-        id1.model = this.selected_component_name1;
-        id1.prim_prop = this.selected_prim_prop_name1;
-        id1.sec_prop = this.selected_sec_prop_name1;
-        // add to watched props
-        this.uiConfig.charts.watchedProps[id1.label] = id1;
-      }
-      let id2 = { label: "", model: "", prim_prop: "", sec_prop: "" };
-      if (this.selected_component_name2 && this.selected_prim_prop_name2) {
-        id2.label =
-          this.selected_component_name2 + "." + this.selected_prim_prop_name2;
-        if (this.selected_sec_prop_name2 !== "") {
-          id2.label += "." + this.selected_sec_prop_name2;
-        }
-        id2.model = this.selected_component_name2;
-        id2.prim_prop = this.selected_prim_prop_name2;
-        id2.sec_prop = this.selected_sec_prop_name2;
-        // add to watched props
-        this.uiConfig.charts.watchedProps[id2.label] = id2;
-      }
-      let id3 = { label: "", model: "", prim_prop: "", sec_prop: "" };
-      if (this.selected_component_name3 && this.selected_prim_prop_name3) {
-        id3.label =
-          this.selected_component_name3 + "." + this.selected_prim_prop_name3;
-        if (this.selected_sec_prop_name3 !== "") {
-          id3.label += "." + this.selected_sec_prop_name3;
-        }
-        id3.model = this.selected_component_name3;
-        id3.prim_prop = this.selected_prim_prop_name3;
-        id3.sec_prop = this.selected_sec_prop_name3;
-        // add to watched props
-        this.uiConfig.charts.watchedProps[id3.label] = id3;
-      }
-      this.uiConfig.updateDataCollector([id1, id2, id3]);
-    },
     stateUpdate() {
       // reset the component names as the model state is updated
       this.component_names = [""];
@@ -1007,8 +988,14 @@ export default {
         this.chartData3 = [];
       }
       this.lineSeries1.clear();
-      this.lineSeries2.clear();
-      this.lineSeries3.clear();
+      if (this.lineSeries2) {
+        this.lineSeries2.clear();
+      }
+
+      if (this.lineSeries3) {
+        this.lineSeries3.clear();
+      }
+
       if (!this.scaling) {
         this.chart1_factor = 1.0;
         this.chart2_factor = 1.0;
@@ -1236,6 +1223,7 @@ export default {
     // get the visibilty
     this.isEnabled = this.collapsed;
     this.toggleVisibility();
+    console.log(this.id);
   },
 };
 </script>

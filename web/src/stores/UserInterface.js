@@ -557,6 +557,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
     },
     charts: {
       general: {
+        _id: "general",
         enabled: true,
         caption: "TIME BASED CHART",
         channels: 3,
@@ -569,13 +570,17 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         models: [],
         props: [],
         selectedModel1: "",
-        selectedProp1: "",
+        selectedPrimProp1: "",
+        selectedSecProp1: "",
         selectedModel2: "",
-        selectedProp2: "",
+        selectedPrimProp2: "",
+        selectedSecProp2: "",
         selectedModel3: "",
-        selectedProp3: "",
+        selectedPrimProp3: "",
+        selectedSecProp3: "",
       },
       gasFlowChart: {
+        _id: "gasFlowChart",
         enabled: true,
         caption: "GAS FLOWS",
         channels: 2,
@@ -588,11 +593,14 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         models: ["GasResistor", "GasCompliance"],
         props: ["Flow", "Pres"],
         selectedModel1: "",
-        selectedProp1: "",
+        selectedPrimProp1: "",
+        selectedSecProp1: "",
         selectedModel2: "",
-        selectedProp2: "",
+        selectedPrimProp2: "",
+        selectedSecProp2: "",
         selectedModel3: "",
-        selectedProp3: "",
+        selectedPrimProp3: "",
+        selectedSecProp3: "",
       },
     },
     monitors: {
@@ -736,6 +744,82 @@ export const useUserInterfaceStore = defineStore("userInterface", {
   getters: {},
 
   actions: {
-    updateDataCollector(propsArray) {},
+    updateDataCollector(propsArray) {
+      // get all the props from charts
+      let propIds = [];
+      let id1 = "";
+      let id2 = "";
+      let id3 = "";
+
+      Object.values(this.charts).forEach((chart) => {
+        console.log(chart);
+        if (chart.selectedModel1 && chart.selectedPrimProp1) {
+          id1 = chart.selectedModel1 + "." + chart.selectedPrimProp1;
+        }
+        if (
+          chart.selectedModel1 &&
+          chart.selectedPrimProp1 &&
+          chart.selectedSecProp1
+        ) {
+          id1 =
+            chart.selectedModel1 +
+            "." +
+            chart.selectedPrimProp1 +
+            "." +
+            chart.selectedSecProp1;
+        }
+
+        let id2 = "";
+        if (chart.selectedModel2 && chart.selectedPrimProp2) {
+          id2 = chart.selectedModel2 + "." + chart.selectedPrimProp2;
+        }
+        if (
+          chart.selectedModel2 &&
+          chart.selectedPrimProp2 &&
+          chart.selectedSecProp2
+        ) {
+          id2 =
+            chart.selectedModel2 +
+            "." +
+            chart.selectedPrimProp2 +
+            "." +
+            chart.selectedSecProp2;
+        }
+
+        let id3 = "";
+        if (chart.selectedModel3 && chart.selectedPrimProp3) {
+          id3 = chart.selectedModel3 + "." + chart.selectedPrimProp3;
+        }
+        if (
+          chart.selectedModel3 &&
+          chart.selectedPrimProp3 &&
+          chart.selectedSecProp3
+        ) {
+          id3 =
+            chart.selectedModel3 +
+            "." +
+            chart.selectedPrimProp3 +
+            "." +
+            chart.selectedSecProp3;
+        }
+
+        if (id1 != "") {
+          if (!propIds.includes(id1)) {
+            propIds.push(id1);
+          }
+        }
+        if (id2 != "") {
+          if (!propIds.includes(id2)) {
+            propIds.push(id2);
+          }
+        }
+        if (id3 != "") {
+          if (!propIds.includes(id3)) {
+            propIds.push(id3);
+          }
+        }
+      });
+      console.log(propIds);
+    },
   },
 });

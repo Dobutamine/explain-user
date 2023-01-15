@@ -58,13 +58,16 @@
 
 <script>
 import { useLoggedInUser } from "stores/loggedInUser";
+import { useUserInterfaceStore } from "src/stores/userInterface";
 import { explain } from "../boot/explain";
 
 export default {
   setup() {
     const user = useLoggedInUser();
+    const uiConfig = useUserInterfaceStore();
     return {
       user,
+      uiConfig,
     };
   },
   data() {
@@ -90,6 +93,7 @@ export default {
     togglePlay() {
       this.rtState = !this.rtState;
       if (this.rtState) {
+        this.uiConfig.updateDataCollector();
         explain.start();
         this.butColor = "negative";
         this.butIcon = "fa-solid fa-stop";
@@ -105,6 +109,7 @@ export default {
       this.calcRunning = !this.calcRunning;
       if (this.calcRunning) {
         this.butCalcColor = "negative";
+        this.uiConfig.updateDataCollector();
         explain.calculate(parseInt(this.selectedDuration));
       }
     },
