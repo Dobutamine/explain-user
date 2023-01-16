@@ -45,37 +45,6 @@ export default class DataCollector {
     this.watch_list_slow.push(this.ncc_atrial);
     this.watch_list_slow.push(this.ncc_ventricular);
 
-    // test data
-    this.watch_list.push({
-      label: "AA.Pres",
-      model: this._modelEngine.Models["AA"],
-      prop: "Pres",
-      secProp: "",
-    });
-    this.watch_list_slow.push({
-      label: "AA.Ph",
-      model: this._modelEngine.Models["AA"],
-      prop: "Ph",
-      secProp: "",
-    });
-    this.watch_list_slow.push({
-      label: "AA.Pco2",
-      model: this._modelEngine.Models["AA"],
-      prop: "Pco2",
-      secProp: "",
-    });
-    this.watch_list_slow.push({
-      label: "AA.Po2",
-      model: this._modelEngine.Models["AA"],
-      prop: "Po2",
-      secProp: "",
-    });
-    this.watch_list_slow.push({
-      label: "AA.So2",
-      model: this._modelEngine.Models["AA"],
-      prop: "So2",
-      secProp: "",
-    });
     // define the data list
     this.collected_data = [];
     this.collected_data_slow = [];

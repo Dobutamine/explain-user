@@ -77,6 +77,13 @@ export default class Model {
       payload: propsArray,
     });
   }
+  watchModelPropertiesSlow(propsArray) {
+    this.sendMessage({
+      type: "command",
+      message: "watch_props_slow",
+      payload: propsArray,
+    });
+  }
 
   watchModelProperty(model, prim_prop, sec_prop) {
     this.sendMessage({

@@ -47,20 +47,18 @@ export default class AcidBase {
       this._max_iterations,
       this._brent_accuracy
     );
-    _result.Iterations = r[1];
-    _result.Error = r[2];
 
     // if the brent root finding did not yield a value then return an error
-    if (_result.Error) {
+    if (r.Error) {
       return _result;
     }
 
     // complete the result object and return it
-    _result.Ph = this._ph;
-    _result.Pco2 = this._pco2;
-    _result.Hco3 = this._hco3;
+    r.Ph = this._ph;
+    r.Pco2 = this._pco2;
+    r.Hco3 = this._hco3;
 
-    return _result;
+    return r;
   }
   net_charge_plasma(h) {
     // calculate the plasma co2 concentration based on the total co2 in the plasma, hydrogen concentration and the constants Kc and Kd

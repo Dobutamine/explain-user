@@ -15,9 +15,9 @@ export function Brent(func, lowerLimit, upperLimit, maxIter, errorTol) {
 
   // define a result object
   let result = {
-    result: 10,
-    iterations: 0,
-    error: false,
+    Result: 10,
+    Iterations: 0,
+    Error: false,
   };
 
   let set_max_iterations = maxIter;
@@ -38,10 +38,10 @@ export function Brent(func, lowerLimit, upperLimit, maxIter, errorTol) {
     new_step = (c - b) / 2;
 
     if (Math.abs(new_step) <= tol_act || fb === 0) {
-      result.result = b;
-      result.error = false;
-      result.iterations = set_max_iterations - maxIter;
-      return result.result; // Acceptable approx. is found
+      result.Result = b;
+      result.Error = false;
+      result.Iterations = set_max_iterations - maxIter;
+      return result; // Acceptable approx. is found
     }
     // Decide if the interpolation can be tried
     if (Math.abs(prev_step) >= tol_act && Math.abs(fa) > Math.abs(fb)) {
@@ -91,8 +91,8 @@ export function Brent(func, lowerLimit, upperLimit, maxIter, errorTol) {
   }
 
   // configure the return object if not within range
-  result.result = -1;
-  result.error = true;
-  result.iterations = set_max_iterations - maxIter;
-  return result.result; // No acceptable approximation. is found
+  result.Result = -1;
+  result.Error = true;
+  result.Iterations = set_max_iterations - maxIter;
+  return result; // No acceptable approximation. is found
 }

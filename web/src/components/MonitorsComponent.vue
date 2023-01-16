@@ -47,7 +47,20 @@ export default {
         explain.modelDataSlow[explain.modelDataSlow.length - 1];
 
       this.mutableParameters.forEach((param) => {
-        param.value = this.currentData[param.prop].toFixed(param.rounding);
+        param.value = "";
+        if (param.props.length > 1) {
+          // two values
+          for (let i = 0; i < param.props.length; i++) {
+            param.value +=
+              this.currentData[param.props[i]].toFixed(param.rounding) + "/";
+          }
+          // slice off the last value
+          param.value = param.value.slice(0, -1);
+        } else {
+          param.value = this.currentData[param.props[0]].toFixed(
+            param.rounding
+          );
+        }
       });
     },
     stateUpdate() {},

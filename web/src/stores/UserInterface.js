@@ -558,7 +558,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
     charts: {
       general: {
         _id: "general",
-        enabled: true,
+        enabled: false,
         caption: "TIME BASED CHART",
         channels: 3,
         collapsed: false,
@@ -581,7 +581,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       },
       gasFlowChart: {
         _id: "gasFlowChart",
-        enabled: true,
+        enabled: false,
         caption: "GAS FLOWS",
         channels: 1,
         collapsed: true,
@@ -604,7 +604,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       },
       bloodPresChart: {
         _id: "bloodPresChart",
-        enabled: true,
+        enabled: false,
         caption: "BLOOD PRESSURE",
         channels: 2,
         collapsed: false,
@@ -627,127 +627,68 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       },
     },
     monitors: {
-      heartMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "HEART",
-        parameters: [],
-      },
-      hemodynamicMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "HEMODYNAMICS",
-        parameters: [],
-      },
-      respirationMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "RESPIRATION",
-        parameters: [],
-      },
-      lungChestwallMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "LUNG AND CHESTWALL",
-        parameters: [],
+      vitals: {
+        enabled: true,
+        collapsed: false,
+        title: "VITALS",
+        parameters: [
+          {
+            props: ["Heart.HeartRate"],
+            label: "Heartrate",
+            unit: "/min",
+            value: 60,
+            rounding: 0,
+          },
+          {
+            props: ["Breathing.RespRate"],
+            label: "Resp Rate",
+            unit: "/min",
+            value: 60,
+            rounding: 0,
+          },
+          {
+            props: ["AA.PresMax", "AA.PresMin"],
+            label: "ABP",
+            unit: "mmHg",
+            value: 60,
+            rounding: 0,
+          },
+        ],
       },
       acidbaseAndOxyMonitoring: {
         enabled: true,
-        collapsed: true,
+        collapsed: false,
         title: "ACIDBASE AND OXYGENATION",
         parameters: [
           {
-            prop: "AA.Ph",
+            props: ["AA.Ph"],
             label: "Ph",
             unit: "",
             value: 7.43,
             rounding: 2,
           },
           {
-            prop: "AA.Pco2",
+            props: ["AA.Pco2"],
             label: "PCO2",
             unit: "mmHg",
             value: 45,
             rounding: 0,
           },
           {
-            prop: "AA.Po2",
+            props: ["AA.Po2"],
             label: "PO2",
             unit: "mmHg",
             value: 45,
             rounding: 0,
           },
           {
-            prop: "AA.So2",
+            props: ["AA.So2"],
             label: "SO2",
             unit: "%",
             value: 20,
             rounding: 2,
           },
         ],
-      },
-      ecmoMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "ECMO",
-        parameters: [
-          {
-            model: "LV_AA",
-            prop: "Flow",
-            label: "Flow",
-            unit: "l/min",
-            value: 250,
-            rounding: 0,
-          },
-        ],
-      },
-      drugMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "DRUGS",
-        parameters: [],
-      },
-      kidneyMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "KIDNEYS",
-        parameters: [],
-      },
-      artificialWhombMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "ARTIFICIAL WHOMB",
-        parameters: [],
-      },
-      brainMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "BRAIN",
-        parameters: [],
-      },
-      resuscitationMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "RESUSCITATION",
-        parameters: [],
-      },
-      birthMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "BIRTH",
-        parameters: [],
-      },
-      ansMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "AUTONOMIC NERVOUS SYSTEM",
-        parameters: [],
-      },
-      ventilatorMonitoring: {
-        enabled: false,
-        collapsed: true,
-        title: "MECHANICAL VENTILATOR",
-        parameters: [],
       },
     },
   }),
@@ -757,11 +698,12 @@ export const useUserInterfaceStore = defineStore("userInterface", {
   actions: {
     updateDataCollector(propsArray) {
       // get all the props from charts
-      let propIds = [];
+      let propIdsCharts = [];
       let id1 = "";
       let id2 = "";
       let id3 = "";
 
+      // charts
       Object.values(this.charts).forEach((chart) => {
         if (chart.selectedModel1 && chart.selectedPrimProp1) {
           id1 = chart.selectedModel1 + "." + chart.selectedPrimProp1;
@@ -814,22 +756,38 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         }
 
         if (id1 != "") {
-          if (!propIds.includes(id1)) {
-            propIds.push(id1);
+          if (!propIdsCharts.includes(id1)) {
+            propIdsCharts.push(id1);
           }
         }
         if (id2 != "") {
-          if (!propIds.includes(id2)) {
-            propIds.push(id2);
+          if (!propIdsCharts.includes(id2)) {
+            propIdsCharts.push(id2);
           }
         }
         if (id3 != "") {
-          if (!propIds.includes(id3)) {
-            propIds.push(id3);
+          if (!propIdsCharts.includes(id3)) {
+            propIdsCharts.push(id3);
           }
         }
       });
-      explain.watchModelProperties(propIds);
+      explain.watchModelProperties(propIdsCharts);
+
+      // monitors
+      let propIdsMonitors = [];
+      Object.values(this.monitors).forEach((monitor) => {
+        if (monitor.parameters.length > 0) {
+          monitor.parameters.forEach((parameter) => {
+            parameter.props.forEach((prop) => {
+              if (!propIdsMonitors.includes(prop)) {
+                propIdsMonitors.push(prop);
+              }
+            });
+          });
+        }
+      });
+      console.log(propIdsMonitors);
+      explain.watchModelPropertiesSlow(propIdsMonitors);
     },
   },
 });

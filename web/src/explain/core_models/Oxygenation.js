@@ -57,19 +57,16 @@ export default class Oxygenation {
       this._max_iterations,
       this._brent_accuracy
     );
-    _result.Iterations = r[1];
-    _result.Error = r[2];
-
     // if the brent root finding did not yield a value then return an error
-    if (_result.Error) {
+    if (r.Error) {
       return _result;
     }
 
     // complete the result object and return it
-    _result.Po2 = this._po2;
-    _result.So2 = this._so2;
+    r.Po2 = this._po2;
+    r.So2 = this._so2;
 
-    return _result;
+    return r;
   }
 
   oxygen_content(po2) {
