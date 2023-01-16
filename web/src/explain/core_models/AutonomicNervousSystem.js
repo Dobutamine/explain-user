@@ -140,6 +140,7 @@ export class AutonomicNervousSystem extends ModelBaseClass {
     if (!ab.Error) {
       this._chemoreceptor.Pco2 = ab.Pco2;
       this._chemoreceptor.Ph = ab.Ph;
+      this._chemoreceptor.Hco3 = ab.Hco3;
     }
 
     // calculate the mean. In neonates the most accurate mean is given by MAP = DBP + (0.466 * (SBP-DBP))

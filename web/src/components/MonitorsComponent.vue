@@ -9,15 +9,21 @@
     <div v-if="parameters.length > 0 && isEnabled">
       <div class="q-ma-sm q-gutter-xs row items-center">
         <div v-for="(field, index) in mutableParameters" :key="index">
+          <div
+            class="col q-mr-xs text-left text-secondary"
+            :style="{ 'font-size': '10px' }"
+          >
+            {{ field.label }} {{ field.unit }}
+          </div>
           <q-input
             v-model="field.value"
-            :label="field.label"
-            :hint="field.unit"
+            color="blue"
+            hide-hint
             filled
             readonly
             dense
             stack-label
-            style="max-width: 90px"
+            style="max-width: 90px; font-size: 18px"
             squared
           />
         </div>
@@ -34,6 +40,7 @@ export default {
     collapsed: Boolean,
     parameters: Array,
   },
+  components: {},
   data() {
     return {
       isEnabled: true,
@@ -52,14 +59,16 @@ export default {
           // two values
           for (let i = 0; i < param.props.length; i++) {
             param.value +=
-              this.currentData[param.props[i]].toFixed(param.rounding) + "/";
+              (this.currentData[param.props[i]] * param.factor).toFixed(
+                param.rounding
+              ) + "/";
           }
-          // slice off the last value
+          // slice off the last value, removing the /
           param.value = param.value.slice(0, -1);
         } else {
-          param.value = this.currentData[param.props[0]].toFixed(
-            param.rounding
-          );
+          param.value = (
+            this.currentData[param.props[0]] * param.factor
+          ).toFixed(param.rounding);
         }
       });
     },
