@@ -558,7 +558,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
     charts: {
       general: {
         _id: "general",
-        enabled: true,
+        enabled: false,
         caption: "TIME BASED CHART",
         channels: 3,
         collapsed: false,
@@ -584,7 +584,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         enabled: true,
         caption: "PRESSURE PROBE",
         channels: 2,
-        collapsed: true,
+        collapsed: false,
         position: 3,
         analysisEnabled: false,
         autoscaleEnabled: false,
@@ -634,7 +634,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
     monitors: {
       vitals: {
         enabled: true,
-        collapsed: false,
+        collapsed: true,
         title: "VITALS",
         parameters: [
           {
@@ -689,7 +689,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       },
       circulation: {
         enabled: true,
-        collapsed: false,
+        collapsed: true,
         title: "BLOOD FLOWS",
         parameters: [
           {
@@ -752,7 +752,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       },
       ventilation: {
         enabled: true,
-        collapsed: false,
+        collapsed: true,
         title: "SPONTANEOUS BREATHING",
         parameters: [
           {
@@ -819,6 +819,29 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             factor: 1,
           },
         ],
+      },
+    },
+    diagrams: {
+      circulation: {
+        settings: {
+          backgroundColor: 0x333333,
+          editingMode: 1,
+          scaling: 0.1,
+          gridSize: 10.0,
+          snapToGrid: true,
+          skeleton: true,
+        },
+        components: {
+          LV: {
+            label: "LV",
+            models: ["LV"],
+            compType: "BloodCompartment",
+            x: 100,
+            y: 100,
+            scale: 0.05,
+            visible: true,
+          },
+        },
       },
     },
   }),
@@ -905,7 +928,6 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       });
 
       // monitors
-
       Object.values(this.monitors).forEach((monitor) => {
         if (monitor.parameters.length > 0) {
           monitor.parameters.forEach((parameter) => {
@@ -917,7 +939,20 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           });
         }
       });
-      console.log(propIdsMonitors);
+
+      // diagrams
+      Object.values(this.diagrams).forEach((diagram) => {
+        Object.values(diagram.components).forEach((component) => {
+          switch (component.compType) {
+            case "BloodCompartment":
+              component.models.forEach((model) => {
+                propIdsCharts.push(model + ".Vol");
+                propIdsCharts.push(model + ".To2");
+              });
+              break;
+          }
+        });
+      });
       console.log(propIdsCharts);
       explain.watchModelProperties(propIdsCharts);
       explain.watchModelPropertiesSlow(propIdsMonitors);

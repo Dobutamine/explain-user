@@ -53,15 +53,15 @@ import DiagramDiffusor from "../components/classes/DiagramDiffusor";
 
 import DiagramValve from "../components/classes/DiagramValve";
 
-import { useDiagramStore } from "src/stores/diagram";
+import { useUserInterfaceStore } from "src/stores/userInterface";
 
 let canvas = null;
 
 export default {
   setup() {
-    const diagram = useDiagramStore();
+    const uiConfig = useUserInterfaceStore();
     return {
-      diagram,
+      uiConfig,
     };
   },
   data() {
@@ -156,109 +156,26 @@ export default {
       this.pixiApp.stage.addChild(this.skeletonGraphics);
     },
     buildDiagram(diagramName = "circulation") {
-      let diagramRef = this.diagram.circulation;
+      let diagramRef = this.uiConfig.diagrams.circulation;
 
       switch (diagramName) {
         case "circulation":
-          diagramRef = this.diagram.circulation;
+          diagramRef = this.uiConfig.diagrams.circulation;
           break;
       }
       // build the blood compartments
-      for (let dbc in diagramRef.components.bloodCompartments) {
-        let component = diagramRef.components.bloodCompartments;
-        this.diagramComponents[dbc] = new DiagramBloodCompartment(
-          dbc,
-          component[dbc].label,
-          component[dbc].models,
-          this.pixiApp
-        );
+      for (let dbc in diagramRef.components) {
+        let component = diagramRef.components[dbc];
+        if (component.compType == "BloodCompartment") {
+          this.diagramComponents[dbc] = new DiagramBloodCompartment(
+            dbc,
+            component.label,
+            component.models,
+            this.pixiApp
+          );
+        }
       }
-      // build the gas compartments
-      for (let dbc in diagramRef.components.gasCompartments) {
-        let component = diagramRef.components.gasCompartments;
-        this.diagramComponents[dbc] = new DiagramGasCompartment(
-          dbc,
-          component[dbc].label,
-          component[dbc].models,
-          this.pixiApp
-        );
-      }
-      // build the blood connectors
-      for (let dbc in diagramRef.components.bloodConnectors) {
-        let component = diagramRef.components.bloodConnectors;
-        // id, label, dbcFrom, dbcTo, connectors, pixiApp
-        this.diagramComponents[dbc] = new DiagramBloodConnector(
-          dbc,
-          component[dbc].label,
-          component[dbc].dbcFrom,
-          component[dbc].dbcTo,
-          component[dbc].models,
-          this.pixiApp
-        );
-      }
-      // build the gas connectors
-      for (let dbc in diagramRef.components.gasConnectors) {
-        let component = diagramRef.components.gasConnectors;
-        // id, label, dbcFrom, dbcTo, connectors, pixiApp
-        this.diagramComponents[dbc] = new DiagramGasConnector(
-          dbc,
-          component[dbc].label,
-          component[dbc].dbcFrom,
-          component[dbc].dbcTo,
-          component[dbc].models,
-          this.pixiApp
-        );
-      }
-      // build the valves
-      for (let dbc in diagramRef.components.valves) {
-        let component = diagramRef.components.valves;
-        // id, label, dbcFrom, dbcTo, connectors, pixiApp
-        this.diagramComponents[dbc] = new DiagramValve(
-          dbc,
-          component[dbc].label,
-          component[dbc].dbcFrom,
-          component[dbc].dbcTo,
-          component[dbc].models,
-          this.pixiApp
-        );
-      }
-      // build the gas exchangers
-      for (let dbc in diagramRef.components.exchangers) {
-        let component = diagramRef.components.exchangers;
-        // id, label, dbcFrom, dbcTo, connectors, pixiApp
-        this.diagramComponents[dbc] = new DiagramGasExchanger(
-          dbc,
-          component[dbc].label,
-          component[dbc].dbcFrom,
-          component[dbc].dbcTo,
-          component[dbc].models,
-          this.pixiApp
-        );
-      }
-      // build the diffusors
-      for (let dbc in diagramRef.components.diffusors) {
-        let component = diagramRef.components.diffusors;
-        // id, label, dbcFrom, dbcTo, connectors, pixiApp
-        this.diagramComponents[dbc] = new DiagramDiffusor(
-          dbc,
-          component[dbc].label,
-          component[dbc].dbcFrom,
-          component[dbc].dbcTo,
-          component[dbc].models,
-          this.pixiApp
-        );
-      }
-      // build the containers
-      for (let dbc in diagramRef.components.containers) {
-        let component = diagramRef.components.containers;
-        // id, label, dbcFrom, dbcTo, connectors, pixiApp
-        this.diagramComponents[dbc] = new DiagramContainer(
-          dbc,
-          component[dbc].label,
-          component[dbc].models,
-          this.pixiApp
-        );
-      }
+      console.log(this.diagramComponents);
     },
     handleResize() {
       // get stage sizes
@@ -275,12 +192,27 @@ export default {
         }
       }
     },
+    rtUpdate() {
+      if (!this.collapsed) {
+        Object.values(this.diagramComponents).forEach((component) => {
+          component.draw(explain.modelData);
+        });
+      }
+    },
+    dataUpdate() {},
+  },
+  beforeUnmount() {
+    document.removeEventListener("rt", this.rtUpdate);
+    document.removeEventListener("data", this.dataUpdate);
   },
   mounted() {
     // initialize the diagram
     this.initDiagram();
     // build the circulation diagram
     this.buildDiagram("circulation");
+
+    document.addEventListener("rt", this.rtUpdate);
+    document.addEventListener("data", this.dataUpdate);
   },
 };
 </script>

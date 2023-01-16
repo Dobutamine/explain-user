@@ -20,7 +20,7 @@ class DiagramBloodCompartment {
     // scaling factos
     this.sprite.scalingFactorX = 1;
     this.sprite.scalingFactorY = 1;
-    this.sprite.globalScale = 5;
+    this.sprite.globalScale = 1;
     this.sprite.interactionData = null;
     this.sprite.dragging = false;
     this.sprite.rotating = false;
@@ -53,7 +53,7 @@ class DiagramBloodCompartment {
     this.sprite.textStyle = new PIXI.TextStyle({
       fill: "white",
       fontSize: 12,
-      fontFamily: "Roboto",
+      fontFamily: "Arial",
       strokeThickness: 0,
     });
     this.sprite.text = new PIXI.Text(this.sprite.label, this.sprite.textStyle);
@@ -96,16 +96,16 @@ class DiagramBloodCompartment {
     }
     let to2 = 0;
     if (rtData) {
-      this.sprite.modelComponents.forEach((modelComponent) => {
-        volume += rtData[0][modelComponent].vol;
-        to2 += rtData[0][modelComponent].to2;
+      this.sprite.models.forEach((model) => {
+        volume += rtData[0][model + ".Vol"];
+        to2 += rtData[0][model + ".To2"];
       });
     }
     this.sprite.volume = this.calculateRadius(volume);
     this.sprite.to2 = to2;
     this.sprite.text.rotation = this.sprite.rotation;
     this.sprite.tint = this.CalculateColor(
-      this.sprite.to2 / this.sprite.modelComponents.length
+      this.sprite.to2 / this.sprite.models.length
     );
     this.sprite.scale.set(
       this.sprite.volume * this.sprite.scalingFactorX * this.sprite.globalScale,

@@ -182,7 +182,7 @@ export default {
   },
   data() {
     return {
-      tab: "charts",
+      tab: "circulation",
       tab_left: "play",
       monitors: [],
       charts: [],
