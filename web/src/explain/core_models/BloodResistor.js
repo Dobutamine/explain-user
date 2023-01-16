@@ -3,11 +3,19 @@ import ModelBaseClass from "../helpers/ModelBaseClass";
 export class BloodResistor extends ModelBaseClass {
   // state variables
   Flow = 0;
+  FlowForwardSec = 0;
+  FlowBackwardSec = 0;
+  FlowSec = 0;
   Res = 0;
 
   // local parameters
   _comp_from = {};
   _comp_to = {};
+  _tempFlow = 0;
+  _tempFlowForward = 0;
+  _tempFlowBackward = 0;
+  _update_counter = 0.0;
+  _update_interval = 2.0;
 
   InitModel(model_ref) {
     // initialize the baseclass
@@ -40,6 +48,25 @@ export class BloodResistor extends ModelBaseClass {
     }
     // calculate the absolute flow in the model step
     let dvol = this.Flow * this._t;
+
+    if (this._modelEngine.Models["Heart"].NccAtrial == 1) {
+      this.FlowSec = this._tempFlow / this._update_counter;
+      this.FlowForwardSec = this._tempFlowForward / this._update_counter;
+      this.FlowBackwardSec = -this._tempFlowBackward / this._update_counter;
+      this._tempFlow = 0;
+      this._tempFlowForward = 0;
+      this._tempFlowBackward = 0;
+      this._update_counter = 0;
+    }
+
+    this._tempFlow += this.Flow * this._t;
+    if (this.Flow > 0) {
+      this._tempFlowForward += this.Flow * this._t;
+    }
+    if (this.Flow < 0) {
+      this._tempFlowBackward += this.Flow * this._t;
+    }
+    this._update_counter += this._t;
 
     // change the volumes of the connected compliances
     if (dvol > 0) {

@@ -12,6 +12,10 @@ export class Breathing extends ModelBaseClass {
   _ncc_insp = 0;
   _ncc_exp = 0;
   _breath_timer = 0.0;
+  ExpTidalVolume = 0;
+  InspTidalVolume = 0;
+  _temp_exp_volume = 0;
+  _temp_insp_volume = 0;
 
   SwitchBreathing(state) {
     if (state) {
@@ -62,6 +66,12 @@ export class Breathing extends ModelBaseClass {
 
       // reset the activation curve counter for the expiration
       this._ncc_exp = 0.0;
+
+      // reset the expiratory volume counter
+      this._temp_exp_volume = 0;
+
+      // store the inspiratory tidal volume
+      this.InspTidalVolume = this._temp_insp_volume;
     }
 
     // has the expiration time elapsed?
@@ -71,6 +81,12 @@ export class Breathing extends ModelBaseClass {
 
       // signal that the expiration has stopped
       this._exp_running = false;
+
+      // reset the inspiratory volume counter
+      this._temp_insp_volume = 0;
+
+      // store the expiratory tidal volume
+      this.ExpTidalVolume = -this._temp_exp_volume;
     }
 
     // increase the timers
@@ -79,11 +95,23 @@ export class Breathing extends ModelBaseClass {
     if (this._insp_running) {
       this._insp_timer += this._t;
       this._ncc_insp += 1.0;
+
+      // calculate the inspiratory  volume
+      if (this._modelEngine.Models[this.TidalVolumeSource].Flow > 0) {
+        this._temp_insp_volume +=
+          this._modelEngine.Models[this.TidalVolumeSource].Flow * this._t;
+      }
     }
 
     if (this._exp_running) {
       this._exp_timer += this._t;
       this._ncc_exp += 1.0;
+
+      // calculate the expiratory  volume
+      if (this._modelEngine.Models[this.TidalVolumeSource].Flow < 0) {
+        this._temp_exp_volume +=
+          this._modelEngine.Models[this.TidalVolumeSource].Flow * this._t;
+      }
     }
 
     // calculate the respiratory muscle pressure

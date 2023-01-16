@@ -23,7 +23,7 @@
             readonly
             dense
             stack-label
-            style="max-width: 90px; font-size: 18px"
+            style="max-width: 90px; font-size: 16px"
             squared
           />
         </div>
