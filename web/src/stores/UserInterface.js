@@ -579,19 +579,24 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         selectedPrimProp3: "",
         selectedSecProp3: "",
       },
-      gasFlowChart: {
-        _id: "gasFlowChart",
-        enabled: false,
-        caption: "GAS FLOWS",
-        channels: 1,
+      pressureProbe: {
+        _id: "pressureProbe",
+        enabled: true,
+        caption: "PRESSURE PROBE",
+        channels: 2,
         collapsed: true,
         position: 3,
         analysisEnabled: false,
         autoscaleEnabled: false,
         multipliersEnabled: false,
         exportEnabled: false,
-        models: ["GasResistor"],
-        props: ["Flow"],
+        models: [
+          "BloodCompliance",
+          "BloodTimeVaryingElastance",
+          "GasCompliance",
+          "Container",
+        ],
+        props: ["Pres"],
         selectedModel1: "",
         selectedPrimProp1: "",
         selectedSecProp1: "",
@@ -602,19 +607,19 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         selectedPrimProp3: "",
         selectedSecProp3: "",
       },
-      bloodPresChart: {
-        _id: "bloodPresChart",
-        enabled: false,
-        caption: "BLOOD PRESSURE",
+      flowProbe: {
+        _id: "flowProbe",
+        enabled: true,
+        caption: "FLOW PROBE",
         channels: 2,
-        collapsed: false,
+        collapsed: true,
         position: 3,
         analysisEnabled: false,
         autoscaleEnabled: false,
         multipliersEnabled: false,
         exportEnabled: false,
-        models: ["BloodCompliance", "BloodTimeVaryingElastance"],
-        props: ["Pres"],
+        models: ["BloodResistor", "GasResistor"],
+        props: ["Flow"],
         selectedModel1: "",
         selectedPrimProp1: "",
         selectedSecProp1: "",
@@ -636,7 +641,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             props: ["Heart.HeartRate"],
             label: "Heartrate",
             unit: "/min",
-            value: 60,
+            value: 0,
             rounding: 0,
             factor: 1.0,
           },
@@ -644,7 +649,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             props: ["AA.PresMax", "AA.PresMin"],
             label: "ABP",
             unit: "mmHg",
-            value: 60,
+            value: 0,
             rounding: 0,
             factor: 1.0,
           },
@@ -652,7 +657,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             props: ["AA.So2"],
             label: "SpO2",
             unit: "%",
-            value: 60,
+            value: 0,
             rounding: 0,
             factor: 100,
           },
@@ -660,7 +665,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             props: ["Breathing.RespRate"],
             label: "Resp Rate",
             unit: "/min",
-            value: 60,
+            value: 0,
             rounding: 0,
             factor: 1.0,
           },
@@ -668,7 +673,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             props: ["Metabolism.BodyTemp"],
             label: "Temp",
             unit: "C",
-            value: 60,
+            value: 0,
             rounding: 1,
             factor: 1.0,
           },
@@ -676,15 +681,30 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             props: ["MechanicalVentilator.EtCo2"],
             label: "EtCO2",
             unit: "kPa",
-            value: 60,
+            value: 0,
             rounding: 1,
             factor: 0.3333,
           },
         ],
       },
-      acidbaseAndOxyMonitoring: {
+      circulation: {
         enabled: true,
         collapsed: false,
+        title: "CIRCULATION",
+        parameters: [
+          {
+            props: ["LV_AA.Flow"],
+            label: "LVO",
+            unit: "/min",
+            value: 0,
+            rounding: 6,
+            factor: 1000.0,
+          },
+        ],
+      },
+      acidbaseAndOxyMonitoring: {
+        enabled: true,
+        collapsed: true,
         title: "ACIDBASE AND OXYGENATION",
         parameters: [
           {
@@ -730,6 +750,8 @@ export const useUserInterfaceStore = defineStore("userInterface", {
     updateDataCollector(propsArray) {
       // get all the props from charts
       let propIdsCharts = [];
+      let propIdsMonitors = [];
+
       let id1 = "";
       let id2 = "";
       let id3 = "";
@@ -802,10 +824,9 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           }
         }
       });
-      explain.watchModelProperties(propIdsCharts);
 
       // monitors
-      let propIdsMonitors = [];
+
       Object.values(this.monitors).forEach((monitor) => {
         if (monitor.parameters.length > 0) {
           monitor.parameters.forEach((parameter) => {
@@ -818,6 +839,8 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         }
       });
       console.log(propIdsMonitors);
+      console.log(propIdsCharts);
+      explain.watchModelProperties(propIdsCharts);
       explain.watchModelPropertiesSlow(propIdsMonitors);
     },
   },

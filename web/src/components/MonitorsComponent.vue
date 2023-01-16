@@ -38,6 +38,7 @@ export default {
   props: {
     title: String,
     collapsed: Boolean,
+    data_type: Number,
     parameters: Array,
   },
   components: {},
@@ -49,7 +50,9 @@ export default {
     };
   },
   methods: {
-    dataUpdate() {
+    dataUpdateSlow() {
+      if (!this.isEnabled) return;
+
       this.currentData =
         explain.modelDataSlow[explain.modelDataSlow.length - 1];
 
@@ -72,16 +75,40 @@ export default {
         }
       });
     },
+    dataUpdate() {
+      if (!this.isEnabled) return;
+
+      this.currentData = explain.modelData[explain.modelData.length - 1];
+      this.mutableParameters.forEach((param) => {
+        param.value = "";
+        if (param.props.length > 1) {
+          // two values
+          for (let i = 0; i < param.props.length; i++) {
+            param.value +=
+              (this.currentData[param.props[i]] * param.factor).toFixed(
+                param.rounding
+              ) + "/";
+          }
+          // slice off the last value, removing the /
+          param.value = param.value.slice(0, -1);
+        } else {
+          param.value = (
+            this.currentData[param.props[0]] * param.factor
+          ).toFixed(param.rounding);
+        }
+      });
+    },
     stateUpdate() {},
   },
   beforeUnmount() {
-    document.removeEventListener("data_slow", this.dataUpdate);
+    document.removeEventListener("data_slow", this.dataUpdateSlow);
     document.removeEventListener("state", this.stateUpdate);
   },
   mounted() {
     this.isEnabled = !this.collapsed;
     this.mutableParameters = [...this.parameters];
-    document.addEventListener("data_slow", this.dataUpdate);
+
+    document.addEventListener("data_slow", this.dataUpdateSlow);
     document.addEventListener("state", this.stateUpdate);
   },
 };

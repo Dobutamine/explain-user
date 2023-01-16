@@ -133,7 +133,15 @@ export default class DataCollector {
             this.watch_list_slow[i].model[this.watch_list_slow[i].prop][
               this.watch_list_slow[i].secProp
             ];
+          // if the watched prop is volume (expressed per weight) or flow (expressed per minute)
+          if (this.watch_list_slow[i].prop == "Flow") {
+            value = (value / this._modelEngine.Weight) * 60.0;
+          }
+          if (this.watch_list_slow[i].prop == "Vol") {
+            value = value / this._modelEngine.Weight;
+          }
         }
+
         data_object[this.watch_list_slow[i].label] = value;
       }
       this.collected_data_slow.push(data_object);

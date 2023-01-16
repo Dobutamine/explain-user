@@ -117,6 +117,7 @@
             <MonitorComponentVue
               :title="monitor.title"
               :collapsed="monitor.collapsed"
+              :data_type="monitor.data_type"
               :parameters="monitor.parameters"
             ></MonitorComponentVue>
           </div>
