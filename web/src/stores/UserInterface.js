@@ -690,7 +690,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       circulation: {
         enabled: true,
         collapsed: false,
-        title: "CIRCULATION",
+        title: "BLOOD FLOWS",
         parameters: [
           {
             props: ["LV_AA.FlowForwardSec"],
@@ -721,7 +721,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             label: "IVC Flow",
             unit: "ml/min",
             value: 0,
-            rounding: 1,
+            rounding: 0,
             factor: 60000.0,
           },
           {
@@ -737,7 +737,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             label: "Brain",
             unit: "ml/min",
             value: 0,
-            rounding: 1,
+            rounding: 0,
             factor: 60000.0,
           },
           {
@@ -745,7 +745,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             label: "Kidneys",
             unit: "ml/min",
             value: 0,
-            rounding: 1,
+            rounding: 0,
             factor: 60000.0,
           },
         ],
@@ -753,11 +753,11 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       ventilation: {
         enabled: true,
         collapsed: false,
-        title: "VENTILATION",
+        title: "SPONTANEOUS BREATHING",
         parameters: [
           {
             props: ["Breathing.RespRate"],
-            label: "Spont RespRate",
+            label: "Resp rate",
             unit: "/min",
             value: 0,
             rounding: 0,
@@ -765,18 +765,18 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           },
           {
             props: ["Breathing.ExpTidalVolume"],
-            label: "TVexp",
+            label: "Tidal volume",
             unit: "ml",
             value: 0,
-            rounding: 2,
+            rounding: 1,
             factor: 1000.0,
           },
           {
             props: ["MOUTH_DS.FlowBackwardSec"],
-            label: "MVexp",
+            label: "Minute volume",
             unit: "ml/min",
             value: 0,
-            rounding: 2,
+            rounding: 0,
             factor: 60000.0,
           },
         ],
