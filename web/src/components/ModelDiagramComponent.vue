@@ -36,22 +36,13 @@
         ]"
       />
     </div>
-    <q-resize-observer @resize="handleResize" />
   </q-card>
 </template>
 
 <script>
 import { PIXI } from "../boot/pixi";
 import { explain } from "../boot/explain";
-import DiagramBloodCompartment from "../components/classes/DiagramBloodCompartment";
-import DiagramBloodConnector from "../components/classes/DiagramBloodConnector";
-import DiagramGasCompartment from "../components/classes/DiagramGasCompartment";
-import DiagramGasConnector from "../components/classes/DiagramGasConnector";
-import DiagramGasExchanger from "../components/classes/DiagramGasExchanger";
-import DiagramContainer from "../components/classes/DiagramContainer";
-import DiagramDiffusor from "../components/classes/DiagramDiffusor";
-
-import DiagramValve from "../components/classes/DiagramValve";
+import BloodCompartmentSprite from "../components/ui-elements/BloodCompartmentSprite";
 
 import { useUserInterfaceStore } from "src/stores/userInterface";
 
@@ -70,17 +61,11 @@ export default {
       collapsed: false,
       editingSelection: "selecting",
       display: "block",
-      stage: {
-        width: 0,
-        height: 0,
-        centerX: 0,
-        centerY: 0,
-        scaling: 60,
-        aspectRatio: 0.8,
-      },
-      skeletonGraphics: {},
+      gridVertical: null,
+      gridHorizontal: null,
+      skeletonGraphics: null,
       diagramComponents: {},
-      watchedModels: [],
+      ticker: null,
     };
   },
   methods: {
@@ -91,9 +76,18 @@ export default {
         delete this.diagramComponents[componentName];
       }
     },
+    statusUpdate() {
+      if (explain.statusMessage.includes("realtime model started")) {
+        this.ticker.start();
+      }
+      if (explain.statusMessage.includes("realtime model stopped")) {
+        this.ticker.stop();
+      }
+    },
     initDiagram() {
       // get the reference to the canvas
       canvas = document.getElementById("stage");
+      // set the resolution of the pix application
       PIXI.settings.RESOLUTION = 2;
       // define a pixi app with the canvas as view
       this.pixiApp = new PIXI.Application({
@@ -101,51 +95,58 @@ export default {
         antialias: true,
         backgroundColor: 0x333333,
         view: canvas,
-        sortableChildren: true,
       });
-      this.pixiApp.spriteMode = { text: "moving", mode: 1 };
 
-      // size the canvas
-      this.handleResize();
+      // allow sortable children
+      this.pixiApp.stage.sortableChildren = true;
 
       // initalize the skeleton graphics
       this.skeletonGraphics = new PIXI.Graphics();
-      this.pixiApp.stage.addChild(this.skeletonGraphics);
 
       // draw the skeleton graphics
       this.drawSkeletonGraphics();
 
       // draw the grid
-      this.pixiApp.gridSize = 10;
-      this.drawGrid();
+      this.drawGrid(10.0);
+
+      // add a ticker to update all sprites
+      this.ticker = this.pixiApp.ticker.add((delta) => {
+        Object.values(this.diagramComponents).forEach((sprite) => {
+          if (explain.modelData.length > 0) {
+            sprite.update(explain.modelData[0]);
+          }
+        });
+      });
     },
-    drawGrid() {
+    drawGrid(gridSize) {
+      if (this.gridVertical) {
+        this.gridVertical.clear();
+      }
       // build the grid
-      for (
-        let x = 0;
-        x < this.pixiApp.renderer.width;
-        x = x + this.pixiApp.gridSize
-      ) {
-        const vertical = new PIXI.Graphics();
-        vertical.lineStyle(1, 0x888888, 0.1);
-        vertical.moveTo(x, 0);
-        vertical.lineTo(x, this.pixiApp.renderer.height);
-        this.pixiApp.stage.addChild(vertical);
+      this.gridVertical = new PIXI.Graphics();
+      for (let x = 0; x < this.pixiApp.renderer.width; x = x + gridSize) {
+        this.gridVertical.lineStyle(1, 0x888888, 0.1);
+        this.gridVertical.moveTo(x, 0);
+        this.gridVertical.lineTo(x, this.pixiApp.renderer.height);
       }
-      for (
-        let y = 0;
-        y < this.pixiApp.renderer.height;
-        y = y + this.pixiApp.gridSize
-      ) {
-        const horizontal = new PIXI.Graphics();
-        horizontal.lineStyle(1, 0x888888, 0.1);
-        horizontal.moveTo(0, y);
-        horizontal.lineTo(this.pixiApp.renderer.width, y);
-        this.pixiApp.stage.addChild(horizontal);
+      this.pixiApp.stage.addChild(this.gridVertical);
+
+      if (this.gridHorizontal) {
+        this.gridHorizontal.clear();
       }
+      this.gridHorizontal = new PIXI.Graphics();
+      for (let y = 0; y < this.pixiApp.renderer.height; y = y + gridSize) {
+        this.gridHorizontal.lineStyle(1, 0x888888, 0.1);
+        this.gridHorizontal.moveTo(0, y);
+        this.gridHorizontal.lineTo(this.pixiApp.renderer.width, y);
+      }
+      this.pixiApp.stage.addChild(this.gridHorizontal);
     },
+
     drawSkeletonGraphics() {
-      this.skeletonGraphics.clear();
+      if (this.skeletonGraphics) {
+        this.skeletonGraphics.clear();
+      }
       // get center stage
       const xCenter = this.pixiApp.renderer.width / 4;
       const yCenter = this.pixiApp.renderer.height / 4;
@@ -155,7 +156,38 @@ export default {
       this.skeletonGraphics.endFill();
       this.pixiApp.stage.addChild(this.skeletonGraphics);
     },
+
     buildDiagram(diagramName = "circulation") {
+      let diagramRef = this.uiConfig.diagrams.circulation;
+
+      const xCenter = this.pixiApp.renderer.width / 4;
+      const yCenter = this.pixiApp.renderer.height / 4;
+      const radius = xCenter * 0.6;
+
+      Object.entries(diagramRef.components).forEach(([key, component]) => {
+        switch (component.compType) {
+          case "BloodCompartment":
+            this.diagramComponents[key] = new BloodCompartmentSprite(
+              this.pixiApp.stage,
+              key,
+              component.label,
+              component.models,
+              {
+                x: xCenter,
+                y: yCenter,
+                pos: component.posDgs.dgs,
+                radius: radius,
+                x_offset: component.posDgs.x_offset,
+                y_offset: component.posDgs.y_offset,
+              },
+              null
+            );
+            break;
+        }
+      });
+    },
+
+    buildDiagramExp(diagramName = "circulation") {
       let diagramRef = this.uiConfig.diagrams.circulation;
 
       switch (diagramName) {
@@ -164,55 +196,58 @@ export default {
           break;
       }
       // build the blood compartments
+      const xCenter = this.pixiApp.renderer.width / 4;
+      const yCenter = this.pixiApp.renderer.height / 4;
+
       for (let dbc in diagramRef.components) {
         let component = diagramRef.components[dbc];
         if (component.compType == "BloodCompartment") {
+          let x =
+            xCenter + Math.cos(component.posDgs * 0.0174533) * xCenter * 0.6;
+          let y =
+            yCenter + Math.sin(component.posDgs * 0.0174533) * xCenter * 0.6;
+          let pos = { x: x, y: y };
           this.diagramComponents[dbc] = new DiagramBloodCompartment(
             dbc,
             component.label,
+            pos,
             component.models,
             this.pixiApp
           );
         }
-      }
-      console.log(this.diagramComponents);
-    },
-    handleResize() {
-      // get stage sizes
-      if (canvas) {
-        this.stage.width = canvas.getBoundingClientRect().width;
-        this.stage.height =
-          canvas.getBoundingClientRect().width * this.stage.aspectRatio;
-        // get the center of the stage
-        this.stage.centerX = this.stage.width * 0.5;
-        this.stage.centerY = this.stage.height * 0.5;
-        // resize the pixi app
-        if (this.pixiApp) {
-          this.pixiApp.renderer.resize(this.stage.width, this.stage.height);
+        if (component.compType == "BloodConnector") {
+          this.diagramComponents[dbc] = new DiagramBloodConnector(
+            dbc,
+            component.label,
+            component.dbcFrom,
+            component.dbcTo,
+            component.models,
+            this.pixiApp
+          );
         }
+        if (component.compType == "Valve") {
+          this.diagramComponents[dbc] = new DiagramValve(
+            dbc,
+            component.label,
+            component.dbcFrom,
+            component.dbcTo,
+            component.models,
+            this.pixiApp
+          );
+        }
+        console.log(this.diagramComponents[dbc]);
       }
     },
-    rtUpdate() {
-      if (!this.collapsed) {
-        Object.values(this.diagramComponents).forEach((component) => {
-          component.draw(explain.modelData);
-        });
-      }
-    },
-    dataUpdate() {},
   },
   beforeUnmount() {
-    document.removeEventListener("rt", this.rtUpdate);
-    document.removeEventListener("data", this.dataUpdate);
+    document.removeEventListener("status", this.statusUpdate);
   },
   mounted() {
     // initialize the diagram
     this.initDiagram();
     // build the circulation diagram
     this.buildDiagram("circulation");
-
-    document.addEventListener("rt", this.rtUpdate);
-    document.addEventListener("data", this.dataUpdate);
+    document.addEventListener("status", this.statusUpdate);
   },
 };
 </script>

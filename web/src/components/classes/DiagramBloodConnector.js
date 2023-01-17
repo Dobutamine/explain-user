@@ -3,18 +3,19 @@ import explain from "./blood.png";
 
 class DiagramBloodConnector {
   constructor(id, label, dbcFrom, dbcTo, connectors, pixiApp) {
-    this.id = id;
+    this.id = Math.floor(Math.random() * 100000000);
+    this.compType = "BloodConnector";
     this.position = 0;
-    this.connectors = connectors;
+    this.models = connectors;
     this.speed = 1;
     this.pixiApp = pixiApp;
     this.graphics = new PIXI.Graphics();
     this.graphics.dbcFrom = dbcFrom;
     this.graphics.dbcTo = dbcTo;
-    this.graphics.id = id;
+    this.graphics.id = this.id;
     this.graphics.label = label;
+    this.graphics.zIndex = 0;
     this.pixiApp.stage.addChild(this.graphics);
-
     // eslint-disable-next-line new-cap
     this.sprite = PIXI.Sprite.from(explain);
     this.sprite.anchor = { x: 0.5, y: 0.5 };
@@ -24,7 +25,7 @@ class DiagramBloodConnector {
     this.sprite.buttonMode = true;
     this.sprite.label = label;
     this.sprite.tint = "0x000000";
-    this.sprite.zIndex = 1;
+    this.sprite.zIndex = 2;
     this.pos = 0;
     this.sprite.scale.set(0.04, 0.04);
     this.pixiApp.stage.addChild(this.sprite);
@@ -40,6 +41,7 @@ class DiagramBloodConnector {
   }
 
   redrawConnectors(diagramCompartments, rtData) {
+    this.pixiApp.stage.removeChild(this.graphics);
     this.graphics.clear();
 
     const x1 = diagramCompartments[this.graphics.dbcFrom].sprite.x;
@@ -84,6 +86,7 @@ class DiagramBloodConnector {
 
     const tint2 = diagramCompartments[this.graphics.dbcTo].sprite.tint;
 
+    this.graphics.zIndex = 0;
     this.graphics.beginFill(0xff3300);
     this.graphics.lineStyle(2, 0xaaaaaa, 1);
     this.graphics.moveTo(x1, y1);
@@ -95,6 +98,7 @@ class DiagramBloodConnector {
     this.sprite.x = (1 - t) * x1 + t * x2;
     this.sprite.y = (1 - t) * y1 + t * y2;
     this.sprite.tint = tint1;
+    this.sprite.zIndex = 1;
 
     if (remapT > 1) {
       this.position = 0;
@@ -106,8 +110,8 @@ class DiagramBloodConnector {
     let flow = 0;
     let angle = 0;
     if (rtData) {
-      this.connectors.forEach((connector) => {
-        flow += rtData[0][connector].real_flow * this.speed;
+      this.models.forEach((connector) => {
+        flow += rtData[0][connector + ".Flow"] * this.speed;
       });
     }
     this.sprite.tint = tint1;
@@ -117,7 +121,7 @@ class DiagramBloodConnector {
       angle = Math.atan2(y2 - y1, x2 - x1) - 0.785 * 2;
     }
     this.sprite.rotation = angle;
-    this.position += flow / this.connectors.length;
+    this.position += flow / this.models.length;
     this.pixiApp.stage.addChild(this.graphics);
     // this.pixiApp.stage.addChild(this.sprite)
   }

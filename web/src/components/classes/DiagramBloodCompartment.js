@@ -1,17 +1,19 @@
 import { PIXI } from "src/boot/pixi.js";
-import explain from "./container.png";
+import { Sprite } from "pixi.js";
+import bc from "./container.png";
 class DiagramBloodCompartment {
-  constructor(id, label, models, pixiApp) {
+  constructor(id, label, position, models, pixiApp) {
     // unique id of this sprite
-    this.id = id;
+    this.id = Math.floor(Math.random() * 100000000);
+    this.compType = "BloodCompartment";
     // the object holding the stage where the sprite should be displayed
     this.pixiApp = pixiApp;
     // define a new sprite from the container.png
-    this.sprite = PIXI.Sprite.from(explain);
+    this.sprite = Sprite.from(bc);
     // store the explain models in the sprite object
     this.sprite.models = models;
     // store the unique id in the sprite object
-    this.sprite.id = id;
+    this.sprite.id = this.id;
     // define a label of the sprite
     this.sprite.label = label;
     // define the mosty important mode properties determining the shape and color
@@ -27,8 +29,8 @@ class DiagramBloodCompartment {
     this.sprite.morphing = false;
     this.sprite.sizing = false;
     this.sprite.anchor = { x: 0.5, y: 0.5 };
-    this.sprite.x = 50;
-    this.sprite.y = 50;
+    this.sprite.x = position.x;
+    this.sprite.y = position.y;
     this.sprite.prevX = 0;
     this.sprite.prevY = 0;
     this.sprite.scale.set(0.1, 0.1);
@@ -58,8 +60,8 @@ class DiagramBloodCompartment {
     });
     this.sprite.text = new PIXI.Text(this.sprite.label, this.sprite.textStyle);
     this.sprite.text.anchor = { x: 0.5, y: 0.5 };
-    this.sprite.text.x = 50;
-    this.sprite.text.y = 50;
+    this.sprite.text.x = position.x;
+    this.sprite.text.y = position.y;
     this.sprite.text.zIndex = 3;
     this.pixiApp.stage.addChild(this.sprite.text);
 
@@ -88,7 +90,7 @@ class DiagramBloodCompartment {
     this.pixiApp.stage.removeChild(this.sprite.text);
   }
 
-  draw(rtData) {
+  draw(diagramCompartments, rtData) {
     let volume = 0;
     if (this.sprite.firstRun) {
       this.sprite.firstRun = false;
@@ -147,6 +149,7 @@ class DiagramBloodCompartment {
   }
 
   onDragEnd(e) {
+    if (!this.interactionData) return;
     // sprite is here the owner, as this function is called by the sprite class
     const closestX = this.x_grid.reduce((a, b) => {
       return Math.abs(b - this.interactionData.global.x) <
@@ -266,10 +269,10 @@ class DiagramBloodCompartment {
   }
 
   CalculateColor(to2) {
-    if (to2 > 8.4) {
-      to2 = 8.4;
+    if (to2 > 7.6) {
+      to2 = 7.6;
     }
-    let remap = this.Remap(to2, 0, 8.4, -10, 1);
+    let remap = this.Remap(to2, 0, 7.6, -10, 1);
     if (remap < 0) remap = 0;
     const red = (remap * 210).toFixed(0);
     const green = (remap * 80).toFixed(0);

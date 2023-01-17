@@ -1,22 +1,21 @@
 import { PIXI } from "src/boot/pixi.js";
 import explain from "./blood.png";
-import valveOpen from "./valveOpen.png";
-import valveClosed from "./valveClosed.png";
 
 class DiagramValve {
   constructor(id, label, dbcFrom, dbcTo, connectors, pixiApp) {
-    this.id = id;
+    this.id = Math.floor(Math.random() * 100000000);
+    this.compType = "Valve";
     this.position = 0;
-    this.connectors = connectors;
+    this.models = connectors;
     this.speed = 1;
     this.pixiApp = pixiApp;
     this.graphics = new PIXI.Graphics();
     this.graphics.dbcFrom = dbcFrom;
     this.graphics.dbcTo = dbcTo;
-    this.graphics.id = id;
+    this.graphics.id = this.id;
     this.graphics.label = label;
+    this.graphics.zIndex = 0;
     this.pixiApp.stage.addChild(this.graphics);
-
     // eslint-disable-next-line new-cap
     this.sprite = PIXI.Sprite.from(explain);
     this.sprite.anchor = { x: 0.5, y: 0.5 };
@@ -24,30 +23,27 @@ class DiagramValve {
     this.sprite.y = 50;
     this.sprite.interactive = true;
     this.sprite.buttonMode = true;
+    this.sprite.label = label;
     this.sprite.tint = "0x000000";
-    this.sprite.zIndex = 1;
+    this.sprite.zIndex = 2;
     this.pos = 0;
     this.sprite.scale.set(0.04, 0.04);
     this.pixiApp.stage.addChild(this.sprite);
 
     // eslint-disable-next-line new-cap
-    this.spriteValveOpen = PIXI.Sprite.from(valveOpen);
+    this.spriteValveOpen = PIXI.Sprite.from("valveOpen.png");
     this.spriteValveOpen.anchor = { x: 0.5, y: 0.5 };
     this.spriteValveOpen.x = 50;
     this.spriteValveOpen.y = 50;
     this.spriteValveOpen.tint = "0xffffff";
-    this.spriteValveOpen.zIndex = 1;
-    this.spriteValveOpen.scale.set(0.05, 0.1);
     this.pixiApp.stage.addChild(this.spriteValveOpen);
 
     // eslint-disable-next-line new-cap
-    this.spriteValveClosed = PIXI.Sprite.from(valveClosed);
+    this.spriteValveClosed = PIXI.Sprite.from("valveClosed.png");
     this.spriteValveClosed.anchor = { x: 0.5, y: 0.5 };
     this.spriteValveClosed.x = 50;
     this.spriteValveClosed.y = 50;
     this.spriteValveClosed.tint = "0xffffff";
-    this.spriteValveClosed.zIndex = 1;
-    this.spriteValveClosed.scale.set(0.05, 0.1);
     this.pixiApp.stage.addChild(this.spriteValveClosed);
   }
 
@@ -157,8 +153,8 @@ class DiagramValve {
     let flow = 0;
     let angleSprite = Math.atan2(y2 - y1, x2 - x1) - 0.785 * 2;
     if (rtData) {
-      this.connectors.forEach((connector) => {
-        flow += rtData[0][connector].real_flow * this.speed;
+      this.models.forEach((connector) => {
+        flow += rtData[0][connector + ".Flow"] * this.speed;
       });
     }
     this.sprite.tint = tint1;
@@ -174,7 +170,7 @@ class DiagramValve {
       this.spriteValveOpen.rotation = angle;
     }
     this.sprite.rotation = angleSprite;
-    this.position += flow / this.connectors.length;
+    this.position += flow / this.models.length;
     this.pixiApp.stage.addChild(this.graphics);
     // this.pixiApp.stage.addChild(this.sprite)
   }
