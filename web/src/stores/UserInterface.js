@@ -821,108 +821,58 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         ],
       },
     },
-    diagrams: {
-      circulation: {
-        settings: {
-          backgroundColor: 0x333333,
-          editingMode: 1,
-          scaling: 0.1,
-          gridSize: 10.0,
-          snapToGrid: true,
-          skeleton: true,
+    diagram: {
+      settings: {
+        backgroundColor: 0x333333,
+        editingMode: 1,
+        scaling: 0.1,
+        grid: true,
+        gridSize: 10.0,
+        snapToGrid: true,
+        skeleton: true,
+        skeletonColor: 0x444444,
+        radius: 0.6,
+      },
+      components: {
+        LA: {
+          label: "LA",
+          models: ["LA"],
+          compType: "BloodCompartment",
+          layout: {
+            type: "arc",
+            x: 0,
+            y: 0,
+            dgs: 345,
+          },
         },
-        components: {
-          LA: {
-            label: "LA",
-            models: ["LA"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 345, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
+        LV: {
+          label: "LV",
+          models: ["LV"],
+          compType: "BloodCompartment",
+          layout: {
+            type: "arc",
+            x: 0,
+            y: 0,
+            dgs: 0,
           },
-          LV: {
-            label: "LV",
-            models: ["LV"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 0, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
+        },
+        AA: {
+          label: "AA",
+          models: ["AA"],
+          compType: "BloodCompartment",
+          layout: {
+            type: "rel",
+            x: 0,
+            y: 0,
+            dgs: 90,
           },
-          RA: {
-            label: "RA",
-            models: ["RA"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 180, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
-          RV: {
-            label: "RV",
-            models: ["RV"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 195, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
-          LB: {
-            label: "LB",
-            models: ["RLB", "INT", "KID", "LS"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 90, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
-          IVC: {
-            label: "IVC",
-            models: ["IVCI", "IVCE"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 135, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
-          SVC: {
-            label: "SVC",
-            models: ["SVC"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 135, x_offset: 0, y_offset: -100 },
-            posCoordinates: {},
-          },
-          AA: {
-            label: "AA",
-            models: ["AA", "AAR"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 15, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
-          AD: {
-            label: "AD",
-            models: ["AD"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 45, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
-          UB: {
-            label: "UB",
-            models: ["RUB", "BR"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 90, x_offset: 0, y_offset: -50 },
-            posCoordinates: {},
-          },
-          PA: {
-            label: "PA",
-            models: ["PA"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 225, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
-          PV: {
-            label: "PV",
-            models: ["PV"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 315, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
-          LUNGS: {
-            label: "LUNGS",
-            models: ["LL", "RL"],
-            compType: "BloodCompartment",
-            posDgs: { dgs: 270, x_offset: 0, y_offset: 0 },
-            posCoordinates: {},
-          },
+        },
+        LV_AA: {
+          label: "LV_AA",
+          models: ["LV_AA"],
+          compType: "BloodConnector",
+          dbcFrom: "LV",
+          dbcTo: "AA",
         },
       },
     },
@@ -1023,27 +973,20 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       });
 
       // diagrams
-      Object.values(this.diagrams).forEach((diagram) => {
-        Object.values(diagram.components).forEach((component) => {
-          switch (component.compType) {
-            case "BloodCompartment":
-              component.models.forEach((model) => {
-                propIdsCharts.push(model + ".Vol");
-                propIdsCharts.push(model + ".To2");
-              });
-              break;
-            case "BloodConnector":
-              component.models.forEach((model) => {
-                propIdsCharts.push(model + ".Flow");
-              });
-              break;
-            case "Valve":
-              component.models.forEach((model) => {
-                propIdsCharts.push(model + ".Flow");
-              });
-              break;
-          }
-        });
+      Object.values(this.diagram.components).forEach((component) => {
+        switch (component.compType) {
+          case "BloodCompartment":
+            component.models.forEach((model) => {
+              propIdsCharts.push(model + ".Vol");
+              propIdsCharts.push(model + ".To2");
+            });
+            break;
+          case "BloodConnector":
+            component.models.forEach((model) => {
+              propIdsCharts.push(model + ".Flow");
+            });
+            break;
+        }
       });
       explain.watchModelProperties(propIdsCharts);
       explain.watchModelPropertiesSlow(propIdsMonitors);

@@ -1,31 +1,38 @@
-import { _themeLoaderDarkTurquoise } from "@arction/lcjs";
 import { PIXI } from "src/boot/pixi.js";
 
 export default class BloodCompartmentSprite {
-  id = "";
+  pixiApp = {};
+  key = "";
   label = "";
-  container = {};
+  models = [];
+  layout = null;
+  xCenter = 0;
+  yCenter = 0;
+  radius = 0;
+
   sprite = {};
   text = {};
   textStyle = {};
-  models = [];
-  posDgs = -1;
-  posCoordinates = {};
+  globalScale = 1.0;
+  scaleSprite = 1.0;
+  scaleText = 8.0;
+
   interactionData = null;
+  connectors = {};
 
   volume = 0;
   to2 = 7.4;
 
-  constructor(container, id, label, models, posCircle, posCoordinate) {
-    this.container = container;
-    this.id = id;
+  constructor(pixiApp, key, label, models, layout, xCenter, yCenter, radius) {
+    // store the parameters
+    this.pixiApp = pixiApp;
+    this.key = key;
     this.label = label;
     this.models = models;
-    this.globalScale = 1;
-    this.scaleSprite = 1;
-    this.scaleText = 7;
-    this.scalingFactorX = 1;
-    this.scalingFactorY = 1;
+    this.layout = layout;
+    this.xCenter = xCenter;
+    this.yCenter = yCenter;
+    this.radius = radius;
 
     // this is a blood compartment sprite which uses
     this.sprite = PIXI.Sprite.from("container.png");
@@ -43,21 +50,27 @@ export default class BloodCompartmentSprite {
     this.sprite.tint = "0x151a7b";
     this.sprite.zIndex = 3;
 
-    if (posCircle) {
-      this.sprite.x =
-        posCircle.x +
-        Math.cos(posCircle.pos * 0.0174533) * posCircle.radius +
-        posCircle.x_offset;
-      this.sprite.y =
-        posCircle.y +
-        Math.sin(posCircle.pos * 0.0174533) * posCircle.radius +
-        posCircle.y_offset;
+    // place the sprite on the stage
+    switch (this.layout.type) {
+      case "arc":
+        this.sprite.x =
+          this.xCenter +
+          Math.cos(this.layout.dgs * 0.0174533) * this.xCenter * this.radius;
+        this.sprite.y =
+          this.yCenter +
+          Math.sin(this.layout.dgs * 0.0174533) * this.xCenter * this.radius;
+        break;
+      case "abs":
+        this.sprite.x = this.layout.x;
+        this.sprite.y = this.layout.y;
+        break;
+      case "rel":
+        this.sprite.x = this.xCenter + this.layout.x;
+        this.sprite.y = this.yCenter + this.layout.y;
+        break;
     }
-    if (posCoordinate) {
-      this.sprite.x = posCoordinate.x;
-      this.sprite.y = posCoordinate.y;
-    }
-    this.container.addChild(this.sprite);
+
+    this.pixiApp.stage.addChild(this.sprite);
 
     //define the caption style and text object and add it to the stage
     this.textStyle = new PIXI.TextStyle({
@@ -71,7 +84,8 @@ export default class BloodCompartmentSprite {
     this.text.x = this.sprite.x;
     this.text.y = this.sprite.y;
     this.text.zIndex = 3;
-    this.container.addChild(this.text);
+
+    this.pixiApp.stage.addChild(this.text);
   }
   update(data) {
     let volume = 0;
@@ -92,16 +106,15 @@ export default class BloodCompartmentSprite {
     this.volume = this.calculateRadius(volume);
 
     this.sprite.scale.set(
-      this.volume * this.scalingFactorX * this.scaleSprite * this.globalScale,
-      this.volume * this.scalingFactorY * this.scaleSprite * this.globalScale
+      this.volume * this.scaleSprite * this.globalScale,
+      this.volume * this.scaleSprite * this.globalScale
     );
-    let scaleFont =
-      this.volume * this.scalingFactorX * this.scaleText * this.globalScale;
+    let scaleFont = this.volume * this.scaleText * this.globalScale;
     if (scaleFont > 1.1) {
       scaleFont = 1.1;
     }
     this.text.scale.set(scaleFont, scaleFont);
-    this.sprite.tint = this.CalculateColor(this.to2);
+    this.sprite.tint = this.calculateColor(this.to2);
   }
   onDragStart(e) {
     this.interactionData = e.data;
@@ -114,6 +127,9 @@ export default class BloodCompartmentSprite {
       this.sprite.y = this.interactionData.global.y;
       this.text.x = this.interactionData.global.x;
       this.text.y = this.interactionData.global.y;
+      this.calculateOnCircle(this.sprite.x, this.sprite.y);
+      // redraw the connector
+      this.redrawConnectors();
     }
   }
   onDragEnd(e) {
@@ -121,17 +137,47 @@ export default class BloodCompartmentSprite {
     this.sprite.alpha = 1;
     this.text.alpha = 1;
   }
-
+  redrawConnectors() {
+    Object.values(this.connectors).forEach((connector) => connector.drawPath());
+  }
+  calculateOnCircle(x, y) {
+    const f1 = Math.pow(x - this.xCenter, 2);
+    const f2 = Math.pow(y - this.yCenter, 2);
+    let distance = Math.abs(Math.sqrt(f1 + f2) - this.radius * this.xCenter);
+    //console.log(distance - this.radius * this.xCenter);
+    let angle = 0;
+    if (distance < 5) {
+      // on circle
+      angle = Math.atan2(this.yCenter - y, x - this.xCenter) * 57.2958;
+      if (this.yCenter - y > 0) {
+        angle = 180 + (180 - angle);
+      } else {
+        angle = -angle;
+      }
+      this.layout.type = "arc";
+      this.layout.dgs = angle;
+      // snap to the circle
+      this.sprite.x =
+        this.xCenter + Math.cos(angle * 0.0174533) * this.xCenter * this.radius;
+      this.sprite.y =
+        this.yCenter + Math.sin(angle * 0.0174533) * this.xCenter * this.radius;
+      this.text.x = this.sprite.x;
+      this.text.y = this.sprite.y;
+    } else {
+      this.layout.type = "abs";
+    }
+  }
   calculateRadius(volume) {
     const _cubicRadius = volume / ((4.0 / 3.0) * Math.PI);
     const _radius = Math.pow(_cubicRadius, 1.0 / 3.0);
     return _radius;
   }
-  CalculateColor(to2) {
+
+  calculateColor(to2) {
     if (to2 > 7.6) {
       to2 = 7.6;
     }
-    let remap = this.Remap(to2, 0, 7.6, -10, 1);
+    let remap = this.remap(to2, 0, 7.6, -10, 1);
     if (remap < 0) remap = 0;
     const red = (remap * 210).toFixed(0);
     const green = (remap * 80).toFixed(0);
@@ -139,7 +185,7 @@ export default class BloodCompartmentSprite {
     const color = "0x" + this.fullColorHex(red, green, blue);
     return color;
   }
-  Remap(value, from1, to1, from2, to2) {
+  remap(value, from1, to1, from2, to2) {
     return ((value - from1) / (to1 - from1)) * (to2 - from2) + from2;
   }
 

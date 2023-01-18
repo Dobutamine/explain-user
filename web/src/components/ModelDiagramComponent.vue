@@ -42,7 +42,8 @@
 <script>
 import { PIXI } from "../boot/pixi";
 import { explain } from "../boot/explain";
-import BloodCompartmentSprite from "../components/ui-elements/BloodCompartmentSprite";
+import BloodCompartment from "../components/ui-elements/BloodCompartment";
+import BloodConnector from "../components/ui-elements/BloodConnector";
 
 import { useUserInterfaceStore } from "src/stores/userInterface";
 
@@ -100,14 +101,14 @@ export default {
       // allow sortable children
       this.pixiApp.stage.sortableChildren = true;
 
-      // initalize the skeleton graphics
-      this.skeletonGraphics = new PIXI.Graphics();
-
       // draw the skeleton graphics
       this.drawSkeletonGraphics();
 
       // draw the grid
-      this.drawGrid(10.0);
+      this.drawGrid();
+
+      // draw the components
+      this.drawComponents();
 
       // add a ticker to update all sprites
       this.ticker = this.pixiApp.ticker.add((delta) => {
@@ -118,125 +119,106 @@ export default {
         });
       });
     },
-    drawGrid(gridSize) {
-      if (this.gridVertical) {
-        this.gridVertical.clear();
-      }
-      // build the grid
-      this.gridVertical = new PIXI.Graphics();
-      for (let x = 0; x < this.pixiApp.renderer.width; x = x + gridSize) {
-        this.gridVertical.lineStyle(1, 0x888888, 0.1);
-        this.gridVertical.moveTo(x, 0);
-        this.gridVertical.lineTo(x, this.pixiApp.renderer.height);
-      }
-      this.pixiApp.stage.addChild(this.gridVertical);
+    drawGrid() {
+      if (this.uiConfig.diagram.settings.grid) {
+        const gridSize = this.uiConfig.diagram.settings.gridSize;
 
-      if (this.gridHorizontal) {
-        this.gridHorizontal.clear();
+        if (this.gridVertical) {
+          this.gridVertical.clear();
+          this.pixiApp.stage.removeChild(this.gridVertical);
+        }
+        // build the grid
+        this.gridVertical = new PIXI.Graphics();
+        for (let x = 0; x < this.pixiApp.renderer.width; x = x + gridSize) {
+          this.gridVertical.lineStyle(1, 0x888888, 0.1);
+          this.gridVertical.moveTo(x, 0);
+          this.gridVertical.lineTo(x, this.pixiApp.renderer.height);
+        }
+        this.pixiApp.stage.addChild(this.gridVertical);
+
+        if (this.gridHorizontal) {
+          this.gridHorizontal.clear();
+          this.pixiApp.stage.removeChild(this.gridHorizontal);
+        }
+        this.gridHorizontal = new PIXI.Graphics();
+        for (let y = 0; y < this.pixiApp.renderer.height; y = y + gridSize) {
+          this.gridHorizontal.lineStyle(1, 0x888888, 0.1);
+          this.gridHorizontal.moveTo(0, y);
+          this.gridHorizontal.lineTo(this.pixiApp.renderer.width, y);
+        }
+        this.pixiApp.stage.addChild(this.gridHorizontal);
+      } else {
+        if (this.gridVertical) {
+          this.gridVertical.clear();
+          this.pixiApp.stage.removeChild(this.gridVertical);
+        }
+        if (this.gridHorizontal) {
+          this.gridHorizontal.clear();
+          this.pixiApp.stage.removeChild(this.gridHorizontal);
+        }
       }
-      this.gridHorizontal = new PIXI.Graphics();
-      for (let y = 0; y < this.pixiApp.renderer.height; y = y + gridSize) {
-        this.gridHorizontal.lineStyle(1, 0x888888, 0.1);
-        this.gridHorizontal.moveTo(0, y);
-        this.gridHorizontal.lineTo(this.pixiApp.renderer.width, y);
-      }
-      this.pixiApp.stage.addChild(this.gridHorizontal);
     },
 
     drawSkeletonGraphics() {
-      if (this.skeletonGraphics) {
-        this.skeletonGraphics.clear();
+      if (this.uiConfig.diagram.settings.skeleton) {
+        if (this.skeletonGraphics) {
+          this.skeletonGraphics.clear();
+          this.pixiApp.stage.removeChild(this.skeletonGraphics);
+        }
+        const radius = this.uiConfig.diagram.settings.radius;
+        const color = this.uiConfig.diagram.settings.skeletonColor;
+
+        // initalize the skeleton graphics
+        this.skeletonGraphics = new PIXI.Graphics();
+
+        // get center stage
+        const xCenter = this.pixiApp.renderer.width / 4;
+        const yCenter = this.pixiApp.renderer.height / 4;
+        this.skeletonGraphics.beginFill(color);
+        this.skeletonGraphics.lineStyle(1, color, 1);
+        this.skeletonGraphics.drawCircle(xCenter, yCenter, xCenter * radius);
+        this.skeletonGraphics.endFill();
+        this.pixiApp.stage.addChild(this.skeletonGraphics);
       }
-      // get center stage
-      const xCenter = this.pixiApp.renderer.width / 4;
-      const yCenter = this.pixiApp.renderer.height / 4;
-      this.skeletonGraphics.beginFill(0x444444);
-      this.skeletonGraphics.lineStyle(1, 0x444444, 1);
-      this.skeletonGraphics.drawCircle(xCenter, yCenter, xCenter * 0.6);
-      this.skeletonGraphics.endFill();
-      this.pixiApp.stage.addChild(this.skeletonGraphics);
     },
 
-    buildDiagram(diagramName = "circulation") {
-      let diagramRef = this.uiConfig.diagrams.circulation;
-
+    drawComponents() {
+      // get the layout properties
       const xCenter = this.pixiApp.renderer.width / 4;
       const yCenter = this.pixiApp.renderer.height / 4;
-      const radius = xCenter * 0.6;
+      const radius = this.uiConfig.diagram.settings.radius;
 
-      Object.entries(diagramRef.components).forEach(([key, component]) => {
-        switch (component.compType) {
-          case "BloodCompartment":
-            this.diagramComponents[key] = new BloodCompartmentSprite(
-              this.pixiApp.stage,
-              key,
-              component.label,
-              component.models,
-              {
-                x: xCenter,
-                y: yCenter,
-                pos: component.posDgs.dgs,
-                radius: radius,
-                x_offset: component.posDgs.x_offset,
-                y_offset: component.posDgs.y_offset,
-              },
-              null
-            );
-            break;
+      // render the blood compartments
+      Object.entries(this.uiConfig.diagram.components).forEach(
+        ([key, component]) => {
+          switch (component.compType) {
+            case "BloodCompartment":
+              this.diagramComponents[key] = new BloodCompartment(
+                this.pixiApp,
+                key,
+                component.label,
+                component.models,
+                component.layout,
+                xCenter,
+                yCenter,
+                radius
+              );
+              break;
+            case "BloodConnector":
+              this.diagramComponents[key] = new BloodConnector(
+                this.pixiApp,
+                key,
+                component.label,
+                component.models,
+                this.diagramComponents[component.dbcFrom],
+                this.diagramComponents[component.dbcTo]
+              );
+              break;
+          }
         }
-      });
-    },
+      );
 
-    buildDiagramExp(diagramName = "circulation") {
-      let diagramRef = this.uiConfig.diagrams.circulation;
-
-      switch (diagramName) {
-        case "circulation":
-          diagramRef = this.uiConfig.diagrams.circulation;
-          break;
-      }
-      // build the blood compartments
-      const xCenter = this.pixiApp.renderer.width / 4;
-      const yCenter = this.pixiApp.renderer.height / 4;
-
-      for (let dbc in diagramRef.components) {
-        let component = diagramRef.components[dbc];
-        if (component.compType == "BloodCompartment") {
-          let x =
-            xCenter + Math.cos(component.posDgs * 0.0174533) * xCenter * 0.6;
-          let y =
-            yCenter + Math.sin(component.posDgs * 0.0174533) * xCenter * 0.6;
-          let pos = { x: x, y: y };
-          this.diagramComponents[dbc] = new DiagramBloodCompartment(
-            dbc,
-            component.label,
-            pos,
-            component.models,
-            this.pixiApp
-          );
-        }
-        if (component.compType == "BloodConnector") {
-          this.diagramComponents[dbc] = new DiagramBloodConnector(
-            dbc,
-            component.label,
-            component.dbcFrom,
-            component.dbcTo,
-            component.models,
-            this.pixiApp
-          );
-        }
-        if (component.compType == "Valve") {
-          this.diagramComponents[dbc] = new DiagramValve(
-            dbc,
-            component.label,
-            component.dbcFrom,
-            component.dbcTo,
-            component.models,
-            this.pixiApp
-          );
-        }
-        console.log(this.diagramComponents[dbc]);
-      }
+      // connect the compartments
     },
   },
   beforeUnmount() {
@@ -245,8 +227,7 @@ export default {
   mounted() {
     // initialize the diagram
     this.initDiagram();
-    // build the circulation diagram
-    this.buildDiagram("circulation");
+
     document.addEventListener("status", this.statusUpdate);
   },
 };
