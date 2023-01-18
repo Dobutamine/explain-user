@@ -1,6 +1,6 @@
 import { PIXI } from "src/boot/pixi.js";
 
-export default class BloodConnector {
+export default class Shunt {
   key = "";
   label = "";
   pixiApp = {};
@@ -9,11 +9,10 @@ export default class BloodConnector {
   dbcTo = {};
 
   sprite = {};
-  spriteColor = 0x999999;
+  spriteColor = 0x664400;
 
   path = null;
-  pathColor = 0x888888;
-  pathWidth = 1;
+  pathColor = 0x442200;
 
   arc = {
     enabled: false,
@@ -50,7 +49,7 @@ export default class BloodConnector {
     this.sprite.anchor = { x: 0.5, y: 0.5 };
     this.sprite.x = this.dbcFrom.sprite.x;
     this.sprite.y = this.dbcFrom.sprite.y;
-    this.sprite.scale.set(0.03, 0.03);
+    this.sprite.scale.set(0.04, 0.04);
     this.sprite.interactive = false;
     this.sprite.tint = this.spriteColor;
     this.sprite.zIndex = 2;
@@ -70,42 +69,18 @@ export default class BloodConnector {
     this.path.zIndex = 1;
     this.path.cacheAsBitmap = true;
 
-    if (this.dbcFrom.layout.type == "arc" && this.dbcTo.layout.type == "arc") {
-      // get the path characteristics
-      this.line.enabled = false;
-      this.arc.enabled = true;
-      let c = 0;
-      if (this.dbcFrom.layout.dgs > this.dbcTo.layout.dgs) {
-        c = 360;
-      }
-      this.arc.from = this.dbcFrom.layout.dgs * 0.0174533;
-      this.arc.to = (this.dbcTo.layout.dgs + c) * 0.0174533;
-      this.arc.radius = this.dbcFrom.xCenter * this.dbcFrom.radius;
-      this.arc.xCenter = this.dbcFrom.xCenter;
-      this.arc.yCenter = this.dbcFrom.yCenter;
-      // draw the path
-      this.path.lineStyle(this.pathWidth, this.pathColor, 1);
-      this.path.arc(
-        this.arc.xCenter,
-        this.arc.yCenter,
-        this.arc.radius,
-        this.arc.from,
-        this.arc.to
-      );
-      this.spritePosition = this.dbcFrom.layout.dgs * 0.0174533;
-    } else {
-      this.arc.enabled = false;
-      this.line.enabled = true;
-      // get the path characteristics
-      this.line.x1 = this.dbcFrom.sprite.x;
-      this.line.y1 = this.dbcFrom.sprite.y;
-      this.line.x2 = this.dbcTo.sprite.x;
-      this.line.y2 = this.dbcTo.sprite.y;
-      // draw the path
-      this.path.lineStyle(this.pathWidth, this.pathColor, 1);
-      this.path.moveTo(this.line.x1, this.line.y1);
-      this.path.lineTo(this.line.x2, this.line.y2);
-    }
+    this.arc.enabled = false;
+    this.line.enabled = true;
+    // get the path characteristics
+    this.line.x1 = this.dbcFrom.sprite.x;
+    this.line.y1 = this.dbcFrom.sprite.y;
+    this.line.x2 = this.dbcTo.sprite.x;
+    this.line.y2 = this.dbcTo.sprite.y;
+    // draw the path
+    this.path.lineStyle(1, this.pathColor, 1);
+    this.path.moveTo(this.line.x1, this.line.y1);
+    this.path.lineTo(this.line.x2, this.line.y2);
+
     this.pixiApp.stage.addChild(this.path);
   }
   update(data) {

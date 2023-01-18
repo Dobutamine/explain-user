@@ -922,7 +922,10 @@
       "RespQ": 0.8,
       "BodyTemp": 37.0,
       "MetabolicActiveModels": {
-        "RLB": 0.185,
+        "RLB": 0.05,
+        "INT": 0.05,
+        "LS": 0.05,
+        "KID": 0.05,
         "RUB": 0.2,
         "AA": 0.005,
         "AD": 0.01,

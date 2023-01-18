@@ -44,6 +44,7 @@ import { PIXI } from "../boot/pixi";
 import { explain } from "../boot/explain";
 import BloodCompartment from "../components/ui-elements/BloodCompartment";
 import BloodConnector from "../components/ui-elements/BloodConnector";
+import Shunt from "../components/ui-elements/Shunt";
 
 import { useUserInterfaceStore } from "src/stores/userInterface";
 
@@ -206,6 +207,16 @@ export default {
               break;
             case "BloodConnector":
               this.diagramComponents[key] = new BloodConnector(
+                this.pixiApp,
+                key,
+                component.label,
+                component.models,
+                this.diagramComponents[component.dbcFrom],
+                this.diagramComponents[component.dbcTo]
+              );
+              break;
+            case "Shunt":
+              this.diagramComponents[key] = new Shunt(
                 this.pixiApp,
                 key,
                 component.label,
