@@ -847,6 +847,8 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         pathColor: 0x444444,
         radius: 0.6,
       },
+      protected: false,
+      shared: false,
       components: {
         LA: {
           label: "LA",
