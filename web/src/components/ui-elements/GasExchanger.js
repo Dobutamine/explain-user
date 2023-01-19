@@ -1,6 +1,6 @@
 import { PIXI } from "src/boot/pixi.js";
 
-export default class BloodCompartment {
+export default class GasExchanger {
   pixiApp = {};
   key = "";
   label = "";
@@ -15,15 +15,28 @@ export default class BloodCompartment {
   textStyle = {};
   globalScale = 1.0;
   scaleSprite = 1.0;
-  scaleText = 8.0;
+  scaleText = 2.0;
 
   interactionData = null;
   connectors = {};
 
-  volume = 0;
-  to2 = 7.4;
+  gas = "";
+  FluxO2 = 0;
+  FluxCo2 = 0;
 
-  constructor(pixiApp, key, label, models, layout, xCenter, yCenter, radius) {
+  rotation = 0;
+
+  constructor(
+    pixiApp,
+    key,
+    label,
+    models,
+    gas,
+    layout,
+    xCenter,
+    yCenter,
+    radius
+  ) {
     // store the parameters
     this.pixiApp = pixiApp;
     this.key = key;
@@ -33,9 +46,10 @@ export default class BloodCompartment {
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.radius = radius;
+    this.gas = ".Flux" + gas;
 
     // this is a blood compartment sprite which uses
-    this.sprite = PIXI.Sprite.from("container.png");
+    this.sprite = PIXI.Sprite.from("exchange.png");
     this.sprite.interactive = true;
     this.sprite.on("mousedown", (e) => this.onDragStart(e));
     this.sprite.on("touchstart", (e) => this.onDragStart(e));
@@ -47,7 +61,7 @@ export default class BloodCompartment {
     this.sprite.on("touchmove", (e) => this.onDragMove(e));
     this.sprite.scale.set(0.15, 0.15);
     this.sprite.anchor = { x: 0.5, y: 0.5 };
-    this.sprite.tint = "0x151a7b";
+    this.sprite.tint = "0xffffff";
     this.sprite.zIndex = 4;
 
     // place the sprite on the stage
@@ -88,33 +102,19 @@ export default class BloodCompartment {
     this.pixiApp.stage.addChild(this.text);
   }
   update(data) {
-    let volume = 0;
-    let volumes = [];
-    let to2s = [];
+    let difO2 = 0;
+
     this.models.forEach((model) => {
-      volume += data[model + ".Vol"];
-      volumes.push(data[model + ".Vol"]);
-      to2s.push(data[model + ".To2"]);
+      difO2 += data[model + ".FluxO2"];
     });
+
     // calculate factors
-    this.to2 = 0;
-    for (let i = 0; i < volumes.length; i++) {
-      let factor = volumes[i] / volume;
-      this.to2 += factor * to2s[i];
+    this.rotation += (difO2 / this.models.length) * 10000;
+    if (this.rotation > 2 * Math.PI) {
+      this.rotation = 0;
     }
-
-    this.volume = this.calculateRadius(volume);
-
-    this.sprite.scale.set(
-      this.volume * this.scaleSprite * this.globalScale,
-      this.volume * this.scaleSprite * this.globalScale
-    );
-    let scaleFont = this.volume * this.scaleText * this.globalScale;
-    if (scaleFont > 1.1) {
-      scaleFont = 1.1;
-    }
-    this.text.scale.set(scaleFont, scaleFont);
-    this.sprite.tint = this.calculateColor(this.to2);
+    //console.log(this.rotation);
+    this.sprite.rotation = -this.rotation;
   }
   onDragStart(e) {
     this.interactionData = e.data;

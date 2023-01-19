@@ -396,7 +396,20 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       Metabolism: {},
       Myocardium: {},
       Oxygenation: {},
-      Pda: {},
+      Pda: {
+        properties: [
+          {
+            caption: "DifO2",
+            modelProp: "DifO2",
+            typeProp: "numeric",
+            unit: "mmol/mmHg",
+            min: 0.0,
+            step: 0.01,
+            displayFactor: 1000.0,
+            displayRounding: 2,
+          },
+        ],
+      },
       Placenta: {},
       Raas: {},
       Resuscitation: {},
@@ -586,8 +599,8 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         channels: 2,
         collapsed: true,
         position: 3,
-        analysisEnabled: false,
-        autoscaleEnabled: false,
+        analysisEnabled: true,
+        autoscaleEnabled: true,
         multipliersEnabled: false,
         exportEnabled: false,
         models: [
@@ -1066,6 +1079,61 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             dgs: 315,
           },
         },
+        CHEST_L: {
+          label: "",
+          models: ["CHEST_L"],
+          compType: "Container",
+          layout: {
+            type: "rel",
+            x: -135,
+            y: -220,
+            dgs: 270,
+          },
+        },
+        CHEST_R: {
+          label: "",
+          models: ["CHEST_R"],
+          compType: "Container",
+          layout: {
+            type: "rel",
+            x: 135,
+            y: -220,
+            dgs: 270,
+          },
+        },
+        ALL: {
+          label: "ALL",
+          models: ["ALL"],
+          compType: "GasCompartment",
+          layout: {
+            type: "rel",
+            x: -135,
+            y: -90,
+            dgs: 270,
+          },
+        },
+        ALR: {
+          label: "ALR",
+          models: ["ALR"],
+          compType: "GasCompartment",
+          layout: {
+            type: "rel",
+            x: 135,
+            y: -90,
+            dgs: 270,
+          },
+        },
+        DS: {
+          label: "DS",
+          models: ["DS"],
+          compType: "GasCompartment",
+          layout: {
+            type: "arc",
+            x: -135,
+            y: 90,
+            dgs: 270,
+          },
+        },
 
         LA_LV: {
           label: "LA_LV",
@@ -1284,6 +1352,44 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           dbcFrom: "PA",
           dbcTo: "PV",
         },
+        DS_ALL: {
+          label: "DS_ALL",
+          models: ["DS_ALL"],
+          compType: "GasConnector",
+          dbcFrom: "DS",
+          dbcTo: "ALL",
+        },
+        DS_ALR: {
+          label: "DS_ALR",
+          models: ["DS_ALR"],
+          compType: "GasConnector",
+          dbcFrom: "DS",
+          dbcTo: "ALR",
+        },
+        GASEX_LL: {
+          label: "",
+          models: ["GASEX_LL"],
+          compType: "GasExchanger",
+          gas: "O2",
+          layout: {
+            type: "arc",
+            x: 0,
+            y: 0,
+            dgs: 300,
+          },
+        },
+        GASEX_LR: {
+          label: "",
+          models: ["GASEX_LR"],
+          compType: "GasExchanger",
+          gas: "O2",
+          layout: {
+            type: "arc",
+            x: 0,
+            y: 0,
+            dgs: 300,
+          },
+        },
       },
     },
   }),
@@ -1394,6 +1500,37 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           case "BloodConnector":
             component.models.forEach((model) => {
               propIdsCharts.push(model + ".Flow");
+            });
+            break;
+          case "Shunt":
+            component.models.forEach((model) => {
+              propIdsCharts.push(model + ".Flow");
+            });
+            break;
+          case "Container":
+            component.models.forEach((model) => {
+              propIdsCharts.push(model + ".Vol");
+            });
+            break;
+          case "GasCompartment":
+            component.models.forEach((model) => {
+              propIdsCharts.push(model + ".Vol");
+              propIdsCharts.push(model + ".Po2");
+            });
+            break;
+          case "GasConnector":
+            component.models.forEach((model) => {
+              propIdsCharts.push(model + ".Flow");
+            });
+            break;
+          case "GasExchanger":
+            component.models.forEach((model) => {
+              if ((component.gas = "O2")) {
+                propIdsCharts.push(model + ".FluxO2");
+              }
+              if ((component.gas = "Co2")) {
+                propIdsCharts.push(model + ".FluxCo2");
+              }
             });
             break;
         }

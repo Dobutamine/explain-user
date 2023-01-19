@@ -1,6 +1,9 @@
 import ModelBaseClass from "../helpers/ModelBaseClass";
 
 export class GasExchanger extends ModelBaseClass {
+  FluxO2 = 0;
+  FluxCo2 = 0;
+
   // local parameters
   _flux_o2 = 0.0;
   _flux_co2 = 0.0;
@@ -75,6 +78,9 @@ export class GasExchanger extends ModelBaseClass {
     if (new_cco2_gas < 0) {
       new_cco2_gas = 0;
     }
+
+    this.FluxO2 = this._flux_o2;
+    this.FluxCo2 = this._flux_co2;
 
     // transfer the new concentrations
     this._modelEngine.Models[this.CompBlood].To2 = new_to2_blood;

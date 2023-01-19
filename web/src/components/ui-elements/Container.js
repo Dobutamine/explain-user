@@ -1,6 +1,6 @@
 import { PIXI } from "src/boot/pixi.js";
 
-export default class BloodCompartment {
+export default class Container {
   pixiApp = {};
   key = "";
   label = "";
@@ -18,10 +18,8 @@ export default class BloodCompartment {
   scaleText = 8.0;
 
   interactionData = null;
-  connectors = {};
 
   volume = 0;
-  to2 = 7.4;
 
   constructor(pixiApp, key, label, models, layout, xCenter, yCenter, radius) {
     // store the parameters
@@ -33,6 +31,7 @@ export default class BloodCompartment {
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.radius = radius;
+    this.textOffset = -30;
 
     // this is a blood compartment sprite which uses
     this.sprite = PIXI.Sprite.from("container.png");
@@ -47,8 +46,8 @@ export default class BloodCompartment {
     this.sprite.on("touchmove", (e) => this.onDragMove(e));
     this.sprite.scale.set(0.15, 0.15);
     this.sprite.anchor = { x: 0.5, y: 0.5 };
-    this.sprite.tint = "0x151a7b";
-    this.sprite.zIndex = 4;
+    this.sprite.tint = "0x555555";
+    this.sprite.zIndex = 3;
 
     // place the sprite on the stage
     switch (this.layout.type) {
@@ -66,7 +65,7 @@ export default class BloodCompartment {
         break;
       case "rel":
         this.sprite.x = this.xCenter + this.layout.x;
-        this.sprite.y = this.yCenter + this.layout.y;
+        this.sprite.y = this.yCenter + this.layout.y + this.textOffset;
         break;
     }
 
@@ -75,33 +74,26 @@ export default class BloodCompartment {
     //define the caption style and text object and add it to the stage
     this.textStyle = new PIXI.TextStyle({
       fill: "white",
-      fontSize: 12,
+      fontSize: 10,
       fontFamily: "Arial",
       strokeThickness: 0,
     });
     this.text = new PIXI.Text(this.label, this.textStyle);
     this.text.anchor = { x: 0.5, y: 0.5 };
     this.text.x = this.sprite.x;
-    this.text.y = this.sprite.y;
-    this.text.zIndex = 4;
+    this.text.y = this.sprite.y + this.textOffset;
+    this.text.zIndex = 3;
 
     this.pixiApp.stage.addChild(this.text);
   }
   update(data) {
     let volume = 0;
     let volumes = [];
-    let to2s = [];
+
     this.models.forEach((model) => {
       volume += data[model + ".Vol"];
       volumes.push(data[model + ".Vol"]);
-      to2s.push(data[model + ".To2"]);
     });
-    // calculate factors
-    this.to2 = 0;
-    for (let i = 0; i < volumes.length; i++) {
-      let factor = volumes[i] / volume;
-      this.to2 += factor * to2s[i];
-    }
 
     this.volume = this.calculateRadius(volume);
 
@@ -114,7 +106,6 @@ export default class BloodCompartment {
       scaleFont = 1.1;
     }
     this.text.scale.set(scaleFont, scaleFont);
-    this.sprite.tint = this.calculateColor(this.to2);
   }
   onDragStart(e) {
     this.interactionData = e.data;
@@ -126,10 +117,8 @@ export default class BloodCompartment {
       this.sprite.x = this.interactionData.global.x;
       this.sprite.y = this.interactionData.global.y;
       this.text.x = this.interactionData.global.x;
-      this.text.y = this.interactionData.global.y;
+      this.text.y = this.interactionData.global.y + this.textOffset;
       this.calculateOnCircle(this.sprite.x, this.sprite.y);
-      // redraw the connector
-      this.redrawConnectors();
     }
   }
   onDragEnd(e) {
@@ -171,36 +160,5 @@ export default class BloodCompartment {
     const _cubicRadius = volume / ((4.0 / 3.0) * Math.PI);
     const _radius = Math.pow(_cubicRadius, 1.0 / 3.0);
     return _radius;
-  }
-
-  calculateColor(to2) {
-    if (to2 > 7.6) {
-      to2 = 7.6;
-    }
-    let remap = this.remap(to2, 0, 7.6, -10, 1);
-    if (remap < 0) remap = 0;
-    const red = (remap * 210).toFixed(0);
-    const green = (remap * 80).toFixed(0);
-    const blue = (80 + remap * 75).toFixed(0);
-    const color = "0x" + this.fullColorHex(red, green, blue);
-    return color;
-  }
-  remap(value, from1, to1, from2, to2) {
-    return ((value - from1) / (to1 - from1)) * (to2 - from2) + from2;
-  }
-
-  rgbToHex(rgb) {
-    let hex = Number(rgb).toString(16);
-    if (hex.length < 2) {
-      hex = "0" + hex;
-    }
-    return hex;
-  }
-
-  fullColorHex(r, g, b) {
-    const red = this.rgbToHex(r);
-    const green = this.rgbToHex(g);
-    const blue = this.rgbToHex(b);
-    return red + green + blue;
   }
 }

@@ -1,6 +1,6 @@
 import { PIXI } from "src/boot/pixi.js";
 
-export default class BloodCompartment {
+export default class GasCompartment {
   pixiApp = {};
   key = "";
   label = "";
@@ -14,8 +14,8 @@ export default class BloodCompartment {
   text = {};
   textStyle = {};
   globalScale = 1.0;
-  scaleSprite = 1.0;
-  scaleText = 8.0;
+  scaleSprite = 0.8;
+  scaleText = 6.0;
 
   interactionData = null;
   connectors = {};
@@ -35,7 +35,7 @@ export default class BloodCompartment {
     this.radius = radius;
 
     // this is a blood compartment sprite which uses
-    this.sprite = PIXI.Sprite.from("container.png");
+    this.sprite = PIXI.Sprite.from("gas_container.png");
     this.sprite.interactive = true;
     this.sprite.on("mousedown", (e) => this.onDragStart(e));
     this.sprite.on("touchstart", (e) => this.onDragStart(e));
@@ -94,7 +94,7 @@ export default class BloodCompartment {
     this.models.forEach((model) => {
       volume += data[model + ".Vol"];
       volumes.push(data[model + ".Vol"]);
-      to2s.push(data[model + ".To2"]);
+      to2s.push(data[model + ".Po2"]);
     });
     // calculate factors
     this.to2 = 0;

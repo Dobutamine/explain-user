@@ -45,6 +45,10 @@ import { explain } from "../boot/explain";
 import BloodCompartment from "../components/ui-elements/BloodCompartment";
 import BloodConnector from "../components/ui-elements/BloodConnector";
 import Shunt from "../components/ui-elements/Shunt";
+import Container from "../components/ui-elements/Container";
+import GasCompartment from "../components/ui-elements/GasCompartment";
+import GasConnector from "../components/ui-elements/GasConnector";
+import GasExchanger from "../components/ui-elements/GasExchanger";
 
 import { useUserInterfaceStore } from "src/stores/userInterface";
 
@@ -63,6 +67,7 @@ export default {
       collapsed: false,
       editingSelection: "selecting",
       display: "block",
+      rt_running: false,
       gridVertical: null,
       gridHorizontal: null,
       skeletonGraphics: null,
@@ -80,10 +85,10 @@ export default {
     },
     statusUpdate() {
       if (explain.statusMessage.includes("realtime model started")) {
-        this.ticker.start();
+        this.rt_running = true;
       }
       if (explain.statusMessage.includes("realtime model stopped")) {
-        this.ticker.stop();
+        this.rt_running = false;
       }
     },
     initDiagram() {
@@ -113,11 +118,13 @@ export default {
 
       // add a ticker to update all sprites
       this.ticker = this.pixiApp.ticker.add((delta) => {
-        Object.values(this.diagramComponents).forEach((sprite) => {
-          if (explain.modelData.length > 0) {
-            sprite.update(explain.modelData[0]);
-          }
-        });
+        if (this.rt_running) {
+          Object.values(this.diagramComponents).forEach((sprite) => {
+            if (explain.modelData.length > 0) {
+              sprite.update(explain.modelData[0]);
+            }
+          });
+        }
       });
     },
     drawGrid() {
@@ -223,6 +230,53 @@ export default {
                 component.models,
                 this.diagramComponents[component.dbcFrom],
                 this.diagramComponents[component.dbcTo]
+              );
+              break;
+            case "Container":
+              this.diagramComponents[key] = new Container(
+                this.pixiApp,
+                key,
+                component.label,
+                component.models,
+                component.layout,
+                xCenter,
+                yCenter,
+                radius
+              );
+              break;
+            case "GasCompartment":
+              this.diagramComponents[key] = new GasCompartment(
+                this.pixiApp,
+                key,
+                component.label,
+                component.models,
+                component.layout,
+                xCenter,
+                yCenter,
+                radius
+              );
+              break;
+            case "GasConnector":
+              this.diagramComponents[key] = new GasConnector(
+                this.pixiApp,
+                key,
+                component.label,
+                component.models,
+                this.diagramComponents[component.dbcFrom],
+                this.diagramComponents[component.dbcTo]
+              );
+              break;
+            case "GasExchanger":
+              this.diagramComponents[key] = new GasExchanger(
+                this.pixiApp,
+                key,
+                component.label,
+                component.models,
+                component.gas,
+                component.layout,
+                xCenter,
+                yCenter,
+                radius
               );
               break;
           }
