@@ -835,6 +835,8 @@ export const useUserInterfaceStore = defineStore("userInterface", {
       },
     },
     diagram: {
+      user: "Timothy Antonius",
+      name: "complete",
       settings: {
         backgroundColor: 0x333333,
         editingMode: 1,
@@ -847,7 +849,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
         pathColor: 0x444444,
         radius: 0.6,
       },
-      protected: false,
+      protected: true,
       shared: false,
       components: {
         LA: {

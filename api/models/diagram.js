@@ -42,7 +42,8 @@ const Diagram = mongoose.model("Diagram", diagramSchema);
 
 function validateDiagram(diagram) {
   const diagramSchema = Joi.object({
-    name: Joi.string().min(5).max(50).required(),
+    user: Joi.string().min(3).max(50),
+    name: Joi.string().min(5).max(50),
     settings: Joi.object(),
     components: Joi.object(),
     shared: Joi.boolean(),

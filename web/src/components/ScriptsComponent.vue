@@ -75,6 +75,7 @@
           </div>
         </q-list>
       </q-card>
+
       <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
         <q-checkbox
           v-if="user.isAdmin"
@@ -88,6 +89,7 @@
           v-model="this.script.shared"
         ></q-checkbox>
       </div>
+
       <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-sm">
         <q-btn
           v-if="script.script.length > 0"
@@ -107,7 +109,7 @@
           @click="saveScriptToServer"
         ></q-btn>
         <q-btn
-          color="red-10"
+          color="blue-10"
           dense
           size="sm"
           style="width: 50px"
@@ -121,9 +123,10 @@
           dense
           style="width: 50px"
           @click="clearScript"
-          icon="fa-solid fa-delete-left"
+          icon="fa-solid fa-trash-can"
         ></q-btn>
       </div>
+
       <div
         class="q-gutter-sm row text-overline justify-center q-mb-xs"
         style="font-size: 10px"

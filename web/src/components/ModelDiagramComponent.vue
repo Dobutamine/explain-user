@@ -36,6 +36,93 @@
         ]"
       />
     </div>
+    <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
+      <q-btn
+        color="red-10"
+        dense
+        size="sm"
+        style="width: 50px"
+        icon="fa-solid fa-upload"
+        @click="saveDiagramToServer"
+      ></q-btn>
+      <q-btn
+        color="blue-10"
+        dense
+        size="sm"
+        style="width: 50px"
+        icon="fa-solid fa-download"
+        @click="openServerCommunication"
+      ></q-btn>
+      <q-btn
+        color="grey-14"
+        size="xs"
+        dense
+        style="width: 50px"
+        @click="clearDiagram"
+        icon="fa-solid fa-trash-can"
+      ></q-btn>
+    </div>
+    <div
+      class="q-gutter-sm row text-overline justify-center q-mb-xs"
+      style="font-size: 10px"
+    >
+      {{ statusMessage }}
+    </div>
+    <q-popup-edit
+      v-if="showPopUpServer"
+      fit
+      touch-position
+      model-value="sylisgek"
+    >
+      <q-card bordered dark style="width: 300px">
+        <div class="row text-overline justify-center">
+          available diagrams on server
+        </div>
+        <div class="row">
+          <q-select
+            class="q-ml-md q-mr-md"
+            label-color="red-6"
+            v-model="selectedDiagramOnServer"
+            :options="availableDiagramsOnServer"
+            hide-bottom-space
+            dense
+            label="available diagrams"
+            style="width: 90%; font-size: 12px"
+          />
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mt-xs q-mb-sm"
+        >
+          <q-btn
+            color="primary"
+            size="sm"
+            style="width: 50px"
+            @click="getDiagramFromServer"
+            icon="fa-solid fa-download"
+          ></q-btn>
+          <q-btn
+            color="red-10"
+            size="sm"
+            style="width: 50px"
+            @click="deleteDiagramFromServer"
+            icon="fa-solid fa-delete-left"
+          ></q-btn>
+          <q-btn
+            color="indigo-10"
+            size="sm"
+            style="width: 50px"
+            @click="closeServerCommunication"
+            icon="fa-solid fa-xmark"
+          ></q-btn>
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-xs"
+          style="font-size: 10px"
+        >
+          {{ statusMessage }}
+        </div>
+      </q-card>
+    </q-popup-edit>
   </q-card>
 </template>
 
@@ -51,18 +138,22 @@ import GasConnector from "../components/ui-elements/GasConnector";
 import GasExchanger from "../components/ui-elements/GasExchanger";
 
 import { useUserInterfaceStore } from "src/stores/userInterface";
+import { useLoggedInUser } from "stores/loggedInUser";
 
 let canvas = null;
 
 export default {
   setup() {
     const uiConfig = useUserInterfaceStore();
+    const user = useLoggedInUser();
     return {
       uiConfig,
+      user,
     };
   },
   data() {
     return {
+      apiUrl: "http://localhost:8081",
       title: "MODEL DIAGRAM",
       collapsed: false,
       editingSelection: "selecting",
@@ -73,9 +164,120 @@ export default {
       skeletonGraphics: null,
       diagramComponents: {},
       ticker: null,
+      availableDiagramsOnServer: [],
+      selectedDiagramOnServer: "",
+      statusMessage: "",
+      showPopUpServer: false,
     };
   },
   methods: {
+    clearDiagram() {
+      this.uiConfig.diagram = {
+        settings: {},
+        protected: false,
+        shared: false,
+        components: {},
+      };
+      this.pixiApp.destroy();
+    },
+    async saveDiagramToServer() {
+      // check if script is not protected
+      if (this.uiConfig.diagram.protected) {
+        alert("Diagram is protected!");
+        return;
+      }
+
+      const url = `${this.apiUrl}/api/diagrams/update_diagram?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.uiConfig.diagram.name,
+          user: this.user.name,
+          settings: this.uiConfig.diagram.settings,
+          components: this.uiConfig.diagram.components,
+          protected: this.uiConfig.diagram.protected,
+          shared: this.uiConfig.diagram.shared,
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        switch (data.message) {
+          case "new":
+            this.statusMessage = "new diagram created on server.";
+            break;
+          case "update":
+            this.statusMessage = "diagram is updated on server.";
+            break;
+        }
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      }
+      this.showPopUpServer = false;
+    },
+    openServerCommunication() {
+      this.showPopUpServer = true;
+      this.getAllDiagramsFromUser();
+    },
+    async getAllDiagramsFromUser() {
+      // do a server request
+      const url = `${this.apiUrl}/api/diagrams/get_diagrams?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user: this.user.name }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        // returns an array with all scripts of this user
+        if (data.length > 0) {
+          this.availableDiagramsOnServer = data.map((diagram) => diagram.name);
+          this.selectedDiagramOnServer = "";
+        } else {
+          this.availableDiagramsOnServer = [];
+        }
+      }
+    },
+    async getDiagramFromServer() {
+      // do a server request
+      const url = `${this.apiUrl}/api/diagrams/get_diagram?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.selectedDiagramOnServer,
+          user: this.user.name,
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        // process the result
+        this.uiConfig.diagram.user = data.user;
+        this.uiConfig.diagram.name = data.name;
+        this.uiConfig.diagram.settings = data.settings;
+        this.uiConfig.diagram.components = data.components;
+        this.uiConfig.diagram.protected = data.protected;
+        this.uiConfig.diagram.shared = data.shared;
+        this.uiConfig.diagram.dateUpdated = data.dateUpdated;
+        this.uiConfig.diagram.dateCreated = data.dateCreated;
+
+        this.statusMessage = "diagram loaded from server.";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+        this.showPopUpServer = false;
+      }
+    },
+    deleteDiagramFromServer() {},
+    closeServerCommunication() {
+      this.showPopUpServer = false;
+    },
     changeEditingMode() {},
     addToDiagram() {},
     removeFromDiagram(componentName) {
