@@ -180,7 +180,31 @@ export default {
       };
       this.pixiApp.destroy();
     },
-    async saveDiagramToServer() {
+    saveDiagramToServer() {
+      Object.keys(this.diagramComponents).forEach((key) => {
+        // try to find the component in the diagram store
+        let found = Object.keys(this.uiConfig.diagram.components).includes(key);
+        // if found then update the component
+        if (found) {
+          switch (this.diagramComponents[key].compType) {
+            case "BloodCompartment":
+              console.log(this.diagramComponents[key]);
+              this.uiConfig.diagram.components[key].label =
+                this.diagramComponents[key].label;
+              this.uiConfig.diagram.components[key].models = [
+                ...this.diagramComponents[key].models,
+              ];
+              this.uiConfig.diagram.components[key].compType =
+                this.diagramComponents[key].compType;
+              this.uiConfig.diagram.components[key].layout = {
+                ...this.diagramComponents[key].layout,
+              };
+              break;
+          }
+        }
+      });
+    },
+    async saveDiagramToServer2() {
       // check if script is not protected
       if (this.uiConfig.diagram.protected) {
         alert("Diagram is protected!");

@@ -1,6 +1,7 @@
 import { PIXI } from "src/boot/pixi.js";
 
 export default class BloodConnector {
+  compType = "BloodConnector";
   key = "";
   label = "";
   pixiApp = {};
@@ -9,7 +10,7 @@ export default class BloodConnector {
   dbcTo = {};
 
   sprite = {};
-  spriteColor = 0x999999;
+  spriteColor = 0xffffff;
 
   path = null;
   pathColor = 0x888888;
@@ -53,7 +54,7 @@ export default class BloodConnector {
     this.sprite.scale.set(0.03, 0.03);
     this.sprite.interactive = false;
     this.sprite.tint = this.spriteColor;
-    this.sprite.zIndex = 2;
+    this.sprite.zIndex = 6;
 
     this.pixiApp.stage.addChild(this.sprite);
 
@@ -109,6 +110,9 @@ export default class BloodConnector {
     this.pixiApp.stage.addChild(this.path);
   }
   update(data) {
+    this.xCenter = this.dbcFrom.xCenter;
+    this.yCenter = this.dbcFrom.yCenter;
+
     // get the speed
     let flow = 0;
     this.models.forEach((model) => {

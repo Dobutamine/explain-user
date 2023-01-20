@@ -55,7 +55,7 @@
 
           <q-separator />
 
-          <q-tab-panels v-model="tab" animated>
+          <q-tab-panels v-model="tab" animated keep-alive>
             <q-tab-panel name="scripts">
               <ScriptComponentVue></ScriptComponentVue>
             </q-tab-panel>

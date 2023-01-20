@@ -1,6 +1,7 @@
 import { PIXI } from "src/boot/pixi.js";
 
 export default class Container {
+  compType = "Container";
   pixiApp = {};
   key = "";
   label = "";
@@ -59,13 +60,9 @@ export default class Container {
           this.yCenter +
           Math.sin(this.layout.dgs * 0.0174533) * this.xCenter * this.radius;
         break;
-      case "abs":
-        this.sprite.x = this.layout.x;
-        this.sprite.y = this.layout.y;
-        break;
       case "rel":
-        this.sprite.x = this.xCenter + this.layout.x;
-        this.sprite.y = this.yCenter + this.layout.y + this.textOffset;
+        this.sprite.x = this.xCenter * this.layout.x;
+        this.sprite.y = this.yCenter * this.layout.y;
         break;
     }
 
@@ -118,6 +115,8 @@ export default class Container {
       this.sprite.y = this.interactionData.global.y;
       this.text.x = this.interactionData.global.x;
       this.text.y = this.interactionData.global.y + this.textOffset;
+      this.layout.x = this.sprite.x / this.xCenter;
+      this.layout.y = this.sprite.y / this.yCenter;
       this.calculateOnCircle(this.sprite.x, this.sprite.y);
     }
   }
@@ -153,7 +152,7 @@ export default class Container {
       this.text.x = this.sprite.x;
       this.text.y = this.sprite.y;
     } else {
-      this.layout.type = "abs";
+      this.layout.type = "rel";
     }
   }
   calculateRadius(volume) {

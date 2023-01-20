@@ -1,6 +1,7 @@
 import { PIXI } from "src/boot/pixi.js";
 
 export default class Shunt {
+  compType = "Shunt";
   key = "";
   label = "";
   pixiApp = {};

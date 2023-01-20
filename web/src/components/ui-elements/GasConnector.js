@@ -1,6 +1,7 @@
 import { PIXI } from "src/boot/pixi.js";
 
 export default class GasConnector {
+  compType = "GasConnector";
   key = "";
   label = "";
   pixiApp = {};
