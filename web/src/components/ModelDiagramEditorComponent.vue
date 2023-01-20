@@ -22,20 +22,23 @@
           color="grey-3"
           outline
           dark
-          label="add model component"
+          label="add diagram component"
           style="width: 80%"
           size="sm"
         >
           <q-menu dark>
             <q-list dense>
-              <div v-for="(modelType, index) in modelTypes" :key="index">
+              <div
+                v-for="(diagramComponentType, index) in diagramComponentTypes"
+                :key="index"
+              >
                 <q-item clickable dense>
                   <q-item-section
                     clickable
                     v-close-popup
-                    @click="selectModelType(modelType)"
+                    @click="selectComponentType(diagramComponentType)"
                   >
-                    {{ modelType }}
+                    {{ diagramComponentType }}
                   </q-item-section>
                 </q-item>
               </div>
@@ -48,20 +51,23 @@
           color="grey-3"
           outline
           dark
-          label="edit model component"
+          label="edit diagram component"
           style="width: 80%"
           size="sm"
         >
           <q-menu dark>
             <q-list dense>
-              <div v-for="(modelType, index) in modelTypes" :key="index">
+              <div
+                v-for="(diagramComponentType, index) in diagramComponentTypes"
+                :key="index"
+              >
                 <q-item clickable dense>
                   <q-item-section
                     clickable
                     v-close-popup
-                    @click="selectModelType(modelType)"
+                    @click="selectComponentType(diagramComponentType)"
                   >
-                    {{ modelType }}
+                    {{ diagramComponentType }}
                   </q-item-section>
                 </q-item>
               </div>
@@ -74,20 +80,23 @@
           color="grey-3"
           outline
           dark
-          label="delete model component"
+          label="delete diagram component"
           style="width: 80%"
           size="sm"
         >
           <q-menu dark>
             <q-list dense>
-              <div v-for="(modelType, index) in modelTypes" :key="index">
+              <div
+                v-for="(diagramComponentType, index) in diagramComponentTypes"
+                :key="index"
+              >
                 <q-item clickable dense>
                   <q-item-section
                     clickable
                     v-close-popup
-                    @click="selectModelType(modelType)"
+                    @click="selectComponentType(diagramComponentType)"
                   >
-                    {{ modelType }}
+                    {{ diagramComponentType }}
                   </q-item-section>
                 </q-item>
               </div>
@@ -95,13 +104,7 @@
           </q-menu>
         </q-btn>
       </div>
-      <div class="q-ma-sm q-gutter-sm row items-center">
-        <BuildPropEditComponent
-          :selectedModelItems="selectedModelItems"
-          @cancelbuild="cancelBuild"
-        >
-        </BuildPropEditComponent>
-      </div>
+      <div class="q-ma-sm q-gutter-sm row items-center"></div>
     </div>
   </q-card>
 </template>
@@ -111,9 +114,7 @@ import { explain } from "../boot/explain";
 import BuildPropEditComponent from "./BuildPropEditComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 export default {
-  components: {
-    BuildPropEditComponent,
-  },
+  components: {},
   setup() {
     const uiConfig = useUserInterfaceStore();
     return {
@@ -123,17 +124,22 @@ export default {
   data() {
     return {
       notyet: true,
-      title: "MODEL EDITOR",
+      title: "DIAGRAM EDITOR",
       collapsed: true,
       modelsTree: {},
       selectedModelType: [],
       selectedModelItems: [],
       modelTypes: [],
+      selectedDiagramComponent: "",
+      diagramComponentTypes: [],
     };
   },
   methods: {
     cancelBuild() {
       this.selectedModelItems = [];
+    },
+    selectComponentType(compType) {
+      this.selectedDiagramComponent = compType;
     },
     selectModelType(modeltype) {
       // search the properties needed for this modeltype in the uiconfig
@@ -184,6 +190,8 @@ export default {
     document.addEventListener("state", this.buildModelItemTree);
     // get the model state
     explain.getModelState();
+
+    this.diagramComponentTypes = this.uiConfig.diagram.settings.componentTypes;
   },
 };
 </script>

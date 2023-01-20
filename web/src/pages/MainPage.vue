@@ -27,10 +27,8 @@
               <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
             <q-tab-panel name="build">
+              <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
               <BuildComponentVue></BuildComponentVue>
-              <DeleteComponentVue></DeleteComponentVue>
-              <GroupersEditorComponent></GroupersEditorComponent>
-              <ModelsComponentVue></ModelsComponentVue>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -155,6 +153,7 @@ import MonitorsComponentVue from "../components/MonitorsComponent.vue";
 import ModelDiagramComponentVue from "src/components/ModelDiagramComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
+import ModelDiagramEditorComponent from "src/components/ModelDiagramEditorComponent.vue";
 
 import { useLoggedInUser } from "stores/loggedInUser";
 import { useUserInterfaceStore } from "src/stores/userInterface";
@@ -174,11 +173,10 @@ export default {
     ModelsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,
     PlayComponentVue: GroupersComponentVue,
-    GroupersEditorComponent,
     BuildComponentVue,
-    DeleteComponentVue,
     ModelDiagramComponentVue,
     TimeChartComponentVue,
+    ModelDiagramEditorComponent,
   },
   data() {
     return {

@@ -168,6 +168,7 @@ export default {
       selectedDiagramOnServer: "",
       statusMessage: "",
       showPopUpServer: false,
+      addModelPopUp: false,
     };
   },
   methods: {
@@ -299,16 +300,20 @@ export default {
       }
     },
     deleteDiagramFromServer() {},
+
     closeServerCommunication() {
       this.showPopUpServer = false;
     },
     changeEditingMode() {},
+
     addToDiagram() {},
+
     removeFromDiagram(componentName) {
       if (componentName) {
         delete this.diagramComponents[componentName];
       }
     },
+
     statusUpdate() {
       if (explain.statusMessage.includes("realtime model started")) {
         this.rt_running = true;
@@ -317,6 +322,7 @@ export default {
         this.rt_running = false;
       }
     },
+
     initDiagram() {
       // get the reference to the canvas
       canvas = document.getElementById("stage");
@@ -353,6 +359,7 @@ export default {
         }
       });
     },
+
     drawGrid() {
       if (this.uiConfig.diagram.settings.grid) {
         const gridSize = this.uiConfig.diagram.settings.gridSize;
@@ -521,6 +528,9 @@ export default {
     this.initDiagram();
 
     document.addEventListener("status", this.statusUpdate);
+
+    // get the model state
+    explain.getModelState();
   },
 };
 </script>
