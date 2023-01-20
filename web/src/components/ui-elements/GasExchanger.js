@@ -1,7 +1,7 @@
 import { PIXI } from "src/boot/pixi.js";
 
 export default class GasExchanger {
-  compType = "GasExchanger";
+  compType = "GasEchanger";
   pixiApp = {};
   key = "";
   label = "";
@@ -14,17 +14,11 @@ export default class GasExchanger {
   sprite = {};
   text = {};
   textStyle = {};
-  globalScale = 1.0;
-  scaleSprite = 1.0;
-  scaleText = 20.0;
 
   interactionData = null;
   connectors = {};
 
-  gas = "";
-  FluxO2 = 0;
-  FluxCo2 = 0;
-
+  gas = "O2";
   rotation = 0;
 
   constructor(
@@ -43,11 +37,11 @@ export default class GasExchanger {
     this.key = key;
     this.label = label;
     this.models = models;
+    this.gas = ".Flux" + gas;
     this.layout = layout;
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.radius = radius;
-    this.gas = ".Flux" + gas;
 
     // this is a blood compartment sprite which uses
     this.sprite = PIXI.Sprite.from("exchange.png");
@@ -60,24 +54,28 @@ export default class GasExchanger {
     this.sprite.on("touchend", (e) => this.onDragEnd(e));
     this.sprite.on("mousemove", (e) => this.onDragMove(e));
     this.sprite.on("touchmove", (e) => this.onDragMove(e));
-    this.sprite.scale.set(0.15, 0.15);
+    this.sprite.scale.set(this.layout.scale.x, this.layout.scale.y);
     this.sprite.anchor = { x: 0.5, y: 0.5 };
     this.sprite.tint = "0xffffff";
     this.sprite.zIndex = 4;
 
     // place the sprite on the stage
-    switch (this.layout.type) {
+    switch (this.layout.pos.type) {
       case "arc":
         this.sprite.x =
           this.xCenter +
-          Math.cos(this.layout.dgs * 0.0174533) * this.xCenter * this.radius;
+          Math.cos(this.layout.pos.dgs * 0.0174533) *
+            this.xCenter *
+            this.radius;
         this.sprite.y =
           this.yCenter +
-          Math.sin(this.layout.dgs * 0.0174533) * this.xCenter * this.radius;
+          Math.sin(this.layout.pos.dgs * 0.0174533) *
+            this.xCenter *
+            this.radius;
         break;
       case "rel":
-        this.sprite.x = this.xCenter * this.layout.x;
-        this.sprite.y = this.yCenter * this.layout.y;
+        this.sprite.x = this.layout.pos.x * this.xCenter;
+        this.sprite.y = this.layout.pos.y * this.yCenter;
         break;
     }
 
@@ -86,14 +84,14 @@ export default class GasExchanger {
     //define the caption style and text object and add it to the stage
     this.textStyle = new PIXI.TextStyle({
       fill: "white",
-      fontSize: 10,
+      fontSize: this.layout.text.size,
       fontFamily: "Arial",
       strokeThickness: 0,
     });
     this.text = new PIXI.Text(this.label, this.textStyle);
     this.text.anchor = { x: 0.5, y: 0.5 };
-    this.text.x = this.sprite.x;
-    this.text.y = this.sprite.y + this.scaleText;
+    this.text.x = this.sprite.x + this.layout.text.x;
+    this.text.y = this.sprite.y + this.layout.text.y;
     this.text.zIndex = 4;
 
     this.pixiApp.stage.addChild(this.text);
@@ -102,7 +100,7 @@ export default class GasExchanger {
     let difO2 = 0;
 
     this.models.forEach((model) => {
-      difO2 += data[model + ".FluxO2"];
+      difO2 += data[model + this.gas];
     });
 
     // calculate factors
@@ -122,10 +120,10 @@ export default class GasExchanger {
     if (this.interactionData) {
       this.sprite.x = this.interactionData.global.x;
       this.sprite.y = this.interactionData.global.y;
-      this.text.x = this.sprite.x;
-      this.text.y = this.sprite.y + this.scaleText;
-      this.layout.x = this.sprite.x / this.xCenter;
-      this.layout.y = this.sprite.y / this.yCenter;
+      this.text.x = this.sprite.x + this.layout.text.x;
+      this.text.y = this.sprite.y + this.layout.text.y;
+      this.layout.pos.x = this.sprite.x / this.xCenter;
+      this.layout.pos.y = this.sprite.y / this.yCenter;
       this.calculateOnCircle(this.sprite.x, this.sprite.y);
       // redraw the connector
       this.redrawConnectors();
@@ -153,53 +151,17 @@ export default class GasExchanger {
       } else {
         angle = -angle;
       }
-      this.layout.type = "arc";
-      this.layout.dgs = angle;
+      this.layout.pos.type = "arc";
+      this.layout.pos.dgs = angle;
       // snap to the circle
       this.sprite.x =
         this.xCenter + Math.cos(angle * 0.0174533) * this.xCenter * this.radius;
       this.sprite.y =
         this.yCenter + Math.sin(angle * 0.0174533) * this.xCenter * this.radius;
-      this.text.x = this.sprite.x;
-      this.text.y = this.sprite.y + this.scaleText;
+      this.text.x = this.sprite.x + this.layout.text.x;
+      this.text.y = this.sprite.y + this.layout.text.y;
     } else {
-      this.layout.type = "rel";
+      this.layout.pos.type = "rel";
     }
-  }
-  calculateRadius(volume) {
-    const _cubicRadius = volume / ((4.0 / 3.0) * Math.PI);
-    const _radius = Math.pow(_cubicRadius, 1.0 / 3.0);
-    return _radius;
-  }
-
-  calculateColor(to2) {
-    if (to2 > 7.6) {
-      to2 = 7.6;
-    }
-    let remap = this.remap(to2, 0, 7.6, -10, 1);
-    if (remap < 0) remap = 0;
-    const red = (remap * 210).toFixed(0);
-    const green = (remap * 80).toFixed(0);
-    const blue = (80 + remap * 75).toFixed(0);
-    const color = "0x" + this.fullColorHex(red, green, blue);
-    return color;
-  }
-  remap(value, from1, to1, from2, to2) {
-    return ((value - from1) / (to1 - from1)) * (to2 - from2) + from2;
-  }
-
-  rgbToHex(rgb) {
-    let hex = Number(rgb).toString(16);
-    if (hex.length < 2) {
-      hex = "0" + hex;
-    }
-    return hex;
-  }
-
-  fullColorHex(r, g, b) {
-    const red = this.rgbToHex(r);
-    const green = this.rgbToHex(g);
-    const blue = this.rgbToHex(b);
-    return red + green + blue;
   }
 }

@@ -8,6 +8,7 @@ export default class BloodConnector {
   models = [];
   dbcFrom = {};
   dbcTo = {};
+  layout = {};
 
   sprite = {};
   spriteColor = 0xffffff;
@@ -37,13 +38,14 @@ export default class BloodConnector {
   prevSpriteX = 0;
   prevSpriteY = 0;
 
-  constructor(pixiApp, key, label, models, dbcFrom, dbcTo) {
+  constructor(pixiApp, key, label, models, dbcFrom, dbcTo, layout) {
     this.pixiApp = pixiApp;
     this.key = key;
     this.label = label;
     this.models = models;
     this.dbcFrom = dbcFrom;
     this.dbcTo = dbcTo;
+    this.layout = layout;
 
     this.drawPath();
 
@@ -71,16 +73,19 @@ export default class BloodConnector {
     this.path.zIndex = 1;
     this.path.cacheAsBitmap = true;
 
-    if (this.dbcFrom.layout.type == "arc" && this.dbcTo.layout.type == "arc") {
+    if (
+      this.dbcFrom.layout.pos.type == "arc" &&
+      this.dbcTo.layout.pos.type == "arc"
+    ) {
       // get the path characteristics
       this.line.enabled = false;
       this.arc.enabled = true;
       let c = 0;
-      if (this.dbcFrom.layout.dgs > this.dbcTo.layout.dgs) {
+      if (this.dbcFrom.layout.pos.dgs > this.dbcTo.layout.pos.dgs) {
         c = 360;
       }
-      this.arc.from = this.dbcFrom.layout.dgs * 0.0174533;
-      this.arc.to = (this.dbcTo.layout.dgs + c) * 0.0174533;
+      this.arc.from = this.dbcFrom.layout.pos.dgs * 0.0174533;
+      this.arc.to = (this.dbcTo.layout.pos.dgs + c) * 0.0174533;
       this.arc.radius = this.dbcFrom.xCenter * this.dbcFrom.radius;
       this.arc.xCenter = this.dbcFrom.xCenter;
       this.arc.yCenter = this.dbcFrom.yCenter;
@@ -93,7 +98,7 @@ export default class BloodConnector {
         this.arc.from,
         this.arc.to
       );
-      this.spritePosition = this.dbcFrom.layout.dgs * 0.0174533;
+      this.spritePosition = this.dbcFrom.layout.pos.dgs * 0.0174533;
     } else {
       this.arc.enabled = false;
       this.line.enabled = true;
