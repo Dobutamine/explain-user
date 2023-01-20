@@ -10,7 +10,7 @@ export default class GasConnector {
   dbcTo = {};
 
   sprite = {};
-  spriteColor = 0x999999;
+  spriteColor = 0xffffff;
 
   path = null;
   pathColor = 0x888888;

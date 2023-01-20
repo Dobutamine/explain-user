@@ -16,7 +16,7 @@ export default class GasExchanger {
   textStyle = {};
   globalScale = 1.0;
   scaleSprite = 1.0;
-  scaleText = 2.0;
+  scaleText = 20.0;
 
   interactionData = null;
   connectors = {};
@@ -86,14 +86,14 @@ export default class GasExchanger {
     //define the caption style and text object and add it to the stage
     this.textStyle = new PIXI.TextStyle({
       fill: "white",
-      fontSize: 12,
+      fontSize: 10,
       fontFamily: "Arial",
       strokeThickness: 0,
     });
     this.text = new PIXI.Text(this.label, this.textStyle);
     this.text.anchor = { x: 0.5, y: 0.5 };
     this.text.x = this.sprite.x;
-    this.text.y = this.sprite.y;
+    this.text.y = this.sprite.y + this.scaleText;
     this.text.zIndex = 4;
 
     this.pixiApp.stage.addChild(this.text);
@@ -122,8 +122,8 @@ export default class GasExchanger {
     if (this.interactionData) {
       this.sprite.x = this.interactionData.global.x;
       this.sprite.y = this.interactionData.global.y;
-      this.text.x = this.interactionData.global.x;
-      this.text.y = this.interactionData.global.y;
+      this.text.x = this.sprite.x;
+      this.text.y = this.sprite.y + this.scaleText;
       this.layout.x = this.sprite.x / this.xCenter;
       this.layout.y = this.sprite.y / this.yCenter;
       this.calculateOnCircle(this.sprite.x, this.sprite.y);
@@ -161,7 +161,7 @@ export default class GasExchanger {
       this.sprite.y =
         this.yCenter + Math.sin(angle * 0.0174533) * this.xCenter * this.radius;
       this.text.x = this.sprite.x;
-      this.text.y = this.sprite.y;
+      this.text.y = this.sprite.y + this.scaleText;
     } else {
       this.layout.type = "rel";
     }

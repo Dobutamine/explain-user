@@ -10,10 +10,10 @@ export default class Shunt {
   dbcTo = {};
 
   sprite = {};
-  spriteColor = 0x664400;
+  spriteColor = 0xffdd00;
 
   path = null;
-  pathColor = 0x442200;
+  pathColor = 0x886600;
 
   arc = {
     enabled: false,

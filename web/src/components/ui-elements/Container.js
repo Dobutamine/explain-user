@@ -14,13 +14,11 @@ export default class Container {
   sprite = {};
   text = {};
   textStyle = {};
-  globalScale = 1.0;
-  scaleSprite = 1.0;
-  scaleText = 8.0;
 
   interactionData = null;
+  connectors = {};
 
-  volume = 0;
+  volume = 0.1;
 
   constructor(pixiApp, key, label, models, layout, xCenter, yCenter, radius) {
     // store the parameters
@@ -32,7 +30,6 @@ export default class Container {
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.radius = radius;
-    this.textOffset = -30;
 
     // this is a blood compartment sprite which uses
     this.sprite = PIXI.Sprite.from("container.png");
@@ -45,24 +42,31 @@ export default class Container {
     this.sprite.on("touchend", (e) => this.onDragEnd(e));
     this.sprite.on("mousemove", (e) => this.onDragMove(e));
     this.sprite.on("touchmove", (e) => this.onDragMove(e));
-    this.sprite.scale.set(0.15, 0.15);
+    this.sprite.scale.set(
+      this.volume * this.layout.scale.x,
+      this.volume * this.layout.scale.y
+    );
     this.sprite.anchor = { x: 0.5, y: 0.5 };
-    this.sprite.tint = "0x555555";
-    this.sprite.zIndex = 3;
+    this.sprite.tint = "0x151a7b";
+    this.sprite.zIndex = 2;
 
     // place the sprite on the stage
-    switch (this.layout.type) {
+    switch (this.layout.pos.type) {
       case "arc":
         this.sprite.x =
           this.xCenter +
-          Math.cos(this.layout.dgs * 0.0174533) * this.xCenter * this.radius;
+          Math.cos(this.layout.pos.dgs * 0.0174533) *
+            this.xCenter *
+            this.radius;
         this.sprite.y =
           this.yCenter +
-          Math.sin(this.layout.dgs * 0.0174533) * this.xCenter * this.radius;
+          Math.sin(this.layout.pos.dgs * 0.0174533) *
+            this.xCenter *
+            this.radius;
         break;
       case "rel":
-        this.sprite.x = this.xCenter * this.layout.x;
-        this.sprite.y = this.yCenter * this.layout.y;
+        this.sprite.x = this.layout.pos.x * this.xCenter;
+        this.sprite.y = this.layout.pos.y * this.yCenter;
         break;
     }
 
@@ -71,34 +75,31 @@ export default class Container {
     //define the caption style and text object and add it to the stage
     this.textStyle = new PIXI.TextStyle({
       fill: "white",
-      fontSize: 10,
+      fontSize: this.layout.text.size,
       fontFamily: "Arial",
       strokeThickness: 0,
     });
     this.text = new PIXI.Text(this.label, this.textStyle);
     this.text.anchor = { x: 0.5, y: 0.5 };
-    this.text.x = this.sprite.x;
-    this.text.y = this.sprite.y + this.textOffset;
-    this.text.zIndex = 3;
+    this.text.x = this.sprite.x + this.layout.text.x;
+    this.text.y = this.sprite.y + this.layout.text.y;
+    this.text.zIndex = 2;
 
     this.pixiApp.stage.addChild(this.text);
   }
   update(data) {
     let volume = 0;
-    let volumes = [];
-
     this.models.forEach((model) => {
       volume += data[model + ".Vol"];
-      volumes.push(data[model + ".Vol"]);
     });
 
     this.volume = this.calculateRadius(volume);
 
     this.sprite.scale.set(
-      this.volume * this.scaleSprite * this.globalScale,
-      this.volume * this.scaleSprite * this.globalScale
+      this.volume * this.layout.scale.x,
+      this.volume * this.layout.scale.y
     );
-    let scaleFont = this.volume * this.scaleText * this.globalScale;
+    let scaleFont = this.volume * this.layout.text.size;
     if (scaleFont > 1.1) {
       scaleFont = 1.1;
     }
@@ -113,11 +114,13 @@ export default class Container {
     if (this.interactionData) {
       this.sprite.x = this.interactionData.global.x;
       this.sprite.y = this.interactionData.global.y;
-      this.text.x = this.interactionData.global.x;
-      this.text.y = this.interactionData.global.y + this.textOffset;
-      this.layout.x = this.sprite.x / this.xCenter;
-      this.layout.y = this.sprite.y / this.yCenter;
+      this.text.x = this.sprite.x + this.layout.text.x;
+      this.text.y = this.sprite.y + this.layout.text.y;
+      this.layout.pos.x = this.sprite.x / this.xCenter;
+      this.layout.pos.y = this.sprite.y / this.yCenter;
       this.calculateOnCircle(this.sprite.x, this.sprite.y);
+      // redraw the connector
+      this.redrawConnectors();
     }
   }
   onDragEnd(e) {
@@ -142,17 +145,17 @@ export default class Container {
       } else {
         angle = -angle;
       }
-      this.layout.type = "arc";
-      this.layout.dgs = angle;
+      this.layout.pos.type = "arc";
+      this.layout.pos.dgs = angle;
       // snap to the circle
       this.sprite.x =
         this.xCenter + Math.cos(angle * 0.0174533) * this.xCenter * this.radius;
       this.sprite.y =
         this.yCenter + Math.sin(angle * 0.0174533) * this.xCenter * this.radius;
-      this.text.x = this.sprite.x;
-      this.text.y = this.sprite.y;
+      this.text.x = this.sprite.x + this.layout.text.x;
+      this.text.y = this.sprite.y + this.layout.text.y;
     } else {
-      this.layout.type = "rel";
+      this.layout.pos.type = "rel";
     }
   }
   calculateRadius(volume) {

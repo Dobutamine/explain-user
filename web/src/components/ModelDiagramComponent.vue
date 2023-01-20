@@ -438,6 +438,18 @@ export default {
                 radius
               );
               break;
+            case "GasCompartment":
+              this.diagramComponents[key] = new GasCompartment(
+                this.pixiApp,
+                key,
+                component.label,
+                component.models,
+                component.layout,
+                xCenter,
+                yCenter,
+                radius
+              );
+              break;
             case "BloodConnector":
               this.diagramComponents[key] = new BloodConnector(
                 this.pixiApp,
@@ -470,18 +482,7 @@ export default {
                 radius
               );
               break;
-            case "GasCompartment":
-              this.diagramComponents[key] = new GasCompartment(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
+
             case "GasConnector":
               this.diagramComponents[key] = new GasConnector(
                 this.pixiApp,
