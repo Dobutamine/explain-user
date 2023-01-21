@@ -38,7 +38,7 @@
                   <q-item-section
                     clickable
                     v-close-popup
-                    @click="selectComponentTypeToAdd(diagramComponentType)"
+                    @click="addComponent(diagramComponentType)"
                   >
                     {{ diagramComponentType }}
                   </q-item-section>
@@ -65,7 +65,7 @@
                   <q-item-section
                     clickable
                     v-close-popup
-                    @click="selectDiagramComponent(diagramComponentName)"
+                    @click="editComponent(diagramComponentName)"
                   >
                     {{ diagramComponentName }}
                   </q-item-section>
@@ -92,7 +92,7 @@
                   <q-item-section
                     clickable
                     v-close-popup
-                    @click="selectComponentType(diagramComponentType)"
+                    @click="deleteComponent(diagramComponentType)"
                   >
                     {{ diagramComponentType }}
                   </q-item-section>
@@ -106,7 +106,7 @@
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
         <div
-          v-if="editorMode == 0 || editorMode == 2"
+          v-if="editorMode == 1 || editorMode == 2"
           :style="{ 'font-size': '10px', width: '100%' }"
         >
           <q-input
@@ -139,6 +139,145 @@
             style="font-size: 12px"
           />
           <div v-if="compType == 'BloodCompartment'">
+            layout
+            <q-btn-toggle
+              class="q-ma-sm col-9"
+              v-model="compLayoutType"
+              size="sm"
+              dark
+              spread
+              dense
+              no-caps
+              toggle-color="blue-grey-6"
+              color="grey-9"
+              text-color="black"
+              :options="[
+                { label: 'Arc', value: true },
+                { label: 'Relative', value: false },
+              ]"
+            />
+            <div v-if="!compLayoutType" class="row">
+              <q-input
+                class="col q-ma-sm"
+                label="postion x"
+                v-model="compLayoutX"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+              <q-input
+                class="col q-ma-sm"
+                label="position Y"
+                v-model="compLayoutY"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+            </div>
+            <div v-if="compLayoutType" class="row">
+              <q-input
+                class="col q-ma-sm"
+                label="position Degrees"
+                v-model="compLayoutDgs"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+            </div>
+            <div class="row">
+              <q-input
+                class="col q-ma-sm"
+                label="morph X"
+                v-model="compMorphX"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+              <q-input
+                class="col q-ma-sm"
+                label="morph Y"
+                v-model="compMorphY"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+            </div>
+            <div class="row">
+              <q-input
+                class="col q-ma-sm"
+                label="scale X"
+                v-model="compScaleX"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+              <q-input
+                class="col q-ma-sm"
+                label="scale Y"
+                v-model="compScaleY"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+            </div>
+            <div class="row">
+              <q-input
+                class="col q-ma-sm"
+                label="label pos X"
+                v-model="compTextX"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+              <q-input
+                class="col q-ma-sm"
+                label="label pos Y"
+                v-model="compTextY"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+              <q-input
+                class="col q-ma-sm"
+                label="label size"
+                v-model="compTextSize"
+                square
+                type="number"
+                hide-hint
+                dense
+                dark
+                stack-label
+              />
+            </div>
+          </div>
+          <div v-if="compType == 'GasCompartment'">
             layout
             <q-btn-toggle
               class="q-ma-sm col-9"
@@ -339,36 +478,123 @@ export default {
     },
     cancelBuild() {
       this.selectedModelItems = [];
+      this.editorMode = 0;
     },
-    selectDiagramComponent(compName) {
+    deleteComponent(compName) {
+      this.editorMode = 3;
+    },
+    editComponent(compName) {
+      this.editorMode = 2;
       // get all the properties
       this.selectedDiagramComponent =
         this.uiConfig.diagram.components[compName];
 
-      console.log(this.selectedDiagramComponent);
+      // get all possible model types
+      this.compModels = [];
+      this.compModelSelection = [];
+
       switch (this.selectedDiagramComponent.compType) {
-        case "BloodCompartment":
+        case "BloodCompartment" || "GasCompartment":
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
-          this.compModels = this.selectedDiagramComponent.models;
-          this.compLayoutDgs = this.selectedDiagramComponent.layout.pos.dgs;
-          this.compLayoutX = this.selectedDiagramComponent.layout.pos.x;
-          this.compLayoutY = this.selectedDiagramComponent.layout.pos.y;
-          this.compMorphX = this.selectedDiagramComponent.layout.morph.x;
-          this.compMorphY = this.selectedDiagramComponent.layout.morph.y;
-          this.compScaleX = this.selectedDiagramComponent.layout.scale.x;
-          this.compScaleY = this.selectedDiagramComponent.layout.scale.y;
-          this.compTextX = this.selectedDiagramComponent.layout.text.x;
-          this.compTextX = this.selectedDiagramComponent.layout.text.x;
-          this.compTextY = this.selectedDiagramComponent.layout.text.y;
-          this.compTextSize = this.selectedDiagramComponent.layout.text.size;
-          this.compModelSelection = this.compModels;
+          this.selectComponentTypeToAdd(this.selectedDiagramComponent.compType);
+          this.compModelSelection = this.selectedDiagramComponent.models;
+          if (this.selectedDiagramComponent.layout.pos.type == "arc") {
+            this.compLayoutType = true;
+          } else {
+            this.compLayoutType = false;
+          }
+          this.compLayoutDgs = parseFloat(
+            this.selectedDiagramComponent.layout.pos.dgs.toFixed(2)
+          );
+          this.compLayoutX = parseFloat(
+            this.selectedDiagramComponent.layout.pos.x.toFixed(2)
+          );
+          this.compLayoutY = parseFloat(
+            this.selectedDiagramComponent.layout.pos.y.toFixed(2)
+          );
+          this.compMorphX = parseFloat(
+            this.selectedDiagramComponent.layout.morph.x.toFixed(2)
+          );
+          this.compMorphY = parseFloat(
+            this.selectedDiagramComponent.layout.morph.y.toFixed(2)
+          );
+          this.compScaleX = parseFloat(
+            this.selectedDiagramComponent.layout.scale.x.toFixed(2)
+          );
+          this.compScaleY = parseFloat(
+            this.selectedDiagramComponent.layout.scale.y.toFixed(2)
+          );
+          this.compTextX = parseFloat(
+            this.selectedDiagramComponent.layout.text.x.toFixed(2)
+          );
+          this.compTextX = parseFloat(
+            this.selectedDiagramComponent.layout.text.x.toFixed(2)
+          );
+          this.compTextY = parseFloat(
+            this.selectedDiagramComponent.layout.text.y.toFixed(2)
+          );
+          this.compTextSize = parseFloat(
+            this.selectedDiagramComponent.layout.text.size.toFixed(2)
+          );
+
+          // add the other possible models
           break;
       }
     },
+    clearFields() {
+      this.compLabel = "";
+      this.compName = "";
+      this.compModels = [];
+      this.compLayoutType = true;
+      this.compLayoutDgs = 0;
+      this.compLayoutX = 0;
+      this.compLayoutY = 0;
+      this.compMorphX = 1;
+      this.compMorphY = 1;
+      this.compScaleX = 1;
+      this.compScaleY = 1;
+      this.compTextX = 0;
+      this.compTextY = 0;
+      this.compTextSize = 10;
+    },
+    addComponent(compType) {
+      this.editorMode = 1;
+      this.clearFields();
+      this.selectComponentTypeToAdd(compType);
+    },
     selectComponentTypeToAdd(compType) {
       this.compType = compType;
+      // find all models which this compType could hold
+      this.compModels = [];
+      this.compModelSelection = [];
+      let models = [];
+      switch (this.compType) {
+        case "BloodCompartment":
+          models = ["BloodCompliance", "BloodTimeVaryingElastance"];
+          break;
+        case "BloodConnector":
+          models = ["BloodResistor"];
+          break;
+        case "GasCompartment":
+          models = ["GasCompliance"];
+          break;
+        case "GasConnector":
+          models = ["GasResistor"];
+          break;
+        case "Container":
+          models = ["Container"];
+          break;
+        case "GasExchanger":
+          models = ["GasExchanger"];
+          break;
+      }
+      Object.keys(explain.modelState.Models).forEach((model) => {
+        if (models.includes(explain.modelState.Models[model].ModelType)) {
+          this.compModels.push(model);
+        }
+      });
     },
     selectModelType(modeltype) {
       // search the properties needed for this modeltype in the uiconfig
