@@ -128,6 +128,7 @@
 
 <script>
 import { PIXI } from "../boot/pixi";
+
 import { explain } from "../boot/explain";
 import BloodCompartment from "../components/ui-elements/BloodCompartment";
 import BloodConnector from "../components/ui-elements/BloodConnector";
@@ -519,6 +520,9 @@ export default {
 
       // connect the compartments
     },
+    rebuildDiagram() {
+      console.log("rebuilding");
+    },
   },
   beforeUnmount() {
     document.removeEventListener("status", this.statusUpdate);
@@ -528,6 +532,7 @@ export default {
     this.initDiagram();
 
     document.addEventListener("status", this.statusUpdate);
+    this.$bus.on("rebuild_diagram", () => console.log("timmie from component"));
 
     // get the model state
     explain.getModelState();
