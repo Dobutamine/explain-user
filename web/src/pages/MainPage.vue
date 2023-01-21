@@ -153,7 +153,7 @@ import MonitorsComponentVue from "../components/MonitorsComponent.vue";
 import ModelDiagramComponentVue from "src/components/ModelDiagramComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
-import ModelDiagramEditorComponent from "src/components/ModelDiagramEditorComponent.vue";
+import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 
 import { useLoggedInUser } from "stores/loggedInUser";
 import { useUserInterfaceStore } from "src/stores/userInterface";
@@ -176,7 +176,7 @@ export default {
     BuildComponentVue,
     ModelDiagramComponentVue,
     TimeChartComponentVue,
-    ModelDiagramEditorComponent,
+    ModelDiagramEditorComponent: DiagramEditorComponent,
   },
   data() {
     return {
