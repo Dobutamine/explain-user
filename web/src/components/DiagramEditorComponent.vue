@@ -339,7 +339,7 @@ export default {
       advancedMode: true,
       editorMode: 0,
       notyet: true,
-      title: "DIAGRAM COMPONENT EDITOR",
+      title: "DIAGRAM EDITOR",
       collapsed: true,
       modelsTree: {},
       selectedModelType: [],
@@ -561,7 +561,6 @@ export default {
       this.selectedDiagramComponent =
         this.uiConfig.diagram.components[compName];
 
-      console.log(this.selectedDiagramComponent);
       // get all possible model types
       this.compModels = [];
       this.compModelSelection = [];
@@ -733,6 +732,7 @@ export default {
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
+          this.compGas = this.selectedDiagramComponent.gas;
           this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
           this.compModelSelection = this.selectedDiagramComponent.models;
           if (this.selectedDiagramComponent.layout.pos.type == "arc") {
@@ -807,7 +807,6 @@ export default {
       this.editorMode = 1;
       this.clearFields();
       this.selectModelTypeToAdd(compType);
-      console.log(compType);
       switch (compType) {
         case "BloodConnector":
           this.findDiagramComponents("BloodCompartment");
@@ -898,6 +897,13 @@ export default {
   beforeUnmount() {
     // remove the model state event listener
     document.removeEventListener("state", this.buildModelItemTree);
+    document.removeEventListener(
+      "edit_comp",
+      (e) => {
+        this.editComponent(e.detail);
+      },
+      false
+    );
   },
   mounted() {
     this.rebuild_event = new CustomEvent("rebuild_diagram");
@@ -913,6 +919,14 @@ export default {
 
     // get all diagram component names
     this.getAllDiagramComponents();
+
+    document.addEventListener(
+      "edit_comp",
+      (e) => {
+        this.editComponent(e.detail);
+      },
+      false
+    );
   },
 };
 </script>

@@ -21,6 +21,7 @@ export default class GasExchanger {
   gas = "O2";
   rotation = 0;
 
+  edit_comp_event = null;
   constructor(
     pixiApp,
     key,
@@ -42,6 +43,8 @@ export default class GasExchanger {
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.radius = radius;
+
+    this.edit_comp_event = new CustomEvent("edit_comp", { detail: this.key });
 
     // this is a blood compartment sprite which uses
     this.sprite = PIXI.Sprite.from("exchange.png");
@@ -133,6 +136,7 @@ export default class GasExchanger {
     this.interactionData = null;
     this.sprite.alpha = 1;
     this.text.alpha = 1;
+    document.dispatchEvent(this.edit_comp_event);
   }
   redrawConnectors() {
     Object.values(this.connectors).forEach((connector) => connector.drawPath());

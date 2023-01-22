@@ -38,6 +38,8 @@ export default class GasConnector {
   prevSpriteX = 0;
   prevSpriteY = 0;
 
+  edit_comp_event = null;
+
   constructor(pixiApp, key, label, models, dbcFrom, dbcTo, layout) {
     this.pixiApp = pixiApp;
     this.key = key;
@@ -46,6 +48,8 @@ export default class GasConnector {
     this.dbcFrom = dbcFrom;
     this.dbcTo = dbcTo;
     this.layout = layout;
+
+    this.edit_comp_event = new CustomEvent("edit_comp", { detail: this.key });
 
     this.drawPath();
 

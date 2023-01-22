@@ -36,6 +36,8 @@ export default class Shunt {
   prevSpriteX = 0;
   prevSpriteY = 0;
 
+  edit_comp_event = null;
+
   constructor(pixiApp, key, label, models, dbcFrom, dbcTo) {
     this.pixiApp = pixiApp;
     this.key = key;
@@ -43,6 +45,7 @@ export default class Shunt {
     this.models = models;
     this.dbcFrom = dbcFrom;
     this.dbcTo = dbcTo;
+    this.edit_comp_event = new CustomEvent("edit_comp", { detail: this.key });
 
     this.drawPath();
 

@@ -1031,10 +1031,10 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             break;
           case "GasExchanger":
             component.models.forEach((model) => {
-              if ((component.gas = "O2")) {
+              if (component.gas === "O2") {
                 propIdsCharts.push(model + ".FluxO2");
               }
-              if ((component.gas = "Co2")) {
+              if (component.gas === "Co2") {
                 propIdsCharts.push(model + ".FluxCo2");
               }
             });

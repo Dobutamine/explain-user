@@ -20,6 +20,8 @@ export default class Container {
 
   volume = 0.1;
 
+  edit_comp_event = null;
+
   constructor(pixiApp, key, label, models, layout, xCenter, yCenter, radius) {
     // store the parameters
     this.pixiApp = pixiApp;
@@ -30,6 +32,8 @@ export default class Container {
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.radius = radius;
+
+    this.edit_comp_event = new CustomEvent("edit_comp", { detail: this.key });
 
     // this is a blood compartment sprite which uses
     this.sprite = PIXI.Sprite.from("container.png");
@@ -127,6 +131,7 @@ export default class Container {
     this.interactionData = null;
     this.sprite.alpha = 1;
     this.text.alpha = 1;
+    document.dispatchEvent(this.edit_comp_event);
   }
   redrawConnectors() {
     Object.values(this.connectors).forEach((connector) => connector.drawPath());

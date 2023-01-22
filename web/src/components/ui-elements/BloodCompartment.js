@@ -1,3 +1,4 @@
+import { Tick3D } from "@arction/lcjs";
 import { PIXI } from "src/boot/pixi.js";
 
 export default class BloodCompartment {
@@ -21,6 +22,8 @@ export default class BloodCompartment {
   volume = 0.1;
   to2 = 7.4;
 
+  edit_comp_event = null;
+
   constructor(pixiApp, key, label, models, layout, xCenter, yCenter, radius) {
     // store the parameters
     this.pixiApp = pixiApp;
@@ -31,6 +34,8 @@ export default class BloodCompartment {
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.radius = radius;
+
+    this.edit_comp_event = new CustomEvent("edit_comp", { detail: this.key });
 
     // this is a blood compartment sprite which uses
     this.sprite = PIXI.Sprite.from("container.png");
@@ -139,6 +144,7 @@ export default class BloodCompartment {
     this.interactionData = null;
     this.sprite.alpha = 1;
     this.text.alpha = 1;
+    document.dispatchEvent(this.edit_comp_event);
   }
   redrawConnectors() {
     Object.values(this.connectors).forEach((connector) => connector.drawPath());
