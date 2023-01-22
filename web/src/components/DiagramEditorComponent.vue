@@ -105,6 +105,7 @@
       <div
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
+        {{ compType }}
         <div
           v-if="editorMode == 1 || editorMode == 2"
           :style="{ 'font-size': '10px', width: '100%' }"
@@ -119,15 +120,6 @@
             stack-label
             style="width: 100%"
           />
-          <q-input
-            label="caption"
-            v-model="compLabel"
-            square
-            hide-hint
-            dense
-            dark
-            stack-label
-          />
           <q-select
             class="col-9"
             label="models"
@@ -140,9 +132,11 @@
           />
           <div
             v-if="
-              compType == 'BloodCompartment' ||
-              compType == 'GasCompartment' ||
-              compType == 'Container'
+              advancedMode &&
+              (compType == 'BloodCompartment' ||
+                compType == 'GasCompartment' ||
+                compType == 'Container' ||
+                compType == 'GasExchanger')
             "
           >
             layout
@@ -199,30 +193,7 @@
                 stack-label
               />
             </div>
-            <div class="row">
-              <q-input
-                class="col q-ma-sm"
-                label="morph X"
-                v-model="compMorphX"
-                square
-                type="number"
-                hide-hint
-                dense
-                dark
-                stack-label
-              />
-              <q-input
-                class="col q-ma-sm"
-                label="morph Y"
-                v-model="compMorphY"
-                square
-                type="number"
-                hide-hint
-                dense
-                dark
-                stack-label
-              />
-            </div>
+
             <div class="row">
               <q-input
                 class="col q-ma-sm"
@@ -335,7 +306,7 @@
             dense
             style="width: 50px"
             @click="cancelDiagramBuild"
-            icon="fa-solid fa-trash-can"
+            icon="fa-solid fa-refresh"
           ></q-btn>
         </div>
         <!-- status message -->
@@ -365,6 +336,7 @@ export default {
   },
   data() {
     return {
+      advancedMode: true,
       editorMode: 0,
       notyet: true,
       title: "DIAGRAM COMPONENT EDITOR",
@@ -380,12 +352,12 @@ export default {
       compType: "",
       compModels: [],
       compLayoutType: true,
-      compLayoutX: 0,
-      compLayoutY: 0,
-      compMorphX: 0,
-      compMorphY: 0,
-      compScaleX: 0,
-      compScaleY: 0,
+      compLayoutX: 1,
+      compLayoutY: 1,
+      compMorphX: 1,
+      compMorphY: 1,
+      compScaleX: 1,
+      compScaleY: 1,
       compTextX: 0,
       compTextY: 0,
       compTextSize: 10,
@@ -427,16 +399,22 @@ export default {
             layout: {
               pos: {
                 type: layoutType,
-                x: this.compLayoutX,
-                y: this.compLayoutY,
-                dgs: this.compLayoutDgs,
+                x: parseFloat(this.compLayoutX),
+                y: parseFloat(this.compLayoutY),
+                dgs: parseFloat(this.compLayoutDgs),
               },
-              morph: { x: this.compMorphX, y: this.compMorphY },
-              scale: { x: this.compScaleX, y: this.compScaleY },
+              morph: {
+                x: parseFloat(this.compMorphX),
+                y: parseFloat(this.compMorphY),
+              },
+              scale: {
+                x: parseFloat(this.compScaleX),
+                y: parseFloat(this.compScaleY),
+              },
               text: {
-                x: this.compTextX,
-                y: this.compTextY,
-                size: this.compTextSize,
+                x: parseFloat(this.compTextX),
+                y: parseFloat(this.compTextY),
+                size: parseFloat(this.compTextSize),
               },
             },
           };
@@ -454,16 +432,22 @@ export default {
             layout: {
               pos: {
                 type: layoutType,
-                x: this.compLayoutX,
-                y: this.compLayoutY,
-                dgs: this.compLayoutDgs,
+                x: parseFloat(this.compLayoutX),
+                y: parseFloat(this.compLayoutY),
+                dgs: parseFloat(this.compLayoutDgs),
               },
-              morph: { x: this.compMorphX, y: this.compMorphY },
-              scale: { x: this.compScaleX, y: this.compScaleY },
+              morph: {
+                x: parseFloat(this.compMorphX),
+                y: parseFloat(this.compMorphY),
+              },
+              scale: {
+                x: parseFloat(this.compScaleX),
+                y: parseFloat(this.compScaleY),
+              },
               text: {
-                x: this.compTextX,
-                y: this.compTextY,
-                size: this.compTextSize,
+                x: parseFloat(this.compTextX),
+                y: parseFloat(this.compTextY),
+                size: parseFloat(this.compTextSize),
               },
             },
           };
@@ -481,16 +465,22 @@ export default {
             layout: {
               pos: {
                 type: layoutType,
-                x: this.compLayoutX,
-                y: this.compLayoutY,
-                dgs: this.compLayoutDgs,
+                x: parseFloat(this.compLayoutX),
+                y: parseFloat(this.compLayoutY),
+                dgs: parseFloat(this.compLayoutDgs),
               },
-              morph: { x: this.compMorphX, y: this.compMorphY },
-              scale: { x: this.compScaleX, y: this.compScaleY },
+              morph: {
+                x: parseFloat(this.compMorphX),
+                y: parseFloat(this.compMorphY),
+              },
+              scale: {
+                x: parseFloat(this.compScaleX),
+                y: parseFloat(this.compScaleY),
+              },
               text: {
-                x: this.compTextX,
-                y: this.compTextY,
-                size: this.compTextSize,
+                x: parseFloat(this.compTextX),
+                y: parseFloat(this.compTextY),
+                size: parseFloat(this.compTextSize),
               },
             },
           };
@@ -531,24 +521,34 @@ export default {
             layout: {
               pos: {
                 type: layoutType,
-                x: this.compLayoutX,
-                y: this.compLayoutY,
-                dgs: this.compLayoutDgs,
+                x: parseFloat(this.compLayoutX),
+                y: parseFloat(this.compLayoutY),
+                dgs: parseFloat(this.compLayoutDgs),
               },
-              morph: { x: this.compMorphX, y: this.compMorphY },
-              scale: { x: this.compScaleX, y: this.compScaleY },
+              morph: {
+                x: parseFloat(this.compMorphX),
+                y: parseFloat(this.compMorphY),
+              },
+              scale: {
+                x: parseFloat(this.compScaleX),
+                y: parseFloat(this.compScaleY),
+              },
               text: {
-                x: this.compTextX,
-                y: this.compTextY,
-                size: this.compTextSize,
+                x: parseFloat(this.compTextX),
+                y: parseFloat(this.compTextY),
+                size: parseFloat(this.compTextSize),
               },
             },
           };
           this.$bus.emit("rebuild_diagram");
           break;
       }
+      this.cancelDiagramBuild();
     },
     cancelDiagramBuild() {
+      this.clearFields();
+      this.getAllDiagramComponents();
+      this.compType = "";
       this.selectedModelItems = [];
       this.editorMode = 0;
     },
@@ -561,6 +561,7 @@ export default {
       this.selectedDiagramComponent =
         this.uiConfig.diagram.components[compName];
 
+      console.log(this.selectedDiagramComponent);
       // get all possible model types
       this.compModels = [];
       this.compModelSelection = [];
@@ -631,9 +632,6 @@ export default {
           this.compTextX = parseFloat(
             this.selectedDiagramComponent.layout.text.x.toFixed(2)
           );
-          this.compTextX = parseFloat(
-            this.selectedDiagramComponent.layout.text.x.toFixed(2)
-          );
           this.compTextY = parseFloat(
             this.selectedDiagramComponent.layout.text.y.toFixed(2)
           );
@@ -674,9 +672,6 @@ export default {
           );
           this.compScaleY = parseFloat(
             this.selectedDiagramComponent.layout.scale.y.toFixed(2)
-          );
-          this.compTextX = parseFloat(
-            this.selectedDiagramComponent.layout.text.x.toFixed(2)
           );
           this.compTextX = parseFloat(
             this.selectedDiagramComponent.layout.text.x.toFixed(2)
@@ -725,6 +720,47 @@ export default {
           this.compTextX = parseFloat(
             this.selectedDiagramComponent.layout.text.x.toFixed(2)
           );
+          this.compTextY = parseFloat(
+            this.selectedDiagramComponent.layout.text.y.toFixed(2)
+          );
+          this.compTextSize = parseFloat(
+            this.selectedDiagramComponent.layout.text.size.toFixed(2)
+          );
+
+          // add the other possible models
+          break;
+        case "GasExchanger":
+          this.compType = this.selectedDiagramComponent.compType;
+          this.compName = compName;
+          this.compLabel = this.selectedDiagramComponent.label;
+          this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
+          this.compModelSelection = this.selectedDiagramComponent.models;
+          if (this.selectedDiagramComponent.layout.pos.type == "arc") {
+            this.compLayoutType = true;
+          } else {
+            this.compLayoutType = false;
+          }
+          this.compLayoutDgs = parseFloat(
+            this.selectedDiagramComponent.layout.pos.dgs.toFixed(2)
+          );
+          this.compLayoutX = parseFloat(
+            this.selectedDiagramComponent.layout.pos.x.toFixed(2)
+          );
+          this.compLayoutY = parseFloat(
+            this.selectedDiagramComponent.layout.pos.y.toFixed(2)
+          );
+          this.compMorphX = parseFloat(
+            this.selectedDiagramComponent.layout.morph.x.toFixed(2)
+          );
+          this.compMorphY = parseFloat(
+            this.selectedDiagramComponent.layout.morph.y.toFixed(2)
+          );
+          this.compScaleX = parseFloat(
+            this.selectedDiagramComponent.layout.scale.x.toFixed(2)
+          );
+          this.compScaleY = parseFloat(
+            this.selectedDiagramComponent.layout.scale.y.toFixed(2)
+          );
           this.compTextX = parseFloat(
             this.selectedDiagramComponent.layout.text.x.toFixed(2)
           );
@@ -753,8 +789,8 @@ export default {
       this.compModels = [];
       this.compLayoutType = true;
       this.compLayoutDgs = 0;
-      this.compLayoutX = 0;
-      this.compLayoutY = 0;
+      this.compLayoutX = 1;
+      this.compLayoutY = 1;
       this.compMorphX = 1;
       this.compMorphY = 1;
       this.compScaleX = 1;
@@ -762,6 +798,10 @@ export default {
       this.compTextX = 0;
       this.compTextY = 0;
       this.compTextSize = 10;
+      this.compDbcFroms = [];
+      this.compDbcFrom = "";
+      this.compDbcTo = "";
+      this.compDbcTos = [];
     },
     addComponent(compType) {
       this.editorMode = 1;
