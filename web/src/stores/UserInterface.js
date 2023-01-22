@@ -3,6 +3,9 @@ import { explain } from "src/boot/explain";
 
 export const useUserInterfaceStore = defineStore("userInterface", {
   state: () => ({
+    settings: {
+      apiUrl: "http://localhost:8081",
+    },
     models: {
       BloodTimeVaryingElastance: {
         properties: [
@@ -836,7 +839,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
     },
     diagram: {
       user: "Timothy Antonius",
-      name: "complete",
+      name: "default",
       settings: {
         backgroundColor: 0x333333,
         editingMode: 1,
@@ -857,13 +860,14 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           "GasExchanger",
         ],
       },
-      protected: true,
+      protected: false,
       shared: false,
       components: {
+        /*
         LA: {
           label: "LA",
           models: ["LA"],
-          compType: "BloodCompartment",
+          compType: "BloodCompartment", or GasCompartment or Container
           layout: {
             pos: { type: "arc", x: 0, y: 0, dgs: 325 },
             morph: { x: 1.0, y: 1.0 },
@@ -871,197 +875,27 @@ export const useUserInterfaceStore = defineStore("userInterface", {
             text: { x: 0.0, y: 0.0, size: 10 },
           },
         },
-        LV: {
-          label: "LV",
-          models: ["LV"],
-          compType: "BloodCompartment",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 15 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        RA: {
-          label: "RA",
-          models: ["RA"],
-          compType: "BloodCompartment",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 180 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        RV: {
-          label: "RV",
-          models: ["RV"],
-          compType: "BloodCompartment",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 200 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        LL: {
-          label: "LL",
-          models: ["LL"],
-          compType: "BloodCompartment",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 270 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        RL: {
-          label: "RL",
-          models: ["RL"],
-          compType: "BloodCompartment",
-          layout: {
-            pos: { type: "rel", x: 1, y: 0.35, dgs: 270 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        PA: {
-          label: "PA",
-          models: ["PA"],
-          compType: "BloodCompartment",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 235 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        PV: {
-          label: "PV",
-          models: ["PV"],
-          compType: "BloodCompartment",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 305 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        ALL: {
-          label: "ALL",
-          models: ["ALL"],
-          compType: "GasCompartment",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 305 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        DS: {
-          label: "DS",
-          models: ["DS"],
-          compType: "GasCompartment",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 305 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        CHEST_L: {
-          label: "CHEST_L",
-          models: ["CHEST_L"],
-          compType: "Container",
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 305 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        RV_PA: {
-          label: "RV_PA",
-          models: ["RV_PA"],
-          compType: "BloodConnector",
-          dbcFrom: "RV",
-          dbcTo: "PA",
-          layout: {},
-        },
-
         RA_RV: {
           label: "RA_RV",
           models: ["RA_RV"],
-          compType: "BloodConnector",
+          compType: "BloodConnector", or "GasConnector" or "Shunt"
           dbcFrom: "RA",
           dbcTo: "RV",
           layout: {},
         },
-        LA_LV: {
-          label: "LA_LV",
-          models: ["LA_LV"],
-          compType: "BloodConnector",
-          dbcFrom: "LA",
-          dbcTo: "LV",
-          layout: {},
+        GASEX_LL: {
+          label: "GASEX_LL",
+          models: ["GASEX_LL"],
+          compType: "GasExchanger"
+          gas: "O2" or "Co2"
+          layout: {
+            pos: { type: "arc", x: 0, y: 0, dgs: 325 },
+            morph: { x: 1.0, y: 1.0 },
+            scale: { x: 1.0, y: 1.0 },
+            text: { x: 0.0, y: 0.0, size: 10 },
+          },
         },
-        PA_LL: {
-          label: "PA_LL",
-          models: ["PA_LL"],
-          compType: "BloodConnector",
-          dbcFrom: "PA",
-          dbcTo: "LL",
-          layout: {},
-        },
-        PA_RL: {
-          label: "PA_RL",
-          models: ["PA_RL"],
-          compType: "BloodConnector",
-          dbcFrom: "PA",
-          dbcTo: "RL",
-          layout: {},
-        },
-        LL_PV: {
-          label: "LL_PV",
-          models: ["LL_PV"],
-          compType: "BloodConnector",
-          dbcFrom: "LL",
-          dbcTo: "PV",
-          layout: {},
-        },
-        RL_PV: {
-          label: "RL_PV",
-          models: ["RL_PV"],
-          compType: "BloodConnector",
-          dbcFrom: "RL",
-          dbcTo: "PV",
-          layout: {},
-        },
-        PV_LA: {
-          label: "PV_LA",
-          models: ["PV_LA"],
-          compType: "BloodConnector",
-          dbcFrom: "PV",
-          dbcTo: "LA",
-          layout: {},
-        },
-        DS_ALL: {
-          label: "DS_ALL",
-          models: ["DS_ALL"],
-          compType: "GasConnector",
-          dbcFrom: "DS",
-          dbcTo: "ALL",
-          layout: {},
-        },
-        PDA: {
-          label: "PDA",
-          models: ["DA"],
-          compType: "Shunt",
-          dbcFrom: "PA",
-          dbcTo: "LA",
-          layout: {},
-        },
+        */
       },
     },
   }),

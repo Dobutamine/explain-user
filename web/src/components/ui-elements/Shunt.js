@@ -57,6 +57,9 @@ export default class Shunt {
 
     this.pixiApp.stage.addChild(this.sprite);
 
+    this.registerConnectorWithDbc();
+  }
+  registerConnectorWithDbc() {
     // register with the dbc
     this.dbcFrom.connectors[this.key] = this;
     this.dbcTo.connectors[this.key] = this;

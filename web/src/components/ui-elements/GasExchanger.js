@@ -1,7 +1,7 @@
 import { PIXI } from "src/boot/pixi.js";
 
 export default class GasExchanger {
-  compType = "GasEchanger";
+  compType = "GasExchanger";
   pixiApp = {};
   key = "";
   label = "";

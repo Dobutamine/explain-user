@@ -1,6 +1,6 @@
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
-
+const debug = require("debug")("app:debug");
 const { Diagram, validate } = require("../models/diagram");
 const express = require("express");
 const _ = require("lodash");
@@ -60,7 +60,6 @@ router.post("/update_diagram", auth, async (req, res) => {
           "shared",
         ])
       );
-
       // add the creation date
       newDiagram["dateCreated"] = Date.now();
       newDiagram["dateUpdated"] = Date.now();
@@ -72,6 +71,8 @@ router.post("/update_diagram", auth, async (req, res) => {
 
       return;
     }
+
+    newDiagram["dateUpdated"] = Date.now();
 
     // save the model definition to the database
     await newDiagram.updateOne({
@@ -118,6 +119,7 @@ router.post("/new_diagram", auth, async (req, res) => {
     // add the creation date
     newDiagram["dateCreated"] = Date.now();
     newDiagram["dateUpdated"] = Date.now();
+    console.log(newDiagram);
 
     // save the model definition to the database
     await newDiagram.save();

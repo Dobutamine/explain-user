@@ -317,7 +317,34 @@
         <div v-if="editorMode == 1"></div>
         <div v-if="editorMode == 2"></div>
         <div v-if="editorMode == 3"></div>
-        <q-btn @click="updateDiagram">TEST</q-btn>
+        <!-- server communication buttons -->
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs"
+        >
+          <q-btn
+            color="red-10"
+            dense
+            size="sm"
+            style="width: 50px"
+            icon="fa-solid fa-upload"
+            @click="saveDiagramComponent"
+          ></q-btn>
+          <q-btn
+            color="grey-14"
+            size="xs"
+            dense
+            style="width: 50px"
+            @click="cancelDiagramBuild"
+            icon="fa-solid fa-trash-can"
+          ></q-btn>
+        </div>
+        <!-- status message -->
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-xs"
+          style="font-size: 10px"
+        >
+          {{ statusMessage }}
+        </div>
       </div>
     </div>
   </q-card>
@@ -368,13 +395,15 @@ export default {
       compDbcTo: "",
       compDbcTos: [],
       compModelSelection: [],
+      compGas: "O2",
+      compGasses: ["O2", "Co2"],
       diagramComponentTypes: [],
       rebuild_event: null,
+      statusMessage: "",
     };
   },
   methods: {
     updateDiagram() {
-      console.log("dispatch event");
       this.$bus.emit("rebuild_diagram");
     },
     getAllDiagramComponents() {
@@ -383,7 +412,143 @@ export default {
         this.diagramComponentNames.push(component);
       });
     },
-    cancelBuild() {
+    saveDiagramComponent() {
+      let layoutType = "rel";
+      switch (this.compType) {
+        case "GasCompartment":
+          layoutType = "rel";
+          if (this.compLayoutType) {
+            layoutType = "arc";
+          }
+          this.uiConfig.diagram.components[this.compName] = {
+            label: this.compName,
+            models: this.compModelSelection,
+            compType: this.compType,
+            layout: {
+              pos: {
+                type: layoutType,
+                x: this.compLayoutX,
+                y: this.compLayoutY,
+                dgs: this.compLayoutDgs,
+              },
+              morph: { x: this.compMorphX, y: this.compMorphY },
+              scale: { x: this.compScaleX, y: this.compScaleY },
+              text: {
+                x: this.compTextX,
+                y: this.compTextY,
+                size: this.compTextSize,
+              },
+            },
+          };
+          this.$bus.emit("rebuild_diagram");
+          break;
+        case "BloodCompartment":
+          layoutType = "rel";
+          if (this.compLayoutType) {
+            layoutType = "arc";
+          }
+          this.uiConfig.diagram.components[this.compName] = {
+            label: this.compName,
+            models: this.compModelSelection,
+            compType: this.compType,
+            layout: {
+              pos: {
+                type: layoutType,
+                x: this.compLayoutX,
+                y: this.compLayoutY,
+                dgs: this.compLayoutDgs,
+              },
+              morph: { x: this.compMorphX, y: this.compMorphY },
+              scale: { x: this.compScaleX, y: this.compScaleY },
+              text: {
+                x: this.compTextX,
+                y: this.compTextY,
+                size: this.compTextSize,
+              },
+            },
+          };
+          this.$bus.emit("rebuild_diagram");
+          break;
+        case "Container":
+          layoutType = "rel";
+          if (this.compLayoutType) {
+            layoutType = "arc";
+          }
+          this.uiConfig.diagram.components[this.compName] = {
+            label: this.compName,
+            models: this.compModelSelection,
+            compType: this.compType,
+            layout: {
+              pos: {
+                type: layoutType,
+                x: this.compLayoutX,
+                y: this.compLayoutY,
+                dgs: this.compLayoutDgs,
+              },
+              morph: { x: this.compMorphX, y: this.compMorphY },
+              scale: { x: this.compScaleX, y: this.compScaleY },
+              text: {
+                x: this.compTextX,
+                y: this.compTextY,
+                size: this.compTextSize,
+              },
+            },
+          };
+          this.$bus.emit("rebuild_diagram");
+          break;
+        case "BloodConnector":
+          this.uiConfig.diagram.components[this.compName] = {
+            label: this.compName,
+            models: this.compModelSelection,
+            compType: this.compType,
+            dbcFrom: this.compDbcFrom,
+            dbcTo: this.compDbcTo,
+            layout: {},
+          };
+          this.$bus.emit("rebuild_diagram");
+          break;
+        case "GasConnector":
+          this.uiConfig.diagram.components[this.compName] = {
+            label: this.compName,
+            models: this.compModelSelection,
+            compType: this.compType,
+            dbcFrom: this.compDbcFrom,
+            dbcTo: this.compDbcTo,
+            layout: {},
+          };
+          this.$bus.emit("rebuild_diagram");
+          break;
+        case "GasExchanger":
+          layoutType = "rel";
+          if (this.compLayoutType) {
+            layoutType = "arc";
+          }
+          this.uiConfig.diagram.components[this.compName] = {
+            label: this.compName,
+            models: this.compModelSelection,
+            compType: this.compType,
+            gas: this.compGas,
+            layout: {
+              pos: {
+                type: layoutType,
+                x: this.compLayoutX,
+                y: this.compLayoutY,
+                dgs: this.compLayoutDgs,
+              },
+              morph: { x: this.compMorphX, y: this.compMorphY },
+              scale: { x: this.compScaleX, y: this.compScaleY },
+              text: {
+                x: this.compTextX,
+                y: this.compTextY,
+                size: this.compTextSize,
+              },
+            },
+          };
+          this.$bus.emit("rebuild_diagram");
+          break;
+      }
+    },
+    cancelDiagramBuild() {
       this.selectedModelItems = [];
       this.editorMode = 0;
     },
@@ -405,7 +570,7 @@ export default {
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
-          this.selectComponentTypeToAdd(this.selectedDiagramComponent.compType);
+          this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
           this.compModelSelection = this.selectedDiagramComponent.models;
           this.compDbcFrom = this.selectedDiagramComponent.dbcFrom;
           this.compDbcTo = this.selectedDiagramComponent.dbcTo;
@@ -415,7 +580,7 @@ export default {
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
-          this.selectComponentTypeToAdd(this.selectedDiagramComponent.compType);
+          this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
           this.compModelSelection = this.selectedDiagramComponent.models;
           this.compDbcFrom = this.selectedDiagramComponent.dbcFrom;
           this.compDbcTo = this.selectedDiagramComponent.dbcTo;
@@ -425,7 +590,7 @@ export default {
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
-          this.selectComponentTypeToAdd(this.selectedDiagramComponent.compType);
+          this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
           this.compModelSelection = this.selectedDiagramComponent.models;
           this.compDbcFrom = this.selectedDiagramComponent.dbcFrom;
           this.compDbcTo = this.selectedDiagramComponent.dbcTo;
@@ -435,7 +600,7 @@ export default {
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
-          this.selectComponentTypeToAdd(this.selectedDiagramComponent.compType);
+          this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
           this.compModelSelection = this.selectedDiagramComponent.models;
           if (this.selectedDiagramComponent.layout.pos.type == "arc") {
             this.compLayoutType = true;
@@ -482,7 +647,7 @@ export default {
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
-          this.selectComponentTypeToAdd(this.selectedDiagramComponent.compType);
+          this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
           this.compModelSelection = this.selectedDiagramComponent.models;
           if (this.selectedDiagramComponent.layout.pos.type == "arc") {
             this.compLayoutType = true;
@@ -529,7 +694,7 @@ export default {
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
-          this.selectComponentTypeToAdd(this.selectedDiagramComponent.compType);
+          this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
           this.compModelSelection = this.selectedDiagramComponent.models;
           if (this.selectedDiagramComponent.layout.pos.type == "arc") {
             this.compLayoutType = true;
@@ -601,9 +766,25 @@ export default {
     addComponent(compType) {
       this.editorMode = 1;
       this.clearFields();
-      this.selectComponentTypeToAdd(compType);
+      this.selectModelTypeToAdd(compType);
+      console.log(compType);
+      switch (compType) {
+        case "BloodConnector":
+          this.findDiagramComponents("BloodCompartment");
+          break;
+        case "GasConnector":
+          this.findDiagramComponents("GasCompartment");
+          break;
+        case "Container":
+          this.findDiagramComponents("BloodCompartment");
+          this.findDiagramComponents("GasCompartment");
+          break;
+        case "Shunt":
+          this.findDiagramComponents("BloodCompartment");
+          break;
+      }
     },
-    selectComponentTypeToAdd(compType) {
+    selectModelTypeToAdd(compType) {
       this.compType = compType;
       // find all models which this compType could hold
       this.compModels = [];
@@ -639,7 +820,6 @@ export default {
       // search the properties needed for this modeltype in the uiconfig
       this.selectedModelItems = [];
       this.selectedModelItems = this.uiConfig.models[modeltype].properties;
-      console.log(this.selectedModelItems);
     },
     removeAllProps() {
       // this.selectedModelItems = [];
@@ -684,6 +864,7 @@ export default {
 
     // add an event listener for when the model state is ready
     document.addEventListener("state", this.buildModelItemTree);
+
     // get the model state
     explain.getModelState();
 
@@ -692,8 +873,6 @@ export default {
 
     // get all diagram component names
     this.getAllDiagramComponents();
-
-    this.$bus.on("rebuild_diagram", () => console.log("timmie fromeditor"));
   },
 };
 </script>

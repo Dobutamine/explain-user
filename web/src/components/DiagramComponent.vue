@@ -1,5 +1,6 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
+    <!-- component title  -->
     <div
       class="row text-overline justify-center"
       @click="collapsed = !collapsed"
@@ -16,9 +17,11 @@
         name="fa-solid fa-chevron-up"
       ></q-icon>
     </div>
+    <!-- diagram pixi app stage -->
     <div class="stage" :style="{ display: display }">
       <canvas id="stage"></canvas>
     </div>
+    <!-- editing mode selectors -->
     <div class="row justify-center">
       <q-btn-toggle
         color="grey-10"
@@ -36,6 +39,7 @@
         ]"
       />
     </div>
+    <!-- server communication buttons -->
     <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
       <q-btn
         color="red-10"
@@ -62,12 +66,14 @@
         icon="fa-solid fa-trash-can"
       ></q-btn>
     </div>
+    <!-- status message -->
     <div
       class="q-gutter-sm row text-overline justify-center q-mb-xs"
       style="font-size: 10px"
     >
       {{ statusMessage }}
     </div>
+    <!-- server communication popup -->
     <q-popup-edit
       v-if="showPopUpServer"
       fit
@@ -97,7 +103,7 @@
             color="primary"
             size="sm"
             style="width: 50px"
-            @click="getDiagramFromServer"
+            @click="loadDiagramFromServer"
             icon="fa-solid fa-download"
           ></q-btn>
           <q-btn
@@ -128,7 +134,6 @@
 
 <script>
 import { PIXI } from "../boot/pixi";
-
 import { explain } from "../boot/explain";
 import BloodCompartment from "../components/ui-elements/BloodCompartment";
 import BloodConnector from "../components/ui-elements/BloodConnector";
@@ -154,7 +159,6 @@ export default {
   },
   data() {
     return {
-      apiUrl: "http://localhost:8081",
       title: "MODEL DIAGRAM",
       collapsed: false,
       editingSelection: "selecting",
@@ -173,47 +177,59 @@ export default {
     };
   },
   methods: {
-    clearDiagram() {
-      this.uiConfig.diagram = {
-        settings: {},
-        protected: false,
-        shared: false,
-        components: {},
-      };
-      this.pixiApp.destroy();
+    initDiagram() {
+      // get the reference to the canvas
+      canvas = document.getElementById("stage");
+      // set the resolution of the pix application
+      PIXI.settings.RESOLUTION = 2;
+      // define a pixi app with the canvas as view
+      this.pixiApp = new PIXI.Application({
+        transparent: false,
+        antialias: true,
+        backgroundColor: 0x333333,
+        view: canvas,
+      });
+      // allow sortable children
+      this.pixiApp.stage.sortableChildren = true;
+
+      // build the diagram
+      this.buildDiagram();
     },
-    saveDiagramToServer() {
-      Object.keys(this.diagramComponents).forEach((key) => {
-        // try to find the component in the diagram store
-        let found = Object.keys(this.uiConfig.diagram.components).includes(key);
-        // if found then update the component
-        if (found) {
-          switch (this.diagramComponents[key].compType) {
-            case "BloodCompartment":
-              console.log(this.diagramComponents[key]);
-              this.uiConfig.diagram.components[key].label =
-                this.diagramComponents[key].label;
-              this.uiConfig.diagram.components[key].models = [
-                ...this.diagramComponents[key].models,
-              ];
-              this.uiConfig.diagram.components[key].compType =
-                this.diagramComponents[key].compType;
-              this.uiConfig.diagram.components[key].layout = {
-                ...this.diagramComponents[key].layout,
-              };
-              break;
-          }
+    buildDiagram() {
+      // first clear all the children from the stage
+      this.clearDiagram();
+      // draw the skeleton graphics
+      this.drawSkeletonGraphics();
+      // draw the grid
+      this.drawGrid();
+      // draw the components
+      this.drawComponents();
+      // add a ticker to update all sprites
+      this.ticker = this.pixiApp.ticker.add((delta) => {
+        if (this.rt_running) {
+          Object.values(this.diagramComponents).forEach((sprite) => {
+            if (explain.modelData.length > 0) {
+              sprite.update(explain.modelData[0]);
+            }
+          });
         }
       });
     },
-    async saveDiagramToServer2() {
+    clearDiagram() {
+      this.pixiApp.stage.removeChildren();
+    },
+    async saveDiagramToServer() {
       // check if script is not protected
       if (this.uiConfig.diagram.protected) {
         alert("Diagram is protected!");
         return;
       }
+      if (Object.keys(this.uiConfig.diagram.components).length === 0) {
+        alert("No diagram components defined!");
+        return;
+      }
 
-      const url = `${this.apiUrl}/api/diagrams/update_diagram?token=${this.user.token}`;
+      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/update_diagram?token=${this.user.token}`;
       let response = await fetch(url, {
         method: "POST",
         headers: {
@@ -223,8 +239,8 @@ export default {
         body: JSON.stringify({
           name: this.uiConfig.diagram.name,
           user: this.user.name,
-          settings: this.uiConfig.diagram.settings,
-          components: this.uiConfig.diagram.components,
+          settings: { ...this.uiConfig.diagram.settings },
+          components: { ...this.uiConfig.diagram.components },
           protected: this.uiConfig.diagram.protected,
           shared: this.uiConfig.diagram.shared,
         }),
@@ -243,35 +259,9 @@ export default {
       }
       this.showPopUpServer = false;
     },
-    openServerCommunication() {
-      this.showPopUpServer = true;
-      this.getAllDiagramsFromUser();
-    },
-    async getAllDiagramsFromUser() {
+    async loadDiagramFromServer() {
       // do a server request
-      const url = `${this.apiUrl}/api/diagrams/get_diagrams?token=${this.user.token}`;
-      let response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user: this.user.name }),
-      });
-      if (response.status === 200) {
-        let data = await response.json();
-        // returns an array with all scripts of this user
-        if (data.length > 0) {
-          this.availableDiagramsOnServer = data.map((diagram) => diagram.name);
-          this.selectedDiagramOnServer = "";
-        } else {
-          this.availableDiagramsOnServer = [];
-        }
-      }
-    },
-    async getDiagramFromServer() {
-      // do a server request
-      const url = `${this.apiUrl}/api/diagrams/get_diagram?token=${this.user.token}`;
+      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/get_diagram?token=${this.user.token}`;
       let response = await fetch(url, {
         method: "POST",
         headers: {
@@ -298,23 +288,45 @@ export default {
         this.statusMessage = "diagram loaded from server.";
         setTimeout(() => (this.statusMessage = ""), 1500);
         this.showPopUpServer = false;
+
+        this.buildDiagram();
       }
     },
-    deleteDiagramFromServer() {},
+    async getDiagramsFromServer() {
+      // do a server request
+      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/get_diagrams?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user: this.user.name }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        // returns an array with all scripts of this user
+        if (data.length > 0) {
+          this.availableDiagramsOnServer = data.map((diagram) => diagram.name);
+          this.selectedDiagramOnServer = "";
+        } else {
+          this.availableDiagramsOnServer = [];
+        }
+      }
+    },
+    async deleteDiagramFromServer() {},
+    openServerCommunication() {
+      // show server communication pop up
+      this.showPopUpServer = true;
 
+      // get all available diuagrams for this user
+      this.getDiagramsFromServer();
+    },
     closeServerCommunication() {
+      // close the server communication pop up
       this.showPopUpServer = false;
     },
     changeEditingMode() {},
-
-    addToDiagram() {},
-
-    removeFromDiagram(componentName) {
-      if (componentName) {
-        delete this.diagramComponents[componentName];
-      }
-    },
-
     statusUpdate() {
       if (explain.statusMessage.includes("realtime model started")) {
         this.rt_running = true;
@@ -323,44 +335,7 @@ export default {
         this.rt_running = false;
       }
     },
-
-    initDiagram() {
-      // get the reference to the canvas
-      canvas = document.getElementById("stage");
-      // set the resolution of the pix application
-      PIXI.settings.RESOLUTION = 2;
-      // define a pixi app with the canvas as view
-      this.pixiApp = new PIXI.Application({
-        transparent: false,
-        antialias: true,
-        backgroundColor: 0x333333,
-        view: canvas,
-      });
-
-      // allow sortable children
-      this.pixiApp.stage.sortableChildren = true;
-
-      // draw the skeleton graphics
-      this.drawSkeletonGraphics();
-
-      // draw the grid
-      this.drawGrid();
-
-      // draw the components
-      this.drawComponents();
-
-      // add a ticker to update all sprites
-      this.ticker = this.pixiApp.ticker.add((delta) => {
-        if (this.rt_running) {
-          Object.values(this.diagramComponents).forEach((sprite) => {
-            if (explain.modelData.length > 0) {
-              sprite.update(explain.modelData[0]);
-            }
-          });
-        }
-      });
-    },
-
+    // drawing methods
     drawGrid() {
       if (this.uiConfig.diagram.settings.grid) {
         const gridSize = this.uiConfig.diagram.settings.gridSize;
@@ -400,7 +375,6 @@ export default {
         }
       }
     },
-
     drawSkeletonGraphics() {
       if (this.uiConfig.diagram.settings.skeleton) {
         if (this.skeletonGraphics) {
@@ -423,7 +397,6 @@ export default {
         this.pixiApp.stage.addChild(this.skeletonGraphics);
       }
     },
-
     drawComponents() {
       // get the layout properties
       const xCenter = this.pixiApp.renderer.width / 4;
@@ -517,25 +490,24 @@ export default {
           }
         }
       );
-
-      // connect the compartments
     },
-    rebuildDiagram() {
-      console.log("rebuilding");
-    },
+    updateConnectors() {},
   },
   beforeUnmount() {
     document.removeEventListener("status", this.statusUpdate);
   },
   mounted() {
-    // initialize the diagram
-    this.initDiagram();
-
+    // listen for an event coming from the explain model
     document.addEventListener("status", this.statusUpdate);
-    this.$bus.on("rebuild_diagram", () => console.log("timmie from component"));
 
     // get the model state
     explain.getModelState();
+
+    // initialize the diagram
+    this.initDiagram();
+
+    // listen for an event triggering a rebuild
+    this.$bus.on("rebuild_diagram", this.buildDiagram);
   },
 };
 </script>

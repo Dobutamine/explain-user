@@ -20,6 +20,12 @@ const diagramSchema = new mongoose.Schema({
   components: {
     type: Object,
   },
+  dateUpdated: {
+    type: Date,
+  },
+  dateCreated: {
+    type: Date,
+  },
   protected: {
     type: Boolean,
   },

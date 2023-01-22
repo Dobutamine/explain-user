@@ -150,7 +150,7 @@ import FileComponentVue from "../components/FileComponent.vue";
 import ScriptsComponentVue from "../components/ScriptsComponent.vue";
 import ModelsComponentVue from "../components/ModelsComponent.vue";
 import MonitorsComponentVue from "../components/MonitorsComponent.vue";
-import ModelDiagramComponentVue from "src/components/ModelDiagramComponent.vue";
+import ModelDiagramComponentVue from "src/components/DiagramComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
 import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
