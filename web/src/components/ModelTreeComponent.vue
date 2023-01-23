@@ -5,8 +5,8 @@
       {{ title }}
     </div>
     <!-- diagram pixi app stage -->
-    <div class="stage" :style="{ display: display }">
-      <canvas id="stage"></canvas>
+    <div class="stageModelTree" :style="{ display: display }">
+      <canvas id="stageModelTree"></canvas>
     </div>
     <!-- editing mode selectors -->
     <div class="row justify-center">
@@ -169,13 +169,6 @@
 <script>
 import { PIXI } from "../boot/pixi";
 import { explain } from "../boot/explain";
-import BloodCompartment from "../components/ui-elements/BloodCompartment";
-import BloodConnector from "../components/ui-elements/BloodConnector";
-import Shunt from "../components/ui-elements/Shunt";
-import Container from "../components/ui-elements/Container";
-import GasCompartment from "../components/ui-elements/GasCompartment";
-import GasConnector from "../components/ui-elements/GasConnector";
-import GasExchanger from "../components/ui-elements/GasExchanger";
 
 import { useUserInterfaceStore } from "src/stores/userInterface";
 import { useLoggedInUser } from "stores/loggedInUser";
@@ -193,7 +186,7 @@ export default {
   },
   data() {
     return {
-      title: "ANIMATED DIAGRAM",
+      title: "MODEL TREE",
       collapsed: false,
       editingSelection: "selecting",
       display: "block",
@@ -217,7 +210,7 @@ export default {
     },
     initDiagram() {
       // get the reference to the canvas
-      canvas = document.getElementById("stage");
+      canvas = document.getElementById("stageModelTree");
       // set the resolution of the pix application
       PIXI.settings.RESOLUTION = 2;
       // define a pixi app with the canvas as view
@@ -240,125 +233,20 @@ export default {
       this.drawSkeletonGraphics();
       // draw the grid
       this.drawGrid();
-      // draw the components
-      this.drawComponents();
-      // add a ticker to update all sprites
-      this.ticker = this.pixiApp.ticker.add((delta) => {
-        if (this.rt_running) {
-          Object.values(this.diagramComponents).forEach((sprite) => {
-            if (explain.modelData.length > 0) {
-              sprite.update(explain.modelData[0]);
-            }
-          });
-        }
-      });
     },
     clearDiagram() {
       this.pixiApp.stage.removeChildren();
     },
-    async saveDiagramToServer() {
-      // check if script is not protected
-      if (this.uiConfig.diagram.protected) {
-        alert("Diagram is protected!");
-        return;
-      }
-      if (Object.keys(this.uiConfig.diagram.components).length === 0) {
-        alert("No diagram components defined!");
-        return;
-      }
-
-      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/update_diagram?token=${this.user.token}`;
-      let response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: this.uiConfig.diagram.name,
-          user: this.user.name,
-          settings: { ...this.uiConfig.diagram.settings },
-          components: { ...this.uiConfig.diagram.components },
-          protected: this.uiConfig.diagram.protected,
-          shared: this.uiConfig.diagram.shared,
-        }),
-      });
-      if (response.status === 200) {
-        let data = await response.json();
-        switch (data.message) {
-          case "new":
-            this.statusMessage = "new diagram created on server.";
-            break;
-          case "update":
-            this.statusMessage = "diagram is updated on server.";
-            break;
-        }
-        setTimeout(() => (this.statusMessage = ""), 1500);
-      }
-      this.showPopUpServer = false;
-    },
-    async loadDiagramFromServer() {
-      // do a server request
-      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/get_diagram?token=${this.user.token}`;
-      let response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: this.selectedDiagramOnServer,
-          user: this.user.name,
-        }),
-      });
-      if (response.status === 200) {
-        let data = await response.json();
-        // process the result
-        this.uiConfig.diagram.user = data.user;
-        this.uiConfig.diagram.name = data.name;
-        this.uiConfig.diagram.settings = data.settings;
-        this.uiConfig.diagram.components = data.components;
-        this.uiConfig.diagram.protected = data.protected;
-        this.uiConfig.diagram.shared = data.shared;
-        this.uiConfig.diagram.dateUpdated = data.dateUpdated;
-        this.uiConfig.diagram.dateCreated = data.dateCreated;
-
-        this.statusMessage = "diagram loaded from server.";
-        setTimeout(() => (this.statusMessage = ""), 1500);
-        this.showPopUpServer = false;
-
-        this.buildDiagram();
-      }
-    },
-    async getDiagramsFromServer() {
-      // do a server request
-      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/get_diagrams?token=${this.user.token}`;
-      let response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user: this.user.name }),
-      });
-      if (response.status === 200) {
-        let data = await response.json();
-        // returns an array with all scripts of this user
-        if (data.length > 0) {
-          this.availableDiagramsOnServer = data.map((diagram) => diagram.name);
-          this.selectedDiagramOnServer = "";
-        } else {
-          this.availableDiagramsOnServer = [];
-        }
-      }
-    },
-    async deleteDiagramFromServer() {},
+    saveModelToServer() {},
+    loadModelFromServer() {},
+    getModelsFromServer() {},
+    deleteModelFromServer() {},
     openServerCommunication() {
       // show server communication pop up
       this.showPopUpServer = true;
 
       // get all available diuagrams for this user
-      this.getDiagramsFromServer();
+      this.getModelsFromServer();
     },
     closeServerCommunication() {
       // close the server communication pop up
@@ -376,66 +264,34 @@ export default {
     },
     // drawing methods
     drawGrid() {
-      if (this.uiConfig.diagram.settings.grid) {
-        const gridSize = this.uiConfig.diagram.settings.gridSize;
+      const gridSize = 10;
 
-        if (this.gridVertical) {
-          this.gridVertical.clear();
-          this.pixiApp.stage.removeChild(this.gridVertical);
-        }
-        // build the grid
-        this.gridVertical = new PIXI.Graphics();
-        for (let x = 0; x < this.pixiApp.renderer.width; x = x + gridSize) {
-          this.gridVertical.lineStyle(1, 0x888888, 0.1);
-          this.gridVertical.moveTo(x, 0);
-          this.gridVertical.lineTo(x, this.pixiApp.renderer.height);
-        }
-        this.pixiApp.stage.addChild(this.gridVertical);
-
-        if (this.gridHorizontal) {
-          this.gridHorizontal.clear();
-          this.pixiApp.stage.removeChild(this.gridHorizontal);
-        }
-        this.gridHorizontal = new PIXI.Graphics();
-        for (let y = 0; y < this.pixiApp.renderer.height; y = y + gridSize) {
-          this.gridHorizontal.lineStyle(1, 0x888888, 0.1);
-          this.gridHorizontal.moveTo(0, y);
-          this.gridHorizontal.lineTo(this.pixiApp.renderer.width, y);
-        }
-        this.pixiApp.stage.addChild(this.gridHorizontal);
-      } else {
-        if (this.gridVertical) {
-          this.gridVertical.clear();
-          this.pixiApp.stage.removeChild(this.gridVertical);
-        }
-        if (this.gridHorizontal) {
-          this.gridHorizontal.clear();
-          this.pixiApp.stage.removeChild(this.gridHorizontal);
-        }
+      if (this.gridVertical) {
+        this.gridVertical.clear();
+        this.pixiApp.stage.removeChild(this.gridVertical);
       }
-    },
-    drawSkeletonGraphics() {
-      if (this.uiConfig.diagram.settings.skeleton) {
-        if (this.skeletonGraphics) {
-          this.skeletonGraphics.clear();
-          this.pixiApp.stage.removeChild(this.skeletonGraphics);
-        }
-        const radius = this.uiConfig.diagram.settings.radius;
-        const color = this.uiConfig.diagram.settings.skeletonColor;
-
-        // initalize the skeleton graphics
-        this.skeletonGraphics = new PIXI.Graphics();
-
-        // get center stage
-        const xCenter = this.pixiApp.renderer.width / 4;
-        const yCenter = this.pixiApp.renderer.height / 4;
-        this.skeletonGraphics.beginFill(color);
-        this.skeletonGraphics.lineStyle(1, color, 1);
-        this.skeletonGraphics.drawCircle(xCenter, yCenter, xCenter * radius);
-        this.skeletonGraphics.endFill();
-        this.pixiApp.stage.addChild(this.skeletonGraphics);
+      // build the grid
+      this.gridVertical = new PIXI.Graphics();
+      for (let x = 0; x < this.pixiApp.renderer.width; x = x + gridSize) {
+        this.gridVertical.lineStyle(1, 0x888888, 0.1);
+        this.gridVertical.moveTo(x, 0);
+        this.gridVertical.lineTo(x, this.pixiApp.renderer.height);
       }
+      this.pixiApp.stage.addChild(this.gridVertical);
+
+      if (this.gridHorizontal) {
+        this.gridHorizontal.clear();
+        this.pixiApp.stage.removeChild(this.gridHorizontal);
+      }
+      this.gridHorizontal = new PIXI.Graphics();
+      for (let y = 0; y < this.pixiApp.renderer.height; y = y + gridSize) {
+        this.gridHorizontal.lineStyle(1, 0x888888, 0.1);
+        this.gridHorizontal.moveTo(0, y);
+        this.gridHorizontal.lineTo(this.pixiApp.renderer.width, y);
+      }
+      this.pixiApp.stage.addChild(this.gridHorizontal);
     },
+    drawSkeletonGraphics() {},
     drawComponents() {
       // get the layout properties
       const xCenter = this.pixiApp.renderer.width / 4;
@@ -544,15 +400,12 @@ export default {
 
     // initialize the diagram
     this.initDiagram();
-
-    // listen for an event triggering a rebuild
-    this.$bus.on("rebuild_diagram", this.buildDiagram);
   },
 };
 </script>
 
 <style scoped>
-#stage {
+#stageModelTree {
   width: 100%;
 }
 </style>

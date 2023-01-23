@@ -47,6 +47,7 @@
             <q-tab name="scripts" label="Scripts" />
             <q-tab name="charts" label="Charts" />
             <q-tab name="diagram" label="Diagram" />
+            <q-tab name="modeltree" label="Model Tree" />
           </q-tabs>
 
           <q-separator />
@@ -57,6 +58,9 @@
             </q-tab-panel>
             <q-tab-panel name="diagram">
               <DiagramComponent></DiagramComponent>
+            </q-tab-panel>
+            <q-tab-panel name="modeltree">
+              <ModelTreeComponent></ModelTreeComponent>
             </q-tab-panel>
 
             <q-tab-panel name="charts">
@@ -133,6 +137,7 @@ import MonitorsComponentVue from "../components/MonitorsComponent.vue";
 import DiagramComponent from "src/components/DiagramComponent.vue";
 import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
+import ModelTreeComponent from "../components/ModelTreeComponent.vue";
 import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
 
 import { useLoggedInUser } from "stores/loggedInUser";
@@ -148,6 +153,7 @@ export default {
     };
   },
   components: {
+    ModelTreeComponent,
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
     ModelsComponent,
