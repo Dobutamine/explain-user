@@ -67,13 +67,23 @@
     </div>
 
     <div v-if="selectedModelItems.length > 0">
-      <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
-        <q-btn color="red-10" size="sm" style="width: 70px" @click="addToModel"
-          >ADD</q-btn
-        >
-        <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
-          >CANCEL</q-btn
-        >
+      <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
+        <q-btn
+          color="negative"
+          dense
+          size="sm"
+          style="width: 50px"
+          icon="fa-solid fa-check"
+          @click="addToModel"
+        ></q-btn>
+        <q-btn
+          color="grey-14"
+          size="xs"
+          dense
+          style="width: 50px"
+          @click="cancel"
+          icon="fa-solid fa-xmark"
+        ></q-btn>
       </div>
       <div
         class="q-gutter-sm row text-overline justify-center q-mb-xs"

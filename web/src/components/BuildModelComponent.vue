@@ -17,15 +17,32 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
+      <!-- topline buttons -->
       <div
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
+        <q-btn color="primary" class="col q-mr-sm" label="add" dark size="sm">
+          <q-menu dark>
+            <q-list dense>
+              <div v-for="(modelType, index) in modelTypes" :key="index">
+                <q-item clickable dense>
+                  <q-item-section
+                    clickable
+                    v-close-popup
+                    @click="selectModelType(modelType)"
+                  >
+                    {{ modelType }}
+                  </q-item-section>
+                </q-item>
+              </div>
+            </q-list>
+          </q-menu>
+        </q-btn>
         <q-btn
-          color="grey-3"
+          color="secondary"
           class="col q-mr-sm"
-          outline
+          label="edit"
           dark
-          icon="fa-solid fa-add"
           size="sm"
         >
           <q-menu dark>
@@ -44,38 +61,7 @@
             </q-list>
           </q-menu>
         </q-btn>
-        <q-btn
-          color="grey-3"
-          class="col q-mr-sm"
-          outline
-          dark
-          icon="fa-solid fa-edit"
-          size="sm"
-        >
-          <q-menu dark>
-            <q-list dense>
-              <div v-for="(modelType, index) in modelTypes" :key="index">
-                <q-item clickable dense>
-                  <q-item-section
-                    clickable
-                    v-close-popup
-                    @click="selectModelType(modelType)"
-                  >
-                    {{ modelType }}
-                  </q-item-section>
-                </q-item>
-              </div>
-            </q-list>
-          </q-menu>
-        </q-btn>
-        <q-btn
-          color="grey-3"
-          class="col"
-          outline
-          dark
-          icon="fa-solid fa-trash-can"
-          size="sm"
-        >
+        <q-btn color="negative" class="col" label="delete" dark size="sm">
           <q-menu dark>
             <q-list dense>
               <div v-for="(modelType, index) in modelTypes" :key="index">
@@ -93,8 +79,6 @@
           </q-menu>
         </q-btn>
       </div>
-      <div class="q-mt-xs q-mb-sm row text-overline justify-center"></div>
-      <div class="q-mt-xs q-mb-sm row text-overline justify-center"></div>
       <div class="q-ma-sm q-gutter-sm row items-center">
         <BuildPropEditComponent
           :selectedModelItems="selectedModelItems"

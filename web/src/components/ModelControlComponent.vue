@@ -19,7 +19,7 @@
       >
       <q-select
         class="q-ml-md q-mr-md"
-        label-color="red-6"
+        label-color="negative"
         v-model="selectedDuration"
         :options="durations"
         hide-bottom-space

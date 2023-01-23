@@ -576,7 +576,7 @@ export const useUserInterfaceStore = defineStore("userInterface", {
     charts: {
       general: {
         _id: "general",
-        enabled: false,
+        enabled: true,
         caption: "TIME BASED CHART",
         channels: 3,
         collapsed: false,

@@ -18,7 +18,7 @@
           </q-tabs>
           <q-separator></q-separator>
 
-          <q-tab-panels v-model="tab_left" animated keep-alive>
+          <q-tab-panels v-model="tab_left" keep-alive>
             <q-tab-panel name="file">
               <FileComponentVue></FileComponentVue>
             </q-tab-panel>
@@ -28,7 +28,7 @@
             </q-tab-panel>
             <q-tab-panel name="build">
               <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
-              <BuildComponentVue></BuildComponentVue>
+              <BuildModelComponent></BuildModelComponent>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -45,32 +45,17 @@
           >
             <q-tab name="scripts" label="Scripts" />
             <q-tab name="charts" label="Charts" />
-            <q-tab name="circulation" label="Circulation" />
-            <q-tab name="respiration" label="Respiration" />
-            <q-tab name="ventilator" label="Ventilator" />
-            <q-tab name="ecmo" label="Ecmo" />
+            <q-tab name="diagram" label="Diagram" />
           </q-tabs>
 
           <q-separator />
 
-          <q-tab-panels v-model="tab" animated keep-alive>
+          <q-tab-panels v-model="tab" keep-alive>
             <q-tab-panel name="scripts">
               <ScriptComponentVue></ScriptComponentVue>
             </q-tab-panel>
-            <q-tab-panel name="circulation">
+            <q-tab-panel name="diagram">
               <DiagramComponent></DiagramComponent>
-            </q-tab-panel>
-
-            <q-tab-panel name="respiration">
-              <div class="text-h6">Respiration</div>
-            </q-tab-panel>
-
-            <q-tab-panel name="ventilator">
-              <div class="text-h6">Ventilator</div>
-            </q-tab-panel>
-
-            <q-tab-panel name="ecmo">
-              <div class="text-h6">ECMO</div>
             </q-tab-panel>
 
             <q-tab-panel name="charts">
@@ -96,7 +81,7 @@
 
         <div class="col-3">
           <q-tabs
-            v-model="tab"
+            v-model="tab_right"
             dense
             class="text-white"
             active-color="primary"
@@ -104,11 +89,7 @@
             align="justify"
             narrow-indicator
           >
-            <q-tab name="test" label="" />
-            <q-tab name="circulation" label="" />
-            <q-tab name="respiration" label="" />
-            <q-tab name="ventilator" label="" />
-            <q-tab name="ecmo" label="" />
+            <q-tab name="monitoring" label="monitoring" />
           </q-tabs>
           <q-separator />
           <div v-for="(monitor, index) in monitors" :key="index">
@@ -142,7 +123,7 @@
 </template>
 
 <script>
-import BuildComponentVue from "../components/BuildComponent.vue";
+import BuildModelComponent from "../components/BuildModelComponent.vue";
 import GroupersComponent from "../components/GroupersComponent.vue";
 import FileComponentVue from "../components/FileComponent.vue";
 import ScriptsComponentVue from "../components/ScriptsComponent.vue";
@@ -171,15 +152,16 @@ export default {
     ModelsComponent,
     MonitorComponentVue: MonitorsComponentVue,
     GroupersComponent,
-    BuildComponentVue,
+    BuildModelComponent,
     DiagramComponent,
     TimeChartComponentVue,
     ModelDiagramEditorComponent: DiagramEditorComponent,
   },
   data() {
     return {
-      tab: "circulation",
+      tab: "diagram",
       tab_left: "build",
+      tab_right: "monitoring",
       monitors: [],
       charts: [],
       models: [],

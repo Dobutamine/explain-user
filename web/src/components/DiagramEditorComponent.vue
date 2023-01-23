@@ -21,14 +21,7 @@
       <div
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
-        <q-btn
-          color="primary q-mr-xs"
-          label="add"
-          dark
-          icon="fa-solid fa-add"
-          class="col"
-          size="sm"
-        >
+        <q-btn color="primary q-mr-xs" label="add" dark class="col" size="sm">
           <q-menu dark>
             <q-list dense>
               <div
@@ -52,7 +45,6 @@
           color="secondary"
           label="edit"
           dark
-          icon="fa-solid fa-edit"
           class="col q-mr-xs"
           size="sm"
         >
@@ -75,14 +67,7 @@
             </q-list>
           </q-menu>
         </q-btn>
-        <q-btn
-          color="negative"
-          label="delete"
-          dark
-          icon="fa-solid fa-trash-can"
-          class="col"
-          size="sm"
-        >
+        <q-btn color="negative" label="delete" dark class="col" size="sm">
           <q-menu dark>
             <q-list dense>
               <div
@@ -329,7 +314,7 @@
         class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs"
       >
         <q-btn
-          color="red-10"
+          color="negative"
           dense
           size="sm"
           style="width: 50px"

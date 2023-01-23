@@ -42,28 +42,29 @@
     <!-- server communication buttons -->
     <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
       <q-btn
-        color="red-10"
-        dense
+        color="primary"
+        label="download"
         size="sm"
-        style="width: 50px"
-        icon="fa-solid fa-upload"
-        @click="openSavePopup"
-      ></q-btn>
-      <q-btn
-        color="blue-10"
-        dense
-        size="sm"
-        style="width: 50px"
+        style="width: 120px"
         icon="fa-solid fa-download"
         @click="openServerCommunication"
       ></q-btn>
       <q-btn
-        color="grey-14"
-        size="xs"
-        dense
-        style="width: 50px"
+        color="secondary"
+        label="upload"
+        size="sm"
+        style="width: 120px"
+        icon="fa-solid fa-upload"
+        @click="openSavePopup"
+      ></q-btn>
+
+      <q-btn
+        color="negative"
+        label="clear"
+        size="sm"
+        style="width: 120px"
         @click="clearDiagram"
-        icon="fa-solid fa-trash-can"
+        icon="fa-solid fa-xmark"
       ></q-btn>
     </div>
     <!-- status message -->
@@ -107,14 +108,14 @@
             icon="fa-solid fa-download"
           ></q-btn>
           <q-btn
-            color="red-10"
+            color="negative"
             size="sm"
             style="width: 50px"
             @click="deleteDiagramFromServer"
-            icon="fa-solid fa-delete-left"
+            icon="fa-solid fa-trash-can"
           ></q-btn>
           <q-btn
-            color="indigo-10"
+            color="grey-14"
             size="sm"
             style="width: 50px"
             @click="closeServerCommunication"
@@ -151,7 +152,7 @@
           class="q-gutter-sm row text-overline justify-center q-mt-xs q-mb-sm"
         >
           <q-btn
-            color="red-10"
+            color="secondary"
             dense
             size="sm"
             style="width: 50px"
@@ -160,7 +161,7 @@
           ></q-btn>
 
           <q-btn
-            color="indigo-10"
+            color="grey-14"
             size="sm"
             style="width: 50px"
             @click="closeServerCommunication"

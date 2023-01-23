@@ -61,12 +61,12 @@
         </q-btn>
       </div>
       <div class="q-ma-sm row items-center">
-        <ModelPropEditComponentVue
+        <ModelPropEditorComponent
           :selectedModelItems="selectedModelItems"
           style="width: 100%"
           @propdelete="deleteProp"
           @removeallprops="removeAllProps"
-        ></ModelPropEditComponentVue>
+        ></ModelPropEditorComponent>
       </div>
     </div>
   </q-card>
@@ -74,11 +74,11 @@
 
 <script>
 import { explain } from "../boot/explain";
-import ModelPropEditComponentVue from "./ModelPropEditComponent.vue";
+import ModelPropEditorComponent from "./ModelPropEditorComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 export default {
   components: {
-    ModelPropEditComponentVue,
+    ModelPropEditorComponent,
   },
   setup() {
     const uiConfig = useUserInterfaceStore();
