@@ -17,12 +17,13 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
+      <!-- topline buttons -->
       <div
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
         <q-btn
-          color="grey-3 q-mr-xs"
-          outline
+          color="primary q-mr-xs"
+          label="add"
           dark
           icon="fa-solid fa-add"
           class="col"
@@ -48,8 +49,8 @@
           </q-menu>
         </q-btn>
         <q-btn
-          color="grey-3"
-          outline
+          color="secondary"
+          label="edit"
           dark
           icon="fa-solid fa-edit"
           class="col q-mr-xs"
@@ -75,8 +76,8 @@
           </q-menu>
         </q-btn>
         <q-btn
-          color="grey-3"
-          outline
+          color="negative"
+          label="delete"
           dark
           icon="fa-solid fa-trash-can"
           class="col"
@@ -102,17 +103,26 @@
           </q-menu>
         </q-btn>
       </div>
+      <!-- editor mode 1 or 2 -->
       <div
+        v-if="editorMode == 1 || editorMode == 2"
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
         {{ compType }}
-        <div
-          v-if="editorMode == 1 || editorMode == 2"
-          :style="{ 'font-size': '10px', width: '100%' }"
-        >
+        <div :style="{ 'font-size': '10px', width: '100%' }">
           <q-input
             label="name"
             v-model="compName"
+            square
+            hide-hint
+            dense
+            dark
+            stack-label
+            style="width: 100%"
+          />
+          <q-input
+            label="label"
+            v-model="compLabel"
             square
             hide-hint
             dense
@@ -284,11 +294,14 @@
             </div>
           </div>
         </div>
-
-        <div v-if="editorMode == 1"></div>
-        <div v-if="editorMode == 2"></div>
-        <div v-if="editorMode == 3"></div>
-        <!-- server communication buttons -->
+      </div>
+      <!-- editor mode 3 -->
+      <div v-if="editorMode === 3">
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs"
+        >
+          Are you sure you want to remove {{ compName }}?
+        </div>
         <div
           class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs"
         >
@@ -297,8 +310,8 @@
             dense
             size="sm"
             style="width: 50px"
-            icon="fa-solid fa-upload"
-            @click="saveDiagramComponent"
+            icon="fa-solid fa-trash-can"
+            @click="deleteComponentFromStore"
           ></q-btn>
           <q-btn
             color="grey-14"
@@ -309,13 +322,35 @@
             icon="fa-solid fa-refresh"
           ></q-btn>
         </div>
-        <!-- status message -->
-        <div
-          class="q-gutter-sm row text-overline justify-center q-mb-xs"
-          style="font-size: 10px"
-        >
-          {{ statusMessage }}
-        </div>
+      </div>
+      <!-- server communication buttons -->
+      <div
+        v-if="editorMode < 3 && editorMode > 0"
+        class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs"
+      >
+        <q-btn
+          color="red-10"
+          dense
+          size="sm"
+          style="width: 50px"
+          icon="fa-solid fa-check"
+          @click="saveDiagramComponent"
+        ></q-btn>
+        <q-btn
+          color="grey-14"
+          size="xs"
+          dense
+          style="width: 50px"
+          @click="cancelDiagramBuild"
+          icon="fa-solid fa-xmark"
+        ></q-btn>
+      </div>
+      <!-- status message -->
+      <div
+        class="q-gutter-sm row text-overline justify-center q-mb-xs"
+        style="font-size: 10px"
+      >
+        {{ statusMessage }}
       </div>
     </div>
   </q-card>
@@ -324,7 +359,6 @@
 <script>
 import { explain } from "../boot/explain";
 
-import BuildPropEditComponent from "./BuildPropEditComponent.vue";
 import { useUserInterfaceStore } from "src/stores/userInterface";
 export default {
   components: {},
@@ -338,9 +372,8 @@ export default {
     return {
       advancedMode: true,
       editorMode: 0,
-      notyet: true,
       title: "DIAGRAM EDITOR",
-      collapsed: true,
+      collapsed: false,
       modelsTree: {},
       selectedModelType: [],
       selectedModelItems: [],
@@ -393,7 +426,7 @@ export default {
             layoutType = "arc";
           }
           this.uiConfig.diagram.components[this.compName] = {
-            label: this.compName,
+            label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
             layout: {
@@ -426,7 +459,7 @@ export default {
             layoutType = "arc";
           }
           this.uiConfig.diagram.components[this.compName] = {
-            label: this.compName,
+            label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
             layout: {
@@ -459,7 +492,7 @@ export default {
             layoutType = "arc";
           }
           this.uiConfig.diagram.components[this.compName] = {
-            label: this.compName,
+            label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
             layout: {
@@ -488,7 +521,7 @@ export default {
           break;
         case "BloodConnector":
           this.uiConfig.diagram.components[this.compName] = {
-            label: this.compName,
+            label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
             dbcFrom: this.compDbcFrom,
@@ -499,7 +532,7 @@ export default {
           break;
         case "GasConnector":
           this.uiConfig.diagram.components[this.compName] = {
-            label: this.compName,
+            label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
             dbcFrom: this.compDbcFrom,
@@ -514,7 +547,7 @@ export default {
             layoutType = "arc";
           }
           this.uiConfig.diagram.components[this.compName] = {
-            label: this.compName,
+            label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
             gas: this.compGas,
@@ -554,6 +587,12 @@ export default {
     },
     deleteComponent(compName) {
       this.editorMode = 3;
+      this.compName = compName;
+    },
+    deleteComponentFromStore() {
+      delete this.uiConfig.diagram.components[this.compName];
+      this.$bus.emit("rebuild_diagram");
+      this.cancelDiagramBuild();
     },
     editComponent(compName) {
       this.editorMode = 2;
@@ -821,6 +860,10 @@ export default {
         case "Shunt":
           this.findDiagramComponents("BloodCompartment");
           break;
+        case "Pump":
+          break;
+        case "Oxygenator":
+          break;
       }
     },
     selectModelTypeToAdd(compType) {
@@ -848,6 +891,12 @@ export default {
         case "GasExchanger":
           models = ["GasExchanger"];
           break;
+        case "Pump":
+          models = ["Pump"];
+          break;
+        case "Oxygenator":
+          models = ["Oxygenator"];
+          break;
       }
       Object.keys(explain.modelState.Models).forEach((model) => {
         if (models.includes(explain.modelState.Models[model].ModelType)) {
@@ -859,9 +908,6 @@ export default {
       // search the properties needed for this modeltype in the uiconfig
       this.selectedModelItems = [];
       this.selectedModelItems = this.uiConfig.models[modeltype].properties;
-    },
-    removeAllProps() {
-      // this.selectedModelItems = [];
     },
     buildModelItemTree() {
       // build the grouperItem tree from the ui store

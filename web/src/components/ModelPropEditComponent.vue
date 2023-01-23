@@ -79,7 +79,11 @@
 
     <div v-if="selectedModelItems.length > 0">
       <div class="q-gutter-sm row text-overline justify-center q-mt-sm q-mb-sm">
-        <q-btn color="red-10" size="sm" style="width: 70px" @click="updateProps"
+        <q-btn
+          color="primary"
+          size="sm"
+          style="width: 70px"
+          @click="updateProps"
           >UPDATE</q-btn
         >
         <q-btn
@@ -89,7 +93,7 @@
           @click="addToScript"
           >SCRIPT</q-btn
         >
-        <q-btn color="indigo-10" size="sm" style="width: 70px" @click="cancel"
+        <q-btn color="negative" size="sm" style="width: 70px" @click="cancel"
           >CANCEL</q-btn
         >
       </div>

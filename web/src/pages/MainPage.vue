@@ -18,13 +18,13 @@
           </q-tabs>
           <q-separator></q-separator>
 
-          <q-tab-panels v-model="tab_left" animated>
+          <q-tab-panels v-model="tab_left" animated keep-alive>
             <q-tab-panel name="file">
               <FileComponentVue></FileComponentVue>
             </q-tab-panel>
             <q-tab-panel name="play">
-              <PlayComponentVue></PlayComponentVue>
-              <ModelsComponentVue></ModelsComponentVue>
+              <GroupersComponent></GroupersComponent>
+              <ModelsComponent></ModelsComponent>
             </q-tab-panel>
             <q-tab-panel name="build">
               <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
@@ -58,7 +58,7 @@
               <ScriptComponentVue></ScriptComponentVue>
             </q-tab-panel>
             <q-tab-panel name="circulation">
-              <ModelDiagramComponentVue></ModelDiagramComponentVue>
+              <DiagramComponent></DiagramComponent>
             </q-tab-panel>
 
             <q-tab-panel name="respiration">
@@ -143,17 +143,15 @@
 
 <script>
 import BuildComponentVue from "../components/BuildComponent.vue";
-import DeleteComponentVue from "src/components/DeleteComponent.vue";
-import GroupersEditorComponent from "src/components/GroupersEditorComponent.vue";
-import GroupersComponentVue from "../components/GroupersComponent.vue";
+import GroupersComponent from "../components/GroupersComponent.vue";
 import FileComponentVue from "../components/FileComponent.vue";
 import ScriptsComponentVue from "../components/ScriptsComponent.vue";
-import ModelsComponentVue from "../components/ModelsComponent.vue";
+import ModelsComponent from "../components/ModelsComponent.vue";
 import MonitorsComponentVue from "../components/MonitorsComponent.vue";
-import ModelDiagramComponentVue from "src/components/DiagramComponent.vue";
+import DiagramComponent from "src/components/DiagramComponent.vue";
+import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import NonTimeBasedChartVue from "../components/charts/NonTimeBasedChart.vue";
-import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 
 import { useLoggedInUser } from "stores/loggedInUser";
 import { useUserInterfaceStore } from "src/stores/userInterface";
@@ -170,18 +168,18 @@ export default {
   components: {
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
-    ModelsComponentVue,
+    ModelsComponent,
     MonitorComponentVue: MonitorsComponentVue,
-    PlayComponentVue: GroupersComponentVue,
+    GroupersComponent,
     BuildComponentVue,
-    ModelDiagramComponentVue,
+    DiagramComponent,
     TimeChartComponentVue,
     ModelDiagramEditorComponent: DiagramEditorComponent,
   },
   data() {
     return {
       tab: "circulation",
-      tab_left: "play",
+      tab_left: "build",
       monitors: [],
       charts: [],
       models: [],

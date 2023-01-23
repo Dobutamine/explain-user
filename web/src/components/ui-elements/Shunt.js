@@ -54,7 +54,9 @@ export default class Shunt {
     this.sprite.x = this.dbcFrom.sprite.x;
     this.sprite.y = this.dbcFrom.sprite.y;
     this.sprite.scale.set(0.04, 0.04);
-    this.sprite.interactive = false;
+    this.sprite.interactive = true;
+    this.sprite.on("mouseup", (e) => this.onDragEnd(e));
+    this.sprite.on("touchend", (e) => this.onDragEnd(e));
     this.sprite.tint = this.spriteColor;
     this.sprite.zIndex = 2;
 
@@ -66,6 +68,9 @@ export default class Shunt {
     // register with the dbc
     this.dbcFrom.connectors[this.key] = this;
     this.dbcTo.connectors[this.key] = this;
+  }
+  onDragEnd(e) {
+    document.dispatchEvent(this.edit_comp_event);
   }
   drawPath() {
     if (this.path) {

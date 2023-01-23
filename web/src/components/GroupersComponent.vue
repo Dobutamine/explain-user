@@ -85,7 +85,7 @@ export default {
   },
   data() {
     return {
-      title: "EDIT GROUPED PROPERTIES",
+      title: "EDIT GROUPERS",
       test: true,
       collapsed: true,
       groupersTree: {},

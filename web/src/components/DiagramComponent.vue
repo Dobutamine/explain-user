@@ -47,7 +47,7 @@
         size="sm"
         style="width: 50px"
         icon="fa-solid fa-upload"
-        @click="saveDiagramToServer"
+        @click="openSavePopup"
       ></q-btn>
       <q-btn
         color="blue-10"
@@ -129,6 +129,52 @@
         </div>
       </q-card>
     </q-popup-edit>
+
+    <q-popup-edit
+      v-if="showPopUpSave"
+      fit
+      touch-position
+      model-value="sylisgek"
+    >
+      <q-card bordered dark style="width: 300px">
+        <div class="row text-overline justify-center">diagram name</div>
+        <q-input
+          class="row q-ma-sm"
+          v-model="uiConfig.diagram.name"
+          square
+          hide-hint
+          dense
+          dark
+          stack-label
+        />
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mt-xs q-mb-sm"
+        >
+          <q-btn
+            color="red-10"
+            dense
+            size="sm"
+            style="width: 50px"
+            icon="fa-solid fa-upload"
+            @click="saveDiagramToServer"
+          ></q-btn>
+
+          <q-btn
+            color="indigo-10"
+            size="sm"
+            style="width: 50px"
+            @click="closeServerCommunication"
+            icon="fa-solid fa-xmark"
+          ></q-btn>
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-xs"
+          style="font-size: 10px"
+        >
+          {{ statusMessage }}
+        </div>
+      </q-card>
+    </q-popup-edit>
   </q-card>
 </template>
 
@@ -173,10 +219,14 @@ export default {
       selectedDiagramOnServer: "",
       statusMessage: "",
       showPopUpServer: false,
+      showPopUpSave: false,
       addModelPopUp: false,
     };
   },
   methods: {
+    openSavePopup() {
+      this.showPopUpSave = true;
+    },
     initDiagram() {
       // get the reference to the canvas
       canvas = document.getElementById("stage");
@@ -325,6 +375,7 @@ export default {
     closeServerCommunication() {
       // close the server communication pop up
       this.showPopUpServer = false;
+      this.showPopUpSave = false;
     },
     changeEditingMode() {},
     statusUpdate() {

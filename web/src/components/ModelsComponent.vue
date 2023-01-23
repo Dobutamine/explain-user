@@ -89,7 +89,7 @@ export default {
   data() {
     return {
       notyet: true,
-      title: "EDIT MODEL PROPERTIES",
+      title: "EDIT MODELS",
       collapsed: true,
       modelsTree: {},
       selectedModelItems: [],
