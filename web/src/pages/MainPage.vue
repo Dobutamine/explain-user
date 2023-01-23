@@ -12,6 +12,7 @@
             align="justify"
             narrow-indicator
           >
+            <q-tab name="file" label="file" />
             <q-tab name="play" label="play" />
 
             <q-tab name="build" label="build" />
