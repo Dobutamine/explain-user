@@ -59,7 +59,7 @@ export default class GasExchanger {
     this.sprite.on("touchmove", (e) => this.onDragMove(e));
     this.sprite.scale.set(this.layout.scale.x, this.layout.scale.y);
     this.sprite.anchor = { x: 0.5, y: 0.5 };
-    this.sprite.tint = "0xffffff";
+    this.sprite.tint = "0xbbbbbb";
     this.sprite.zIndex = 4;
 
     // place the sprite on the stage

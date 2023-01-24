@@ -14,8 +14,8 @@ export default class BloodConnector {
   spriteColor = 0xffffff;
 
   path = null;
-  pathColor = 0x666666;
-  pathWidth = 2;
+  pathColor = 0x555555;
+  pathWidth = 4;
 
   arc = {
     enabled: false,
@@ -62,7 +62,7 @@ export default class BloodConnector {
     this.sprite.anchor = { x: 0.5, y: 0.5 };
     this.sprite.x = this.dbcFrom.sprite.x;
     this.sprite.y = this.dbcFrom.sprite.y;
-    this.sprite.scale.set(0.05, 0.05);
+    this.sprite.scale.set(0.025, 0.07);
     this.sprite.interactive = true;
     this.sprite.on("mouseup", (e) => this.onDragEnd(e));
     this.sprite.on("touchend", (e) => this.onDragEnd(e));

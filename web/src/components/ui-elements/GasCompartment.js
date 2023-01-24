@@ -1,7 +1,8 @@
+import { Tick3D, _themeLoaderDarkTurquoise } from "@arction/lcjs";
 import { PIXI } from "src/boot/pixi.js";
 
 export default class GasCompartment {
-  compType = "GasCompartment";
+  compType = "BloodCompartment";
   pixiApp = {};
   key = "";
   label = "";
@@ -10,6 +11,8 @@ export default class GasCompartment {
   xCenter = 0;
   yCenter = 0;
   radius = 0;
+  angle = 0;
+  distanceToCenter = 0;
 
   sprite = {};
   text = {};
@@ -20,7 +23,7 @@ export default class GasCompartment {
 
   volume = 0.1;
   to2 = 7.4;
-  po2 = 13.0;
+
   edit_comp_event = null;
 
   constructor(pixiApp, key, label, models, layout, xCenter, yCenter, radius) {
@@ -88,7 +91,7 @@ export default class GasCompartment {
     this.text.anchor = { x: 0.5, y: 0.5 };
     this.text.x = this.sprite.x + this.layout.text.x;
     this.text.y = this.sprite.y + this.layout.text.y;
-    this.text.zIndex = 4;
+    this.text.zIndex = 7;
 
     this.pixiApp.stage.addChild(this.text);
   }
@@ -152,7 +155,6 @@ export default class GasCompartment {
     const f1 = Math.pow(x - this.xCenter, 2);
     const f2 = Math.pow(y - this.yCenter, 2);
     let distance = Math.abs(Math.sqrt(f1 + f2) - this.radius * this.xCenter);
-    //console.log(distance - this.radius * this.xCenter);
     let angle = 0;
     if (distance < 5) {
       // on circle
