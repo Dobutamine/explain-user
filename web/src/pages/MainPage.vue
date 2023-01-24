@@ -166,7 +166,7 @@ export default {
   },
   data() {
     return {
-      tab: "diagram",
+      tab: "modeltree",
       tab_left: "build",
       tab_right: "monitoring",
       monitors: [],

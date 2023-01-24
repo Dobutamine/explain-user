@@ -169,6 +169,7 @@
 <script>
 import { PIXI } from "../boot/pixi";
 import { explain } from "../boot/explain";
+import ModelItem from "../components/ui-elements/ModelItem";
 
 import { useUserInterfaceStore } from "src/stores/userInterface";
 import { useLoggedInUser } from "stores/loggedInUser";
@@ -202,13 +203,19 @@ export default {
       showPopUpServer: false,
       showPopUpSave: false,
       addModelPopUp: false,
+      modelTreeConnections: {},
+      modelTreeComponents: {},
+      modelTypes: [],
+      models: {},
+      refractory: false,
+      path: null,
     };
   },
   methods: {
     openSavePopup() {
       this.showPopUpSave = true;
     },
-    initDiagram() {
+    initModelTree() {
       // get the reference to the canvas
       canvas = document.getElementById("stageModelTree");
       // set the resolution of the pix application
@@ -222,17 +229,117 @@ export default {
       });
       // allow sortable children
       this.pixiApp.stage.sortableChildren = true;
-
-      // build the diagram
-      this.buildDiagram();
     },
-    buildDiagram() {
+    buildModelTree() {
+      if (this.refractory) return;
+
+      this.refractory = true;
       // first clear all the children from the stage
       this.clearDiagram();
       // draw the skeleton graphics
       this.drawSkeletonGraphics();
       // draw the grid
       this.drawGrid();
+      // find all model types in current model
+      let mt = [];
+      this.models = {};
+      const xWidth = this.pixiApp.renderer.width;
+      const yWidth = this.pixiApp.renderer.height;
+      Object.entries(explain.modelState.Models).forEach(([name, model]) => {
+        mt.push(model.ModelType);
+        this.models[name] = model;
+
+        if (model.IsEnabled) {
+          this.modelTreeComponents[name] = new ModelItem(
+            this.pixiApp,
+            name,
+            model,
+            explain.modelState,
+            this.modelTreeComponents,
+            {}
+          );
+        }
+      });
+      // remove the duplicates
+      this.modelTypes = [...new Set(mt)];
+      // determine the input and outputs of every model type
+      Object.values(this.modelTreeComponents).forEach((modelTreeComponent) => {
+        switch (modelTreeComponent.model.ModelType) {
+          case "BloodResistor":
+            modelTreeComponent.inputs.push(modelTreeComponent.model.CompFrom);
+            modelTreeComponent.outputs.push(modelTreeComponent.model.CompTo);
+            this.modelTreeComponents[
+              modelTreeComponent.model.CompTo
+            ].inputs.push(modelTreeComponent.key);
+            this.modelTreeComponents[
+              modelTreeComponent.model.CompFrom
+            ].outputs.push(modelTreeComponent.key);
+            break;
+        }
+        switch (modelTreeComponent.model.ModelType) {
+          case "GasResistor":
+            modelTreeComponent.inputs.push(modelTreeComponent.model.CompFrom);
+            modelTreeComponent.outputs.push(modelTreeComponent.model.CompTo);
+            this.modelTreeComponents[
+              modelTreeComponent.model.CompTo
+            ].inputs.push(modelTreeComponent.key);
+            this.modelTreeComponents[
+              modelTreeComponent.model.CompFrom
+            ].outputs.push(modelTreeComponent.key);
+            break;
+        }
+      });
+
+      this.updateModelTree();
+      //console.log(this.modelTreeComponents);
+      // prevent multi triggering
+      setTimeout(() => (this.refractory = false), 2000);
+    },
+    updateModelTree() {
+      let matches = [];
+      // determine all connections, connect inputs to outputs
+      Object.values(this.modelTreeComponents).forEach(
+        (modelTreeComponentInput) => {
+          // iterate over the inputs of this modelTreeCompoent
+          modelTreeComponentInput.inputs.forEach((input) => {
+            // iterate over all outputs
+            Object.values(this.modelTreeComponents).forEach(
+              (modelTreeComponentOutput) => {
+                modelTreeComponentOutput.outputs.forEach((output) => {
+                  if (input == output) {
+                    // we have a match
+                    matches.push({
+                      i: modelTreeComponentInput.key,
+                      o: modelTreeComponentOutput.key,
+                    });
+                  }
+                });
+              }
+            );
+          });
+        }
+      );
+
+      if (this.path) {
+        this.path.clear();
+        this.pixiApp.stage.removeChild(this.path);
+      }
+      this.path = new PIXI.Graphics();
+      this.path.zIndex = 1;
+      this.path.cacheAsBitmap = true;
+      this.path.lineStyle(1, 0xffffff, 1);
+
+      matches.forEach((match) => {
+        let x_input = this.modelTreeComponents[match.i].sprite.x;
+        let y_input = this.modelTreeComponents[match.i].sprite.y;
+        let x_output = this.modelTreeComponents[match.o].sprite.x;
+        let y_output = this.modelTreeComponents[match.o].sprite.y;
+
+        this.path.moveTo(x_output, y_output);
+        this.path.lineTo(x_input, y_input);
+      });
+
+      this.pixiApp.stage.addChild(this.path);
     },
     clearDiagram() {
       this.pixiApp.stage.removeChildren();
@@ -254,14 +361,8 @@ export default {
       this.showPopUpSave = false;
     },
     changeEditingMode() {},
-    statusUpdate() {
-      if (explain.statusMessage.includes("realtime model started")) {
-        this.rt_running = true;
-      }
-      if (explain.statusMessage.includes("realtime model stopped")) {
-        this.rt_running = false;
-      }
-    },
+
+    stateUpdate() {},
     // drawing methods
     drawGrid() {
       const gridSize = 10;
@@ -292,114 +393,20 @@ export default {
       this.pixiApp.stage.addChild(this.gridHorizontal);
     },
     drawSkeletonGraphics() {},
-    drawComponents() {
-      // get the layout properties
-      const xCenter = this.pixiApp.renderer.width / 4;
-      const yCenter = this.pixiApp.renderer.height / 4;
-      const radius = this.uiConfig.diagram.settings.radius;
-
-      // render the blood compartments
-      Object.entries(this.uiConfig.diagram.components).forEach(
-        ([key, component]) => {
-          switch (component.compType) {
-            case "BloodCompartment":
-              this.diagramComponents[key] = new BloodCompartment(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
-            case "GasCompartment":
-              this.diagramComponents[key] = new GasCompartment(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
-            case "BloodConnector":
-              this.diagramComponents[key] = new BloodConnector(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                this.diagramComponents[component.dbcFrom],
-                this.diagramComponents[component.dbcTo]
-              );
-              break;
-            case "Shunt":
-              this.diagramComponents[key] = new Shunt(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                this.diagramComponents[component.dbcFrom],
-                this.diagramComponents[component.dbcTo]
-              );
-              break;
-            case "Container":
-              this.diagramComponents[key] = new Container(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
-
-            case "GasConnector":
-              this.diagramComponents[key] = new GasConnector(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                this.diagramComponents[component.dbcFrom],
-                this.diagramComponents[component.dbcTo]
-              );
-              break;
-            case "GasExchanger":
-              this.diagramComponents[key] = new GasExchanger(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.gas,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
-          }
-        }
-      );
-    },
-    updateConnectors() {},
   },
   beforeUnmount() {
-    document.removeEventListener("status", this.statusUpdate);
+    document.removeEventListener("state", this.buildModelTree);
   },
   mounted() {
-    // listen for an event coming from the explain model
-    document.addEventListener("status", this.statusUpdate);
-
+    // listen for model state update
+    document.addEventListener("state", this.buildModelTree);
     // get the model state
     explain.getModelState();
 
     // initialize the diagram
-    this.initDiagram();
+    this.initModelTree();
+
+    document.addEventListener("modeltreeupdate", this.updateModelTree);
   },
 };
 </script>
