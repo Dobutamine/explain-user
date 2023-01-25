@@ -6,7 +6,7 @@
         class="row q-mb-md"
         dense
         v-model="newModelName"
-        label="new model name"
+        label="model name"
         :style="{ 'font-size': '12px', width: '100%' }"
       />
       <div
@@ -21,8 +21,8 @@
             :unit="selectedModelItem.unit"
             :min="selectedModelItem.min"
             :step="selectedModelItem.step"
-            :value="0.0"
-            :initValue="0.0"
+            :value="selectedModelItem.value"
+            :initValue="selectedModelItem.value"
             :displayFactor="selectedModelItem.displayFactor"
             :displayRounding="selectedModelItem.displayRounding"
           >
@@ -33,8 +33,8 @@
             :caption="selectedModelItem.caption"
             :modelName="newModelName"
             :modelProp="selectedModelItem.modelProp"
-            :value="false"
-            :initValue="false"
+            :value="selectedModelItem.value"
+            :initValue="selectedModelItem.value"
           >
           </BooleanInputComponentVue>
         </div>
@@ -44,8 +44,8 @@
             :modelName="newModelName"
             :modelProp="selectedModelItem.modelProp"
             :options="selectedModelItem.optionalModels"
-            value=""
-            initValue=""
+            :value="selectedModelItem.value"
+            :initValue="selectedModelItem.value"
           >
           </ListInputComponentVue>
         </div>
@@ -58,8 +58,8 @@
             :modelName="newModelName"
             :modelProp="selectedModelItem.modelProp"
             :options="selectedModelItem.optionalModels"
-            :value="[]"
-            :initValue="[]"
+            :value="selectedModelItem.value"
+            :initValue="selectedModelItem.value"
           >
           </MultipleListInputComponentVue>
         </div>
@@ -120,15 +120,30 @@ export default {
     BooleanInputComponentVue,
   },
   props: {
+    modelName: String,
     selectedModelItems: Array,
+    editMode: Number, // 0 is new, 1 = existing
+  },
+  watch: {
+    modelName(nv, ov) {
+      this.newModelName = nv;
+      this.findModelProperties();
+    },
   },
   data() {
     return {
       newModelName: "",
       statusMessage: "",
+      value: 0.0,
     };
   },
   methods: {
+    findModelProperties() {
+      this.selectedModelItems.forEach((item) => {
+        this.value = explain.modelState.Models[this.modelName][item.modelProp];
+        item["value"] = this.value;
+      });
+    },
     addToModel() {
       if (this.newModelName === "") {
         alert("Give your model component a name!");

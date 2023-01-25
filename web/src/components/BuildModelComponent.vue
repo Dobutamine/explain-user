@@ -47,14 +47,14 @@
         >
           <q-menu dark>
             <q-list dense>
-              <div v-for="(modelType, index) in modelTypes" :key="index">
+              <div v-for="(modelName, index) in modelNames" :key="index">
                 <q-item clickable dense>
                   <q-item-section
                     clickable
                     v-close-popup
-                    @click="selectModelType(modelType)"
+                    @click="selectModel(modelName)"
                   >
-                    {{ modelType }}
+                    {{ modelName }}
                   </q-item-section>
                 </q-item>
               </div>
@@ -81,7 +81,9 @@
       </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
         <BuildPropEditComponent
+          :modelName="selectedModelName"
           :selectedModelItems="selectedModelItems"
+          :editMode="editMode"
           @cancelbuild="cancelBuild"
         >
         </BuildPropEditComponent>
@@ -112,18 +114,32 @@ export default {
       modelsTree: {},
       selectedModelType: [],
       selectedModelItems: [],
+      editMode: 0,
       modelTypes: [],
+      modelNames: [],
+      selectedModelName: "",
     };
   },
   methods: {
     cancelBuild() {
       this.selectedModelItems = [];
     },
+    selectModel(modelName) {
+      // find the properties of the model
+      let modelType = explain.modelState.Models[modelName].ModelType;
+      // store the model name
+      this.selectedModelName = modelName;
+      // search the properties needed for this modeltype in the uiconfig
+      this.editMode = 1;
+      this.selectedModelItems = [];
+      this.selectedModelItems = this.uiConfig.models[modelType].properties;
+    },
     selectModelType(modeltype) {
       // search the properties needed for this modeltype in the uiconfig
+      this.editMode = 0;
+      this.selectedModelName = "";
       this.selectedModelItems = [];
       this.selectedModelItems = this.uiConfig.models[modeltype].properties;
-      console.log(this.selectedModelItems);
     },
     removeAllProps() {
       // this.selectedModelItems = [];
@@ -131,8 +147,10 @@ export default {
     buildModelItemTree() {
       // build the grouperItem tree from the ui store
       this.modelsTree = {};
+      this.modelNames = [];
       // first find all models
       for (let model in explain.modelState.Models) {
+        this.modelNames.push(model);
         let modelType = explain.modelState.Models[model].ModelType;
         let props = [];
         if (!this.modelTypes.includes(modelType)) {
