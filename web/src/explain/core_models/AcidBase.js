@@ -1,7 +1,9 @@
 import { Brent } from "../helpers/BrentRootFinding";
+import ModelBaseClass from "../helpers/ModelBaseClass";
 
-export default class AcidBase {
+export default class AcidBase extends ModelBaseClass {
   // class attributes
+  IsEnabled = true;
   AlphaCo2P = 0.03067;
 
   // set the brent root finding properties
@@ -27,6 +29,18 @@ export default class AcidBase {
   _cco2 = 0;
   _cco3 = 0;
   _oh = 0;
+  _is_initialized = true;
+
+  // calculate step
+  CalcModel(tco2, sid = 35.9, alb = 25.0, pi = 1.64, u = 0.0) {
+    this.calc_acid_base(
+      tco2,
+      (sid = 35.9),
+      (alb = 25.0),
+      (pi = 1.64),
+      (u = 0.0)
+    );
+  }
 
   calc_acid_base(tco2, sid = 35.9, alb = 25.0, pi = 1.64, u = 0.0) {
     // declare a new blood gas instance
