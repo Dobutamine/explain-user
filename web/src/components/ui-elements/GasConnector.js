@@ -187,7 +187,7 @@ export default class GasConnector {
     });
     this.spritePosition += flow / this.models.length;
 
-    if (flow > 0) {
+    if (flow >= 0) {
       direction = 0;
       this.sprite.tint = this.dbcFrom.sprite.tint;
     } else {

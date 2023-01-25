@@ -181,14 +181,18 @@ export default class Shunt {
 
     // get the speed
     let flow = 0;
+    let direction = 0;
+
     this.models.forEach((model) => {
       flow += data[model + ".Flow"];
     });
     this.spritePosition += flow / this.models.length;
 
-    if (flow > 0) {
+    if (flow >= 0) {
+      direction = 0;
       this.sprite.tint = this.dbcFrom.sprite.tint;
     } else {
+      direction = Math.PI;
       this.sprite.tint = this.dbcTo.sprite.tint;
     }
 
@@ -236,7 +240,7 @@ export default class Shunt {
       angle = this.spritePosition + Math.PI;
     }
 
-    this.sprite.rotation = angle;
+    this.sprite.rotation = angle + direction;
 
     this.prevSpriteX = this.sprite.x;
     this.prevSpriteY = this.sprite.y;
