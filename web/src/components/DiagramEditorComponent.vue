@@ -958,6 +958,8 @@ export default {
       },
       false
     );
+
+    this.$bus.on("diagram_loaded", () => this.getAllDiagramComponents());
   },
 };
 </script>

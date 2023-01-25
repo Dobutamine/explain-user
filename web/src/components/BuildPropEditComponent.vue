@@ -25,6 +25,7 @@
             :initValue="selectedModelItem.value"
             :displayFactor="selectedModelItem.displayFactor"
             :displayRounding="selectedModelItem.displayRounding"
+            @propupdate="propUpdate"
           >
           </NumberInputComponentVue>
         </div>
@@ -35,6 +36,7 @@
             :modelProp="selectedModelItem.modelProp"
             :value="selectedModelItem.value"
             :initValue="selectedModelItem.value"
+            @propupdate="propUpdate"
           >
           </BooleanInputComponentVue>
         </div>
@@ -46,6 +48,7 @@
             :options="selectedModelItem.optionalModels"
             :value="selectedModelItem.value"
             :initValue="selectedModelItem.value"
+            @propupdate="propUpdate"
           >
           </ListInputComponentVue>
         </div>
@@ -60,6 +63,7 @@
             :options="selectedModelItem.optionalModels"
             :value="selectedModelItem.value"
             :initValue="selectedModelItem.value"
+            @propupdate="propUpdate"
           >
           </MultipleListInputComponentVue>
         </div>
@@ -74,7 +78,7 @@
           size="sm"
           style="width: 50px"
           icon="fa-solid fa-check"
-          @click="addToModel"
+          @click="updateProps"
         ></q-btn>
         <q-btn
           color="grey-14"
@@ -135,9 +139,80 @@ export default {
       newModelName: "",
       statusMessage: "",
       value: 0.0,
+      updateList: [],
     };
   },
   methods: {
+    propUpdate(modelName, propName, propValue) {
+      let key = modelName + "." + propName;
+      this.updateList[key] = propValue;
+    },
+    addToScript() {
+      let counter = 0;
+      for (let item in this.updateList) {
+        let processed_item = item.split(".");
+        let model = processed_item[0];
+        let prop = processed_item[1];
+
+        // get the current value
+        let currentValue = explain.modelState.Models[model][prop];
+        if (this.updateList[item] != currentValue) {
+          // delete the prop as the prop is moved to the script, otherwise we get state problems
+          this.deleteProp(model, prop);
+          counter += 1;
+          this.script.script.push({
+            m: model,
+            p: prop,
+            o: currentValue,
+            v: this.updateList[item],
+            it: 0.0,
+            at: 0.0,
+            t: "model",
+            state: "pending",
+          });
+        }
+      }
+      if (counter > 0) {
+        this.statusMessage = "property change added to script";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      } else {
+        this.statusMessage = "nothing changed!";
+        setTimeout(() => (this.statusMessage = ""), 1500);
+      }
+
+      // reset the updateProps list
+      this.updateList = {};
+    },
+    updateProps() {
+      // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
+      let updatePropObject = [];
+      // iterate over all props and build an prop update object
+      for (let item in this.updateList) {
+        let processed_item = item.split(".");
+        let model = processed_item[0];
+        let prop = processed_item[1];
+
+        updatePropObject.push({
+          m: model,
+          p: prop,
+          v: this.updateList[item],
+          at: 0.0,
+          it: 0.0,
+        });
+      }
+      // set the new model properties on the model
+      explain.setModelProperties(updatePropObject);
+
+      // display the status message
+      this.statusMessage = "properties updated";
+      setTimeout(() => (this.statusMessage = ""), 1000);
+
+      // reset the updateProps list
+      this.updateList = {};
+    },
+    saveModelProperties() {
+      console.log(this.selectedModelItems);
+    },
     findModelProperties() {
       this.selectedModelItems.forEach((item) => {
         this.value = explain.modelState.Models[this.modelName][item.modelProp];

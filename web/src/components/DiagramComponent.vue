@@ -328,6 +328,8 @@ export default {
         this.showPopUpServer = false;
 
         this.buildDiagram();
+
+        this.$bus.emit("diagram_loaded");
       }
     },
     async getDiagramsFromServer() {
