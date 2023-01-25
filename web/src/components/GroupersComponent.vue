@@ -70,14 +70,14 @@
 </template>
 
 <script>
-import GrouperUpdaterComponentVue from "./GrouperUpdaterComponent.vue";
-import { useUserInterfaceStore } from "src/stores/userInterface";
+import GrouperEditorComponentVue from "./GrouperEditorComponent.vue";
+import { useUiStore } from "src/stores/ui";
 export default {
   components: {
-    GrouperUpdaterComponentVue,
+    GrouperUpdaterComponentVue: GrouperEditorComponentVue,
   },
   setup() {
-    const uiConfig = useUserInterfaceStore();
+    const uiConfig = useUiStore();
     return {
       uiConfig,
     };

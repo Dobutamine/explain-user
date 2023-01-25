@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { explain } from "src/boot/explain";
 
-export const useUserInterfaceStore = defineStore("userInterface", {
+export const useUiStore = defineStore("ui", {
   state: () => ({
     settings: {
       apiUrl: "http://localhost:8081",

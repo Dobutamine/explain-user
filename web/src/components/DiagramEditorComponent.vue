@@ -344,11 +344,11 @@
 <script>
 import { explain } from "../boot/explain";
 
-import { useUserInterfaceStore } from "src/stores/userInterface";
+import { useUiStore } from "src/stores/ui";
 export default {
   components: {},
   setup() {
-    const uiConfig = useUserInterfaceStore();
+    const uiConfig = useUiStore();
     return {
       uiConfig,
     };

@@ -44,13 +44,13 @@
 <script>
 import { explain } from "../boot/explain";
 import { useScriptStore } from "stores/script";
-import { useUserInterfaceStore } from "src/stores/userInterface";
+import { useUiStore } from "src/stores/ui";
 import SliderComponentVue from "./groupers/SliderComponent.vue";
 
 export default {
   setup() {
     const script = useScriptStore();
-    const uiConfig = useUserInterfaceStore();
+    const uiConfig = useUiStore();
     return {
       script,
       uiConfig,

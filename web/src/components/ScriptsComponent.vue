@@ -303,12 +303,12 @@
 
 <script>
 import { useScriptStore } from "stores/script";
-import { useLoggedInUser } from "stores/loggedInUser";
+import { useUserStore } from "stores/user";
 
 export default {
   setup() {
     const script = useScriptStore();
-    const user = useLoggedInUser();
+    const user = useUserStore();
     return {
       script,
       user,

@@ -57,14 +57,14 @@
 </template>
 
 <script>
-import { useLoggedInUser } from "stores/loggedInUser";
-import { useUserInterfaceStore } from "src/stores/userInterface";
+import { useUserStore } from "src/stores/user";
+import { useUiStore } from "src/stores/ui";
 import { explain } from "../boot/explain";
 
 export default {
   setup() {
-    const user = useLoggedInUser();
-    const uiConfig = useUserInterfaceStore();
+    const user = useUserStore();
+    const uiConfig = useUiStore();
     return {
       user,
       uiConfig,

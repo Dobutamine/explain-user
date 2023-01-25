@@ -128,7 +128,7 @@
         <div class="row text-overline justify-center">diagram name</div>
         <q-input
           class="row q-ma-sm"
-          v-model="uiConfig.diagram.name"
+          v-model="ui.diagram.name"
           square
           hide-hint
           dense
@@ -177,17 +177,17 @@ import GasCompartment from "../components/ui-elements/GasCompartment";
 import GasConnector from "../components/ui-elements/GasConnector";
 import GasExchanger from "../components/ui-elements/GasExchanger";
 
-import { useUserInterfaceStore } from "src/stores/userInterface";
-import { useLoggedInUser } from "stores/loggedInUser";
+import { useUiStore } from "src/stores/ui";
+import { useUserStore } from "src/stores/user";
 
 let canvas = null;
 
 export default {
   setup() {
-    const uiConfig = useUserInterfaceStore();
-    const user = useLoggedInUser();
+    const ui = useUiStore();
+    const user = useUserStore();
     return {
-      uiConfig,
+      ui,
       user,
     };
   },
@@ -258,16 +258,16 @@ export default {
     },
     async saveDiagramToServer() {
       // check if script is not protected
-      if (this.uiConfig.diagram.protected) {
+      if (this.ui.diagram.protected) {
         alert("Diagram is protected!");
         return;
       }
-      if (Object.keys(this.uiConfig.diagram.components).length === 0) {
+      if (Object.keys(this.ui.diagram.components).length === 0) {
         alert("No diagram components defined!");
         return;
       }
 
-      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/update_diagram?token=${this.user.token}`;
+      const url = `${this.ui.settings.apiUrl}/api/diagrams/update_diagram?token=${this.user.token}`;
       let response = await fetch(url, {
         method: "POST",
         headers: {
@@ -275,12 +275,12 @@ export default {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: this.uiConfig.diagram.name,
+          name: this.ui.diagram.name,
           user: this.user.name,
-          settings: { ...this.uiConfig.diagram.settings },
-          components: { ...this.uiConfig.diagram.components },
-          protected: this.uiConfig.diagram.protected,
-          shared: this.uiConfig.diagram.shared,
+          settings: { ...this.ui.diagram.settings },
+          components: { ...this.ui.diagram.components },
+          protected: this.ui.diagram.protected,
+          shared: this.ui.diagram.shared,
         }),
       });
       if (response.status === 200) {
@@ -299,7 +299,7 @@ export default {
     },
     async loadDiagramFromServer() {
       // do a server request
-      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/get_diagram?token=${this.user.token}`;
+      const url = `${this.ui.settings.apiUrl}/api/diagrams/get_diagram?token=${this.user.token}`;
       let response = await fetch(url, {
         method: "POST",
         headers: {
@@ -314,14 +314,14 @@ export default {
       if (response.status === 200) {
         let data = await response.json();
         // process the result
-        this.uiConfig.diagram.user = data.user;
-        this.uiConfig.diagram.name = data.name;
-        this.uiConfig.diagram.settings = data.settings;
-        this.uiConfig.diagram.components = data.components;
-        this.uiConfig.diagram.protected = data.protected;
-        this.uiConfig.diagram.shared = data.shared;
-        this.uiConfig.diagram.dateUpdated = data.dateUpdated;
-        this.uiConfig.diagram.dateCreated = data.dateCreated;
+        this.ui.diagram.user = data.user;
+        this.ui.diagram.name = data.name;
+        this.ui.diagram.settings = data.settings;
+        this.ui.diagram.components = data.components;
+        this.ui.diagram.protected = data.protected;
+        this.ui.diagram.shared = data.shared;
+        this.ui.diagram.dateUpdated = data.dateUpdated;
+        this.ui.diagram.dateCreated = data.dateCreated;
 
         this.statusMessage = "diagram loaded from server.";
         setTimeout(() => (this.statusMessage = ""), 1500);
@@ -334,7 +334,7 @@ export default {
     },
     async getDiagramsFromServer() {
       // do a server request
-      const url = `${this.uiConfig.settings.apiUrl}/api/diagrams/get_diagrams?token=${this.user.token}`;
+      const url = `${this.ui.settings.apiUrl}/api/diagrams/get_diagrams?token=${this.user.token}`;
       let response = await fetch(url, {
         method: "POST",
         headers: {
@@ -378,8 +378,8 @@ export default {
     },
     // drawing methods
     drawGrid() {
-      if (this.uiConfig.diagram.settings.grid) {
-        const gridSize = this.uiConfig.diagram.settings.gridSize;
+      if (this.ui.diagram.settings.grid) {
+        const gridSize = this.ui.diagram.settings.gridSize;
 
         if (this.gridVertical) {
           this.gridVertical.clear();
@@ -417,13 +417,13 @@ export default {
       }
     },
     drawSkeletonGraphics() {
-      if (this.uiConfig.diagram.settings.skeleton) {
+      if (this.ui.diagram.settings.skeleton) {
         if (this.skeletonGraphics) {
           this.skeletonGraphics.clear();
           this.pixiApp.stage.removeChild(this.skeletonGraphics);
         }
-        const radius = this.uiConfig.diagram.settings.radius;
-        const color = this.uiConfig.diagram.settings.skeletonColor;
+        const radius = this.ui.diagram.settings.radius;
+        const color = this.ui.diagram.settings.skeletonColor;
 
         // initalize the skeleton graphics
         this.skeletonGraphics = new PIXI.Graphics();
@@ -442,96 +442,94 @@ export default {
       // get the layout properties
       const xCenter = this.pixiApp.renderer.width / 4;
       const yCenter = this.pixiApp.renderer.height / 4;
-      const radius = this.uiConfig.diagram.settings.radius;
+      const radius = this.ui.diagram.settings.radius;
 
       // render the blood compartments
-      Object.entries(this.uiConfig.diagram.components).forEach(
-        ([key, component]) => {
-          switch (component.compType) {
-            case "BloodCompartment":
-              this.diagramComponents[key] = new BloodCompartment(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
-            case "GasCompartment":
-              this.diagramComponents[key] = new GasCompartment(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
-            case "BloodConnector":
-              this.diagramComponents[key] = new BloodConnector(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                this.diagramComponents[component.dbcFrom],
-                this.diagramComponents[component.dbcTo]
-              );
-              break;
-            case "Shunt":
-              console.log("shunt added");
-              this.diagramComponents[key] = new Shunt(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                this.diagramComponents[component.dbcFrom],
-                this.diagramComponents[component.dbcTo]
-              );
-              break;
-            case "Container":
-              this.diagramComponents[key] = new Container(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
+      Object.entries(this.ui.diagram.components).forEach(([key, component]) => {
+        switch (component.compType) {
+          case "BloodCompartment":
+            this.diagramComponents[key] = new BloodCompartment(
+              this.pixiApp,
+              key,
+              component.label,
+              component.models,
+              component.layout,
+              xCenter,
+              yCenter,
+              radius
+            );
+            break;
+          case "GasCompartment":
+            this.diagramComponents[key] = new GasCompartment(
+              this.pixiApp,
+              key,
+              component.label,
+              component.models,
+              component.layout,
+              xCenter,
+              yCenter,
+              radius
+            );
+            break;
+          case "BloodConnector":
+            this.diagramComponents[key] = new BloodConnector(
+              this.pixiApp,
+              key,
+              component.label,
+              component.models,
+              this.diagramComponents[component.dbcFrom],
+              this.diagramComponents[component.dbcTo]
+            );
+            break;
+          case "Shunt":
+            console.log("shunt added");
+            this.diagramComponents[key] = new Shunt(
+              this.pixiApp,
+              key,
+              component.label,
+              component.models,
+              this.diagramComponents[component.dbcFrom],
+              this.diagramComponents[component.dbcTo]
+            );
+            break;
+          case "Container":
+            this.diagramComponents[key] = new Container(
+              this.pixiApp,
+              key,
+              component.label,
+              component.models,
+              component.layout,
+              xCenter,
+              yCenter,
+              radius
+            );
+            break;
 
-            case "GasConnector":
-              this.diagramComponents[key] = new GasConnector(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                this.diagramComponents[component.dbcFrom],
-                this.diagramComponents[component.dbcTo]
-              );
-              break;
-            case "GasExchanger":
-              this.diagramComponents[key] = new GasExchanger(
-                this.pixiApp,
-                key,
-                component.label,
-                component.models,
-                component.gas,
-                component.layout,
-                xCenter,
-                yCenter,
-                radius
-              );
-              break;
-          }
+          case "GasConnector":
+            this.diagramComponents[key] = new GasConnector(
+              this.pixiApp,
+              key,
+              component.label,
+              component.models,
+              this.diagramComponents[component.dbcFrom],
+              this.diagramComponents[component.dbcTo]
+            );
+            break;
+          case "GasExchanger":
+            this.diagramComponents[key] = new GasExchanger(
+              this.pixiApp,
+              key,
+              component.label,
+              component.models,
+              component.gas,
+              component.layout,
+              xCenter,
+              yCenter,
+              radius
+            );
+            break;
         }
-      );
+      });
     },
     updateConnectors() {},
   },

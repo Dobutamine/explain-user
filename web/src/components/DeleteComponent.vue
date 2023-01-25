@@ -83,14 +83,13 @@
 
 <script>
 import { explain } from "../boot/explain";
-import BuildPropEditComponent from "./BuildPropEditComponent.vue";
-import { useUserInterfaceStore } from "src/stores/userInterface";
+import { useUiStore } from "src/stores/ui";
 export default {
   components: {
     //BuildPropEditComponent,
   },
   setup() {
-    const uiConfig = useUserInterfaceStore();
+    const uiConfig = useUiStore();
     return {
       uiConfig,
     };

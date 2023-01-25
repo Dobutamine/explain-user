@@ -25,7 +25,6 @@
             </q-tab-panel>
             <q-tab-panel name="play">
               <GroupersComponent></GroupersComponent>
-              <ModelsComponent></ModelsComponent>
             </q-tab-panel>
             <q-tab-panel name="build">
               <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
@@ -124,22 +123,21 @@
 </template>
 
 <script>
-import BuildModelComponent from "../components/BuildModelComponent.vue";
+import ModelComponent from "../components/ModelComponent.vue";
 import GroupersComponent from "../components/GroupersComponent.vue";
 import FileComponentVue from "../components/FileComponent.vue";
 import ScriptsComponentVue from "../components/ScriptsComponent.vue";
-import ModelsComponent from "../components/ModelsComponent.vue";
 import MonitorsComponentVue from "../components/MonitorsComponent.vue";
 import DiagramComponent from "src/components/DiagramComponent.vue";
 import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
-import { useLoggedInUser } from "stores/loggedInUser";
-import { useUserInterfaceStore } from "src/stores/userInterface";
+import { useUserStore } from "src/stores/user";
+import { useUiStore } from "src/stores/ui";
 
 export default {
   setup() {
-    const user = useLoggedInUser();
-    const uiConfig = useUserInterfaceStore();
+    const user = useUserStore();
+    const uiConfig = useUiStore();
     return {
       user,
       uiConfig,
@@ -148,10 +146,9 @@ export default {
   components: {
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
-    ModelsComponent,
     MonitorComponentVue: MonitorsComponentVue,
     GroupersComponent,
-    BuildModelComponent,
+    BuildModelComponent: ModelComponent,
     DiagramComponent,
     TimeChartComponentVue,
     ModelDiagramEditorComponent: DiagramEditorComponent,

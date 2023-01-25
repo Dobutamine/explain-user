@@ -331,7 +331,7 @@ import {
   FontSettings,
   Themes,
 } from "@arction/lcjs";
-import { h } from "vue";
+
 export default {
   setup() {},
   props: {

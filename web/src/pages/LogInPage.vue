@@ -110,14 +110,12 @@
 </template>
 
 <script>
-import { explain } from "src/boot/explain";
-import { PIXI } from "src/boot/pixi";
-import { useLoggedInUser } from "stores/loggedInUser";
+import { useUserStore } from "src/stores/user";
 //import axios from "axios";
 /* eslint-disable */
 export default {
   setup() {
-    const user = useLoggedInUser();
+    const user = useUserStore();
     return {
       user,
     };
