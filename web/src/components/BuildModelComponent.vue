@@ -110,7 +110,7 @@ export default {
     return {
       notyet: true,
       title: "MODEL EDITOR",
-      collapsed: true,
+      collapsed: false,
       modelsTree: {},
       selectedModelType: [],
       selectedModelItems: [],

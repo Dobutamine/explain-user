@@ -73,15 +73,21 @@
     <div v-if="selectedModelItems.length > 0">
       <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
         <q-btn
-          color="negative"
-          dense
+          color="primary"
           size="sm"
-          style="width: 50px"
-          icon="fa-solid fa-check"
+          style="width: 70px"
           @click="updateProps"
-        ></q-btn>
+          >UPDATE</q-btn
+        >
         <q-btn
-          color="grey-14"
+          color="secondary"
+          size="sm"
+          style="width: 70px"
+          @click="addToScript"
+          >SCRIPT</q-btn
+        >
+        <q-btn
+          color="negative"
           size="xs"
           dense
           style="width: 50px"
@@ -157,8 +163,6 @@ export default {
         // get the current value
         let currentValue = explain.modelState.Models[model][prop];
         if (this.updateList[item] != currentValue) {
-          // delete the prop as the prop is moved to the script, otherwise we get state problems
-          this.deleteProp(model, prop);
           counter += 1;
           this.script.script.push({
             m: model,

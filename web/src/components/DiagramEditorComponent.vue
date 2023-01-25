@@ -515,6 +515,17 @@ export default {
           };
           this.$bus.emit("rebuild_diagram");
           break;
+        case "Shunt":
+          this.uiConfig.diagram.components[this.compName] = {
+            label: this.compLabel,
+            models: this.compModelSelection,
+            compType: this.compType,
+            dbcFrom: this.compDbcFrom,
+            dbcTo: this.compDbcTo,
+            layout: {},
+          };
+          this.$bus.emit("rebuild_diagram");
+          break;
         case "GasConnector":
           this.uiConfig.diagram.components[this.compName] = {
             label: this.compLabel,
@@ -862,6 +873,9 @@ export default {
           models = ["BloodCompliance", "BloodTimeVaryingElastance"];
           break;
         case "BloodConnector":
+          models = ["BloodResistor"];
+          break;
+        case "Shunt":
           models = ["BloodResistor"];
           break;
         case "GasCompartment":

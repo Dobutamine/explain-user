@@ -90,89 +90,62 @@ export default class Shunt {
     this.path.zIndex = 1;
     this.path.cacheAsBitmap = true;
 
-    if (
-      this.dbcFrom.layout.pos.type == "arc" &&
-      this.dbcTo.layout.pos.type == "arc"
-    ) {
-      // get the path characteristics
-      this.line.enabled = false;
-      this.arc.enabled = true;
-      let c = 0;
-      if (this.dbcFrom.layout.pos.dgs > this.dbcTo.layout.pos.dgs) {
-        c = 360;
-      }
-      this.arc.from = this.dbcFrom.layout.pos.dgs * 0.0174533;
-      this.arc.to = (this.dbcTo.layout.pos.dgs + c) * 0.0174533;
-      this.arc.radius = this.dbcFrom.xCenter * this.dbcFrom.radius;
-      this.arc.xCenter = this.dbcFrom.xCenter;
-      this.arc.yCenter = this.dbcFrom.yCenter;
-      // draw the path
-      this.path.lineStyle(this.pathWidth, this.pathColor, 1);
-      this.path.arc(
-        this.arc.xCenter,
-        this.arc.yCenter,
-        this.arc.radius,
-        this.arc.from,
-        this.arc.to
-      );
-      this.spritePosition = this.dbcFrom.layout.pos.dgs * 0.0174533;
+    this.arc.enabled = false;
+    this.line.enabled = true;
+
+    // now it is difficult to calculate the arc. first calculate center x
+    this.line.x1 = this.dbcFrom.sprite.x;
+    this.line.y1 = this.dbcFrom.sprite.y;
+    this.line.x2 = this.dbcTo.sprite.x;
+    this.line.y2 = this.dbcTo.sprite.y;
+    this.line.radius = this.dbcFrom.xCenter * this.dbcFrom.radius;
+
+    let radsq = this.line.radius * this.line.radius;
+    let q = Math.sqrt(
+      (this.line.x2 - this.line.x1) * (this.line.x2 - this.line.x1) +
+        (this.line.y2 - this.line.y1) * (this.line.y2 - this.line.y1)
+    );
+    let x3 = (this.line.x1 + this.line.x2) / 2;
+    let y3 = (this.line.y1 + this.line.y2) / 2;
+    this.line.xCenter =
+      x3 +
+      Math.sqrt(radsq - (q / 2) * (q / 2)) *
+        ((this.line.y1 - this.line.y2) / q);
+    this.line.yCenter =
+      y3 +
+      Math.sqrt(radsq - (q / 2) * (q / 2)) *
+        ((this.line.x2 - this.line.x1) / q);
+    let angle1 =
+      Math.atan2(
+        this.line.yCenter - this.line.y1,
+        this.line.x1 - this.line.xCenter
+      ) * 57.2958;
+    if (this.line.yCenter - this.line.y1 > 0) {
+      angle1 = 180 + (180 - angle1);
     } else {
-      this.arc.enabled = false;
-      this.line.enabled = true;
-
-      // now it is difficult to calculate the arc. first calculate center x
-      this.line.x1 = this.dbcFrom.sprite.x;
-      this.line.y1 = this.dbcFrom.sprite.y;
-      this.line.x2 = this.dbcTo.sprite.x;
-      this.line.y2 = this.dbcTo.sprite.y;
-      this.line.radius = this.dbcFrom.xCenter * this.dbcFrom.radius;
-
-      let radsq = this.line.radius * this.line.radius;
-      let q = Math.sqrt(
-        (this.line.x2 - this.line.x1) * (this.line.x2 - this.line.x1) +
-          (this.line.y2 - this.line.y1) * (this.line.y2 - this.line.y1)
-      );
-      let x3 = (this.line.x1 + this.line.x2) / 2;
-      let y3 = (this.line.y1 + this.line.y2) / 2;
-      this.line.xCenter =
-        x3 +
-        Math.sqrt(radsq - (q / 2) * (q / 2)) *
-          ((this.line.y1 - this.line.y2) / q);
-      this.line.yCenter =
-        y3 +
-        Math.sqrt(radsq - (q / 2) * (q / 2)) *
-          ((this.line.x2 - this.line.x1) / q);
-      let angle1 =
-        Math.atan2(
-          this.line.yCenter - this.line.y1,
-          this.line.x1 - this.line.xCenter
-        ) * 57.2958;
-      if (this.line.yCenter - this.line.y1 > 0) {
-        angle1 = 180 + (180 - angle1);
-      } else {
-        angle1 = -angle1;
-      }
-      this.line.from = angle1 * 0.0174533;
-      let angle2 =
-        Math.atan2(
-          this.line.yCenter - this.line.y2,
-          this.line.x2 - this.line.xCenter
-        ) * 57.2958;
-      if (this.line.yCenter - this.line.y2 > 0) {
-        angle2 = 180 + (180 - angle2);
-      } else {
-        angle2 = -angle2;
-      }
-      this.line.to = angle2 * 0.0174533;
-      this.path.lineStyle(this.pathWidth, this.pathColor, 1);
-      this.path.arc(
-        this.line.xCenter,
-        this.line.yCenter,
-        this.line.radius,
-        this.line.from,
-        this.line.to
-      );
+      angle1 = -angle1;
     }
+    this.line.from = angle1 * 0.0174533;
+    let angle2 =
+      Math.atan2(
+        this.line.yCenter - this.line.y2,
+        this.line.x2 - this.line.xCenter
+      ) * 57.2958;
+    if (this.line.yCenter - this.line.y2 > 0) {
+      angle2 = 180 + (180 - angle2);
+    } else {
+      angle2 = -angle2;
+    }
+    this.line.to = angle2 * 0.0174533;
+    this.path.lineStyle(this.pathWidth, this.pathColor, 1);
+    this.path.arc(
+      this.line.xCenter,
+      this.line.yCenter,
+      this.line.radius,
+      this.line.from,
+      this.line.to
+    );
+
     this.pixiApp.stage.addChild(this.path);
   }
   update(data) {

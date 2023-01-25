@@ -883,45 +883,12 @@ export const useUserInterfaceStore = defineStore("userInterface", {
           "GasConnector",
           "Container",
           "GasExchanger",
+          "Shunt",
         ],
       },
       protected: false,
       shared: false,
-      components: {
-        /*
-        LA: {
-          label: "LA",
-          models: ["LA"],
-          compType: "BloodCompartment", or GasCompartment or Container
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 325 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        RA_RV: {
-          label: "RA_RV",
-          models: ["RA_RV"],
-          compType: "BloodConnector", or "GasConnector" or "Shunt"
-          dbcFrom: "RA",
-          dbcTo: "RV",
-          layout: {},
-        },
-        GASEX_LL: {
-          label: "GASEX_LL",
-          models: ["GASEX_LL"],
-          compType: "GasExchanger"
-          gas: "O2" or "Co2"
-          layout: {
-            pos: { type: "arc", x: 0, y: 0, dgs: 325 },
-            morph: { x: 1.0, y: 1.0 },
-            scale: { x: 1.0, y: 1.0 },
-            text: { x: 0.0, y: 0.0, size: 10 },
-          },
-        },
-        */
-      },
+      components: {},
     },
   }),
 
