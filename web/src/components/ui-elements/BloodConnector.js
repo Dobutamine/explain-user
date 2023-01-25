@@ -173,6 +173,9 @@ export default class BloodConnector {
         this.line.to
       );
     }
+    this.path.interactive = true;
+    this.path.on("mouseup", (e) => this.onDragEnd(e));
+    this.path.on("touchend", (e) => this.onDragEnd(e));
     this.pixiApp.stage.addChild(this.path);
   }
   update(data) {
