@@ -5,6 +5,10 @@ export class Pda extends ModelBaseClass {
   _pda = {};
   _res = 1.0;
 
+  Res = 0;
+  Velocity = 0;
+  Flow = 0;
+
   InitModel(model_ref) {
     // initialize the baseclass
     super.InitModel(model_ref);
@@ -41,6 +45,7 @@ export class Pda extends ModelBaseClass {
 
     // convert resistance of mmHg * s / mm^3 to mmHg *s / l
     this._res = this._res / 1000.0;
+    this.Res = this._res;
 
     // transfer the resistance to the ductus arteriosus blood connector and enable flow
     this._pda.IsEnabled = this.IsEnabled;

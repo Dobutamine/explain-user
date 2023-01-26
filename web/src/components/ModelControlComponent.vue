@@ -6,6 +6,14 @@
         :color="butColor"
         size="sm"
         :style="{ width: '70px' }"
+        @click="test"
+        >TEST</q-btn
+      >
+      <q-btn
+        :icon="butIcon"
+        :color="butColor"
+        size="sm"
+        :style="{ width: '70px' }"
         @click="togglePlay"
         >{{ butCaption }}</q-btn
       >
@@ -33,7 +41,20 @@
 
 <script>
 import { explain } from "../boot/explain";
+import { useSettingsStore } from "src/stores/settings";
+import { useUiStore } from "src/stores/ui";
+import { useUserStore } from "src/stores/user";
 export default {
+  setup() {
+    const settings = useSettingsStore();
+    const uiConfig = useUiStore();
+    const user = useUserStore();
+    return {
+      settings,
+      uiConfig,
+      user,
+    };
+  },
   data() {
     return {
       calcRunning: false,
@@ -49,6 +70,37 @@ export default {
     };
   },
   methods: {
+    async test() {
+      const url = `${this.uiConfig.settings.apiUrl}/api/settings/update_setting?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          engine_version: this.settings.engine_version,
+          active_experimental_models: [
+            ...this.settings.active_experimental_models,
+          ],
+          modeling_stepsize: this.settings.modeling_stepsize,
+          base_model_settings: { ...this.settings.base_model_settings },
+          core_models: { ...this.settings.core_models },
+          experimental_models: { ...this.settings.experimental_models },
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        switch (data.message) {
+          case "new":
+            this.statusMessage = "new diagram created on server.";
+            break;
+          case "update":
+            this.statusMessage = "diagram is updated on server.";
+            break;
+        }
+      }
+    },
     togglePlay() {
       this.rtState = !this.rtState;
       if (this.rtState) {

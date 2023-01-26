@@ -2,7 +2,7 @@ import ModelBaseClass from "../helpers/ModelBaseClass";
 
 export class Breathing extends ModelBaseClass {
   // local parameters
-  EMin4 = Math.pow(Math.E, -4);
+  _eMin4 = Math.pow(Math.E, -4);
   _insp_timer = 0.0;
   _insp_running = false;
   _exp_timer = 0.0;
@@ -14,6 +14,7 @@ export class Breathing extends ModelBaseClass {
   _breath_timer = 0.0;
   ExpTidalVolume = 0;
   InspTidalVolume = 0;
+  MinuteVolume = 0;
   _temp_exp_volume = 0;
   _temp_insp_volume = 0;
 
@@ -138,8 +139,8 @@ export class Breathing extends ModelBaseClass {
     if (this._exp_running) {
       this.RespMusclePressure =
         ((Math.pow(Math.E, -4.0 * (this._ncc_exp / (this._te / this._t))) -
-          this.EMin4) /
-          (1.0 - this.EMin4)) *
+          this._eMin4) /
+          (1.0 - this._eMin4)) *
         this.RmpGain;
     }
   }

@@ -645,7 +645,10 @@
       "Vol": 100000000,
       "UVol": 100000000,
       "ElBase": 0.00076,
-      "ElK": 0
+      "ElK": 0,
+      "Temp": 20,
+      "Humidity": 0.5,
+      "FixedComposition": true
     },
     "DS": {
       "Name": "DS",
@@ -655,7 +658,10 @@
       "Vol": 0.005,
       "UVol": 0.005,
       "ElBase": 5500,
-      "ElK": 0
+      "ElK": 0,
+      "Temp": 32,
+      "Humidity": 1.0,
+      "FixedComposition": false
     },
     "ALL": {
       "Name": "ALL",
@@ -665,7 +671,10 @@
       "Vol": 0.0465,
       "UVol": 0.0425,
       "ElBase": 750.0,
-      "ElK": 0
+      "ElK": 0,
+      "Temp": 37,
+      "Humidity": 1.0,
+      "FixedComposition": false
     },
     "ALR": {
       "Name": "ALR",
@@ -675,7 +684,10 @@
       "Vol": 0.0465,
       "UVol": 0.0425,
       "ElBase": 750.0,
-      "ElK": 0
+      "ElK": 0,
+      "Temp": 37,
+      "Humidity": 1.0,
+      "FixedComposition": true
     },
     "VENTIN": {
       "Name": "VENTIN",
@@ -686,6 +698,8 @@
       "UVol": 5.0,
       "ElBase": 1000.0,
       "ElK": 0,
+      "Temp": 37,
+      "Humidity": 1.0,
       "FixedComposition": true
     },
     "TUBINGIN": {
@@ -697,6 +711,8 @@
       "UVol": 0.131,
       "ElBase": 1160.0,
       "ElK": 0,
+      "Temp": 37,
+      "Humidity": 1.0,
       "FixedComposition": false
     },
     "TUBINGOUT": {
@@ -708,6 +724,8 @@
       "UVol": 0.131,
       "ElBase": 1160.0,
       "ElK": 0,
+      "Temp": 37,
+      "Humidity": 1.0,
       "FixedComposition": false
     },
     "YPIECE": {
@@ -719,6 +737,8 @@
       "UVol": 0.011,
       "ElBase": 10000.0,
       "ElK": 0,
+      "Temp": 37,
+      "Humidity": 1.0,
       "FixedComposition": false
     },
     "VENTOUT": {
@@ -730,6 +750,8 @@
       "UVol": 5.0,
       "ElBase": 1000.0,
       "ElK": 0,
+      "Temp": 37,
+      "Humidity": 1.0,
       "FixedComposition": true
     },
     "CHEST_L": {
@@ -1059,6 +1081,31 @@
       "TcContTo2": 10,
       "GHpTo2": 0,
       "GContTo2": 0
+    },
+    "AcidBase": {
+      "Name": "AcidBase",
+      "Description": "",
+      "ModelType": "AcidBase",
+      "IsEnabled": true,
+      "Tco2": 47,
+      "Sid": 35.9,
+      "Alb": 25.0,
+      "Pi": 1.64,
+      "U": 0.0,
+      "AlphaCo2P": 0.03067
+    },
+    "Oxygenation": {
+      "Name": "Oxygenation",
+      "Description": "",
+      "ModelType": "Oxygenation",
+      "IsEnabled": true,
+      "To2": 8.7,
+      "Hb": 8.0,
+      "Temp": 37.0,
+      "Dpg": 5.0,
+      "Ph": 7.4,
+      "Be": 0.0,
+      "Pres": 760
     },
     "MechanicalVentilator": {
       "Name": "MechanicalVentilator",

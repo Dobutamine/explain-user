@@ -22,6 +22,7 @@
           <q-tab-panels v-model="tab_left" keep-alive>
             <q-tab-panel name="file">
               <FileComponentVue></FileComponentVue>
+              <ModelControlComponent></ModelControlComponent>
             </q-tab-panel>
             <q-tab-panel name="play">
               <GroupersComponent></GroupersComponent>
@@ -123,6 +124,7 @@
 </template>
 
 <script>
+import ModelControlComponent from "src/components/ModelControlComponent.vue";
 import ModelComponent from "../components/ModelComponent.vue";
 import GroupersComponent from "../components/GroupersComponent.vue";
 import FileComponentVue from "../components/FileComponent.vue";
@@ -144,6 +146,7 @@ export default {
     };
   },
   components: {
+    ModelControlComponent,
     FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,

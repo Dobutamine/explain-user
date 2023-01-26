@@ -38,7 +38,7 @@ export class GasCompliance extends ModelBaseClass {
   FixedComposition = false;
 
   // local parameters
-  GasConstant = 62.36367;
+  _gasConstant = 62.36367;
   _temp_max_pres = -1000.0;
   _temp_min_pres = 1000.0;
   _temp_max_vol = -1000.0;
@@ -109,7 +109,7 @@ export class GasCompliance extends ModelBaseClass {
     // change the volume as the temperature changes
     if (this.Pres != 0) {
       // as Ctotal is in mmol/l we have convert it as the gas constant is in mol
-      let dV = (this.Ctotal * this.Vol * this.GasConstant * dT) / this.Pres;
+      let dV = (this.Ctotal * this.Vol * this._gasConstant * dT) / this.Pres;
       this.Vol += dV / 1000.0;
 
       // guard against negative volumes
@@ -133,7 +133,7 @@ export class GasCompliance extends ModelBaseClass {
     if (this.Pres != 0) {
       // as dH2O is in mmol/l we have convert it as the gas constant is in mol
       this.Vol +=
-        ((this.GasConstant * (273.15 + this.Temp)) / this.Pres) *
+        ((this._gasConstant * (273.15 + this.Temp)) / this.Pres) *
         (dH2O / 1000.0);
     }
   }

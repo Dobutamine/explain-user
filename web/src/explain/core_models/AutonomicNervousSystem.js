@@ -18,6 +18,9 @@ export class AutonomicNervousSystem extends ModelBaseClass {
   _veLungStretchActivationFunction = {};
   _update_timer = 0.0;
 
+  HeartPeriodChangeAns = 0;
+  TargetMinuteVolume = 0;
+
   InitModel(model_ref) {
     // initialize the baseclass
     super.InitModel(model_ref);
@@ -170,5 +173,9 @@ export class AutonomicNervousSystem extends ModelBaseClass {
     if (this._breathing.TargetMinuteVolume <= 0) {
       this._breathing.TargetMinuteVolume = 0;
     }
+
+    this.HeartPeriodChangeAns = this._heart.HeartPeriodChangeAns;
+
+    this.TargetMinuteVolume = this._breathing.TargetMinuteVolume;
   }
 }

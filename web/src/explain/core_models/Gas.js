@@ -3,7 +3,7 @@ import { SetAirComposition } from "../helpers/AirComposition";
 
 export class Gas extends ModelBaseClass {
   // local parameters
-  GasConstant = 62.36367;
+  _gasConstant = 62.36367;
 
   InitModel(model_ref) {
     // initialize the baseclass

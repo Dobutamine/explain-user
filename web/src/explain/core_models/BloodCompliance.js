@@ -12,6 +12,7 @@ export class BloodCompliance extends ModelBaseClass {
   PresMus = 0;
   PresExt = 0;
   PresCc = 0;
+
   Solutes = {};
   To2 = 0.0;
   Po2 = 0.0;
@@ -19,6 +20,7 @@ export class BloodCompliance extends ModelBaseClass {
   Tco2 = 0.0;
   Pco2 = 0.0;
   Ph = 0.0;
+  Hco3 = 0.0;
 
   // local parameter
   _temp_max_pres = -1000.0;
