@@ -71,13 +71,13 @@
 
 <script>
 import GrouperEditorComponentVue from "./GrouperEditorComponent.vue";
-import { useUiStore } from "src/stores/ui";
+import { useConfigStore } from "src/stores/config";
 export default {
   components: {
     GrouperUpdaterComponentVue: GrouperEditorComponentVue,
   },
   setup() {
-    const uiConfig = useUiStore();
+    const uiConfig = useConfigStore();
     return {
       uiConfig,
     };

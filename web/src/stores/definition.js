@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export const useDefinitionStore = defineStore("definition", {
   state: () => ({
     engine_version: 0.1,
-    name: "Normal neonate",
+    name: "normal neonate",
     description: "normal 3.3 kg neonate at an age of 24h with shunts",
     weight: 3.3,
     user: "Timothy Antonius",

@@ -344,13 +344,16 @@
 <script>
 import { explain } from "../boot/explain";
 
-import { useUiStore } from "src/stores/ui";
+import { useConfigStore } from "src/stores/config";
+import { useDiagramStore } from "src/stores/diagram";
 export default {
   components: {},
   setup() {
-    const uiConfig = useUiStore();
+    const uiConfig = useConfigStore();
+    const diagram = useDiagramStore;
     return {
       uiConfig,
+      diagram,
     };
   },
   data() {
@@ -398,9 +401,11 @@ export default {
     },
     getAllDiagramComponents() {
       this.diagramComponentNames = [];
-      Object.keys(this.uiConfig.diagram.components).forEach((component) => {
-        this.diagramComponentNames.push(component);
-      });
+      if (this.diagram.components) {
+        Object.keys(this.diagram.components).forEach((component) => {
+          this.diagramComponentNames.push(component);
+        });
+      }
     },
     saveDiagramComponent() {
       let layoutType = "rel";
@@ -410,7 +415,7 @@ export default {
           if (this.compLayoutType) {
             layoutType = "arc";
           }
-          this.uiConfig.diagram.components[this.compName] = {
+          this.diagram.components[this.compName] = {
             label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
@@ -443,7 +448,7 @@ export default {
           if (this.compLayoutType) {
             layoutType = "arc";
           }
-          this.uiConfig.diagram.components[this.compName] = {
+          this.diagram.components[this.compName] = {
             label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
@@ -476,7 +481,7 @@ export default {
           if (this.compLayoutType) {
             layoutType = "arc";
           }
-          this.uiConfig.diagram.components[this.compName] = {
+          this.diagram.components[this.compName] = {
             label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
@@ -505,7 +510,7 @@ export default {
           this.$bus.emit("rebuild_diagram");
           break;
         case "BloodConnector":
-          this.uiConfig.diagram.components[this.compName] = {
+          this.diagram.components[this.compName] = {
             label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
@@ -516,7 +521,7 @@ export default {
           this.$bus.emit("rebuild_diagram");
           break;
         case "Shunt":
-          this.uiConfig.diagram.components[this.compName] = {
+          this.diagram.components[this.compName] = {
             label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
@@ -527,7 +532,7 @@ export default {
           this.$bus.emit("rebuild_diagram");
           break;
         case "GasConnector":
-          this.uiConfig.diagram.components[this.compName] = {
+          this.diagram.components[this.compName] = {
             label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
@@ -542,7 +547,7 @@ export default {
           if (this.compLayoutType) {
             layoutType = "arc";
           }
-          this.uiConfig.diagram.components[this.compName] = {
+          this.diagram.components[this.compName] = {
             label: this.compLabel,
             models: this.compModelSelection,
             compType: this.compType,
@@ -586,15 +591,14 @@ export default {
       this.compName = compName;
     },
     deleteComponentFromStore() {
-      delete this.uiConfig.diagram.components[this.compName];
+      delete this.diagram.components[this.compName];
       this.$bus.emit("rebuild_diagram");
       this.cancelDiagramBuild();
     },
     editComponent(compName) {
       this.editorMode = 2;
       // get all the properties
-      this.selectedDiagramComponent =
-        this.uiConfig.diagram.components[compName];
+      this.selectedDiagramComponent = this.diagram.components[compName];
 
       // get all possible model types
       this.compModels = [];
@@ -811,8 +815,8 @@ export default {
       }
     },
     findDiagramComponents(compType) {
-      Object.keys(this.uiConfig.diagram.components).forEach((compName) => {
-        if (this.uiConfig.diagram.components[compName].compType == compType) {
+      Object.keys(this.diagram.components).forEach((compName) => {
+        if (this.diagram.components[compName].compType == compType) {
           this.compDbcFroms.push(compName);
           this.compDbcTos.push(compName);
         }
@@ -960,7 +964,7 @@ export default {
     explain.getModelState();
 
     // get all diagram component types
-    this.diagramComponentTypes = this.uiConfig.diagram.settings.componentTypes;
+    this.diagramComponentTypes = this.diagram.componentTypes;
 
     // get all diagram component names
     this.getAllDiagramComponents();

@@ -134,12 +134,12 @@ import DiagramComponent from "src/components/DiagramComponent.vue";
 import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import { useUserStore } from "src/stores/user";
-import { useUiStore } from "src/stores/ui";
+import { useConfigStore } from "src/stores/config";
 
 export default {
   setup() {
     const user = useUserStore();
-    const uiConfig = useUiStore();
+    const uiConfig = useConfigStore();
     return {
       user,
       uiConfig,

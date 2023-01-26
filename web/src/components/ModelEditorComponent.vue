@@ -112,12 +112,12 @@ import ListInputComponentVue from "./ui-elements/ListInputComponent.vue";
 import BooleanInputComponentVue from "./ui-elements/BooleanInputComponent.vue";
 import NumberInputComponentVue from "./ui-elements/NumberInputComponent.vue";
 import { useScriptStore } from "stores/script";
-import { useUiStore } from "src/stores/ui";
+import { useConfigStore } from "src/stores/config";
 
 export default {
   setup() {
     const script = useScriptStore();
-    const uiConfig = useUiStore();
+    const uiConfig = useConfigStore();
     return {
       script,
       uiConfig,

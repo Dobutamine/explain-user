@@ -83,13 +83,13 @@
 
 <script>
 import { explain } from "../boot/explain";
-import { useUiStore } from "src/stores/ui";
+import { useConfigStore } from "src/stores/config";
 export default {
   components: {
     //BuildPropEditComponent,
   },
   setup() {
-    const uiConfig = useUiStore();
+    const uiConfig = useConfigStore();
     return {
       uiConfig,
     };

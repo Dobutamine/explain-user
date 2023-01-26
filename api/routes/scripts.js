@@ -20,7 +20,6 @@ router.post("/delete_script", auth, async (req, res) => {
       user: req.body.user,
       protected: false,
     });
-    console.log(newScript);
 
     // send a response to the client without the password or account and with a header containing the webtoken
     if (newScript.deletedCount === 0) {

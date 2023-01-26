@@ -44,7 +44,7 @@ router.post("/update_definition", auth, async (req, res) => {
       // save the model definition to the database
       await newDefinition.save();
 
-      res.send('{ "definition" : "new" }');
+      res.send('{ "message" : "new" }');
 
       return;
     }
@@ -63,7 +63,7 @@ router.post("/update_definition", auth, async (req, res) => {
     });
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    res.send('{ "definition" : "update" }');
+    res.send('{ "message" : "update" }');
   } catch (ex) {
     console.log(ex);
     res.status(500).send("Internal server error.");

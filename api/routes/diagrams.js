@@ -52,8 +52,10 @@ router.post("/update_diagram", auth, async (req, res) => {
       newDiagram = new Diagram(
         _.pick(req.body, [
           "_id",
+          "engine_version",
           "user",
           "name",
+          "definition",
           "settings",
           "components",
           "protected",
@@ -76,6 +78,10 @@ router.post("/update_diagram", auth, async (req, res) => {
 
     // save the model definition to the database
     await newDiagram.updateOne({
+      engine_version: req.body.engine_version,
+      user: req.body.user,
+      name: req.body.name,
+      definition: req.body.definition,
       settings: req.body.settings,
       components: req.body.components,
       protected: req.body.protected,

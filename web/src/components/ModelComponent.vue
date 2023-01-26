@@ -95,13 +95,13 @@
 <script>
 import { explain } from "../boot/explain";
 import ModelEditorComponent from "./ModelEditorComponent.vue";
-import { useUiStore } from "src/stores/ui";
+import { useConfigStore } from "src/stores/config";
 export default {
   components: {
     BuildPropEditComponent: ModelEditorComponent,
   },
   setup() {
-    const uiConfig = useUiStore();
+    const uiConfig = useConfigStore();
     return {
       uiConfig,
     };

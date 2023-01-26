@@ -1,13 +1,13 @@
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const debug = require("debug")("app:debug");
-const { Engine, validate } = require("../models/engine");
+const { Config, validate } = require("../models/config");
 const express = require("express");
 const _ = require("lodash");
 const router = express.Router();
 
-// save a new model state
-router.post("/update_engine", auth, admin, async (req, res) => {
+// save a new model definition
+router.post("/update_config", auth, async (req, res) => {
   // validate the request
   const { error } = validate(req.body);
   // if not validate return error message
@@ -15,30 +15,33 @@ router.post("/update_engine", auth, admin, async (req, res) => {
 
   try {
     // is this script already registered?
-    let newEngine = await Engine.findOne({
+    let newConfig = await Config.findOne({
+      user: req.body.user,
       engine_version: req.body.engine_version,
     });
 
-    if (!newEngine) {
+    if (!newConfig) {
       // this script does not exist yet so make a new one
       // we have a valid user object so we need to store it in the database
-      newEngine = new Engine(
+      newConfig = new Config(
         _.pick(req.body, [
           "_id",
+          "user",
           "engine_version",
-          "modeling_stepsize",
-          "base_model_settings",
-          "active_experimental_models",
-          "core_models",
-          "experimental_models",
+          "definition",
+          "apiUrl",
+          "models",
+          "groupers",
+          "charts",
+          "monitors",
         ])
       );
       // add the creation date
-      newEngine["dateCreated"] = Date.now();
-      newEngine["dateUpdated"] = Date.now();
+      newConfig["dateCreated"] = Date.now();
+      newConfig["dateUpdated"] = Date.now();
 
       // save the model definition to the database
-      await newEngine.save();
+      await newConfig.save();
 
       res.send('{ "message" : "new" }');
 
@@ -46,13 +49,15 @@ router.post("/update_engine", auth, admin, async (req, res) => {
     }
 
     // save the model definition to the database
-    await newEngine.updateOne({
+    await newConfig.updateOne({
       engine_version: req.body.engine_version,
-      modeling_stepsize: req.body.modeling_stepsize,
-      base_model_settings: req.body.base_model_settings,
-      active_experimental_models: req.body.active_experimental_models,
-      core_models: req.body.core_models,
-      experimental_models: req.body.experimental_models,
+      user: req.body.user,
+      definition: req.body.definition,
+      apiUrl: req.body.apiUrl,
+      models: req.body.models,
+      groupers: req.body.groupers,
+      charts: req.body.charts,
+      monitors: req.body.monitors,
       dateUpdated: Date.now(),
     });
 
@@ -64,8 +69,8 @@ router.post("/update_engine", auth, admin, async (req, res) => {
   }
 });
 
-// get a specific engine
-router.post("/get_engine", auth, async (req, res) => {
+// get specific definition for the current user with a specific engine version
+router.post("/get_config", auth, async (req, res) => {
   // validate the request
   const { error } = validate(req.body);
 
@@ -74,38 +79,17 @@ router.post("/get_engine", auth, async (req, res) => {
 
   try {
     // get the state file
-    let foundEngine = await Engine.findOne({
+    let foundConfig = await Config.find({
       engine_version: req.body.engine_version,
+      user: req.body.user,
     });
 
     // if not found
-    if (!foundEngine) return res.status(400).send("Can't find explain engine.");
-
-    // return the found script
-    res.send(foundEngine);
-  } catch (ex) {
-    console.log(ex);
-    res.status(500).send("Internal server error.");
-  }
-});
-
-// get all engines
-router.post("/get_engines", auth, async (req, res) => {
-  // validate the request
-  const { error } = validate(req.body);
-
-  // if not validate return error message
-  if (error) return res.status(400).send(error.details[0].message);
-
-  try {
-    // get the state file
-    let foundEngines = await Engine.find();
-
-    // if not found
-    if (!foundEngines) return res.status(400).send("Can't find any engines.");
+    if (!foundConfig)
+      return res.status(400).send("Can't find the config file.");
 
     // return the found scripts
-    res.send(foundEngines);
+    res.send(foundConfig);
   } catch (ex) {
     console.log(ex);
     res.status(500).send("Internal server error.");

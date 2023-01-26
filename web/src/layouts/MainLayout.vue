@@ -58,13 +58,13 @@
 
 <script>
 import { useUserStore } from "src/stores/user";
-import { useUiStore } from "src/stores/ui";
+import { useConfigStore } from "src/stores/config";
 import { explain } from "../boot/explain";
 
 export default {
   setup() {
     const user = useUserStore();
-    const uiConfig = useUiStore();
+    const uiConfig = useConfigStore();
     return {
       user,
       uiConfig,

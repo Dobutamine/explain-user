@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { explain } from "src/boot/explain";
 
-export const useUiStore = defineStore("ui", {
+export const useConfigStore = defineStore("config", {
   state: () => ({
-    settings: {
-      apiUrl: "http://localhost:8081",
-    },
+    engine_version: 0.1,
+    user: "Timothy Antonius",
+    definition: "normal neonate",
+    apiUrl: "http://localhost:8081",
     models: {
       BloodTimeVaryingElastance: {
         properties: [
@@ -862,34 +863,6 @@ export const useUiStore = defineStore("ui", {
         ],
       },
     },
-    diagram: {
-      user: "Timothy Antonius",
-      name: "default",
-      settings: {
-        backgroundColor: 0x333333,
-        editingMode: 1,
-        scaling: 0.1,
-        grid: false,
-        gridSize: 10.0,
-        snapToGrid: true,
-        skeleton: true,
-        skeletonColor: 0x444444,
-        pathColor: 0x444444,
-        radius: 0.6,
-        componentTypes: [
-          "BloodCompartment",
-          "BloodConnector",
-          "GasCompartment",
-          "GasConnector",
-          "Container",
-          "GasExchanger",
-          "Shunt",
-        ],
-      },
-      protected: false,
-      shared: false,
-      components: {},
-    },
   }),
 
   getters: {},
@@ -922,7 +895,7 @@ export const useUiStore = defineStore("ui", {
             chart.selectedSecProp1;
         }
 
-        let id2 = "";
+        id2 = "";
         if (chart.selectedModel2 && chart.selectedPrimProp2) {
           id2 = chart.selectedModel2 + "." + chart.selectedPrimProp2;
         }
@@ -939,7 +912,7 @@ export const useUiStore = defineStore("ui", {
             chart.selectedSecProp2;
         }
 
-        let id3 = "";
+        id3 = "";
         if (chart.selectedModel3 && chart.selectedPrimProp3) {
           id3 = chart.selectedModel3 + "." + chart.selectedPrimProp3;
         }
@@ -986,53 +959,6 @@ export const useUiStore = defineStore("ui", {
         }
       });
 
-      // diagrams
-      Object.values(this.diagram.components).forEach((component) => {
-        switch (component.compType) {
-          case "BloodCompartment":
-            component.models.forEach((model) => {
-              propIdsCharts.push(model + ".Vol");
-              propIdsCharts.push(model + ".To2");
-            });
-            break;
-          case "BloodConnector":
-            component.models.forEach((model) => {
-              propIdsCharts.push(model + ".Flow");
-            });
-            break;
-          case "Shunt":
-            component.models.forEach((model) => {
-              propIdsCharts.push(model + ".Flow");
-            });
-            break;
-          case "Container":
-            component.models.forEach((model) => {
-              propIdsCharts.push(model + ".Vol");
-            });
-            break;
-          case "GasCompartment":
-            component.models.forEach((model) => {
-              propIdsCharts.push(model + ".Vol");
-              propIdsCharts.push(model + ".Po2");
-            });
-            break;
-          case "GasConnector":
-            component.models.forEach((model) => {
-              propIdsCharts.push(model + ".Flow");
-            });
-            break;
-          case "GasExchanger":
-            component.models.forEach((model) => {
-              if (component.gas === "O2") {
-                propIdsCharts.push(model + ".FluxO2");
-              }
-              if (component.gas === "Co2") {
-                propIdsCharts.push(model + ".FluxCo2");
-              }
-            });
-            break;
-        }
-      });
       explain.watchModelProperties(propIdsCharts);
       explain.watchModelPropertiesSlow(propIdsMonitors);
     },

@@ -128,7 +128,7 @@
         <div class="row text-overline justify-center">diagram name</div>
         <q-input
           class="row q-ma-sm"
-          v-model="ui.diagram.name"
+          v-model="diagram.name"
           square
           hide-hint
           dense
@@ -177,18 +177,21 @@ import GasCompartment from "../components/ui-elements/GasCompartment";
 import GasConnector from "../components/ui-elements/GasConnector";
 import GasExchanger from "../components/ui-elements/GasExchanger";
 
-import { useUiStore } from "src/stores/ui";
+import { useConfigStore } from "src/stores/config";
 import { useUserStore } from "src/stores/user";
+import { useDiagramStore } from "src/stores/diagram";
 
 let canvas = null;
 
 export default {
   setup() {
-    const ui = useUiStore();
+    const ui = useConfigStore();
     const user = useUserStore();
+    const diagram = useDiagramStore();
     return {
       ui,
       user,
+      diagram,
     };
   },
   data() {
@@ -258,11 +261,11 @@ export default {
     },
     async saveDiagramToServer() {
       // check if script is not protected
-      if (this.ui.diagram.protected) {
+      if (this.diagram.protected) {
         alert("Diagram is protected!");
         return;
       }
-      if (Object.keys(this.ui.diagram.components).length === 0) {
+      if (Object.keys(this.diagram.components).length === 0) {
         alert("No diagram components defined!");
         return;
       }
@@ -275,12 +278,12 @@ export default {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: this.ui.diagram.name,
+          name: this.diagram.name,
           user: this.user.name,
-          settings: { ...this.ui.diagram.settings },
-          components: { ...this.ui.diagram.components },
-          protected: this.ui.diagram.protected,
-          shared: this.ui.diagram.shared,
+          settings: { ...this.diagram.settings },
+          components: { ...this.diagram.components },
+          protected: this.diagram.protected,
+          shared: this.diagram.shared,
         }),
       });
       if (response.status === 200) {
@@ -314,14 +317,14 @@ export default {
       if (response.status === 200) {
         let data = await response.json();
         // process the result
-        this.ui.diagram.user = data.user;
-        this.ui.diagram.name = data.name;
-        this.ui.diagram.settings = data.settings;
-        this.ui.diagram.components = data.components;
-        this.ui.diagram.protected = data.protected;
-        this.ui.diagram.shared = data.shared;
-        this.ui.diagram.dateUpdated = data.dateUpdated;
-        this.ui.diagram.dateCreated = data.dateCreated;
+        this.diagram.user = data.user;
+        this.diagram.name = data.name;
+        this.diagram.settings = data.settings;
+        this.diagram.components = data.components;
+        this.diagram.protected = data.protected;
+        this.diagram.shared = data.shared;
+        this.diagram.dateUpdated = data.dateUpdated;
+        this.diagram.dateCreated = data.dateCreated;
 
         this.statusMessage = "diagram loaded from server.";
         setTimeout(() => (this.statusMessage = ""), 1500);
@@ -378,8 +381,8 @@ export default {
     },
     // drawing methods
     drawGrid() {
-      if (this.ui.diagram.settings.grid) {
-        const gridSize = this.ui.diagram.settings.gridSize;
+      if (this.diagram.settings.grid) {
+        const gridSize = this.diagram.settings.gridSize;
 
         if (this.gridVertical) {
           this.gridVertical.clear();
@@ -417,13 +420,13 @@ export default {
       }
     },
     drawSkeletonGraphics() {
-      if (this.ui.diagram.settings.skeleton) {
+      if (this.diagram.settings.skeleton) {
         if (this.skeletonGraphics) {
           this.skeletonGraphics.clear();
           this.pixiApp.stage.removeChild(this.skeletonGraphics);
         }
-        const radius = this.ui.diagram.settings.radius;
-        const color = this.ui.diagram.settings.skeletonColor;
+        const radius = this.diagram.settings.radius;
+        const color = this.diagram.settings.skeletonColor;
 
         // initalize the skeleton graphics
         this.skeletonGraphics = new PIXI.Graphics();
@@ -442,10 +445,10 @@ export default {
       // get the layout properties
       const xCenter = this.pixiApp.renderer.width / 4;
       const yCenter = this.pixiApp.renderer.height / 4;
-      const radius = this.ui.diagram.settings.radius;
+      const radius = this.diagram.settings.radius;
 
       // render the blood compartments
-      Object.entries(this.ui.diagram.components).forEach(([key, component]) => {
+      Object.entries(this.diagram.components).forEach(([key, component]) => {
         switch (component.compType) {
           case "BloodCompartment":
             this.diagramComponents[key] = new BloodCompartment(

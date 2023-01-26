@@ -4,15 +4,23 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 
 const diagramSchema = new mongoose.Schema({
+  engine_version: {
+    type: Number,
+  },
   user: {
     type: String,
-    minlength: 3,
-    maxlength: 50,
   },
   name: {
     type: String,
-    minlength: 3,
-    maxlength: 50,
+  },
+  definition: {
+    type: String,
+  },
+  protected: {
+    type: Boolean,
+  },
+  shared: {
+    type: Boolean,
   },
   settings: {
     type: Object,
@@ -25,12 +33,6 @@ const diagramSchema = new mongoose.Schema({
   },
   dateCreated: {
     type: Date,
-  },
-  protected: {
-    type: Boolean,
-  },
-  shared: {
-    type: Boolean,
   },
 });
 
@@ -48,8 +50,10 @@ const Diagram = mongoose.model("Diagram", diagramSchema);
 
 function validateDiagram(diagram) {
   const diagramSchema = Joi.object({
-    user: Joi.string().min(3).max(50),
-    name: Joi.string().min(5).max(50),
+    engine_version: Joi.number(),
+    user: Joi.string(),
+    name: Joi.string(),
+    definition: Joi.string(),
     settings: Joi.object(),
     components: Joi.object(),
     shared: Joi.boolean(),
