@@ -11,11 +11,11 @@ const { default: mongoose } = require("mongoose");
 // import the routes
 const users = require("./routes/users");
 const auth = require("./routes/auth");
-const defs = require("./routes/defs");
+const definitions = require("./routes/definitions");
 const states = require("./routes/states");
 const scripts = require("./routes/scripts");
 const diagrams = require("./routes/diagrams");
-const settings = require("./routes/settings");
+const engines = require("./routes/engines");
 const error = require("./middleware/error");
 
 // detect the enviroment in which node is running (= same as process.env.NODE_ENV)
@@ -54,11 +54,11 @@ app.use(express.static("public"));
 // register the routes
 app.use("/api/auth", auth);
 app.use("/api/users", users);
-app.use("/api/defs", defs);
+app.use("/api/definitions", definitions);
 app.use("/api/states", states);
 app.use("/api/scripts", scripts);
 app.use("/api/diagrams", diagrams);
-app.use("/api/settings", settings);
+app.use("/api/engines", engines);
 // handle errors
 app.use(error);
 

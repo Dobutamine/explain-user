@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-export const useSettingsStore = defineStore("settings", {
+export const useEngineStore = defineStore("engine", {
   state: () => ({
     engine_version: 0.6,
     active_experimental_models: [],

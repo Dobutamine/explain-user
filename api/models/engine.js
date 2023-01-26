@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const settingSchema = new mongoose.Schema({
+const engineSchema = new mongoose.Schema({
   engine_version: {
     type: Number,
   },
@@ -28,10 +28,10 @@ const settingSchema = new mongoose.Schema({
   },
 });
 
-const Setting = mongoose.model("Setting", settingSchema);
+const Engine = mongoose.model("Engine", engineSchema);
 
-function validateSetting(new_setting) {
-  const settingSchema = Joi.object({
+function validateEngine(new_engine) {
+  const engineSchema = Joi.object({
     engine_version: Joi.number(),
     modeling_stepsize: Joi.number(),
     base_model_settings: Joi.object(),
@@ -40,8 +40,8 @@ function validateSetting(new_setting) {
     experimental_models: Joi.object(),
   });
 
-  return settingSchema.validate(new_setting);
+  return engineSchema.validate(new_engine);
 }
 
-exports.Setting = Setting;
-exports.validate = validateSetting;
+exports.Engine = Engine;
+exports.validate = validateEngine;
