@@ -64,4 +64,52 @@ router.post("/update_engine", auth, admin, async (req, res) => {
   }
 });
 
+// get a specific engine
+router.post("/get_engine", auth, async (req, res) => {
+  // validate the request
+  const { error } = validate(req.body);
+
+  // if not validate return error message
+  if (error) return res.status(400).send(error.details[0].message);
+
+  try {
+    // get the state file
+    let foundEngine = await Engine.findOne({
+      engine_version: req.body.engine_version,
+    });
+
+    // if not found
+    if (!foundEngine) return res.status(400).send("Can't find explain engine.");
+
+    // return the found script
+    res.send(foundEngine);
+  } catch (ex) {
+    console.log(ex);
+    res.status(500).send("Internal server error.");
+  }
+});
+
+// get all engines
+router.post("/get_engines", auth, async (req, res) => {
+  // validate the request
+  const { error } = validate(req.body);
+
+  // if not validate return error message
+  if (error) return res.status(400).send(error.details[0].message);
+
+  try {
+    // get the state file
+    let foundEngines = await Engine.find();
+
+    // if not found
+    if (!foundEngines) return res.status(400).send("Can't find any engines.");
+
+    // return the found scripts
+    res.send(foundEngines);
+  } catch (ex) {
+    console.log(ex);
+    res.status(500).send("Internal server error.");
+  }
+});
+
 module.exports = router;

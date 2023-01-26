@@ -224,6 +224,7 @@ export default {
         this.user.loggedIn = false;
       }
     },
+    async LoadEngine() {},
   },
   mounted() {
     this.$q.dark.set(true);
