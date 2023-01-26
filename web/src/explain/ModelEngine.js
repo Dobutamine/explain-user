@@ -19,8 +19,6 @@
 // import all models present in the model_index module
 import * as models from "./ModelIndex";
 
-import AcidBase from "./core_models/AcidBase";
-import Oxygenation from "./core_models/Oxygenation";
 import DataCollector from "./helpers/DataCollector";
 import TaskScheduler from "./helpers/TaskScheduler";
 

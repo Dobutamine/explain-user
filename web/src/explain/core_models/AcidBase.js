@@ -32,16 +32,6 @@ export default class AcidBase extends ModelBaseClass {
   _is_initialized = true;
 
   // calculate step
-  CalcModel(tco2, sid = 35.9, alb = 25.0, pi = 1.64, u = 0.0) {
-    this.calc_acid_base(
-      tco2,
-      (sid = 35.9),
-      (alb = 25.0),
-      (pi = 1.64),
-      (u = 0.0)
-    );
-  }
-
   calc_acid_base(tco2, sid = 35.9, alb = 25.0, pi = 1.64, u = 0.0) {
     // declare a new blood gas instance
     let _result = new BloodGas();

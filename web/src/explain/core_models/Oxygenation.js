@@ -1,6 +1,7 @@
 import { Brent } from "../helpers/BrentRootFinding";
+import ModelBaseClass from "../helpers/ModelBaseClass";
 
-export default class Oxygenation {
+export default class Oxygenation extends ModelBaseClass {
   // class attributes
   Hemoglobin = 0.0;
   Dpg = 0.0;
