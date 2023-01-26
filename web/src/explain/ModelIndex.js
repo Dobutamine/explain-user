@@ -1,5 +1,3 @@
-import ModelBaseClass from "./helpers/ModelBaseClass";
-
 export { ArtificialWhomb } from "./core_models/ArtificialWhomb";
 export { AutonomicNervousSystem } from "./core_models/AutonomicNervousSystem";
 export { Birth } from "./core_models/Birth";

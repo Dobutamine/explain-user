@@ -23,7 +23,6 @@ import AcidBase from "./core_models/AcidBase";
 import Oxygenation from "./core_models/Oxygenation";
 import DataCollector from "./helpers/DataCollector";
 import TaskScheduler from "./helpers/TaskScheduler";
-import Interface from "./helpers/Interface";
 
 // store all imported models in a list to be able to instantiate them dynamically
 const available_models = [];
@@ -317,12 +316,6 @@ const initModel = function (modelDefinition) {
         model[key] = value;
       }
     }
-    // initialize the acid base model
-    model["AcidBase"] = new AcidBase();
-
-    // initialize the oxygenation model
-    model["Oxygenation"] = new Oxygenation();
-
     // initialize all model components
     Object.values(modelDefinition.Models).forEach((component) => {
       // check if the model is available in the available model list
