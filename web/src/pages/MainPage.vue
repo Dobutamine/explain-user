@@ -176,18 +176,18 @@ export default {
       this.$router.push("/login");
     }
 
-    // // build the monitor list
-    // for (let key in this.uiConfig.monitors) {
-    //   if (this.uiConfig.monitors[key].enabled) {
-    //     this.monitors.push(this.uiConfig.monitors[key]);
-    //   }
-    // }
-    // // build the chart list
-    // for (let key in this.uiConfig.charts) {
-    //   if (this.uiConfig.charts[key].enabled) {
-    //     this.charts.push(this.uiConfig.charts[key]);
-    //   }
-    // }
+    // build the monitor list
+    for (let key in this.uiConfig.monitors) {
+      if (this.uiConfig.monitors[key].enabled) {
+        this.monitors.push(this.uiConfig.monitors[key]);
+      }
+    }
+    // build the chart list
+    for (let key in this.uiConfig.charts) {
+      if (this.uiConfig.charts[key].enabled) {
+        this.charts.push(this.uiConfig.charts[key]);
+      }
+    }
   },
 };
 </script>
