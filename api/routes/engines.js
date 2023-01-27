@@ -28,7 +28,7 @@ router.post("/update_engine", auth, admin, async (req, res) => {
           "engine_version",
           "modeling_stepsize",
           "base_model_settings",
-          "active_experimental_models",
+          "experimental_models",
           "core_models",
           "experimental_models",
         ])
@@ -50,7 +50,7 @@ router.post("/update_engine", auth, admin, async (req, res) => {
       engine_version: req.body.engine_version,
       modeling_stepsize: req.body.modeling_stepsize,
       base_model_settings: req.body.base_model_settings,
-      active_experimental_models: req.body.active_experimental_models,
+      experimental_models: req.body.experimental_models,
       core_models: req.body.core_models,
       experimental_models: req.body.experimental_models,
       dateUpdated: Date.now(),

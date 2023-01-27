@@ -21,7 +21,15 @@ router.post("/new_user", async (req, res) => {
 
     // we have a valid user object so we need to store it in the database
     user = new User(
-      _.pick(req.body, ["_id", "name", "password", "email", "isAdmin"])
+      _.pick(req.body, [
+        "_id",
+        "name",
+        "password",
+        "default_engine",
+        "default_definition",
+        "email",
+        "isAdmin",
+      ])
     );
 
     // hash the password
@@ -38,7 +46,17 @@ router.post("/new_user", async (req, res) => {
     user["token"] = token;
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    res.send(_.pick(user, ["_id", "name", "email", "isAdmin", "token"]));
+    res.send(
+      _.pick(user, [
+        "_id",
+        "name",
+        "email",
+        "isAdmin",
+        "default_engine",
+        "default_definition",
+        "token",
+      ])
+    );
   } catch (ex) {
     console.log(ex);
     res.status(500).send("Internal server error.");
@@ -90,7 +108,17 @@ router.put("/me", auth, async (req, res) => {
     user["token"] = token;
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    res.send(_.pick(user, ["_id", "name", "email", "isAdmin", "token"]));
+    res.send(
+      _.pick(user, [
+        "_id",
+        "name",
+        "email",
+        "isAdmin",
+        "default_engine",
+        "default_definition",
+        "token",
+      ])
+    );
   } catch (ex) {
     res.status(500).send("Internal server error.");
   }
@@ -143,7 +171,15 @@ router.post("/", [auth, admin], async (req, res) => {
 
     // we have a valid user object so we need to store it in the database
     user = new User(
-      _.pick(req.body, ["_id", "name", "password", "email", "isAdmin"])
+      _.pick(req.body, [
+        "_id",
+        "name",
+        "password",
+        "email",
+        "default_engine",
+        "default_definition",
+        "isAdmin",
+      ])
     );
 
     // hash the password
@@ -160,7 +196,17 @@ router.post("/", [auth, admin], async (req, res) => {
     user["token"] = token;
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    res.send(_.pick(user, ["_id", "name", "email", "isAdmin", "token"]));
+    res.send(
+      _.pick(user, [
+        "_id",
+        "name",
+        "email",
+        "default_engine",
+        "default_definition",
+        "isAdmin",
+        "token",
+      ])
+    );
   } catch (ex) {
     console.log(ex);
     res.status(500).send("Internal server error.");
@@ -185,6 +231,8 @@ router.put("/:id", [auth, admin], async (req, res) => {
     user.name = req.body.name;
     user.email = req.body.email;
     user.isAdmin = req.body.isAdmin;
+    user.default_definition = req.body.default_definition;
+    user.default_engine = req.body.default_engine;
     // hash the password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(req.body.password, salt);
@@ -199,7 +247,17 @@ router.put("/:id", [auth, admin], async (req, res) => {
     user["token"] = token;
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    res.send(_.pick(user, ["_id", "name", "email", "isAdmin", "token"]));
+    res.send(
+      _.pick(user, [
+        "_id",
+        "name",
+        "email",
+        "isAdmin",
+        "default_engine",
+        "default_definition",
+        "token",
+      ])
+    );
   } catch (ex) {
     res.status(500).send("Internal server error.");
   }

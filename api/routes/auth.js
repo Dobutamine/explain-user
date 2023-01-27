@@ -34,7 +34,17 @@ router.post("/", async (req, res) => {
   user.lastLogin = Date.now();
 
   // we have a valid login so return the json web token to the client
-  res.send(_.pick(user, ["_id", "name", "email", "isAdmin", "token"]));
+  res.send(
+    _.pick(user, [
+      "_id",
+      "name",
+      "email",
+      "isAdmin",
+      "default_engine",
+      "default_definition",
+      "token",
+    ])
+  );
 });
 
 function validate(req) {

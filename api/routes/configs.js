@@ -79,7 +79,7 @@ router.post("/get_config", auth, async (req, res) => {
 
   try {
     // get the state file
-    let foundConfig = await Config.find({
+    let foundConfig = await Config.findOne({
       engine_version: req.body.engine_version,
       user: req.body.user,
     });

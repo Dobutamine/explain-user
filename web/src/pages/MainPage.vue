@@ -135,12 +135,15 @@ import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
+import { useGeneralStore } from "../stores/general";
 
 export default {
   setup() {
     const user = useUserStore();
+    const general = useGeneralStore();
     const uiConfig = useConfigStore();
     return {
+      general,
       user,
       uiConfig,
     };
@@ -166,23 +169,25 @@ export default {
       models: [],
     };
   },
+  methods: {},
   mounted() {
     this.$q.dark.set(true);
     if (!this.user.loggedIn) {
       this.$router.push("/login");
     }
-    // build the monitor list
-    for (let key in this.uiConfig.monitors) {
-      if (this.uiConfig.monitors[key].enabled) {
-        this.monitors.push(this.uiConfig.monitors[key]);
-      }
-    }
-    // build the chart list
-    for (let key in this.uiConfig.charts) {
-      if (this.uiConfig.charts[key].enabled) {
-        this.charts.push(this.uiConfig.charts[key]);
-      }
-    }
+
+    // // build the monitor list
+    // for (let key in this.uiConfig.monitors) {
+    //   if (this.uiConfig.monitors[key].enabled) {
+    //     this.monitors.push(this.uiConfig.monitors[key]);
+    //   }
+    // }
+    // // build the chart list
+    // for (let key in this.uiConfig.charts) {
+    //   if (this.uiConfig.charts[key].enabled) {
+    //     this.charts.push(this.uiConfig.charts[key]);
+    //   }
+    // }
   },
 };
 </script>

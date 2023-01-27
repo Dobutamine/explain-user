@@ -109,6 +109,7 @@ export default {
     },
     calculate() {
       this.calcRunning = !this.calcRunning;
+      console.log(explain);
       if (this.calcRunning) {
         this.butCalcColor = "negative";
         this.uiConfig.updateDataCollector();

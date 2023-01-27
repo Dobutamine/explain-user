@@ -1,3 +1,4 @@
+export { AcidBase } from "./core_models/AcidBase";
 export { ArtificialWhomb } from "./core_models/ArtificialWhomb";
 export { AutonomicNervousSystem } from "./core_models/AutonomicNervousSystem";
 export { Birth } from "./core_models/Birth";
@@ -21,6 +22,7 @@ export { Kidneys } from "./core_models/Kidneys";
 export { MechanicalVentilator } from "./core_models/MechanicalVentilator";
 export { Metabolism } from "./core_models/Metabolism";
 export { Myocardium } from "./core_models/Myocardium";
+export { Oxygenation } from "./core_models/Oxygenation";
 export { Pda } from "./core_models/Pda";
 export { Placenta } from "./core_models/Placenta";
 export { Raas } from "./core_models/Raas";

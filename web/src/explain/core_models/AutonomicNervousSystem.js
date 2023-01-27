@@ -129,8 +129,10 @@ export class AutonomicNervousSystem extends ModelBaseClass {
 
   CalcAutonomicControl() {
     // calculate the acid base and oxygenation properties of chemoreceptor site
-    let ab = this._modelEngine.AcidBase.calc_acid_base(this._baroreceptor.Tco2);
-    let oxy = this._modelEngine.Oxygenation.calc_oxygenation(
+    let ab = this._modelEngine.Models.AcidBase.calc_acid_base(
+      this._baroreceptor.Tco2
+    );
+    let oxy = this._modelEngine.Models.Oxygenation.calc_oxygenation(
       this._baroreceptor.To2
     );
 

@@ -11,8 +11,8 @@ const engineSchema = new mongoose.Schema({
   base_model_settings: {
     type: Object,
   },
-  active_experimental_models: {
-    type: Array,
+  experimental_models: {
+    type: Boolean,
   },
   core_models: {
     type: Object,
@@ -35,7 +35,7 @@ function validateEngine(new_engine) {
     engine_version: Joi.number(),
     modeling_stepsize: Joi.number(),
     base_model_settings: Joi.object(),
-    active_experimental_models: Joi.array(),
+    experimental_models: Joi.boolean(),
     core_models: Joi.object(),
     experimental_models: Joi.object(),
   });

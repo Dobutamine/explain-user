@@ -33,15 +33,12 @@ export default class Model {
   errorLog = [];
   maxErrorLog = 10;
 
-  constructor(explain_definition = "normal_neonate.json") {
+  constructor() {
     // spin up a model engine
     this.modelEngine = new Worker(new URL("./ModelEngine.js", import.meta.url));
 
     // setup a communication channel with the model engine
     this.setUpComChannel();
-
-    // inject the explain definition into the model engine
-    this.injectModelDefinition(explain_definition);
   }
 
   start() {
@@ -141,18 +138,21 @@ export default class Model {
       payload: [],
     });
   }
+  initModelEngine(engine_definition) {
+    this.sendMessage({
+      type: "command",
+      message: "init_engine",
+      payload: [JSON.stringify(engine_definition)],
+    });
+  }
 
   injectModelDefinition(explain_definition) {
-    // load model definition file
-    fetch(explain_definition).then((response) =>
-      response.json().then((data) => {
-        this.sendMessage({
-          type: "command",
-          message: "init",
-          payload: [data],
-        });
-      })
-    );
+    // build explain_definition object
+    this.sendMessage({
+      type: "command",
+      message: "load_definition",
+      payload: [JSON.stringify(explain_definition)],
+    });
   }
 
   setUpComChannel() {

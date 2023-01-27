@@ -1,9 +1,10 @@
+import { _themeLoaderDuskInLapland } from "@arction/lcjs";
 import { defineStore } from "pinia";
 import { explain } from "src/boot/explain";
 
 export const useConfigStore = defineStore("config", {
   state: () => ({
-    engine_version: 0.1,
+    engine_version: 1.1,
     user: "Timothy Antonius",
     definition: "normal neonate",
     apiUrl: "http://localhost:8081",
@@ -868,6 +869,36 @@ export const useConfigStore = defineStore("config", {
   getters: {},
 
   actions: {
+    async getConfig(apiUrl, engine_version, userName, token) {
+      const url = `${apiUrl}/api/configs/get_config?token=${token}`;
+      // get the user login data
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          engine_version: engine_version,
+          user: userName,
+        }),
+      });
+
+      if (response.status === 200) {
+        let data = await response.json();
+        this.engine_version = data.engine_version;
+        this.user = data.user;
+        this.definition = data.definition;
+        this.apiUrl = data.apiUrl;
+        this.models = data.models;
+        this.groupers = data.groupers;
+        this.charts = data.charts;
+        this.monitors = data.monitors;
+        return true;
+      } else {
+        return false;
+      }
+    },
     updateDataCollector(propsArray) {
       // get all the props from charts
       let propIdsCharts = [];

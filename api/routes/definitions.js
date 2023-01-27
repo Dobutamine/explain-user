@@ -80,7 +80,7 @@ router.post("/get_definition", auth, async (req, res) => {
 
   try {
     // get the state file
-    let foundDefinition = await Definition.find({
+    let foundDefinition = await Definition.findOne({
       engine_version: req.body.engine_version,
       name: req.body.name,
       user: req.body.user,

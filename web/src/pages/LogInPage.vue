@@ -110,14 +110,27 @@
 </template>
 
 <script>
+import { explain } from "../boot/explain";
 import { useUserStore } from "src/stores/user";
+import { useGeneralStore } from "../stores/general";
+import { useConfigStore } from "../stores/config";
+import { useEngineStore } from "../stores/engine";
+import { useDefinitionStore } from "../stores/definition";
 //import axios from "axios";
 /* eslint-disable */
 export default {
   setup() {
     const user = useUserStore();
+    const general = useGeneralStore();
+    const config = useConfigStore();
+    const engine = useEngineStore();
+    const definition = useDefinitionStore();
     return {
       user,
+      general,
+      config,
+      engine,
+      definition,
     };
   },
   data() {
@@ -132,6 +145,10 @@ export default {
       showChoices: false,
       newUserEntry: false,
       login: true,
+      get_config: null,
+      log_in: null,
+      get_engine: null,
+      get_definition: null,
     };
   },
   methods: {
@@ -150,6 +167,9 @@ export default {
       this.password = "";
       this.name = "";
     },
+    LogIn() {
+      this.user.logIn(this.general.apiUrl, this.name, this.password);
+    },
     LogOut() {
       this.id = "";
       this.showChoices = false;
@@ -159,6 +179,25 @@ export default {
       this.name = "";
       this.errorText = "";
     },
+    startModel() {
+      explain.initModelEngine(this.engine.getEngineObject());
+
+      // construct explain definition object
+      // let def = {
+      //   EngineVersion: this.config.engine_version,
+      //   Name: this.definition.name,
+      //   Description: this.definition.description,
+      //   Weight: parseFloat(this.definition.weight),
+      //   ModelTimeTotal: 0.0,
+      //   ModelingStepsize: this.engine.modeling_stepsize,
+      //   Models: this.definition.models,
+      // };
+      // inject the explain definition into the model engine
+      explain.injectModelDefinition(this.definition.getDefinitionObject());
+
+      // show main window
+      this.$router.push("/main");
+    },
     pressedEnter() {
       if (this.newUserEntry) {
         this.registerNewUser();
@@ -166,83 +205,96 @@ export default {
         this.LogIn();
       }
     },
-    async registerNewUser() {
-      const url = `${this.apiUrl}/api/users/new_user`;
-      // get the user login data
-      let response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: this.name,
-          email: this.email,
-          password: this.password,
-          isAdmin: false,
-        }),
-      });
-
-      if (response.status === 200) {
-        // login the user
-        this.LogIn();
-      } else {
-        this.errorText = "Name or email already registered!";
-        // reset the password entry
-        this.password = "";
-      }
-    },
-    async LogIn() {
-      const url = `${this.apiUrl}/api/auth`;
-      // get the user login data
-      let response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: this.name, password: this.password }),
-      });
-
-      if (response.status === 200) {
-        let data = await response.json();
-        this.user.id = data._id;
-        this.user.name = data.name;
-        this.user.email = data.email;
-        this.user.isAdmin = data.isAdmin;
-        this.user.token = data.token;
-        this.user.loggedIn = true;
-        this.$router.push("/main");
-      } else {
-        this.errorText = "Invalid username or password";
-        // reset the password entry
-        this.password = "";
-        this.user.name = "";
-        this.user.email = "";
-        this.user.isAdmin = false;
-        this.user.token = "";
-        this.user.loggedIn = false;
-      }
-    },
-    async LoadEngine() {},
+  },
+  beforeUnmount() {
+    this.log_in();
+    this.get_config();
+    this.get_engine();
+    this.get_definition();
   },
   mounted() {
     this.$q.dark.set(true);
-    this.id = "";
-    this.email = "";
-    this.password = "";
-    this.name = "";
 
-    this.user.name = "";
-    this.user.email = "";
-    this.user.isAdmin = false;
-    this.user.token = "";
-    this.user.loggedIn = false;
+    // define a login request handler
+    this.log_in = this.user.$onAction(({ name, after }) => {
+      if (name === "logIn") {
+        after((result) => {
+          if (result) {
+            this.errorText = "";
+            // get the config file
+            this.config.getConfig(
+              this.general.apiUrl,
+              this.user.default_engine,
+              this.user.name,
+              this.user.token
+            );
+            console.log("User logged in.");
+          } else {
+            this.errorText = "Invalid username or password!";
+          }
+        });
+      }
+    });
 
-    // override development
+    // define a get config handler
+    this.get_config = this.config.$onAction(({ name, after }) => {
+      if (name === "getConfig") {
+        after((result) => {
+          if (result) {
+            this.errorText = "";
+            console.log("Configuration file loaded.");
+            // get the right explain engine
+            this.engine.getEngine(
+              this.general.apiUrl,
+              this.config.engine_version,
+              this.user.token
+            );
+          } else {
+            this.errorText = "Can't find configuration settings on server!";
+          }
+        });
+      }
+    });
+
+    this.get_engine = this.engine.$onAction(({ name, after }) => {
+      if (name === "getEngine") {
+        after((result) => {
+          if (result) {
+            this.errorText = "";
+            console.log("Explain engine loaded.");
+            // get model definition
+            this.definition.getDefinition(
+              this.general.apiUrl,
+              this.user.default_engine,
+              this.user.default_definition,
+              this.user.name,
+              this.user.token
+            );
+          } else {
+            this.errorText = "Can't find explain engine on server!";
+          }
+        });
+      }
+    });
+
+    this.get_definition = this.definition.$onAction(({ name, after }) => {
+      if (name === "getDefinition") {
+        after((result) => {
+          if (result) {
+            this.errorText = "";
+            console.log("Explain model definition loaded.");
+            this.startModel();
+          } else {
+            this.errorText = "Can't find explain model definition on server!";
+          }
+        });
+      }
+    });
+
+    // override login for developement development
     this.password = "y5qkqjed";
     this.name = "Timothy Antonius";
-    this.LogIn();
+    this.user.logIn(this.general.apiUrl, this.name, this.password);
   },
 };
 </script>

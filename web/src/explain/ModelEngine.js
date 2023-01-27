@@ -31,6 +31,9 @@ let model = {
   Models: {},
 };
 
+let modelEngine = {};
+let modelDefinition = {};
+
 // declare a model data object
 let modelData = {};
 
@@ -53,8 +56,12 @@ onmessage = function (e) {
   switch (e.data.type) {
     // command types
     case "command":
-      if (e.data.message == "init") {
-        initModel(e.data.payload[0]);
+      if (e.data.message == "init_engine") {
+        initEngine(JSON.parse(e.data.payload[0]));
+        break;
+      }
+      if (e.data.message == "load_definition") {
+        initModel(JSON.parse(e.data.payload[0]));
         break;
       }
       if (e.data.message == "start") {
@@ -138,6 +145,9 @@ onmessage = function (e) {
   }
 };
 
+const initEngine = function (engine_definition) {
+  modelEngine = engine_definition;
+};
 const start = function () {
   // start the model in realtime
   if (modelInitialized) {
@@ -293,7 +303,11 @@ const getModelDataSlow = function () {
   });
 };
 
-const initModel = function (modelDefinition) {
+const initModel = function (model_definition) {
+  console.log(modelEngine);
+  // store the model definition
+  modelDefinition = model_definition;
+
   // reset error flag
   let error = false;
 
@@ -302,9 +316,13 @@ const initModel = function (modelDefinition) {
     Models: {},
   };
 
+  // set the modeling stepsize
+  model["ModelingStepsize"] = modelEngine.modeling_stepsize;
+
   // clear model initialized flag
   modelInitialized = false;
 
+  console.log(model);
   // try to process the modelDefinition object
   try {
     // initialize the model parameters, except the model components key which needs special processing
@@ -316,31 +334,34 @@ const initModel = function (modelDefinition) {
     }
     // initialize all model components
     Object.values(modelDefinition.Models).forEach((component) => {
-      // check if the model is available in the available model list
-      let index = available_models.findIndex(
-        (model) => model.name === component.ModelType
-      );
+      // check whether the model is in the model engine list
+      if (Object.keys(modelEngine.core_models).includes(component.ModelType)) {
+        // check if the model is available in the available model list
+        let index = available_models.findIndex(
+          (model) => model.name === component.ModelType
+        );
 
-      // if the component model was found then instantiate a model
-      if (index > -1) {
-        // copy the properties of the modeldefinition file to an args object
-        let args = [];
-        for (const [key, value] of Object.entries(component)) {
-          args.push({ key, value });
+        // if the component model was found then instantiate a model
+        if (index > -1) {
+          // copy the properties of the modeldefinition file to an args object
+          let args = [];
+          for (const [key, value] of Object.entries(component)) {
+            args.push({ key, value });
+          }
+          // instantiate the new component with the args array and a reference to the model object
+          let newComponent = new available_models[index](args);
+
+          // add the new component to the model object
+          model.Models[component.Name] = newComponent;
+        } else {
+          // process any errors
+          error = true;
+          postMessage({
+            type: "error",
+            message: component.ModelType + " model not found",
+            payload: [],
+          });
         }
-        // instantiate the new component with the args array and a reference to the model object
-        let newComponent = new available_models[index](args);
-
-        // add the new component to the model object
-        model.Models[component.Name] = newComponent;
-      } else {
-        // process any errors
-        error = true;
-        postMessage({
-          type: "error",
-          message: component.ModelType + " model not found",
-          payload: [],
-        });
       }
     });
 
