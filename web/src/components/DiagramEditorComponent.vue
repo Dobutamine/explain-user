@@ -350,7 +350,7 @@ export default {
   components: {},
   setup() {
     const uiConfig = useConfigStore();
-    const diagram = useDiagramStore;
+    const diagram = useDiagramStore();
     return {
       uiConfig,
       diagram,
@@ -964,7 +964,7 @@ export default {
     explain.getModelState();
 
     // get all diagram component types
-    this.diagramComponentTypes = this.diagram.componentTypes;
+    this.diagramComponentTypes = this.diagram.settings.componentTypes;
 
     // get all diagram component names
     this.getAllDiagramComponents();

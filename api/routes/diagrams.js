@@ -148,7 +148,7 @@ router.post("/new_diagram", auth, async (req, res) => {
   }
 });
 
-// get all scripts for the current user
+// get all diagrams for the current user
 router.post("/get_diagrams", auth, async (req, res) => {
   // validate the request
   const { error } = validate(req.body);

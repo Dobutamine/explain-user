@@ -180,6 +180,7 @@ import GasExchanger from "../components/ui-elements/GasExchanger";
 import { useConfigStore } from "src/stores/config";
 import { useUserStore } from "src/stores/user";
 import { useDiagramStore } from "src/stores/diagram";
+import { useGeneralStore } from "src/stores/general";
 
 let canvas = null;
 
@@ -188,10 +189,12 @@ export default {
     const ui = useConfigStore();
     const user = useUserStore();
     const diagram = useDiagramStore();
+    const general = useGeneralStore();
     return {
       ui,
       user,
       diagram,
+      general,
     };
   },
   data() {
@@ -212,6 +215,7 @@ export default {
       showPopUpServer: false,
       showPopUpSave: false,
       addModelPopUp: false,
+      load_diagram: null,
     };
   },
   methods: {
@@ -278,8 +282,10 @@ export default {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          engine_version: this.diagram.engine_version,
           name: this.diagram.name,
           user: this.user.name,
+          definition: this.diagram.definition,
           settings: { ...this.diagram.settings },
           components: { ...this.diagram.components },
           protected: this.diagram.protected,
@@ -300,44 +306,17 @@ export default {
       }
       this.showPopUpServer = false;
     },
-    async loadDiagramFromServer() {
-      // do a server request
-      const url = `${this.ui.settings.apiUrl}/api/diagrams/get_diagram?token=${this.user.token}`;
-      let response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: this.selectedDiagramOnServer,
-          user: this.user.name,
-        }),
-      });
-      if (response.status === 200) {
-        let data = await response.json();
-        // process the result
-        this.diagram.user = data.user;
-        this.diagram.name = data.name;
-        this.diagram.settings = data.settings;
-        this.diagram.components = data.components;
-        this.diagram.protected = data.protected;
-        this.diagram.shared = data.shared;
-        this.diagram.dateUpdated = data.dateUpdated;
-        this.diagram.dateCreated = data.dateCreated;
-
-        this.statusMessage = "diagram loaded from server.";
-        setTimeout(() => (this.statusMessage = ""), 1500);
-        this.showPopUpServer = false;
-
-        this.buildDiagram();
-
-        this.$bus.emit("diagram_loaded");
-      }
+    loadDiagramFromServer() {
+      this.diagram.getDiagram(
+        this.general.apiUrl,
+        this.selectedDiagramOnServer,
+        this.user.name,
+        this.user.token
+      );
     },
     async getDiagramsFromServer() {
       // do a server request
-      const url = `${this.ui.settings.apiUrl}/api/diagrams/get_diagrams?token=${this.user.token}`;
+      const url = `${this.general.apiUrl}/api/diagrams/get_diagrams?token=${this.user.token}`;
       let response = await fetch(url, {
         method: "POST",
         headers: {
@@ -538,8 +517,27 @@ export default {
   },
   beforeUnmount() {
     document.removeEventListener("status", this.statusUpdate);
+    this.load_diagram();
   },
   mounted() {
+    // define a load diagram request handler
+    this.load_diagram = this.diagram.$onAction(({ name, after }) => {
+      if (name === "getDiagram") {
+        after((result) => {
+          if (result) {
+            this.statusMessage = "diagram loaded from server.";
+            setTimeout(() => (this.statusMessage = ""), 1500);
+            this.showPopUpServer = false;
+            this.buildDiagram();
+            this.$bus.emit("diagram_loaded");
+          } else {
+            this.statusMessage = "failed to get diagram.";
+            setTimeout(() => (this.statusMessage = ""), 1500);
+          }
+        });
+      }
+    });
+
     // listen for an event coming from the explain model
     document.addEventListener("status", this.statusUpdate);
 

@@ -37,6 +37,37 @@ export const useDiagramStore = defineStore("diagram", {
   getters: {},
 
   actions: {
+    async getDiagram(apiUrl, diagram_name, user_name, token) {
+      // do a server request
+      const url = `${apiUrl}/api/diagrams/get_diagram?token=${token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: diagram_name,
+          user: user_name,
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        // process the result
+        this.user = data.user;
+        this.name = data.name;
+        this.definition = data.definition;
+        this.settings = data.settings;
+        this.components = data.components;
+        this.protected = data.protected;
+        this.shared = data.shared;
+        this.dateUpdated = data.dateUpdated;
+        this.dateCreated = data.dateCreated;
+        return true;
+      } else {
+        return false;
+      }
+    },
     updateDataCollector(propsArray) {
       // get all the props from charts
       let propIdsDiagram = [];
