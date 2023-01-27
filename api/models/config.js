@@ -11,9 +11,6 @@ const configSchema = new mongoose.Schema({
   definition: {
     type: String,
   },
-  apiUrl: {
-    type: String,
-  },
   models: {
     type: Object,
   },
@@ -41,7 +38,6 @@ function validateConfig(new_config) {
     user: Joi.string(),
     engine_version: Joi.number(),
     definition: Joi.string(),
-    apiUrl: Joi.string(),
     models: Joi.object(),
     groupers: Joi.object(),
     charts: Joi.object(),
