@@ -87,6 +87,13 @@
           >SCRIPT</q-btn
         >
         <q-btn
+          color="secondary"
+          size="sm"
+          style="width: 70px"
+          @click="saveModelProperties"
+          >SAVE</q-btn
+        >
+        <q-btn
           color="negative"
           size="xs"
           dense
@@ -113,14 +120,23 @@ import BooleanInputComponentVue from "./ui-elements/BooleanInputComponent.vue";
 import NumberInputComponentVue from "./ui-elements/NumberInputComponent.vue";
 import { useScriptStore } from "stores/script";
 import { useConfigStore } from "src/stores/config";
+import { useEngineStore } from "src/stores/engine";
+import { useDefinitionStore } from "src/stores/definition";
+import { useUserStore } from "src/stores/user";
 
 export default {
   setup() {
     const script = useScriptStore();
     const uiConfig = useConfigStore();
+    const engine = useEngineStore();
+    const definition = useDefinitionStore();
+    const user = useUserStore();
     return {
       script,
       uiConfig,
+      engine,
+      definition,
+      user,
     };
   },
   components: {
@@ -147,6 +163,10 @@ export default {
       value: 0.0,
       updateList: [],
     };
+  },
+  mounted() {
+    // get the model state
+    explain.getModelState();
   },
   methods: {
     propUpdate(modelName, propName, propValue) {
@@ -215,9 +235,63 @@ export default {
       this.updateList = {};
     },
     saveModelProperties() {
-      console.log(this.selectedModelItems);
+      // save the model state to the server
+      let modelState = { ...explain.modelState };
+
+      // build a new model definition object
+      let newModelState = {
+        engine_version: 0.1,
+        name: this.definition.name,
+        description: this.definition.description,
+        weight: this.definition.weight,
+        user: this.user.name,
+        protected: this.definition.protected,
+        shared: this.definition.shared,
+        models: {},
+      };
+      // iterate over the models in the modelState object
+      Object.entries(modelState.Models).forEach(([model_name, model]) => {
+        let modelType = model.ModelType;
+        newModelState.models[model_name] = {};
+        // find the modelType in the engine definition file
+        Object.entries(this.engine.base_model_settings).forEach(
+          ([prop_name, prop]) => {
+            // get the value of this input from the current modelstate
+            let current_value = modelState.Models[model_name][prop_name];
+            // set the current_value in the models object
+            newModelState.models[model_name][prop_name] = current_value;
+          }
+        );
+        Object.entries(this.engine.core_models[modelType].inputs).forEach(
+          ([input_name, input]) => {
+            // get the value of this input from the current modelstate
+            let current_value = modelState.Models[model_name][input_name];
+            if (current_value !== undefined) {
+              // set the current_value in the models object
+              newModelState.models[model_name][input_name] = current_value;
+            }
+          }
+        );
+        if (this.engine.core_models[modelType].outputs !== undefined) {
+          Object.entries(this.engine.core_models[modelType].outputs).forEach(
+            ([output_name, input]) => {
+              try {
+                // get the value of this input from the current modelstate
+                let current_value = modelState.Models[model_name][output_name];
+                if (current_value !== undefined) {
+                  // set the current_value in the models object
+                  newModelState.models[model_name][output_name] = current_value;
+                }
+              } catch {}
+            }
+          );
+        }
+      });
+      console.log(newModelState);
     },
     findModelProperties() {
+      console.log(explain.modelState);
+      explain.getModelState();
       this.selectedModelItems.forEach((item) => {
         this.value = explain.modelState.Models[this.modelName][item.modelProp];
         item["value"] = this.value;

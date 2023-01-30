@@ -14,7 +14,7 @@ export class BloodCompliance extends ModelBaseClass {
   PresCc = 0;
 
   Solutes = {};
-  To2 = 0.0;
+  To2 = 0;
   Po2 = 0.0;
   So2 = 0.0;
   Tco2 = 0.0;

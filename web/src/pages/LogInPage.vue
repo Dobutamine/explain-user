@@ -180,18 +180,9 @@ export default {
       this.errorText = "";
     },
     startModel() {
+      // initialize the modelengine
       explain.initModelEngine(this.engine.getEngineObject());
 
-      // construct explain definition object
-      // let def = {
-      //   EngineVersion: this.config.engine_version,
-      //   Name: this.definition.name,
-      //   Description: this.definition.description,
-      //   Weight: parseFloat(this.definition.weight),
-      //   ModelTimeTotal: 0.0,
-      //   ModelingStepsize: this.engine.modeling_stepsize,
-      //   Models: this.definition.models,
-      // };
       // inject the explain definition into the model engine
       explain.injectModelDefinition(this.definition.getDefinitionObject());
 

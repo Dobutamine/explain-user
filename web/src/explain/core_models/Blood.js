@@ -6,7 +6,7 @@ export class Blood extends ModelBaseClass {
     super.InitModel(model_ref);
 
     // find all blood compliances and blood time varying elastances and transfer the solutes to the compartments
-    this.SetSolutes();
+    //this.SetSolutes();
 
     //set pCO2 and pO2 in the lung compliances
     this._modelEngine.Models.LL.Po2 = 100.0;
@@ -22,9 +22,15 @@ export class Blood extends ModelBaseClass {
         model.ModelType === "BloodCompliance" ||
         model.ModelType === "BloodTimeVaryingElastance"
       ) {
-        model.Solutes = { ...this.Solutes };
-        model.To2 = this.To2;
-        model.Tco2 = this.Tco2;
+        if (Object.keys(model.Solutes).length === 0) {
+          model.Solutes = { ...this.Solutes };
+        }
+        if (model.To2 === 0) {
+          model.To2 = this.To2;
+        }
+        if (model.Tco2 === 0) {
+          model.Tco2 = this.Tco2;
+        }
       }
     });
   }

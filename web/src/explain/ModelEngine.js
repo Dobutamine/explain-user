@@ -307,7 +307,6 @@ const getModelDataSlow = function () {
 };
 
 const initModel = function (model_definition) {
-  console.log(modelEngine);
   // store the model definition
   modelDefinition = model_definition;
 

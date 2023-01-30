@@ -21,6 +21,29 @@
         <q-toolbar-title class="text-overline">
           <div>{{ statusMessage }}</div>
         </q-toolbar-title>
+        <div class="q-mr-lg text-overline">
+          model: {{ this.definition.name }}
+        </div>
+
+        <q-btn
+          flat
+          round
+          dense
+          size="sm"
+          icon="fa-solid fa-download"
+          class="q-mr-sm"
+          @click="getAllModelStates"
+        />
+
+        <q-btn
+          flat
+          round
+          dense
+          size="sm"
+          icon="fa-solid fa-upload"
+          class="q-mr-sm"
+          @click="saveModelState"
+        />
         <q-btn
           flat
           round
@@ -61,16 +84,26 @@ import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
 import { explain } from "../boot/explain";
 import { useDiagramStore } from "../stores/diagram";
+import { useEngineStore } from "../stores/engine";
+import { useDefinitionStore } from "src/stores/definition";
+import { useGeneralStore } from "src/stores/general";
 
 export default {
   setup() {
     const user = useUserStore();
     const uiConfig = useConfigStore();
     const diagram = useDiagramStore();
+    const engine = useEngineStore();
+    const definition = useDefinitionStore();
+    const general = useGeneralStore();
+
     return {
       user,
       uiConfig,
       diagram,
+      engine,
+      definition,
+      general,
     };
   },
   data() {
@@ -90,8 +123,171 @@ export default {
     };
   },
   methods: {
+    async getAllModelStates() {
+      // do a server request
+      const url = `${this.general.apiUrl}/api/definitions/get_definitions?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          engine_version: this.engine.engine_version,
+          user: this.user.name,
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        console.log(data);
+        // // process the result
+        // this.user = data.user;
+        // this.name = data.name;
+        // this.definition = data.definition;
+        // this.settings = data.settings;
+        // this.components = data.components;
+        // this.protected = data.protected;
+        // this.shared = data.shared;
+        // this.dateUpdated = data.dateUpdated;
+        // this.dateCreated = data.dateCreated;
+        // if (this.components === undefined) {
+        //   this.components = {};
+        // }
+
+        return true;
+      } else {
+        return false;
+      }
+    },
+    async getModelState() {
+      // do a server request
+      const url = `${this.general.apiUrl}/api/definitions/get_definition?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          engine_version: this.engine.engine_version,
+          name: this.definition.name,
+          user: this.user.name,
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        console.log(data);
+        // // process the result
+        // this.user = data.user;
+        // this.name = data.name;
+        // this.definition = data.definition;
+        // this.settings = data.settings;
+        // this.components = data.components;
+        // this.protected = data.protected;
+        // this.shared = data.shared;
+        // this.dateUpdated = data.dateUpdated;
+        // this.dateCreated = data.dateCreated;
+        // if (this.components === undefined) {
+        //   this.components = {};
+        // }
+
+        return true;
+      } else {
+        return false;
+      }
+    },
+    async saveModelState() {
+      let newModelState = this.buildModelState();
+      const url = `${this.general.apiUrl}/api/definitions/update_definition?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          engine_version: newModelState.engine_version,
+          name: newModelState.name,
+          description: newModelState.description,
+          weight: newModelState.weight,
+          user: newModelState.user,
+          protected: newModelState.protected,
+          shared: newModelState.shared,
+          models: { ...newModelState.models },
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        switch (data.message) {
+          case "new":
+            this.statusMessage = "new definition created on server.";
+
+            break;
+          case "update":
+            this.statusMessage = "definition is updated on server.";
+            break;
+        }
+        console.log(this.statusMessage);
+      }
+    },
+    buildModelState() {
+      // save the model state to the server
+      let modelState = { ...explain.modelState };
+
+      // build a new model definition object
+      let newModelState = {
+        engine_version: 0.1,
+        name: this.definition.name,
+        description: this.definition.description,
+        weight: this.definition.weight,
+        user: this.user.name,
+        protected: this.definition.protected,
+        shared: this.definition.shared,
+        models: {},
+      };
+      // iterate over the models in the modelState object
+      Object.entries(modelState.Models).forEach(([model_name, model]) => {
+        let modelType = model.ModelType;
+        newModelState.models[model_name] = {};
+        // find the modelType in the engine definition file
+        Object.entries(this.engine.base_model_settings).forEach(
+          ([prop_name, prop]) => {
+            // get the value of this input from the current modelstate
+            let current_value = modelState.Models[model_name][prop_name];
+            // set the current_value in the models object
+            newModelState.models[model_name][prop_name] = current_value;
+          }
+        );
+        Object.entries(this.engine.core_models[modelType].inputs).forEach(
+          ([input_name, input]) => {
+            // get the value of this input from the current modelstate
+            let current_value = modelState.Models[model_name][input_name];
+            if (current_value !== undefined) {
+              // set the current_value in the models object
+              newModelState.models[model_name][input_name] = current_value;
+            }
+          }
+        );
+        if (this.engine.core_models[modelType].outputs !== undefined) {
+          Object.entries(this.engine.core_models[modelType].outputs).forEach(
+            ([output_name, input]) => {
+              try {
+                // get the value of this input from the current modelstate
+                let current_value = modelState.Models[model_name][output_name];
+                if (current_value !== undefined) {
+                  // set the current_value in the models object
+                  newModelState.models[model_name][output_name] = current_value;
+                }
+              } catch {}
+            }
+          );
+        }
+      });
+      return newModelState;
+    },
     statusUpdate() {
       this.statusMessage = "STATUS: " + explain.statusMessage;
+
       this.calculationReady();
     },
     togglePlay() {
@@ -109,6 +305,7 @@ export default {
         this.butColor = "white";
         this.butIcon = "fa-solid fa-play";
         this.butCaption = "PLAY";
+        explain.getModelState();
       }
     },
     calculate() {
@@ -125,6 +322,8 @@ export default {
         this.calcRunning = false;
         this.butCalcCaption = "CALCULATE";
         this.butCalcColor = "white";
+
+        explain.getModelState();
         if (this.playArmed) {
           this.playArmed = false;
           explain.start();
