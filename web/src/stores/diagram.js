@@ -63,6 +63,10 @@ export const useDiagramStore = defineStore("diagram", {
         this.shared = data.shared;
         this.dateUpdated = data.dateUpdated;
         this.dateCreated = data.dateCreated;
+        if (this.components === undefined) {
+          this.components = {};
+        }
+
         return true;
       } else {
         return false;
@@ -73,7 +77,7 @@ export const useDiagramStore = defineStore("diagram", {
       let propIdsDiagram = [];
 
       // diagrams
-      Object.values(this.diagram.components).forEach((component) => {
+      Object.values(this.components).forEach((component) => {
         switch (component.compType) {
           case "BloodCompartment":
             component.models.forEach((model) => {

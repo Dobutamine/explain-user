@@ -31,13 +31,16 @@ let model = {
   Models: {},
 };
 
+// declare a model engine object holding the engine properties
 let modelEngine = {};
+
+// declare a model definition object holding the properties of the current model
 let modelDefinition = {};
 
-// declare a model data object
+// declare a model data object holding the high resolution model data
 let modelData = {};
 
-// declare a model data object
+// declare a model data object holding the low resolution model data
 let modelDataSlow = {};
 
 // declare the model initialization flag
@@ -322,7 +325,6 @@ const initModel = function (model_definition) {
   // clear model initialized flag
   modelInitialized = false;
 
-  console.log(model);
   // try to process the modelDefinition object
   try {
     // initialize the model parameters, except the model components key which needs special processing

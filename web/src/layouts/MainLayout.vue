@@ -60,14 +60,17 @@
 import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
 import { explain } from "../boot/explain";
+import { useDiagramStore } from "../stores/diagram";
 
 export default {
   setup() {
     const user = useUserStore();
     const uiConfig = useConfigStore();
+    const diagram = useDiagramStore();
     return {
       user,
       uiConfig,
+      diagram,
     };
   },
   data() {
@@ -95,6 +98,7 @@ export default {
       this.rtState = !this.rtState;
       if (this.rtState) {
         this.uiConfig.updateDataCollector();
+        this.diagram.updateDataCollector();
         this.playArmed = true;
         this.calculate();
         this.butColor = "negative";
@@ -109,10 +113,10 @@ export default {
     },
     calculate() {
       this.calcRunning = !this.calcRunning;
-      console.log(explain);
       if (this.calcRunning) {
         this.butCalcColor = "negative";
         this.uiConfig.updateDataCollector();
+        this.diagram.updateDataCollector();
         explain.calculate(parseInt(this.selectedDuration));
       }
     },
@@ -127,9 +131,7 @@ export default {
         }
       }
     },
-    dataUpdate(e) {
-      console.log(explain.modelData);
-    },
+    dataUpdate(e) {},
   },
   beforeUnmount() {
     document.removeEventListener("status", this.statusUpdate);

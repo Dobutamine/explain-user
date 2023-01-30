@@ -274,7 +274,7 @@ export default {
         return;
       }
 
-      const url = `${this.ui.settings.apiUrl}/api/diagrams/update_diagram?token=${this.user.token}`;
+      const url = `${this.general.apiUrl}/api/diagrams/update_diagram?token=${this.user.token}`;
       let response = await fetch(url, {
         method: "POST",
         headers: {
