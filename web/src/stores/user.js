@@ -7,9 +7,9 @@ export const useUserStore = defineStore("user", {
     email: "",
     token: "",
     default_engine: 0.1,
-    default_definition: "normal neonate",
+    default_definition: "",
     isAdmin: false,
-    loggedIn: true,
+    loggedIn: false,
   }),
 
   getters: {},

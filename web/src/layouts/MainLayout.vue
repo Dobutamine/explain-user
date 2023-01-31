@@ -42,7 +42,7 @@
           size="sm"
           icon="fa-solid fa-upload"
           class="q-mr-sm"
-          @click="saveModelState"
+          @click="openPopUp"
         />
         <q-btn
           flat
@@ -76,6 +76,51 @@
         />
       </q-toolbar>
     </q-footer>
+    <q-popup-edit
+      v-if="showPopUpSave"
+      fit
+      touch-position
+      model-value="sylisgek"
+    >
+      <q-card bordered dark style="width: 300px">
+        <div class="row text-overline justify-center">model state name</div>
+        <q-input
+          class="row q-ma-sm"
+          v-model="stateName"
+          square
+          hide-hint
+          dense
+          dark
+          stack-label
+        />
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mt-xs q-mb-sm"
+        >
+          <q-btn
+            color="secondary"
+            dense
+            size="sm"
+            style="width: 50px"
+            icon="fa-solid fa-upload"
+            @click="saveModelState"
+          ></q-btn>
+
+          <q-btn
+            color="grey-14"
+            size="sm"
+            style="width: 50px"
+            @click="closePopUp"
+            icon="fa-solid fa-xmark"
+          ></q-btn>
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-xs"
+          style="font-size: 10px"
+        >
+          {{ statusMessagePopUp }}
+        </div>
+      </q-card>
+    </q-popup-edit>
   </q-layout>
 </template>
 
@@ -108,6 +153,8 @@ export default {
   },
   data() {
     return {
+      showPopUpSave: false,
+      stateName: "",
       playArmed: false,
       calcRunning: false,
       rtState: false,
@@ -118,11 +165,19 @@ export default {
       butCalcIcon: "fa-solid fa-calculator",
       butCalcCaption: "CALCULATE",
       statusMessage: "No model definition file loaded.",
+      statusMessagePopUp: "",
       selectedDuration: 3,
       durations: [1, 2, 3, 5, 10, 20, 30, 60, 120, 240, 360, 600, 1200, 1800],
     };
   },
   methods: {
+    openPopUp() {
+      this.stateName = this.definition.name;
+      this.showPopUpSave = true;
+    },
+    closePopUp() {
+      this.showPopUpSave = false;
+    },
     async getAllModelStates() {
       // do a server request
       const url = `${this.general.apiUrl}/api/definitions/get_definitions?token=${this.user.token}`;
@@ -197,6 +252,10 @@ export default {
       }
     },
     async saveModelState() {
+      if (this.stateName !== "") {
+        this.definition.name = this.stateName;
+      }
+
       let newModelState = this.buildModelState();
       const url = `${this.general.apiUrl}/api/definitions/update_definition?token=${this.user.token}`;
       let response = await fetch(url, {
@@ -220,14 +279,15 @@ export default {
         let data = await response.json();
         switch (data.message) {
           case "new":
-            this.statusMessage = "new definition created on server.";
+            this.statusMessage = "Model state uploaded to server.";
+            this.showPopUpSave = false;
 
             break;
           case "update":
-            this.statusMessage = "definition is updated on server.";
+            this.statusMessage = "Model state updated on server.";
+            this.showPopUpSave = false;
             break;
         }
-        console.log(this.statusMessage);
       }
     },
     buildModelState() {

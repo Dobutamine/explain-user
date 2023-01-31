@@ -4,33 +4,12 @@ import { explain } from "src/boot/explain";
 export const useDiagramStore = defineStore("diagram", {
   state: () => ({
     engine_version: 0.1,
-    user: "Timothy Antonius",
-    name: "default",
-    definition: "normal neonate",
+    user: "",
+    name: "",
+    definition: "",
     protected: false,
     shared: false,
-    settings: {
-      backgroundColor: 0x333333,
-      editingMode: 1,
-      scaling: 0.1,
-      grid: false,
-      gridSize: 10.0,
-      snapToGrid: true,
-      skeleton: true,
-      skeletonColor: 0x444444,
-      pathColor: 0x444444,
-      radius: 0.6,
-      componentTypes: [
-        "BloodCompartment",
-        "BloodConnector",
-        "GasCompartment",
-        "GasConnector",
-        "Container",
-        "GasExchanger",
-        "Shunt",
-      ],
-    },
-
+    settings: {},
     components: {},
   }),
 
