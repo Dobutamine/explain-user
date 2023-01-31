@@ -18,6 +18,20 @@ export class Breathing extends ModelBaseClass {
   _temp_exp_volume = 0;
   _temp_insp_volume = 0;
 
+  // model initializer
+  InitModel(model_ref, args) {
+    // process the arguments/parameters
+    args.forEach((arg) => {
+      this[arg["key"]] = arg["value"];
+    });
+
+    // store a reference to the model object
+    this._modelEngine = model_ref;
+
+    // set the flag to model is initialized
+    this._is_initialized = true;
+  }
+
   SwitchBreathing(state) {
     if (state) {
       this.IsEnabled = true;

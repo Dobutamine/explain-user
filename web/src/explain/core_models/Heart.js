@@ -28,9 +28,19 @@ export class Heart extends ModelBaseClass {
   _qt_timer = 0.0;
   _qt_running = false;
 
-  InitModel(model_ref) {
-    // initialize the baseclass
-    super.InitModel(model_ref);
+  InitModel(model_ref, args) {
+    // model initializer
+
+    // process the arguments/parameters
+    args.forEach((arg) => {
+      this[arg["key"]] = arg["value"];
+    });
+
+    // store a reference to the model object
+    this._modelEngine = model_ref;
+
+    // set the flag to model is initialized
+    this._is_initialized = true;
 
     // find the references to the atrial and ventricular models
     this._ra = this._modelEngine.Models[this.RightAtrium];

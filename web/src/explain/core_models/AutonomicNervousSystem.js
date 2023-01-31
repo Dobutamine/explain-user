@@ -21,9 +21,19 @@ export class AutonomicNervousSystem extends ModelBaseClass {
   HeartPeriodChangeAns = 0;
   TargetMinuteVolume = 0;
 
-  InitModel(model_ref) {
+  InitModel(model_ref, args) {
     // initialize the baseclass
-    super.InitModel(model_ref);
+    // model initializer
+    // process the arguments/parameters
+    args.forEach((arg) => {
+      this[arg["key"]] = arg["value"];
+    });
+
+    // store a reference to the model object
+    this._modelEngine = model_ref;
+
+    // set the flag to model is initialized
+    this._is_initialized = true;
 
     // find the input sites
     this._baroreceptor = this._modelEngine.Models[this.BaroreceptorLocation];

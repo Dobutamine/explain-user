@@ -17,9 +17,19 @@ export class BloodResistor extends ModelBaseClass {
   _update_counter = 0.0;
   _update_interval = 2.0;
 
-  InitModel(model_ref) {
-    // initialize the baseclass
-    super.InitModel(model_ref);
+  InitModel(model_ref, args) {
+    // model initializer
+
+    // process the arguments/parameters
+    args.forEach((arg) => {
+      this[arg["key"]] = arg["value"];
+    });
+
+    // store a reference to the model object
+    this._modelEngine = model_ref;
+
+    // set the flag to model is initialized
+    this._is_initialized = true;
 
     // find the blood components which this resistors connects to
     this._comp_from = this._modelEngine.Models[this.CompFrom];

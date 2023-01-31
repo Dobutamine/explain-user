@@ -378,7 +378,15 @@ const initModel = function (model_definition) {
 
       // now initiliaze all the models
       Object.values(model.Models).forEach((model_comp) => {
-        model_comp.InitModel(model);
+        // // find the arguments for the model in the model definition
+        let args = [];
+        for (const [key, value] of Object.entries(
+          modelDefinition.Models[model_comp.Name]
+        )) {
+          args.push({ key, value });
+        }
+        // set the arguments
+        model_comp.InitModel(model, args);
       });
 
       // update the status

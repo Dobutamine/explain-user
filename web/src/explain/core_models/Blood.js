@@ -1,9 +1,16 @@
 import ModelBaseClass from "../helpers/ModelBaseClass";
 
 export class Blood extends ModelBaseClass {
-  InitModel(model_ref) {
-    // initialize the baseclass
-    super.InitModel(model_ref);
+  InitModel(model_ref, args) {
+    args.forEach((arg) => {
+      this[arg["key"]] = arg["value"];
+    });
+
+    // store a reference to the model object
+    this._modelEngine = model_ref;
+
+    // set the flag to model is initialized
+    this._is_initialized = true;
 
     // find all blood compliances and blood time varying elastances and transfer the solutes to the compartments
     this.SetSolutes();
@@ -22,11 +29,12 @@ export class Blood extends ModelBaseClass {
         model.ModelType === "BloodCompliance" ||
         model.ModelType === "BloodTimeVaryingElastance"
       ) {
+        // only set the solutes when the rest is zero
         if (Object.keys(model.Solutes).length === 0) {
           model.Solutes = { ...this.Solutes };
         }
         if (model.To2 === 0) {
-          model.To2 = this.To2;
+          console.log("To2 was zero in ", model);
         }
         if (model.Tco2 === 0) {
           model.Tco2 = this.Tco2;

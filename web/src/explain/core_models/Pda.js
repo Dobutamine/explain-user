@@ -9,9 +9,19 @@ export class Pda extends ModelBaseClass {
   Velocity = 0;
   Flow = 0;
 
-  InitModel(model_ref) {
-    // initialize the baseclass
-    super.InitModel(model_ref);
+  InitModel(model_ref, args) {
+    // model initializer
+
+    // process the arguments/parameters
+    args.forEach((arg) => {
+      this[arg["key"]] = arg["value"];
+    });
+
+    // store a reference to the model object
+    this._modelEngine = model_ref;
+
+    // set the flag to model is initialized
+    this._is_initialized = true;
 
     // reference the blood resister
     this._pda = this._modelEngine.Models[this.Model];

@@ -5,18 +5,29 @@ export class Gas extends ModelBaseClass {
   // local parameters
   _gasConstant = 62.36367;
 
-  InitModel(model_ref) {
-    // initialize the baseclass
-    super.InitModel(model_ref);
+  InitModel(model_ref, args) {
+    // process the arguments/parameters
+    args.forEach((arg) => {
+      this[arg["key"]] = arg["value"];
+    });
 
-    // set the temperatures
-    this.SetTemperatures();
+    // store a reference to the model object
+    this._modelEngine = model_ref;
 
-    // // set the humidities
-    this.SetHumidity();
+    // set the flag to model is initialized
+    this._is_initialized = true;
 
-    // // initialize the gas compliances holding the inspired air
-    this.SetInspiredAir();
+    // check whether the parameters are already set by loading a state, otherwise reinitialize with the settings in the gas settings
+    if (this.Pres0 === 0) {
+      // set the temperatures
+      this.SetTemperatures();
+
+      // // set the humidities
+      this.SetHumidity();
+
+      // // initialize the gas compliances holding the inspired air
+      this.SetInspiredAir();
+    }
   }
 
   SetTemperatures() {

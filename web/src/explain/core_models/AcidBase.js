@@ -31,6 +31,20 @@ export class AcidBase extends ModelBaseClass {
   _oh = 0;
   _is_initialized = true;
 
+  // model initializer
+  InitModel(model_ref, args) {
+    // process the arguments/parameters
+    args.forEach((arg) => {
+      this[arg["key"]] = arg["value"];
+    });
+
+    // store a reference to the model object
+    this._modelEngine = model_ref;
+
+    // set the flag to model is initialized
+    this._is_initialized = true;
+  }
+
   // calculate step
   calc_acid_base(tco2, sid = 35.9, alb = 25.0, pi = 1.64, u = 0.0) {
     // declare a new blood gas instance
