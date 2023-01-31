@@ -318,6 +318,10 @@ const initModel = function (model_definition) {
     Models: {},
   };
 
+  // clear model data
+  modelData = {};
+  modelDataSlow = {};
+
   // set the modeling stepsize
   model["ModelingStepsize"] = modelEngine.modeling_stepsize;
 

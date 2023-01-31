@@ -22,10 +22,11 @@
           <div>{{ statusMessage }}</div>
         </q-toolbar-title>
         <div class="q-mr-lg text-overline">
-          model: {{ this.definition.name }}
+          {{ this.definition.name }}
         </div>
 
         <q-btn
+          :disable="rtState"
           flat
           round
           dense
@@ -36,6 +37,7 @@
         />
 
         <q-btn
+          :disable="rtState"
           flat
           round
           dense
@@ -76,6 +78,60 @@
         />
       </q-toolbar>
     </q-footer>
+
+    <q-popup-edit
+      v-if="showPopUpServer"
+      fit
+      touch-position
+      model-value="sylisgek"
+    >
+      <q-card bordered dark style="width: 300px">
+        <div class="row text-overline justify-center">
+          available model states on server
+        </div>
+        <div class="row">
+          <q-select
+            class="q-ml-md q-mr-md"
+            label-color="red-6"
+            v-model="selectedModelStateOnServer"
+            :options="availableModelStatesOnServer"
+            hide-bottom-space
+            dense
+            label="available model states"
+            style="width: 90%; font-size: 12px"
+          />
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mt-xs q-mb-sm"
+        >
+          <q-btn
+            color="primary"
+            size="sm"
+            style="width: 50px"
+            @click="getModelState"
+            icon="fa-solid fa-download"
+          ></q-btn>
+          <q-btn
+            color="negative"
+            size="sm"
+            style="width: 50px"
+            @click="deleteModelStateFromServer"
+            icon="fa-solid fa-trash-can"
+          ></q-btn>
+          <q-btn
+            color="grey-14"
+            size="sm"
+            style="width: 50px"
+            @click="closeServerCommunication"
+            icon="fa-solid fa-xmark"
+          ></q-btn>
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-xs"
+          style="font-size: 10px"
+        ></div>
+      </q-card>
+    </q-popup-edit>
     <q-popup-edit
       v-if="showPopUpSave"
       fit
@@ -116,9 +172,7 @@
         <div
           class="q-gutter-sm row text-overline justify-center q-mb-xs"
           style="font-size: 10px"
-        >
-          {{ statusMessagePopUp }}
-        </div>
+        ></div>
       </q-card>
     </q-popup-edit>
   </q-layout>
@@ -153,6 +207,9 @@ export default {
   },
   data() {
     return {
+      selectedModelStateOnServer: "",
+      availableModelStatesOnServer: [],
+      showPopUpServer: false,
       showPopUpSave: false,
       stateName: "",
       playArmed: false,
@@ -164,13 +221,52 @@ export default {
       butIcon: "fa-solid fa-play",
       butCalcIcon: "fa-solid fa-calculator",
       butCalcCaption: "CALCULATE",
-      statusMessage: "No model definition file loaded.",
-      statusMessagePopUp: "",
+      statusMessage: "",
       selectedDuration: 3,
       durations: [1, 2, 3, 5, 10, 20, 30, 60, 120, 240, 360, 600, 1200, 1800],
     };
   },
   methods: {
+    loadModelStateFromServer() {},
+    async deleteModelStateFromServer() {
+      const url = `${this.general.apiUrl}/api/definitions/remove_definition?token=${this.user.token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          engine_version: this.engine.engine_version,
+          name: this.selectedModelStateOnServer,
+          user: this.user.name,
+        }),
+      });
+      if (response.status === 200) {
+        let data = await response.json();
+        switch (data.message) {
+          case "deleted":
+            this.statusMessageLoad = "Model state deleted from server.";
+            this.showPopUpServer = false;
+
+            break;
+          case "not deleted":
+            this.statusMessageLoad = "Model state was protected or not found.";
+            this.showPopUpServer = false;
+
+            break;
+        }
+        return true;
+      } else {
+        this.statusMessage = "Model state was not found or protected.";
+        this.showPopUpServer = false;
+        return false;
+      }
+    },
+    closeServerCommunication() {
+      this.showPopUpServer = false;
+    },
+
     openPopUp() {
       this.stateName = this.definition.name;
       this.showPopUpSave = true;
@@ -179,6 +275,7 @@ export default {
       this.showPopUpSave = false;
     },
     async getAllModelStates() {
+      this.showPopUpServer = true;
       // do a server request
       const url = `${this.general.apiUrl}/api/definitions/get_definitions?token=${this.user.token}`;
       let response = await fetch(url, {
@@ -194,20 +291,10 @@ export default {
       });
       if (response.status === 200) {
         let data = await response.json();
-        console.log(data);
-        // // process the result
-        // this.user = data.user;
-        // this.name = data.name;
-        // this.definition = data.definition;
-        // this.settings = data.settings;
-        // this.components = data.components;
-        // this.protected = data.protected;
-        // this.shared = data.shared;
-        // this.dateUpdated = data.dateUpdated;
-        // this.dateCreated = data.dateCreated;
-        // if (this.components === undefined) {
-        //   this.components = {};
-        // }
+        this.availableModelStatesOnServer = [];
+        data.forEach((state) =>
+          this.availableModelStatesOnServer.push(state.name)
+        );
 
         return true;
       } else {
@@ -215,6 +302,18 @@ export default {
       }
     },
     async getModelState() {
+      if (this.selectedModelStateOnServer === "") {
+        alert("No model state selected!");
+        return;
+      }
+
+      // stop the realtime model
+      explain.stop();
+      this.rtState = false;
+      this.butColor = "white";
+      this.butIcon = "fa-solid fa-play";
+      this.butCaption = "PLAY";
+
       // do a server request
       const url = `${this.general.apiUrl}/api/definitions/get_definition?token=${this.user.token}`;
       let response = await fetch(url, {
@@ -225,35 +324,40 @@ export default {
         },
         body: JSON.stringify({
           engine_version: this.engine.engine_version,
-          name: this.definition.name,
+          name: this.selectedModelStateOnServer,
           user: this.user.name,
         }),
       });
       if (response.status === 200) {
         let data = await response.json();
-        console.log(data);
-        // // process the result
-        // this.user = data.user;
-        // this.name = data.name;
-        // this.definition = data.definition;
-        // this.settings = data.settings;
-        // this.components = data.components;
-        // this.protected = data.protected;
-        // this.shared = data.shared;
-        // this.dateUpdated = data.dateUpdated;
-        // this.dateCreated = data.dateCreated;
-        // if (this.components === undefined) {
-        //   this.components = {};
-        // }
-
+        this.definition.engine_version = data.engine_version;
+        this.definition.name = data.name;
+        this.definition.description = data.description;
+        this.definition.protected = data.protected;
+        this.definition.shared = data.shared;
+        this.definition.user = data.user;
+        this.definition.weight = data.weight;
+        this.definition.models = { ...data.models };
+        // process the result
+        this.restartModelWithNewDefinition();
+        this.statusMessage = "Model state loaded from server.";
+        this.showPopUpServer = false;
         return true;
       } else {
         return false;
       }
     },
     async saveModelState() {
+      if (
+        this.stateName === this.definition.name &&
+        this.definition.protected
+      ) {
+        alert("This model state is protected! Choose a different name.");
+        return;
+      }
       if (this.stateName !== "") {
         this.definition.name = this.stateName;
+        this.definition.protected = false;
       }
 
       let newModelState = this.buildModelState();
@@ -289,6 +393,13 @@ export default {
             break;
         }
       }
+    },
+    restartModelWithNewDefinition() {
+      // initialize the modelengine
+      explain.initModelEngine(this.engine.getEngineObject());
+
+      // inject the explain definition into the model engine
+      explain.injectModelDefinition(this.definition.getDefinitionObject());
     },
     buildModelState() {
       // save the model state to the server

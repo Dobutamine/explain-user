@@ -124,5 +124,35 @@ export const useDiagramStore = defineStore("diagram", {
       });
       explain.watchModelProperties(propIdsDiagram);
     },
+    clearDiagram() {
+      this.engine_version = 0.1;
+      this.user = "";
+      this.name = "";
+      this.definition = "";
+      this.protected = false;
+      this.shared = false;
+      this.components = {};
+      this.settings = {
+        backgroundColor: 3355443,
+        editingMode: 1,
+        scaling: 0.1,
+        grid: false,
+        gridSize: 10,
+        snapToGrid: true,
+        skeleton: true,
+        skeletonColor: 4473924,
+        pathColor: 4473924,
+        radius: 0.6,
+        componentTypes: [
+          "BloodCompartment",
+          "BloodConnector",
+          "GasCompartment",
+          "GasConnector",
+          "Container",
+          "GasExchanger",
+          "Shunt",
+        ],
+      };
+    },
   },
 });

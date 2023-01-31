@@ -23,6 +23,7 @@
       <div v-if="diagram.name === ''" class="row text-overline justify-center">
         no diagram loaded
       </div>
+
       <!-- topline buttons -->
       <div
         v-if="diagram.name !== ''"

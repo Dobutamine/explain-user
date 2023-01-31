@@ -1,12 +1,7 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
     <!-- component title  -->
-    <div class="row text-overline justify-center">ANIMATED DIAGRAM</div>
-    <!-- diagram pixi app stage -->
-    <div class="stage" :style="{ display: display }">
-      <canvas id="stage"></canvas>
-    </div>
-    <!-- editing mode selectors -->
+    <!-- <div class="row text-overline justify-center">ANIMATED DIAGRAM</div> -->
     <div class="row justify-center">
       <q-btn-toggle
         color="grey-10"
@@ -23,6 +18,13 @@
           { label: 'sizing', value: 4 },
         ]"
       />
+    </div>
+    <!-- diagram pixi app stage -->
+    <div class="stage" :style="{ display: display }">
+      <canvas id="stage"></canvas>
+    </div>
+
+    <div class="row justify-center q-gutter-md">
       <q-toggle
         class="text-overline"
         size="xs"
@@ -39,9 +41,34 @@
       >
         skeleton
       </q-toggle>
+      <q-toggle
+        class="text-overline"
+        size="xs"
+        v-model="diagram.shared"
+        @click="buildDiagram"
+      >
+        shared
+      </q-toggle>
+      <q-toggle
+        class="text-overline"
+        :disable="!user.isAdmin"
+        size="xs"
+        v-model="diagram.protected"
+        @click="buildDiagram"
+      >
+        protected
+      </q-toggle>
     </div>
     <!-- server communication buttons -->
     <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
+      <q-btn
+        color="negative"
+        label="new"
+        size="sm"
+        style="width: 120px"
+        icon="fa-solid fa-plus"
+        @click="openPopUpNew"
+      ></q-btn>
       <q-btn
         color="primary"
         label="download"
@@ -57,15 +84,6 @@
         style="width: 120px"
         icon="fa-solid fa-upload"
         @click="openSavePopup"
-      ></q-btn>
-
-      <q-btn
-        color="negative"
-        label="clear"
-        size="sm"
-        style="width: 120px"
-        @click="clearDiagram"
-        icon="fa-solid fa-xmark"
       ></q-btn>
     </div>
     <!-- status message -->
@@ -177,6 +195,47 @@
         </div>
       </q-card>
     </q-popup-edit>
+
+    <q-popup-edit v-if="showPopUpNew" fit touch-position model-value="sylisgek">
+      <q-card bordered dark style="width: 300px">
+        <div class="row text-overline justify-center">new diagram name</div>
+        <q-input
+          class="row q-ma-sm"
+          v-model="newDiagramName"
+          square
+          hide-hint
+          dense
+          dark
+          stack-label
+        />
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mt-xs q-mb-sm"
+        >
+          <q-btn
+            color="secondary"
+            dense
+            size="sm"
+            style="width: 50px"
+            icon="fa-solid fa-upload"
+            @click="newDiagram"
+          ></q-btn>
+
+          <q-btn
+            color="grey-14"
+            size="sm"
+            style="width: 50px"
+            @click="closePopUpNew"
+            icon="fa-solid fa-xmark"
+          ></q-btn>
+        </div>
+        <div
+          class="q-gutter-sm row text-overline justify-center q-mb-xs"
+          style="font-size: 10px"
+        >
+          {{ statusMessagePopUpNew }}
+        </div>
+      </q-card>
+    </q-popup-edit>
   </q-card>
 </template>
 
@@ -195,6 +254,7 @@ import { useConfigStore } from "src/stores/config";
 import { useUserStore } from "src/stores/user";
 import { useDiagramStore } from "src/stores/diagram";
 import { useGeneralStore } from "src/stores/general";
+import { useDefinitionStore } from "src/stores/definition";
 
 let canvas = null;
 
@@ -204,18 +264,21 @@ export default {
     const user = useUserStore();
     const diagram = useDiagramStore();
     const general = useGeneralStore();
+    const definition = useDefinitionStore();
+
     return {
       ui,
       user,
       diagram,
       general,
+      definition,
     };
   },
   data() {
     return {
       title: "ANIMATED DIAGRAM",
       collapsed: false,
-      editingSelection: "selecting",
+      editingSelection: 1,
       display: "block",
       rt_running: false,
       gridVertical: null,
@@ -226,13 +289,34 @@ export default {
       availableDiagramsOnServer: [],
       selectedDiagramOnServer: "",
       statusMessage: "",
+      statusMessagePopUpNew: "",
+      showPopUpNew: false,
       showPopUpServer: false,
       showPopUpSave: false,
       addModelPopUp: false,
       load_diagram: null,
+      newDiagramName: "",
     };
   },
   methods: {
+    newDiagram() {
+      // clear current diagram
+      this.diagram.clearDiagram();
+      this.buildDiagram();
+      this.diagram.name = this.newDiagramName;
+      this.diagram.user = this.user.name;
+      this.diagram.definition = this.definition.name;
+      this.showPopUpNew = false;
+      this.$bus.emit("diagram_loaded");
+    },
+    openPopUpNew() {
+      this.newDiagramName = "";
+      this.showPopUpNew = true;
+    },
+    closePopUpNew() {
+      this.newDiagramName = "";
+      this.showPopUpNew = false;
+    },
     toggleGrid() {
       this.buildDiagram();
     },
@@ -319,7 +403,10 @@ export default {
             this.statusMessage = "diagram is updated on server.";
             break;
         }
-        setTimeout(() => (this.statusMessage = ""), 1500);
+        setTimeout(() => {
+          this.statusMessage = "";
+          this.showPopUpSave = false;
+        }, 1000);
       }
       this.showPopUpServer = false;
     },
@@ -366,7 +453,9 @@ export default {
       this.showPopUpServer = false;
       this.showPopUpSave = false;
     },
-    changeEditingMode() {},
+    changeEditingMode(e) {
+      console.log(this.editingSelection);
+    },
     statusUpdate() {
       if (explain.statusMessage.includes("realtime model started")) {
         this.rt_running = true;

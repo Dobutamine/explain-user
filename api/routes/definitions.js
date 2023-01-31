@@ -98,6 +98,33 @@ router.post("/get_definition", auth, async (req, res) => {
   }
 });
 
+// get specific definition for the current user with a specific engine version
+router.post("/remove_definition", auth, async (req, res) => {
+  // validate the request
+  const { error } = validate(req.body);
+
+  // if not validate return error message
+  if (error) return res.status(400).send(error.details[0].message);
+
+  try {
+    // get the state file
+    let foundDefinition = await Definition.deleteOne({
+      engine_version: req.body.engine_version,
+      protected: false,
+      name: req.body.name,
+      user: req.body.user,
+    });
+    if (foundDefinition.deletedCount > 0) {
+      res.send('{ "message" : "deleted"}');
+    }
+    // return the found scripts
+    res.send('{ "message" : "not deleted"}');
+  } catch (ex) {
+    console.log(ex);
+    res.status(500).send("Internal server error.");
+  }
+});
+
 // get all definitions for current user  with a specific engine version
 router.post("/get_definitions", auth, async (req, res) => {
   // validate the request
