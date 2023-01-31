@@ -1,9 +1,7 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
     <!-- component title  -->
-    <div class="row text-overline justify-center">
-      {{ diagram.name }}
-    </div>
+    <div class="row text-overline justify-center">ANIMATED DIAGRAM</div>
     <!-- diagram pixi app stage -->
     <div class="stage" :style="{ display: display }">
       <canvas id="stage"></canvas>

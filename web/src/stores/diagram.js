@@ -5,7 +5,7 @@ export const useDiagramStore = defineStore("diagram", {
   state: () => ({
     engine_version: 0.1,
     user: "",
-    name: "DEFAULT ANIMATED DIAGRAM",
+    name: "",
     definition: "",
     protected: false,
     shared: false,

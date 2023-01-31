@@ -17,8 +17,21 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
+      <div
+        v-if="definition.name !== ''"
+        class="row text-overline justify-center"
+      >
+        {{ definition.name }}
+      </div>
+      <div
+        v-if="definition.name === ''"
+        class="row text-overline justify-center"
+      >
+        no model definition loaded
+      </div>
       <!-- topline buttons -->
       <div
+        v-if="definition.name !== ''"
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
         <q-btn color="primary" class="col q-mr-sm" label="add" dark size="sm">
@@ -96,14 +109,17 @@
 import { explain } from "../boot/explain";
 import ModelEditorComponent from "./ModelEditorComponent.vue";
 import { useConfigStore } from "src/stores/config";
+import { useDefinitionStore } from "src/stores/definition";
 export default {
   components: {
     BuildPropEditComponent: ModelEditorComponent,
   },
   setup() {
     const uiConfig = useConfigStore();
+    const definition = useDefinitionStore();
     return {
       uiConfig,
+      definition,
     };
   },
   data() {

@@ -17,8 +17,15 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
+      <div v-if="diagram.name !== ''" class="row text-overline justify-center">
+        {{ diagram.name }}
+      </div>
+      <div v-if="diagram.name === ''" class="row text-overline justify-center">
+        no diagram loaded
+      </div>
       <!-- topline buttons -->
       <div
+        v-if="diagram.name !== ''"
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
         <q-btn color="primary q-mr-xs" label="add" dark class="col" size="sm">
