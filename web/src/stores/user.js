@@ -7,7 +7,9 @@ export const useUserStore = defineStore("user", {
     email: "",
     token: "",
     default_engine: 0.1,
+    default_engine_name: "",
     default_definition: "",
+    default_config: "",
     isAdmin: false,
     loggedIn: false,
   }),
@@ -20,8 +22,9 @@ export const useUserStore = defineStore("user", {
       this.name = "";
       this.token = "";
       this.default_engine = 0;
+      this.default_engine_name = "";
       this.default_definition = "";
-      this.isAdmin = false;
+      (this.default_config = ""), (this.isAdmin = false);
       this.loggedIn = false;
     },
     async logIn(apiUrl, name, password) {
@@ -43,6 +46,8 @@ export const useUserStore = defineStore("user", {
         this.email = data.email;
         this.default_definition = data.default_definition;
         this.default_engine = parseFloat(data.default_engine);
+        this.default_engine_name = data.default_engine_name;
+        this.default_config = data.default_config;
         this.isAdmin = data.isAdmin;
         this.token = data.token;
         this.loggedIn = true;
@@ -55,6 +60,8 @@ export const useUserStore = defineStore("user", {
         this.email = "";
         this.default_definition = "";
         this.default_engine = 0.0;
+        this.default_engine_name = "";
+        this.default_config = "";
         this.isAdmin = false;
         this.token = "";
         this.loggedIn = false;

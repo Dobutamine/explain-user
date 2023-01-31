@@ -5,6 +5,9 @@ const engineSchema = new mongoose.Schema({
   engine_version: {
     type: Number,
   },
+  engine_name: {
+    type: String,
+  },
   modeling_stepsize: {
     type: Number,
   },
@@ -33,6 +36,7 @@ const Engine = mongoose.model("Engine", engineSchema);
 function validateEngine(new_engine) {
   const engineSchema = Joi.object({
     engine_version: Joi.number(),
+    engine_name: Joi.string(),
     modeling_stepsize: Joi.number(),
     base_model_settings: Joi.object(),
     experimental_models: Joi.boolean(),

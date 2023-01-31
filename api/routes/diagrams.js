@@ -53,6 +53,7 @@ router.post("/update_diagram", auth, async (req, res) => {
         _.pick(req.body, [
           "_id",
           "engine_version",
+          "engine_name",
           "user",
           "name",
           "definition",
@@ -79,6 +80,7 @@ router.post("/update_diagram", auth, async (req, res) => {
     // save the model definition to the database
     await newDiagram.updateOne({
       engine_version: req.body.engine_version,
+      engine_name: req.body.engine_name,
       user: req.body.user,
       name: req.body.name,
       definition: req.body.definition,
@@ -91,57 +93,6 @@ router.post("/update_diagram", auth, async (req, res) => {
 
     // send a response to the client without the password or account and with a header containing the webtoken
     res.send('{ "message" : "update" }');
-  } catch (ex) {
-    console.log(ex);
-    res.status(500).send("Internal server error.");
-  }
-});
-
-// save a new model state
-router.post("/new_diagram", auth, async (req, res) => {
-  // validate the request
-  const { error } = validate(req.body);
-  // if not validate return error message
-  if (error) return res.status(400).send(error.details[0].message);
-
-  try {
-    // is this script already registered?
-    let newDiagram = await Diagram.findOne({ name: req.body.name });
-    if (newDiagram) return res.status(400).send("Diagram exists already.");
-
-    // we have a valid user object so we need to store it in the database
-    newDiagram = new Diagram(
-      _.pick(req.body, [
-        "_id",
-        "user",
-        "name",
-        "settings",
-        "components",
-        "protected",
-        "shared",
-      ])
-    );
-
-    // add the creation date
-    newDiagram["dateCreated"] = Date.now();
-    newDiagram["dateUpdated"] = Date.now();
-    console.log(newDiagram);
-
-    // save the model definition to the database
-    await newDiagram.save();
-
-    // send a response to the client without the password or account and with a header containing the webtoken
-    res.send(
-      _.pick(newDiagram, [
-        "_id",
-        "user",
-        "name",
-        "settings",
-        "components",
-        "protected",
-        "shared",
-      ])
-    );
   } catch (ex) {
     console.log(ex);
     res.status(500).send("Internal server error.");

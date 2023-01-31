@@ -110,6 +110,7 @@ router.post("/remove_definition", auth, async (req, res) => {
     // get the state file
     let foundDefinition = await Definition.deleteOne({
       engine_version: req.body.engine_version,
+      engine_name: req.body.engine_name,
       protected: false,
       name: req.body.name,
       user: req.body.user,
@@ -192,6 +193,7 @@ router.post("/get_shared_definitions", auth, async (req, res) => {
     // get the state file
     let foundDefinitions = await Definition.find({
       engine_version: req.body.engine_version,
+      engine_name: req.body.engine_name,
       shared: req.body.shared,
     });
 

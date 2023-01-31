@@ -4,6 +4,7 @@ import { explain } from "src/boot/explain";
 export const useDiagramStore = defineStore("diagram", {
   state: () => ({
     engine_version: 0.1,
+    engine_name: "",
     user: "",
     name: "",
     definition: "",
@@ -126,6 +127,7 @@ export const useDiagramStore = defineStore("diagram", {
     },
     clearDiagram() {
       this.engine_version = 0.1;
+      this.engine_name = "";
       this.user = "";
       this.name = "";
       this.definition = "";

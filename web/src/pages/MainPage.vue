@@ -12,7 +12,6 @@
             align="justify"
             narrow-indicator
           >
-            <q-tab name="file" label="file" />
             <q-tab name="play" label="play" />
 
             <q-tab name="build" label="build" />
@@ -20,12 +19,9 @@
           <q-separator></q-separator>
 
           <q-tab-panels v-model="tab_left" keep-alive>
-            <q-tab-panel name="file">
-              <FileComponentVue></FileComponentVue>
-              <ModelControlComponent></ModelControlComponent>
-            </q-tab-panel>
             <q-tab-panel name="play">
               <GroupersComponent></GroupersComponent>
+              <BuildModelComponent></BuildModelComponent>
             </q-tab-panel>
             <q-tab-panel name="build">
               <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
@@ -124,10 +120,8 @@
 </template>
 
 <script>
-import ModelControlComponent from "src/components/ModelControlComponent.vue";
 import ModelComponent from "../components/ModelComponent.vue";
 import GroupersComponent from "../components/GroupersComponent.vue";
-import FileComponentVue from "../components/FileComponent.vue";
 import ScriptsComponentVue from "../components/ScriptsComponent.vue";
 import MonitorsComponentVue from "../components/MonitorsComponent.vue";
 import DiagramComponent from "src/components/DiagramComponent.vue";
@@ -149,8 +143,6 @@ export default {
     };
   },
   components: {
-    ModelControlComponent,
-    FileComponentVue,
     ScriptComponentVue: ScriptsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,
     GroupersComponent,

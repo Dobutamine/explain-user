@@ -26,6 +26,7 @@ router.post("/update_engine", auth, admin, async (req, res) => {
         _.pick(req.body, [
           "_id",
           "engine_version",
+          "engine_name",
           "modeling_stepsize",
           "base_model_settings",
           "experimental_models",
@@ -48,6 +49,7 @@ router.post("/update_engine", auth, admin, async (req, res) => {
     // save the model definition to the database
     await newEngine.updateOne({
       engine_version: req.body.engine_version,
+      engine_name: req.body.engine_name,
       modeling_stepsize: req.body.modeling_stepsize,
       base_model_settings: req.body.base_model_settings,
       experimental_models: req.body.experimental_models,
@@ -76,6 +78,7 @@ router.post("/get_engine", auth, async (req, res) => {
     // get the state file
     let foundEngine = await Engine.findOne({
       engine_version: req.body.engine_version,
+      engine_name: req.body.engine_name,
     });
 
     // if not found

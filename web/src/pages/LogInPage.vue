@@ -216,6 +216,8 @@ export default {
             this.config.getConfig(
               this.general.apiUrl,
               this.user.default_engine,
+              this.user.default_engine_name,
+              this.user.default_config,
               this.user.name,
               this.user.token
             );
@@ -238,6 +240,7 @@ export default {
             this.engine.getEngine(
               this.general.apiUrl,
               this.config.engine_version,
+              this.config.engine_name,
               this.user.token
             );
           } else {
@@ -257,6 +260,7 @@ export default {
             this.definition.getDefinition(
               this.general.apiUrl,
               this.user.default_engine,
+              this.user.default_engine_name,
               this.user.default_definition,
               this.user.name,
               this.user.token

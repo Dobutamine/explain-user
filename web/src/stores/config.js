@@ -5,6 +5,8 @@ import { explain } from "src/boot/explain";
 export const useConfigStore = defineStore("config", {
   state: () => ({
     engine_version: 0,
+    engine_name: "",
+    name: "",
     user: "",
     definition: "",
     models: {},
@@ -19,6 +21,8 @@ export const useConfigStore = defineStore("config", {
     getConfigObject() {
       return {
         engine_version: this.engine_version,
+        engine_name: this.engine_name,
+        name: this.name,
         user: this.user,
         definition: this.definition,
         models: this.models,
@@ -27,7 +31,14 @@ export const useConfigStore = defineStore("config", {
         monitors: this.monitors,
       };
     },
-    async getConfig(apiUrl, engine_version, userName, token) {
+    async getConfig(
+      apiUrl,
+      engine_version,
+      engine_name,
+      configName,
+      userName,
+      token
+    ) {
       const url = `${apiUrl}/api/configs/get_config?token=${token}`;
       // get the user login data
       let response = await fetch(url, {
@@ -38,6 +49,8 @@ export const useConfigStore = defineStore("config", {
         },
         body: JSON.stringify({
           engine_version: engine_version,
+          engine_name: engine_name,
+          name: configName,
           user: userName,
         }),
       });
@@ -45,6 +58,8 @@ export const useConfigStore = defineStore("config", {
       if (response.status === 200) {
         let data = await response.json();
         this.engine_version = data.engine_version;
+        this.engine_name = data.engine_name;
+        this.name = data.name;
         this.user = data.user;
         this.definition = data.definition;
         this.apiUrl = data.apiUrl;

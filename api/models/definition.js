@@ -5,6 +5,9 @@ const definitionSchema = new mongoose.Schema({
   engine_version: {
     type: Number,
   },
+  engine_name: {
+    type: String,
+  },
   name: {
     type: String,
   },
@@ -39,6 +42,7 @@ const Definition = mongoose.model("Definition", definitionSchema);
 function validateDefinition(newDefinition) {
   const definitionSchema = Joi.object({
     engine_version: Joi.number(),
+    engine_name: Joi.string(),
     name: Joi.string(),
     description: Joi.string(),
     user: Joi.string(),

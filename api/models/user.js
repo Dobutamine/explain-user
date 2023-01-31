@@ -19,7 +19,13 @@ const userSchema = new mongoose.Schema({
   default_engine: {
     type: Number,
   },
+  default_engine_name: {
+    type: String,
+  },
   default_definition: {
+    type: String,
+  },
+  default_config: {
     type: String,
   },
   password: {
@@ -51,7 +57,9 @@ function validateUser(user) {
     name: Joi.string().min(5).max(50).required(),
     email: Joi.string().min(5).max(255).email(),
     default_engine: Joi.number(),
+    default_engine_name: Joi.string(),
     default_definition: Joi.string(),
+    default_config: Joi.string(),
     password: Joi.string().min(5).max(255),
     isAdmin: Joi.boolean(),
   });

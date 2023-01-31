@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useDefinitionStore = defineStore("definition", {
   state: () => ({
     engine_version: 0.1,
+    engine_name: "",
     name: "",
     description: "",
     weight: 3.3,
@@ -18,6 +19,7 @@ export const useDefinitionStore = defineStore("definition", {
     getDefinitionObject() {
       return {
         EngineVersion: this.engine_version,
+        EngineName: this.engine_name,
         Name: this.name,
         Description: this.description,
         Weight: parseFloat(this.weight),
@@ -28,6 +30,7 @@ export const useDefinitionStore = defineStore("definition", {
     async getDefinition(
       apiUrl,
       engine_version,
+      engine_name,
       definition_name,
       user_name,
       token
@@ -42,6 +45,7 @@ export const useDefinitionStore = defineStore("definition", {
         },
         body: JSON.stringify({
           engine_version: engine_version,
+          engine_name: engine_name,
           name: definition_name,
           user: user_name,
         }),
@@ -50,6 +54,7 @@ export const useDefinitionStore = defineStore("definition", {
       if (response.status === 200) {
         let data = await response.json();
         this.engine_version = data.engine_version;
+        this.engine_name = data.engine_name;
         this.name = data.name;
         this.description = data.description;
         this.weight = data.weight;

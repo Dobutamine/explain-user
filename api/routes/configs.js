@@ -6,7 +6,7 @@ const express = require("express");
 const _ = require("lodash");
 const router = express.Router();
 
-// save a new model definition
+// save a new config file
 router.post("/update_config", auth, async (req, res) => {
   // validate the request
   const { error } = validate(req.body);
@@ -26,8 +26,10 @@ router.post("/update_config", auth, async (req, res) => {
       newConfig = new Config(
         _.pick(req.body, [
           "_id",
+          "name",
           "user",
           "engine_version",
+          "engine_name",
           "definition",
           "models",
           "groupers",
@@ -50,7 +52,9 @@ router.post("/update_config", auth, async (req, res) => {
     // save the model definition to the database
     await newConfig.updateOne({
       engine_version: req.body.engine_version,
+      engine_name: req.body.engine_name,
       user: req.body.user,
+      name: req.body.name,
       definition: req.body.definition,
       models: req.body.models,
       groupers: req.body.groupers,
@@ -67,7 +71,7 @@ router.post("/update_config", auth, async (req, res) => {
   }
 });
 
-// get specific definition for the current user with a specific engine version
+// get specific config for the current user with a specific engine version and specific name
 router.post("/get_config", auth, async (req, res) => {
   // validate the request
   const { error } = validate(req.body);
@@ -79,6 +83,8 @@ router.post("/get_config", auth, async (req, res) => {
     // get the state file
     let foundConfig = await Config.findOne({
       engine_version: req.body.engine_version,
+      engine_name: req.body.engine_name,
+      name: req.body.name,
       user: req.body.user,
     });
 

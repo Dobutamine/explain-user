@@ -26,7 +26,9 @@ router.post("/new_user", async (req, res) => {
         "name",
         "password",
         "default_engine",
+        "default_engine_name",
         "default_definition",
+        "default_config",
         "email",
         "isAdmin",
       ])
@@ -53,7 +55,9 @@ router.post("/new_user", async (req, res) => {
         "email",
         "isAdmin",
         "default_engine",
+        "default_engine_name",
         "default_definition",
+        "default_config",
         "token",
       ])
     );
@@ -115,7 +119,9 @@ router.put("/me", auth, async (req, res) => {
         "email",
         "isAdmin",
         "default_engine",
+        "default_engine_name",
         "default_definition",
+        "default_config",
         "token",
       ])
     );
@@ -177,7 +183,9 @@ router.post("/", [auth, admin], async (req, res) => {
         "password",
         "email",
         "default_engine",
+        "default_engine_name",
         "default_definition",
+        "default_config",
         "isAdmin",
       ])
     );
@@ -202,7 +210,9 @@ router.post("/", [auth, admin], async (req, res) => {
         "name",
         "email",
         "default_engine",
+        "default_engine_name",
         "default_definition",
+        "default_config",
         "isAdmin",
         "token",
       ])
@@ -233,6 +243,8 @@ router.put("/:id", [auth, admin], async (req, res) => {
     user.isAdmin = req.body.isAdmin;
     user.default_definition = req.body.default_definition;
     user.default_engine = req.body.default_engine;
+    user.default_engine_name = req.body.default_engine_name;
+    this.default_config = req.body.default_config;
     // hash the password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(req.body.password, salt);
@@ -254,7 +266,9 @@ router.put("/:id", [auth, admin], async (req, res) => {
         "email",
         "isAdmin",
         "default_engine",
+        "default_engine_name",
         "default_definition",
+        "default_config",
         "token",
       ])
     );

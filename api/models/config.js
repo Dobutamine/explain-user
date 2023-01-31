@@ -5,8 +5,14 @@ const configSchema = new mongoose.Schema({
   user: {
     type: String,
   },
+  name: {
+    type: String,
+  },
   engine_version: {
     type: Number,
+  },
+  engine_name: {
+    type: String,
   },
   definition: {
     type: String,
@@ -36,7 +42,9 @@ const Config = mongoose.model("Config", configSchema);
 function validateConfig(new_config) {
   const configSchema = Joi.object({
     user: Joi.string(),
+    name: Joi.string(),
     engine_version: Joi.number(),
+    engine_name: Joi.string(),
     definition: Joi.string(),
     models: Joi.object(),
     groupers: Joi.object(),

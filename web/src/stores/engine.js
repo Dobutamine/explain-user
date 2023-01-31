@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useEngineStore = defineStore("engine", {
   state: () => ({
     engine_version: 0,
+    engine_name: "",
     experimental_models: false,
     modeling_stepsize: 0.0,
     base_model_settings: {},
@@ -23,7 +24,7 @@ export const useEngineStore = defineStore("engine", {
         experimental_models: this.experimental_models,
       };
     },
-    async getEngine(apiUrl, engine_version, token) {
+    async getEngine(apiUrl, engine_version, engine_name, token) {
       const url = `${apiUrl}/api/engines/get_engine?token=${token}`;
       // get the user login data
       let response = await fetch(url, {
@@ -34,12 +35,14 @@ export const useEngineStore = defineStore("engine", {
         },
         body: JSON.stringify({
           engine_version: engine_version,
+          engine_name: engine_name,
         }),
       });
 
       if (response.status === 200) {
         let data = await response.json();
         this.engine_version = data.engine_version;
+        this.engine_name = data.engine_name;
         this.experimental_models = data.experimental_models;
         this.modeling_stepsize = data.modeling_stepsize;
         this.base_model_settings = data.base_model_settings;

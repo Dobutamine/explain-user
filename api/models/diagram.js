@@ -7,6 +7,9 @@ const diagramSchema = new mongoose.Schema({
   engine_version: {
     type: Number,
   },
+  engine_name: {
+    type: String,
+  },
   user: {
     type: String,
   },
@@ -51,6 +54,7 @@ const Diagram = mongoose.model("Diagram", diagramSchema);
 function validateDiagram(diagram) {
   const diagramSchema = Joi.object({
     engine_version: Joi.number(),
+    engine_name: Joi.string(),
     user: Joi.string(),
     name: Joi.string(),
     definition: Joi.string(),

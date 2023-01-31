@@ -41,7 +41,9 @@ router.post("/", async (req, res) => {
       "email",
       "isAdmin",
       "default_engine",
+      "default_engine_name",
       "default_definition",
+      "default_config",
       "token",
     ])
   );
