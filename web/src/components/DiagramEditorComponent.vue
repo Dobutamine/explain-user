@@ -25,7 +25,9 @@
           <q-menu dark>
             <q-list dense>
               <div
-                v-for="(diagramComponentType, index) in diagramComponentTypes"
+                v-for="(
+                  diagramComponentType, index
+                ) in general.diagramComponentTypes"
                 :key="index"
               >
                 <q-item clickable dense>
@@ -346,14 +348,17 @@ import { explain } from "../boot/explain";
 
 import { useConfigStore } from "src/stores/config";
 import { useDiagramStore } from "src/stores/diagram";
+import { useGeneralStore } from "src/stores/general";
 export default {
   components: {},
   setup() {
     const uiConfig = useConfigStore();
     const diagram = useDiagramStore();
+    const general = useGeneralStore();
     return {
       uiConfig,
       diagram,
+      general,
     };
   },
   data() {
@@ -390,7 +395,6 @@ export default {
       compModelSelection: [],
       compGas: "O2",
       compGasses: ["O2", "Co2"],
-      diagramComponentTypes: [],
       rebuild_event: null,
       statusMessage: "",
     };
@@ -962,9 +966,6 @@ export default {
 
     // get the model state
     explain.getModelState();
-
-    // get all diagram component types
-    this.diagramComponentTypes = this.diagram.settings.componentTypes;
 
     // get all diagram component names
     this.getAllDiagramComponents();

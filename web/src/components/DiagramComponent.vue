@@ -2,7 +2,7 @@
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
     <!-- component title  -->
     <div class="row text-overline justify-center">
-      {{ title }}
+      {{ diagram.name }}
     </div>
     <!-- diagram pixi app stage -->
     <div class="stage" :style="{ display: display }">
@@ -25,6 +25,22 @@
           { label: 'sizing', value: 4 },
         ]"
       />
+      <q-toggle
+        class="text-overline"
+        size="xs"
+        v-model="diagram.settings.grid"
+        @click="buildDiagram"
+      >
+        grid
+      </q-toggle>
+      <q-toggle
+        class="text-overline"
+        size="xs"
+        v-model="diagram.settings.skeleton"
+        @click="buildDiagram"
+      >
+        skeleton
+      </q-toggle>
     </div>
     <!-- server communication buttons -->
     <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
@@ -219,6 +235,9 @@ export default {
     };
   },
   methods: {
+    toggleGrid() {
+      this.buildDiagram();
+    },
     openSavePopup() {
       this.showPopUpSave = true;
     },
