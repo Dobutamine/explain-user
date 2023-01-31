@@ -72,6 +72,7 @@
                   :exportEnabled="chart.exportEnabled"
                 ></TimeChartComponentVue>
               </div>
+              <ScriptComponentVue></ScriptComponentVue>
             </q-tab-panel>
           </q-tab-panels>
         </div>
