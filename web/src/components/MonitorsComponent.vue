@@ -108,6 +108,11 @@ export default {
     this.isEnabled = !this.collapsed;
     this.mutableParameters = [...this.parameters];
 
+    try {
+      document.removeEventListener("data_slow", this.dataUpdateSlow);
+      document.removeEventListener("state", this.stateUpdate);
+    } catch {}
+
     document.addEventListener("data_slow", this.dataUpdateSlow);
     document.addEventListener("state", this.stateUpdate);
   },

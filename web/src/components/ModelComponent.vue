@@ -198,6 +198,9 @@ export default {
     document.removeEventListener("state", this.buildModelItemTree);
   },
   mounted() {
+    try {
+      document.removeEventListener("state", this.buildModelItemTree);
+    } catch {}
     // add an event listener for when the model state is ready
     document.addEventListener("state", this.buildModelItemTree);
     // get the model state

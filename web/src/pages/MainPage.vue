@@ -90,6 +90,7 @@
             <q-tab name="monitoring" label="monitoring" />
           </q-tabs>
           <q-separator />
+          <PatientMonitor></PatientMonitor>
           <div v-for="(monitor, index) in monitors" :key="index">
             <MonitorComponentVue
               :title="monitor.title"
@@ -128,6 +129,7 @@ import MonitorsComponentVue from "../components/MonitorsComponent.vue";
 import DiagramComponent from "src/components/DiagramComponent.vue";
 import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
+import PatientMonitor from "src/components/PatientMonitor.vue";
 import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
 import { useGeneralStore } from "../stores/general";
@@ -144,6 +146,7 @@ export default {
     };
   },
   components: {
+    PatientMonitor,
     ScriptComponentVue: ScriptsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,
     GroupersComponent,

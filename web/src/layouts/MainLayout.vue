@@ -507,6 +507,9 @@ export default {
     document.removeEventListener("status", this.statusUpdate);
   },
   mounted() {
+    try {
+      document.removeEventListener("status", this.statusUpdate);
+    } catch {}
     document.addEventListener("status", this.statusUpdate);
   },
 };

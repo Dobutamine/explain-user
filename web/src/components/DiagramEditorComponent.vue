@@ -969,6 +969,16 @@ export default {
   mounted() {
     this.rebuild_event = new CustomEvent("rebuild_diagram");
 
+    try {
+      document.removeEventListener("state", this.buildModelItemTree);
+      document.removeEventListener(
+        "edit_comp",
+        (e) => {
+          this.editComponent(e.detail);
+        },
+        false
+      );
+    } catch {}
     // add an event listener for when the model state is ready
     document.addEventListener("state", this.buildModelItemTree);
 

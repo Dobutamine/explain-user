@@ -644,6 +644,9 @@ export default {
       }
     });
 
+    try {
+      document.removeEventListener("status", this.statusUpdate);
+    } catch {}
     // listen for an event coming from the explain model
     document.addEventListener("status", this.statusUpdate);
 

@@ -1224,6 +1224,13 @@ export default {
     this.chartId = "chart" + Math.floor(Math.random() * 10000);
   },
   mounted() {
+    // remove handlers
+    try {
+      document.removeEventListener("data", this.dataUpdate);
+      document.removeEventListener("state", this.stateUpdate);
+      document.removeEventListener("rt", this.rtUpdate);
+    } catch {}
+
     // create the chart
     this.createChart();
     // get the model state

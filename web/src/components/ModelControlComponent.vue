@@ -273,6 +273,9 @@ export default {
     document.removeEventListener("status", this.calculationReady);
   },
   mounted() {
+    try {
+      document.removeEventListener("status", this.calculationReady);
+    } catch {}
     document.addEventListener("status", this.calculationReady);
   },
 };
