@@ -60,6 +60,8 @@ export default {
       channelsConfig: [
         {
           channel_no: 1,
+          channel_grid: false,
+          channel_grid_color: 0xffffff,
 
           channelLabel: "HR",
           channelLabel_color: "lime",
@@ -73,12 +75,13 @@ export default {
 
           curve_label: "II",
           curve_color: "green",
-          curve_font_size: 20,
+          curve_font_size: 16,
           curve_prop: "Heart.EcgSignal",
         },
         {
           channel_no: 2,
-
+          channel_grid: true,
+          channel_grid_color: 0xff00ff,
           channelLabel: "SpO2(1)",
           channelLabel_color: "magenta",
           channelLabel_font_size: 12,
@@ -91,12 +94,13 @@ export default {
 
           curve_label: "Pleth(1)",
           curve_color: "magenta",
-          curve_font_size: 20,
+          curve_font_size: 16,
           curve_prop: "AA.Pres",
         },
         {
           channel_no: 3,
-
+          channel_grid: true,
+          channel_grid_color: 0xff00ff,
           channelLabel: "SpO2(2)",
           channelLabel_color: "purple",
           channelLabel_font_size: 12,
@@ -109,12 +113,13 @@ export default {
 
           curve_label: "Pleth(2)",
           curve_color: "purple",
-          curve_font_size: 20,
+          curve_font_size: 16,
           curve_prop: "AD.Pres",
         },
         {
           channel_no: 4,
-
+          channel_grid: true,
+          channel_grid_color: 0xff0000,
           channelLabel: "Abp",
           channelLabel_color: "red",
           channelLabel_font_size: 12,
@@ -127,12 +132,13 @@ export default {
 
           curve_label: "Pres",
           curve_color: "red",
-          curve_font_size: 20,
+          curve_font_size: 16,
           curve_prop: "AA.Pres",
         },
         {
           channel_no: 5,
-
+          channel_grid: true,
+          channel_grid_color: 0xffffff,
           channelLabel: "Resp",
           channelLabel_color: "white",
           channelLabel_font_size: 12,
@@ -145,12 +151,13 @@ export default {
 
           curve_label: "Resp",
           curve_color: "white",
-          curve_font_size: 20,
+          curve_font_size: 16,
           curve_prop: "CHEST_L.Vol",
         },
         {
           channel_no: 6,
-
+          channel_grid: true,
+          channel_grid_color: 0xffff00,
           channelLabel: "EtCO2",
           channelLabel_color: "yellow",
           channelLabel_font_size: 12,
@@ -163,7 +170,7 @@ export default {
 
           curve_label: "CO2",
           curve_color: "yellow",
-          curve_font_size: 20,
+          curve_font_size: 16,
           curve_prop: "MechanicalVentilator.EtCo2",
         },
       ],
@@ -189,42 +196,42 @@ export default {
       this.graphHeight = this.pixiApp.renderer.height;
 
       // draw abp line
-      this.abpCurve = new PIXI.Graphics();
-      this.abpCurve.lineStyle(1, 0xff0000, 1);
-      this.abpCurve.moveTo(0, this.pixiApp.renderer.height / 2);
-      this.abpCurve.lineTo(
-        this.pixiApp.renderer.width,
-        this.pixiApp.renderer.height / 2
-      );
+      // this.abpCurve = new PIXI.Graphics();
+      // this.abpCurve.lineStyle(1, 0xff0000, 1);
+      // this.abpCurve.moveTo(0, this.pixiApp.renderer.height / 2);
+      // this.abpCurve.lineTo(
+      //   this.pixiApp.renderer.width,
+      //   this.pixiApp.renderer.height / 2
+      // );
 
-      this.satCurve = new PIXI.Graphics();
-      this.satCurve.lineStyle(1, 0xffff00, 1);
-      this.satCurve.moveTo(0, this.pixiApp.renderer.height / 2);
-      this.satCurve.lineTo(
-        this.pixiApp.renderer.width,
-        this.pixiApp.renderer.height / 2
-      );
+      // this.satCurve = new PIXI.Graphics();
+      // this.satCurve.lineStyle(1, 0xffff00, 1);
+      // this.satCurve.moveTo(0, this.pixiApp.renderer.height / 2);
+      // this.satCurve.lineTo(
+      //   this.pixiApp.renderer.width,
+      //   this.pixiApp.renderer.height / 2
+      // );
 
-      this.breathingCurve = new PIXI.Graphics();
-      this.breathingCurve.lineStyle(1, 0xffffff, 1);
-      this.breathingCurve.moveTo(0, this.pixiApp.renderer.height / 2);
-      this.breathingCurve.lineTo(
-        this.pixiApp.renderer.width,
-        this.pixiApp.renderer.height / 2
-      );
+      // this.breathingCurve = new PIXI.Graphics();
+      // this.breathingCurve.lineStyle(1, 0xffffff, 1);
+      // this.breathingCurve.moveTo(0, this.pixiApp.renderer.height / 2);
+      // this.breathingCurve.lineTo(
+      //   this.pixiApp.renderer.width,
+      //   this.pixiApp.renderer.height / 2
+      // );
 
-      this.ecgCurve = new PIXI.Graphics();
-      this.ecgCurve.lineStyle(1, 0x00ffff, 1);
-      this.ecgCurve.moveTo(0, this.pixiApp.renderer.height / 2);
-      this.ecgCurve.lineTo(
-        this.pixiApp.renderer.width,
-        this.pixiApp.renderer.height / 2
-      );
+      // this.ecgCurve = new PIXI.Graphics();
+      // this.ecgCurve.lineStyle(1, 0x00ffff, 1);
+      // this.ecgCurve.moveTo(0, this.pixiApp.renderer.height / 2);
+      // this.ecgCurve.lineTo(
+      //   this.pixiApp.renderer.width,
+      //   this.pixiApp.renderer.height / 2
+      // );
 
-      this.pixiApp.stage.addChild(this.abpCurve);
-      this.pixiApp.stage.addChild(this.satCurve);
-      this.pixiApp.stage.addChild(this.breathingCurve);
-      this.pixiApp.stage.addChild(this.ecgCurve);
+      // this.pixiApp.stage.addChild(this.abpCurve);
+      // this.pixiApp.stage.addChild(this.satCurve);
+      // this.pixiApp.stage.addChild(this.breathingCurve);
+      // this.pixiApp.stage.addChild(this.ecgCurve);
 
       this.drawBackgroundGraphics();
     },
@@ -282,6 +289,26 @@ export default {
             (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
         }
         this.pixiApp.stage.addChild(curveLabel);
+
+        if (channel.channel_grid) {
+          let grid = new PIXI.Graphics();
+          grid.lineStyle(1, channel.channel_grid_color, 0.2);
+          let y = 10;
+          if (channel.channel_no > 1) {
+            y =
+              10 +
+              (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
+          }
+          grid.moveTo(0, y);
+          grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
+          y = y + this.graphHeight / this.no_channels / 3;
+          grid.moveTo(0, y);
+          grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
+          y = y + this.graphHeight / this.no_channels / 3;
+          grid.moveTo(0, y);
+          grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
+          this.pixiApp.stage.addChild(grid);
+        }
       });
     },
     drawCurves() {
@@ -312,48 +339,48 @@ export default {
       // calculate the number of pixels per datapoint
       let step = nox / ndp;
 
-      this.abpData.push(this.currentData["AA.Pres"]);
-      this.ecgData.push(this.currentData["Heart.EcgSignal"]);
-      this.breathingData.push(
-        (this.currentData["CHEST_L.Vol"] + this.currentData["CHEST_R.Vol"]) *
-          1000
-      );
+      // this.abpData.push(this.currentData["AA.Pres"]);
+      // this.ecgData.push(this.currentData["Heart.EcgSignal"]);
+      // this.breathingData.push(
+      //   (this.currentData["CHEST_L.Vol"] + this.currentData["CHEST_R.Vol"]) *
+      //     1000
+      // );
 
-      // shift the data
-      if (this.abpData.length > ndp) {
-        this.abpData.shift();
-        this.ecgData.shift();
-        this.breathingData.shift();
-      }
+      // // shift the data
+      // if (this.abpData.length > ndp) {
+      //   this.abpData.shift();
+      //   this.ecgData.shift();
+      //   this.breathingData.shift();
+      // }
 
-      // now draw the datapoints, we have ndp data points available which is
-      if (this.graphDrawCounter > this.graphDrawInterval) {
-        this.graphDrawCounter = 0;
-        this.abpCurve.clear();
-        this.abpCurve.lineStyle(2, 0xff0000, 1);
-        this.abpCurve.moveTo(0, 300 - this.abpData[0]);
+      // // now draw the datapoints, we have ndp data points available which is
+      // if (this.graphDrawCounter > this.graphDrawInterval) {
+      //   this.graphDrawCounter = 0;
+      //   this.abpCurve.clear();
+      //   this.abpCurve.lineStyle(2, 0xff0000, 1);
+      //   this.abpCurve.moveTo(0, 300 - this.abpData[0]);
 
-        this.ecgCurve.clear();
-        this.ecgCurve.lineStyle(2, 0x00ffff, 1);
-        this.ecgCurve.moveTo(0, 300 - this.ecgData[0]);
+      //   this.ecgCurve.clear();
+      //   this.ecgCurve.lineStyle(2, 0x00ffff, 1);
+      //   this.ecgCurve.moveTo(0, 300 - this.ecgData[0]);
 
-        this.breathingCurve.clear();
-        this.breathingCurve.lineStyle(2, 0xffffff, 1);
-        this.breathingCurve.moveTo(0, 300 - this.breathingData[0]);
+      //   this.breathingCurve.clear();
+      //   this.breathingCurve.lineStyle(2, 0xffffff, 1);
+      //   this.breathingCurve.moveTo(0, 300 - this.breathingData[0]);
 
-        this.satCurve.clear();
-        this.satCurve.lineStyle(2, 0xffff00, 1);
-        this.satCurve.moveTo(0, 300 - this.abpData[0]);
+      //   this.satCurve.clear();
+      //   this.satCurve.lineStyle(2, 0xffff00, 1);
+      //   this.satCurve.moveTo(0, 300 - this.abpData[0]);
 
-        for (let i = 0; i < this.abpData.length - 2; i += 1) {
-          this.abpCurve.lineTo(i * step, 300 - this.abpData[i]);
-          this.ecgCurve.lineTo(i * step, 300 - this.ecgData[i] * 5);
-          this.satCurve.lineTo(i * step, 500 - this.abpData[i]);
-          this.breathingCurve.lineTo(i * step, 300 - this.breathingData[i] * 2);
-        }
-      }
+      //   for (let i = 0; i < this.abpData.length - 2; i += 1) {
+      //     this.abpCurve.lineTo(i * step, 300 - this.abpData[i]);
+      //     this.ecgCurve.lineTo(i * step, 300 - this.ecgData[i] * 5);
+      //     this.satCurve.lineTo(i * step, 500 - this.abpData[i]);
+      //     this.breathingCurve.lineTo(i * step, 300 - this.breathingData[i] * 2);
+      //   }
+      // }
 
-      this.graphDrawCounter += this.dataUpdateInterval;
+      // this.graphDrawCounter += this.dataUpdateInterval;
     },
     stateUpdate() {},
   },

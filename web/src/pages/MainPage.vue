@@ -43,6 +43,7 @@
             <q-tab name="scripts" label="Scripts" />
             <q-tab name="charts" label="Charts" />
             <q-tab name="diagram" label="Diagram" />
+            <q-tab name="trends" label="Trends" />
           </q-tabs>
 
           <q-separator />
