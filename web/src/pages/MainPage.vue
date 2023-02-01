@@ -88,15 +88,15 @@
             narrow-indicator
           >
             <q-tab name="monitor" label="monitor" />
-            <q-tab name="monitoring" label="monitoring" />
+            <q-tab name="numerics" label="numerics" />
             <q-tab name="probes" label="probes" />
           </q-tabs>
           <q-separator />
           <q-tab-panels v-model="tab_right" keep-alive>
-            <q-tab-panel name="monitoring">
+            <q-tab-panel name="monitor">
               <PatientMonitor></PatientMonitor>
             </q-tab-panel>
-            <q-tab-panel name="patient">
+            <q-tab-panel name="numerics">
               <div v-for="(monitor, index) in monitors" :key="index">
                 <MonitorComponentVue
                   :title="monitor.title"
@@ -106,7 +106,7 @@
                 ></MonitorComponentVue>
               </div>
             </q-tab-panel>
-            <q-tab-panel name="charts">
+            <q-tab-panel name="probes">
               <div v-for="(chart, index) in charts" :key="index">
                 <TimeChartComponentVue
                   v-if="chart.position === 3"

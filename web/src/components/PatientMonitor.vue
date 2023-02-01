@@ -55,6 +55,118 @@ export default {
       graphSpeed: 2,
       dataUpdateInterval: 0.015,
       dataWindowTime: 3,
+      channels: [],
+      no_channels: 6,
+      channelsConfig: [
+        {
+          channel_no: 1,
+
+          channelLabel: "HR",
+          channelLabel_color: "lime",
+          channelLabel_font_size: 12,
+
+          valueLabel: "147",
+          valueLabel_color: "lime",
+          valueLabel_font_size: 48,
+          valueLabel_prop1: "Heart.Heartrate",
+          valueLabel_prop2: "",
+
+          curve_label: "II",
+          curve_color: "green",
+          curve_font_size: 20,
+          curve_prop: "Heart.EcgSignal",
+        },
+        {
+          channel_no: 2,
+
+          channelLabel: "SpO2(1)",
+          channelLabel_color: "magenta",
+          channelLabel_font_size: 12,
+
+          valueLabel: "99",
+          valueLabel_color: "magenta",
+          valueLabel_font_size: 48,
+          valueLabel_prop1: "AA.So2",
+          valueLabel_prop2: "",
+
+          curve_label: "Pleth(1)",
+          curve_color: "magenta",
+          curve_font_size: 20,
+          curve_prop: "AA.Pres",
+        },
+        {
+          channel_no: 3,
+
+          channelLabel: "SpO2(2)",
+          channelLabel_color: "purple",
+          channelLabel_font_size: 12,
+
+          valueLabel: "97",
+          valueLabel_color: "purple",
+          valueLabel_font_size: 48,
+          valueLabel_prop1: "AD.So2",
+          valueLabel_prop2: "",
+
+          curve_label: "Pleth(2)",
+          curve_color: "purple",
+          curve_font_size: 20,
+          curve_prop: "AD.Pres",
+        },
+        {
+          channel_no: 4,
+
+          channelLabel: "Abp",
+          channelLabel_color: "red",
+          channelLabel_font_size: 12,
+
+          valueLabel: "60/40",
+          valueLabel_color: "red",
+          valueLabel_font_size: 48,
+          valueLabel_prop1: "AA.PresMax",
+          valueLabel_prop2: "AA.PresMin",
+
+          curve_label: "Pres",
+          curve_color: "red",
+          curve_font_size: 20,
+          curve_prop: "AA.Pres",
+        },
+        {
+          channel_no: 5,
+
+          channelLabel: "Resp",
+          channelLabel_color: "white",
+          channelLabel_font_size: 12,
+
+          valueLabel: "45",
+          valueLabel_color: "white",
+          valueLabel_font_size: 48,
+          valueLabel_prop1: "Breathing.RespRate",
+          valueLabel_prop2: "",
+
+          curve_label: "Resp",
+          curve_color: "white",
+          curve_font_size: 20,
+          curve_prop: "CHEST_L.Vol",
+        },
+        {
+          channel_no: 6,
+
+          channelLabel: "EtCO2",
+          channelLabel_color: "yellow",
+          channelLabel_font_size: 12,
+
+          valueLabel: "4.5",
+          valueLabel_color: "yellow",
+          valueLabel_font_size: 48,
+          valueLabel_prop1: "",
+          valueLabel_prop2: "",
+
+          curve_label: "CO2",
+          curve_color: "yellow",
+          curve_font_size: 20,
+          curve_prop: "MechanicalVentilator.EtCo2",
+        },
+      ],
     };
   },
   methods: {
@@ -76,7 +188,6 @@ export default {
       this.graphWidth = this.pixiApp.renderer.width;
       this.graphHeight = this.pixiApp.renderer.height;
 
-      console.log(this.graphWidth, this.graphHeight);
       // draw abp line
       this.abpCurve = new PIXI.Graphics();
       this.abpCurve.lineStyle(1, 0xff0000, 1);
@@ -118,167 +229,60 @@ export default {
       this.drawBackgroundGraphics();
     },
     drawBackgroundGraphics() {
-      // draw the
-      this.textStyle = new PIXI.TextStyle({
-        fill: "green",
-        fontSize: 20,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.text = new PIXI.Text("II", this.textStyle);
-      // this.text.anchor = { x: 0.5, y: 0.5 };
-      this.text.x = 10;
-      this.text.y = 10;
-      this.text.zIndex = 7;
-      this.pixiApp.stage.addChild(this.text);
+      this.channelsConfig.forEach((channel) => {
+        // do the channel label
+        let channelLabelStyle = new PIXI.TextStyle({
+          fill: channel.channelLabel_color,
+          fontSize: channel.channelLabel_font_size,
+          fontFamily: "Arial",
+          strokeThickness: 0,
+        });
+        let channelLabel = new PIXI.Text(
+          channel.channelLabel,
+          channelLabelStyle
+        );
+        channelLabel.x = this.graphWidth - 0.2 * this.graphWidth;
+        channelLabel.y = 0;
+        if (channel.channel_no > 1) {
+          channelLabel.y =
+            (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
+        }
+        this.pixiApp.stage.addChild(channelLabel);
 
-      this.textStyleHrValue = new PIXI.TextStyle({
-        fill: "limegreen",
-        fontSize: 60,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textHrValue = new PIXI.Text("147", this.textStyleHrValue);
-      // this.text.anchor = { x: 0.5, y: 0.5 };
-      this.textHrValue.x = this.graphWidth - 0.2 * this.graphWidth;
-      this.textHrValue.y = 10;
-      this.textHrValue.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textHrValue);
+        // do the label
+        let valueLabelStyle = new PIXI.TextStyle({
+          fill: channel.valueLabel_color,
+          fontSize: channel.valueLabel_font_size,
+          fontFamily: "Arial",
+          strokeThickness: 0,
+        });
+        let valueLabel = new PIXI.Text(channel.valueLabel, valueLabelStyle);
+        valueLabel.x = this.graphWidth - 0.2 * this.graphWidth;
+        valueLabel.y = 10;
+        if (channel.channel_no > 1) {
+          valueLabel.y =
+            10 +
+            (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
+        }
+        this.pixiApp.stage.addChild(valueLabel);
 
-      this.textStyleSat = new PIXI.TextStyle({
-        fill: "purple",
-        fontSize: 20,
-        fontFamily: "Arial",
-        strokeThickness: 0,
+        // do the curve label
+        let curveLabelStyle = new PIXI.TextStyle({
+          fill: channel.curve_color,
+          fontSize: channel.curve_font_size,
+          fontFamily: "Arial",
+          strokeThickness: 0,
+        });
+        let curveLabel = new PIXI.Text(channel.curve_label, curveLabelStyle);
+        curveLabel.x = 10;
+        curveLabel.y = 10;
+        if (channel.channel_no > 1) {
+          curveLabel.y =
+            10 +
+            (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
+        }
+        this.pixiApp.stage.addChild(curveLabel);
       });
-      this.textSat = new PIXI.Text("Pleth", this.textStyleSat);
-      // this.textSat.anchor = { x: 0.5, y: 0.5 };
-      this.textSat.x = 10;
-      this.textSat.y = 10 + this.graphHeight / 6;
-      this.textSat.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textSat);
-
-      this.textStyleSatValue = new PIXI.TextStyle({
-        fill: "magenta",
-        fontSize: 60,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textSatValue = new PIXI.Text("93", this.textStyleSatValue);
-      // this.text.anchor = { x: 0.5, y: 0.5 };
-      this.textSatValue.x = this.graphWidth - 0.2 * this.graphWidth;
-      this.textSatValue.y = 10 + this.graphHeight / 6;
-      this.textSatValue.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textSatValue);
-
-      this.textStyleSat2 = new PIXI.TextStyle({
-        fill: "purple",
-        fontSize: 20,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textSat2 = new PIXI.Text("Pleth-po", this.textStyleSat2);
-      // this.textSat.anchor = { x: 0.5, y: 0.5 };
-      this.textSat2.x = 10;
-      this.textSat2.y = 10 + (this.graphHeight / 6) * 2;
-      this.textSat2.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textSat2);
-
-      this.textStyleSat2Value = new PIXI.TextStyle({
-        fill: "purple",
-        fontSize: 60,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textSat2Value = new PIXI.Text("93", this.textStyleSat2Value);
-      // this.textSat.anchor = { x: 0.5, y: 0.5 };
-      this.textSat2Value.x = this.graphWidth - 0.2 * this.graphWidth;
-      this.textSat2Value.y = 10 + (this.graphHeight / 6) * 2;
-      this.textSat2Value.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textSat2Value);
-
-      this.textStyleAbp = new PIXI.TextStyle({
-        fill: "red",
-        fontSize: 20,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textAbp = new PIXI.Text("ABP", this.textStyleAbp);
-      // this.textAbp.anchor = { x: 0.5, y: 0.5 };
-      this.textAbp.x = 10;
-      this.textAbp.y = 10 + (this.graphHeight / 6) * 3;
-      this.textAbp.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textAbp);
-
-      this.textStyleAbpValue = new PIXI.TextStyle({
-        fill: "red",
-        fontSize: 38,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textAbpValue = new PIXI.Text("60/40", this.textStyleAbpValue);
-      this.textAbpMean = new PIXI.Text("(50)", this.textStyleAbpValue);
-      // this.textAbpValue.anchor = { x: 0.5, y: 0.5 };
-      this.textAbpValue.x = this.graphWidth - 0.2 * this.graphWidth;
-      this.textAbpValue.y = 10 + (this.graphHeight / 6) * 3;
-      this.textAbpMean.x = this.graphWidth - 0.2 * this.graphWidth + 15;
-      this.textAbpMean.y = 45 + (this.graphHeight / 6) * 3;
-      this.textAbpMean.anchor = { x: 0, y: 0 };
-      this.textAbpValue.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textAbpValue);
-      this.pixiApp.stage.addChild(this.textAbpMean);
-
-      this.textStyleRespValue = new PIXI.TextStyle({
-        fill: "white",
-        fontSize: 20,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textRespValue = new PIXI.Text("RespValue", this.textStyleRespValue);
-      // this.textRespValue.anchor = { x: 0.5, y: 0.5 };
-      this.textRespValue.x = 10;
-      this.textRespValue.y = 10 + (this.graphHeight / 6) * 4;
-      this.textRespValue.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textRespValue);
-
-      this.textStyleRespValue = new PIXI.TextStyle({
-        fill: "white",
-        fontSize: 60,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textRespValue = new PIXI.Text("45", this.textStyleRespValue);
-      // this.textRespValue.anchor = { x: 0.5, y: 0.5 };
-      this.textRespValue.x = this.graphWidth - 0.2 * this.graphWidth;
-      this.textRespValue.y = 10 + (this.graphHeight / 6) * 4;
-      this.textRespValue.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textRespValue);
-
-      this.textStyleEtCO2 = new PIXI.TextStyle({
-        fill: "yellow",
-        fontSize: 20,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textEtCO2 = new PIXI.Text("EtCO2", this.textStyleEtCO2);
-      // this.textEtCO2.anchor = { x: 0.5, y: 0.5 };
-      this.textEtCO2.x = 10;
-      this.textEtCO2.y = 10 + (this.graphHeight / 6) * 5;
-      this.textEtCO2.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textEtCO2);
-
-      this.textStyleEtCO2Value = new PIXI.TextStyle({
-        fill: "yellow",
-        fontSize: 60,
-        fontFamily: "Arial",
-        strokeThickness: 0,
-      });
-      this.textEtCO2Value = new PIXI.Text("4.5", this.textStyleEtCO2Value);
-      // this.textEtCO2Value.anchor = { x: 0.5, y: 0.5 };
-      this.textEtCO2Value.x = this.graphWidth - 0.2 * this.graphWidth;
-      this.textEtCO2Value.y = 10 + (this.graphHeight / 6) * 5;
-      this.textEtCO2Value.zIndex = 7;
-      this.pixiApp.stage.addChild(this.textEtCO2Value);
     },
     drawCurves() {
       // get width
