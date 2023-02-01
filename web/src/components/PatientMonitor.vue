@@ -1,12 +1,23 @@
 <template>
   <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
     <div
-      class="q-mt-es row gutter text-overline justify-center"
+      class="q-mt-es q-mb-sm row gutter text-overline justify-center"
       @click="isEnabled = !isEnabled"
     >
       PATIENT MONITOR
     </div>
-
+    <div class="row q-gutter-md text-overline justify-left">
+      <q-icon
+        name="fa-solid fa-network-wired"
+        class="q-ml-lg q-mt-sm q-mb-sm q-mr-lg"
+      ></q-icon>
+      1A-16
+      <q-icon
+        name="fa-solid fa-baby"
+        class="q-ml-lg q-mt-sm q-mb-sm q-mr-lg"
+      ></q-icon>
+      Explain
+    </div>
     <div class="stagePatMon" :style="{ display: display }">
       <canvas id="stagePatMon"></canvas>
     </div>
@@ -103,6 +114,171 @@ export default {
       this.pixiApp.stage.addChild(this.satCurve);
       this.pixiApp.stage.addChild(this.breathingCurve);
       this.pixiApp.stage.addChild(this.ecgCurve);
+
+      this.drawBackgroundGraphics();
+    },
+    drawBackgroundGraphics() {
+      // draw the
+      this.textStyle = new PIXI.TextStyle({
+        fill: "green",
+        fontSize: 20,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.text = new PIXI.Text("II", this.textStyle);
+      // this.text.anchor = { x: 0.5, y: 0.5 };
+      this.text.x = 10;
+      this.text.y = 10;
+      this.text.zIndex = 7;
+      this.pixiApp.stage.addChild(this.text);
+
+      this.textStyleHrValue = new PIXI.TextStyle({
+        fill: "limegreen",
+        fontSize: 60,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textHrValue = new PIXI.Text("147", this.textStyleHrValue);
+      // this.text.anchor = { x: 0.5, y: 0.5 };
+      this.textHrValue.x = this.graphWidth - 0.2 * this.graphWidth;
+      this.textHrValue.y = 10;
+      this.textHrValue.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textHrValue);
+
+      this.textStyleSat = new PIXI.TextStyle({
+        fill: "purple",
+        fontSize: 20,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textSat = new PIXI.Text("Pleth", this.textStyleSat);
+      // this.textSat.anchor = { x: 0.5, y: 0.5 };
+      this.textSat.x = 10;
+      this.textSat.y = 10 + this.graphHeight / 6;
+      this.textSat.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textSat);
+
+      this.textStyleSatValue = new PIXI.TextStyle({
+        fill: "magenta",
+        fontSize: 60,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textSatValue = new PIXI.Text("93", this.textStyleSatValue);
+      // this.text.anchor = { x: 0.5, y: 0.5 };
+      this.textSatValue.x = this.graphWidth - 0.2 * this.graphWidth;
+      this.textSatValue.y = 10 + this.graphHeight / 6;
+      this.textSatValue.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textSatValue);
+
+      this.textStyleSat2 = new PIXI.TextStyle({
+        fill: "purple",
+        fontSize: 20,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textSat2 = new PIXI.Text("Pleth-po", this.textStyleSat2);
+      // this.textSat.anchor = { x: 0.5, y: 0.5 };
+      this.textSat2.x = 10;
+      this.textSat2.y = 10 + (this.graphHeight / 6) * 2;
+      this.textSat2.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textSat2);
+
+      this.textStyleSat2Value = new PIXI.TextStyle({
+        fill: "purple",
+        fontSize: 60,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textSat2Value = new PIXI.Text("93", this.textStyleSat2Value);
+      // this.textSat.anchor = { x: 0.5, y: 0.5 };
+      this.textSat2Value.x = this.graphWidth - 0.2 * this.graphWidth;
+      this.textSat2Value.y = 10 + (this.graphHeight / 6) * 2;
+      this.textSat2Value.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textSat2Value);
+
+      this.textStyleAbp = new PIXI.TextStyle({
+        fill: "red",
+        fontSize: 20,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textAbp = new PIXI.Text("ABP", this.textStyleAbp);
+      // this.textAbp.anchor = { x: 0.5, y: 0.5 };
+      this.textAbp.x = 10;
+      this.textAbp.y = 10 + (this.graphHeight / 6) * 3;
+      this.textAbp.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textAbp);
+
+      this.textStyleAbpValue = new PIXI.TextStyle({
+        fill: "red",
+        fontSize: 38,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textAbpValue = new PIXI.Text("60/40", this.textStyleAbpValue);
+      this.textAbpMean = new PIXI.Text("(50)", this.textStyleAbpValue);
+      // this.textAbpValue.anchor = { x: 0.5, y: 0.5 };
+      this.textAbpValue.x = this.graphWidth - 0.2 * this.graphWidth;
+      this.textAbpValue.y = 10 + (this.graphHeight / 6) * 3;
+      this.textAbpMean.x = this.graphWidth - 0.2 * this.graphWidth + 15;
+      this.textAbpMean.y = 45 + (this.graphHeight / 6) * 3;
+      this.textAbpMean.anchor = { x: 0, y: 0 };
+      this.textAbpValue.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textAbpValue);
+      this.pixiApp.stage.addChild(this.textAbpMean);
+
+      this.textStyleRespValue = new PIXI.TextStyle({
+        fill: "white",
+        fontSize: 20,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textRespValue = new PIXI.Text("RespValue", this.textStyleRespValue);
+      // this.textRespValue.anchor = { x: 0.5, y: 0.5 };
+      this.textRespValue.x = 10;
+      this.textRespValue.y = 10 + (this.graphHeight / 6) * 4;
+      this.textRespValue.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textRespValue);
+
+      this.textStyleRespValue = new PIXI.TextStyle({
+        fill: "white",
+        fontSize: 60,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textRespValue = new PIXI.Text("45", this.textStyleRespValue);
+      // this.textRespValue.anchor = { x: 0.5, y: 0.5 };
+      this.textRespValue.x = this.graphWidth - 0.2 * this.graphWidth;
+      this.textRespValue.y = 10 + (this.graphHeight / 6) * 4;
+      this.textRespValue.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textRespValue);
+
+      this.textStyleEtCO2 = new PIXI.TextStyle({
+        fill: "yellow",
+        fontSize: 20,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textEtCO2 = new PIXI.Text("EtCO2", this.textStyleEtCO2);
+      // this.textEtCO2.anchor = { x: 0.5, y: 0.5 };
+      this.textEtCO2.x = 10;
+      this.textEtCO2.y = 10 + (this.graphHeight / 6) * 5;
+      this.textEtCO2.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textEtCO2);
+
+      this.textStyleEtCO2Value = new PIXI.TextStyle({
+        fill: "yellow",
+        fontSize: 60,
+        fontFamily: "Arial",
+        strokeThickness: 0,
+      });
+      this.textEtCO2Value = new PIXI.Text("4.5", this.textStyleEtCO2Value);
+      // this.textEtCO2Value.anchor = { x: 0.5, y: 0.5 };
+      this.textEtCO2Value.x = this.graphWidth - 0.2 * this.graphWidth;
+      this.textEtCO2Value.y = 10 + (this.graphHeight / 6) * 5;
+      this.textEtCO2Value.zIndex = 7;
+      this.pixiApp.stage.addChild(this.textEtCO2Value);
     },
     drawCurves() {
       // get width

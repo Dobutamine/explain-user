@@ -87,34 +87,44 @@
             align="justify"
             narrow-indicator
           >
+            <q-tab name="monitor" label="monitor" />
             <q-tab name="monitoring" label="monitoring" />
+            <q-tab name="probes" label="probes" />
           </q-tabs>
           <q-separator />
-          <PatientMonitor></PatientMonitor>
-          <div v-for="(monitor, index) in monitors" :key="index">
-            <MonitorComponentVue
-              :title="monitor.title"
-              :collapsed="monitor.collapsed"
-              :data_type="monitor.data_type"
-              :parameters="monitor.parameters"
-            ></MonitorComponentVue>
-          </div>
-          <div v-for="(chart, index) in charts" :key="index">
-            <TimeChartComponentVue
-              v-if="chart.position === 3"
-              :id="chart._id"
-              :caption="chart.caption"
-              :models="chart.models"
-              :props="chart.props"
-              :channels="chart.channels"
-              :collapsed="chart.collapsed"
-              :enabled="chart.enabled"
-              :analysisEnabled="chart.analysisEnabled"
-              :autoscaleEnabled="chart.autoscaleEnabled"
-              :multipliersEnabled="chart.multipliersEnabled"
-              :exportEnabled="chart.exportEnabled"
-            ></TimeChartComponentVue>
-          </div>
+          <q-tab-panels v-model="tab_right" keep-alive>
+            <q-tab-panel name="monitoring">
+              <PatientMonitor></PatientMonitor>
+            </q-tab-panel>
+            <q-tab-panel name="patient">
+              <div v-for="(monitor, index) in monitors" :key="index">
+                <MonitorComponentVue
+                  :title="monitor.title"
+                  :collapsed="monitor.collapsed"
+                  :data_type="monitor.data_type"
+                  :parameters="monitor.parameters"
+                ></MonitorComponentVue>
+              </div>
+            </q-tab-panel>
+            <q-tab-panel name="charts">
+              <div v-for="(chart, index) in charts" :key="index">
+                <TimeChartComponentVue
+                  v-if="chart.position === 3"
+                  :id="chart._id"
+                  :caption="chart.caption"
+                  :models="chart.models"
+                  :props="chart.props"
+                  :channels="chart.channels"
+                  :collapsed="chart.collapsed"
+                  :enabled="chart.enabled"
+                  :analysisEnabled="chart.analysisEnabled"
+                  :autoscaleEnabled="chart.autoscaleEnabled"
+                  :multipliersEnabled="chart.multipliersEnabled"
+                  :exportEnabled="chart.exportEnabled"
+                ></TimeChartComponentVue>
+              </div>
+            </q-tab-panel>
+          </q-tab-panels>
         </div>
       </div>
     </div>
