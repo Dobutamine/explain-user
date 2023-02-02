@@ -101,7 +101,9 @@ onmessage = function (e) {
             prop: propsSplit[1],
             secProp: secProp,
           };
-          model.DataCollector.add_to_watchlist(processedProp);
+          try {
+            model.DataCollector.add_to_watchlist(processedProp);
+          } catch {}
         });
 
         break;
@@ -119,7 +121,9 @@ onmessage = function (e) {
             prop: propsSplit[1],
             secProp: secProp,
           };
-          model.DataCollector.add_to_watchlist_slow(processedProp);
+          try {
+            model.DataCollector.add_to_watchlist_slow(processedProp);
+          } catch {}
         });
 
         break;

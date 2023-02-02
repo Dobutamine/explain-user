@@ -170,7 +170,7 @@ export default {
     return {
       tab: "diagram",
       tab_left: "build",
-      tab_right: "monitoring",
+      tab_right: "monitor",
       monitors: [],
       charts: [],
       models: [],
