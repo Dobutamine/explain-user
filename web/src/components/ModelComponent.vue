@@ -164,33 +164,33 @@ export default {
       // build the grouperItem tree from the ui store
       this.modelsTree = {};
       this.modelNames = [];
-      // first find all models
-      for (let model in explain.modelState.Models) {
-        this.modelNames.push(model);
-        let modelType = explain.modelState.Models[model].ModelType;
-        let props = [];
-        if (!this.modelTypes.includes(modelType)) {
-          this.modelTypes.push(modelType);
-        }
-        if (this.uiConfig.models[modelType]) {
-          for (let prop in this.uiConfig.models[modelType].properties) {
-            let propName =
-              this.uiConfig.models[modelType].properties[prop].modelProp;
-            let propSettings = this.uiConfig.models[modelType].properties[prop];
-            props.push({
-              propName: propName,
-              propSettings: propSettings,
-            });
-          }
+      // // first find all models
+      // for (let model in explain.modelState.Models) {
+      //   this.modelNames.push(model);
+      //   let modelType = explain.modelState.Models[model].ModelType;
+      //   let props = [];
+      //   if (!this.modelTypes.includes(modelType)) {
+      //     this.modelTypes.push(modelType);
+      //   }
+      //   if (this.uiConfig.models[modelType]) {
+      //     for (let prop in this.uiConfig.models[modelType].properties) {
+      //       let propName =
+      //         this.uiConfig.models[modelType].properties[prop].modelProp;
+      //       let propSettings = this.uiConfig.models[modelType].properties[prop];
+      //       props.push({
+      //         propName: propName,
+      //         propSettings: propSettings,
+      //       });
+      //     }
 
-          this.modelsTree[model] = {
-            model: model,
-            modelType: modelType,
-            props: props,
-            value: "",
-          };
-        }
-      }
+      //     this.modelsTree[model] = {
+      //       model: model,
+      //       modelType: modelType,
+      //       props: props,
+      //       value: "",
+      //     };
+      //   }
+      // }
     },
   },
   beforeUnmount() {

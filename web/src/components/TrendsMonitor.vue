@@ -60,13 +60,11 @@ export default {
       graphHeight: 600,
       graphInterval: 10,
       graphSpeed: 2,
-      dataUpdateInterval: 0.015,
-      dataWindowTime: 3,
+      dataUpdateInterval: 1.0,
+      dataWindowTime: 300,
       channels: {},
-      no_channels: 6,
+      no_channels: 4,
       channel_height: 100,
-      autoscale_counter: 0,
-      autoscale_interval: 2,
     };
   },
   methods: {
@@ -103,43 +101,33 @@ export default {
 
       // configure the channels
       this.config.trends_monitor.forEach((channel) => {
-        // add the value label
-        let valueLabelStyle = new PIXI.TextStyle({
-          fill: channel.value_label_color,
-          fontSize: channel.value_label_font_size,
-          fontFamily: "Arial",
-          strokeThickness: 0,
-        });
-        let valueLabel = new PIXI.Text(channel.value_label, valueLabelStyle);
-        valueLabel.x = this.graphWidth - 0.2 * this.graphWidth;
-        valueLabel.y = 10;
-        if (channel.channel_no > 1) {
-          valueLabel.y = this.channel_height * (channel.channel_no - 1);
-        }
-        this.pixiApp.stage.addChild(valueLabel);
-
-        // add the value
-        let valueStyle = new PIXI.TextStyle({
-          fill: channel.value_color,
-          fontSize: channel.value_font_size,
-          fontFamily: "Arial",
-          strokeThickness: 0,
-        });
-        let value = new PIXI.Text(channel.value, valueStyle);
-        value.x = this.graphWidth - 0.2 * this.graphWidth;
-        value.y = 10 + channel.value_label_font_size;
-        if (channel.channel_no > 1) {
-          value.y =
-            this.channel_height * (channel.channel_no - 1) +
-            channel.value_label_font_size;
-        }
+        // configure the watchers
         explain.watchModelPropertiesSlow([channel.value_prop1]);
         if (channel.value_prop2 != "") {
           explain.watchModelPropertiesSlow([channel.value_prop2]);
         }
-        this.pixiApp.stage.addChild(value);
 
-        // do curve label
+        // configure the channel label
+        let channelLabelStyle = new PIXI.TextStyle({
+          fill: channel.channel_label_color,
+          fontSize: channel.channel_label_font_size,
+          fontFamily: "Arial",
+          strokeThickness: 0,
+        });
+        let channelLabel = new PIXI.Text(
+          channel.channel_label,
+          channelLabelStyle
+        );
+        channelLabel.x = this.graphWidth * 0.8;
+        channelLabel.y = 10;
+        if (channel.channel_no > 1) {
+          channelLabel.y =
+            10 +
+            (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
+        }
+        this.pixiApp.stage.addChild(channelLabel);
+
+        // configure the curve label
         let curveLabelStyle = new PIXI.TextStyle({
           fill: channel.curve_label_color,
           fontSize: channel.curve_label_font_size,
@@ -147,61 +135,103 @@ export default {
           strokeThickness: 0,
         });
         let curveLabel = new PIXI.Text(channel.curve_label, curveLabelStyle);
-        curveLabel.x = 10;
+        curveLabel.x = 35;
         curveLabel.y = 10;
         if (channel.channel_no > 1) {
           curveLabel.y =
             10 +
             (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
         }
-
         this.pixiApp.stage.addChild(curveLabel);
 
         // set the grid
+        let gridLabelValue = channel.value_max;
+        let gridLabelStep = (channel.value_max - channel.value_min) / 4;
         let grid = {};
+        let gridLabelStyle = new PIXI.TextStyle({
+          fill: channel.curve_label_color,
+          fontSize: 10,
+          fontFamily: "Arial",
+          strokeThickness: 0,
+        });
         if (channel.grid) {
           grid = new PIXI.Graphics();
           grid.lineStyle(1, parseInt(channel.grid_color, 16), 0.2);
-          let y = 10;
+          let y = 0;
           if (channel.channel_no > 1) {
             y =
-              10 +
               (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
           }
           grid.moveTo(0, y);
           grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
-          y = y + this.graphHeight / this.no_channels / 3;
+          let gridLabel1 = new PIXI.Text(gridLabelValue, gridLabelStyle);
+          gridLabel1.x = 10;
+          gridLabel1.y = y;
+          this.pixiApp.stage.addChild(gridLabel1);
+
+          y = y + this.graphHeight / this.no_channels / 4;
           grid.moveTo(0, y);
           grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
-          y = y + this.graphHeight / this.no_channels / 3;
+          gridLabelValue -= gridLabelStep;
+          let gridLabel2 = new PIXI.Text(
+            gridLabelValue.toFixed(0),
+            gridLabelStyle
+          );
+          gridLabel2.x = 10;
+          gridLabel2.y = y;
+          this.pixiApp.stage.addChild(gridLabel2);
+
+          y = y + this.graphHeight / this.no_channels / 4;
           grid.moveTo(0, y);
           grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
+          gridLabelValue -= gridLabelStep;
+          let gridLabel3 = new PIXI.Text(
+            gridLabelValue.toFixed(0),
+            gridLabelStyle
+          );
+          gridLabel3.x = 10;
+          gridLabel3.y = y;
+          this.pixiApp.stage.addChild(gridLabel3);
+
+          y = y + this.graphHeight / this.no_channels / 4;
+          grid.moveTo(0, y);
+          grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
+          gridLabelValue -= gridLabelStep;
+          let gridLabel4 = new PIXI.Text(gridLabelValue, gridLabelStyle);
+          gridLabel4.x = 10;
+          gridLabel4.y = y;
+          this.pixiApp.stage.addChild(gridLabel4);
+
+          y = y + this.graphHeight / this.no_channels / 4;
+          grid.moveTo(0, y);
+          grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
+          gridLabelValue = channel.value_min;
+          let gridLabel5 = new PIXI.Text(gridLabelValue, gridLabelStyle);
+          gridLabel5.x = 10;
+          gridLabel5.y = y;
+          this.pixiApp.stage.addChild(gridLabel5);
+
           this.pixiApp.stage.addChild(grid);
         }
         // initialize the curve
         let curve = new PIXI.Graphics();
         this.pixiApp.stage.addChild(curve);
 
-        // add the prop to the watchlist
-        explain.watchModelProperties([channel.curve_prop]);
-
         // store the channel
         this.channels.push({
           channel_no: channel.channel_no,
-          valueLabel: valueLabel,
           curveLabel: curveLabel,
-          value: value,
+          channelLabel: channelLabel,
           valueFactor: channel.value_factor,
           valueRounding: channel.value_rounding,
           grid: grid,
           curve: curve,
-          curve_min: 0,
-          curve_max: 100,
+          curve_min: channel.value_min,
+          curve_max: channel.value_max,
           curve_factor: 1,
-          curve_y: 300,
+          curve_y: 0,
           curve_y_min: 0,
           curve_y_max: 100,
-          curve_prop: channel.curve_prop,
           curve_color: parseInt(channel.curve_color, 16),
           value_prop1: channel.value_prop1,
           value_prop2: channel.value_prop2,
@@ -209,45 +239,12 @@ export default {
         });
       });
     },
-    dataUpdateSlow() {
-      if (!this.isEnabled) return;
 
-      let slowData = explain.modelDataSlow[explain.modelDataSlow.length - 1];
-      this.channels.forEach((channel) => {
-        let valueText = (
-          slowData[channel.value_prop1] * channel.valueFactor
-        ).toFixed(channel.valueRounding);
-        if (channel.value_prop2 !== "") {
-          valueText +=
-            "/" +
-            (slowData[channel.value_prop2] * channel.valueFactor).toFixed(
-              channel.valueRounding
-            );
-        }
-        channel.value.text = valueText;
-      });
-    },
-    remap(value, from1, to1, from2, to2) {
-      return ((value - from1) / (to1 - from1)) * (to2 - from2) + from2;
-    },
-    autoscale() {
-      this.channels.forEach((channel) => {
-        channel.curve_max = Math.max.apply(null, channel.curve_data);
-        channel.curve_min = Math.min.apply(null, channel.curve_data);
-
-        channel.curve_y_min = this.channel_height * (channel.channel_no - 1);
-        channel.curve_y_max = this.channel_height * channel.channel_no;
-
-        channel.curve_factor =
-          ((channel.curve_y_max - channel.curve_y_min) /
-            (channel.curve_max - channel.curve_min)) *
-          0.5;
-      });
-    },
     dataUpdate() {
       if (!this.isEnabled) return;
 
-      this.currentData = explain.modelData[explain.modelData.length - 1];
+      this.currentData =
+        explain.modelDataSlow[explain.modelDataSlow.length - 1];
       // determine the number of x coordinates available for the graph, so we have maximum of that number of data points
 
       // number x pixels available
@@ -261,7 +258,9 @@ export default {
       let step = nox / ndp;
 
       this.channels.forEach((channel) => {
-        channel.curve_data.push(this.currentData[channel.curve_prop]);
+        channel.curve_data.push(
+          this.currentData[channel.value_prop1] * channel.valueFactor
+        );
         if (channel.curve_data.length > ndp) {
           channel.curve_data.shift();
         }
@@ -271,13 +270,26 @@ export default {
       if (this.graphDrawCounter > this.graphDrawInterval) {
         this.graphDrawCounter = 0;
         this.channels.forEach((channel) => {
+          channel.curve_y_min = this.channel_height * (channel.channel_no - 1);
+          channel.curve_y_max = this.channel_height * channel.channel_no;
+
+          channel.curve_factor =
+            (channel.curve_y_max - channel.curve_y_min) /
+            (channel.curve_max - channel.curve_min);
+
           channel.curve.clear();
-          channel.curve.moveTo(0, 300);
+          let first_y =
+            channel.curve_y_max -
+            (channel.curve_data[0] - channel.curve_min) * channel.curve_factor;
+          if (first_y < channel.curve_y_min) {
+            first_y = channel.curve_y_min;
+          }
+
+          channel.curve.moveTo(0, first_y);
           channel.curve.lineStyle(2, channel.curve_color, 1);
           for (let i = 0; i < channel.curve_data.length; i += 1) {
             let y_co =
               channel.curve_y_max -
-              this.channel_height * 0.4 -
               (channel.curve_data[i] - channel.curve_min) *
                 channel.curve_factor;
             if (y_co < channel.curve_y_min) {
@@ -288,31 +300,22 @@ export default {
         });
       }
       this.graphDrawCounter += this.dataUpdateInterval;
-      if (this.autoscale_counter > this.autoscale_interval) {
-        this.autoscale_interval = 3;
-        this.autoscale_counter = 0;
-        this.autoscale();
-      }
-      this.autoscale_counter += this.dataUpdateInterval;
     },
     stateUpdate() {},
   },
   beforeUnmount() {
-    document.removeEventListener("data_slow", this.dataUpdateSlow);
+    document.removeEventListener("data_slow", this.dataUpdate);
     document.removeEventListener("state", this.stateUpdate);
-    document.removeEventListener("rt", this.dataUpdate);
   },
   mounted() {
     this.isEnabled = !this.collapsed;
 
     try {
-      document.removeEventListener("data_slow", this.dataUpdateSlow);
+      document.removeEventListener("data_slow", this.dataUpdate);
       document.removeEventListener("state", this.stateUpdate);
-      document.removeEventListener("rt", this.dataUpdate);
     } catch {}
 
-    document.addEventListener("data_slow", this.dataUpdateSlow);
-    document.addEventListener("rt", this.dataUpdate);
+    document.addEventListener("data_slow", this.dataUpdate);
     document.addEventListener("state", this.stateUpdate);
 
     this.initMonitor();
