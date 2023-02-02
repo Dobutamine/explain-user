@@ -129,7 +129,9 @@ export default {
         value.x = this.graphWidth - 0.2 * this.graphWidth;
         value.y = 10 + channel.value_label_font_size;
         if (channel.channel_no > 1) {
-          value.y = this.channel_height * (channel.channel_no - 1);
+          value.y =
+            this.channel_height * (channel.channel_no - 1) +
+            channel.value_label_font_size;
         }
         explain.watchModelPropertiesSlow([channel.value_prop1]);
         if (channel.value_prop2 != "") {
@@ -273,19 +275,21 @@ export default {
           channel.curve.moveTo(0, 300);
           channel.curve.lineStyle(2, channel.curve_color, 1);
           for (let i = 0; i < channel.curve_data.length; i += 1) {
-            channel.curve.lineTo(
-              i * step,
+            let y_co =
               channel.curve_y_max -
-                this.channel_height * 0.4 -
-                (channel.curve_data[i] - channel.curve_min) *
-                  channel.curve_factor
-            );
+              this.channel_height * 0.4 -
+              (channel.curve_data[i] - channel.curve_min) *
+                channel.curve_factor;
+            if (y_co < channel.curve_y_min) {
+              y_co = channel.curve_y_min;
+            }
+            channel.curve.lineTo(i * step, y_co);
           }
         });
       }
       this.graphDrawCounter += this.dataUpdateInterval;
       if (this.autoscale_counter > this.autoscale_interval) {
-        this.autoscale_interval = 5;
+        this.autoscale_interval = 3;
         this.autoscale_counter = 0;
         this.autoscale();
       }
