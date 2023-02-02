@@ -27,10 +27,16 @@
 <script>
 import { PIXI } from "../boot/pixi";
 import { explain } from "../boot/explain";
-import TimeChartComponent from "./charts/TimeChartComponent.vue";
+import { useConfigStore } from "src/stores/config";
 
 let canvasPatMon = null;
 export default {
+  setup() {
+    const config = useConfigStore();
+    return {
+      config,
+    };
+  },
   components: {},
   data() {
     return {
@@ -61,143 +67,6 @@ export default {
       channel_height: 100,
       autoscale_counter: 0,
       autoscale_interval: 2,
-      channelsConfig: [
-        {
-          channel_no: 1,
-          channel_grid: false,
-          channel_grid_color: 0xffffff,
-
-          channelLabel: "HR",
-          channelLabel_color: "lime",
-          channelLabel_font_size: 12,
-
-          valueLabel: "147",
-          valueLabel_color: "lime",
-          valueLabel_font_size: 48,
-          valueFactor: 1,
-          valueRounding: 0,
-          value_prop1: "Heart.HeartRate",
-          value_prop2: "",
-
-          curve_label: "II",
-          curve_color: "green",
-          curve_font_size: 16,
-          curve_prop: "Heart.EcgSignal",
-          curve_color: 0x32cd32,
-        },
-        {
-          channel_no: 2,
-          channel_grid: true,
-          channel_grid_color: 0xff00ff,
-          channelLabel: "SpO2(1)",
-          channelLabel_color: "magenta",
-          channelLabel_font_size: 12,
-
-          valueLabel: "99",
-          valueFactor: 100,
-          valueRounding: 0,
-          valueLabel_color: "magenta",
-          valueLabel_font_size: 48,
-          value_prop1: "AA.So2",
-          value_prop2: "",
-
-          curve_label: "Pleth(1)",
-          curve_color: "magenta",
-          curve_font_size: 16,
-          curve_prop: "AA.Pres",
-          curve_color: 0xff00ff,
-        },
-        // {
-        //   channel_no: 3,
-        //   channel_grid: true,
-        //   channel_grid_color: 0xff00ff,
-        //   channelLabel: "SpO2(2)",
-        //   channelLabel_color: "purple",
-        //   channelLabel_font_size: 12,
-
-        //   valueLabel: "97",
-        //   valueLabel_color: "purple",
-        //   valueLabel_font_size: 48,
-        //   valueLabel_prop1: "AD.So2",
-        //   valueLabel_prop2: "",
-
-        //   curve_label: "Pleth(2)",
-        //   curve_color: "purple",
-        //   curve_font_size: 16,
-        //   curve_prop: "AD.Pres",
-        //   curve_color: 0xff00ff,
-        // },
-        {
-          channel_no: 4,
-          channel_grid: true,
-          channel_grid_color: 0xff0000,
-          channelLabel: "Abp",
-          channelLabel_color: "red",
-          channelLabel_font_size: 12,
-
-          valueLabel: "60/40",
-          valueFactor: 1,
-          valueRounding: 0,
-          valueLabel_color: "red",
-          valueLabel_font_size: 48,
-          value_prop1: "AA.PresMax",
-          value_prop2: "AA.PresMin",
-
-          curve_label: "Pres",
-          curve_color: "red",
-          curve_font_size: 16,
-          curve_prop: "AA.Pres",
-          curve_color: 0xff0000,
-        },
-        {
-          channel_no: 5,
-          channel_grid: true,
-          channel_grid_color: 0xffffff,
-          channelLabel: "Resp",
-          channelLabel_color: "white",
-          channelLabel_font_size: 12,
-
-          valueLabel: "45",
-          valueFactor: 1,
-          valueRounding: 0,
-          valueLabel_color: "white",
-          valueLabel_font_size: 48,
-          value_prop1: "Breathing.RespRate",
-          value_prop2: "",
-
-          curve_label: "Resp",
-          curve_color: "white",
-          curve_font_size: 16,
-          curve_prop: "CHEST_L.Vol",
-          curve_color: 0xffffff,
-        },
-        // {
-        //   channel_no: 6,
-        //   channel_grid: true,
-        //   channel_grid_color: 0xffff00,
-        //   channelLabel: "EtCO2",
-        //   channelLabel_color: "yellow",
-        //   channelLabel_font_size: 12,
-
-        //   valueLabel: "4.5",
-        //   valueLabel_color: "yellow",
-        //   valueLabel_font_size: 48,
-        //   valueLabel_prop1: "",
-        //   valueLabel_prop2: "",
-
-        //   curve_label: "CO2",
-        //   curve_color: "yellow",
-        //   curve_font_size: 16,
-        //   curve_prop: "MechanicalVentilator.EtCo2",
-        //   curve_color: 0xff0000,
-        // },
-      ],
-      channel1Curve: null,
-      channel2Curve: null,
-      channel3Curve: null,
-      channel4Curve: null,
-      channel5Curve: null,
-      channel6Curve: null,
     };
   },
   methods: {
@@ -233,51 +102,45 @@ export default {
       this.channel_height = this.graphHeight / this.no_channels;
 
       // configure the channels
-      this.channelsConfig.forEach((channel) => {
-        // do the channel label
-        let channelLabelStyle = new PIXI.TextStyle({
-          fill: channel.channelLabel_color,
-          fontSize: channel.channelLabel_font_size,
-          fontFamily: "Arial",
-          strokeThickness: 0,
-        });
-        let channelLabel = new PIXI.Text(
-          channel.channelLabel,
-          channelLabelStyle
-        );
-        channelLabel.x = this.graphWidth - 0.2 * this.graphWidth;
-        channelLabel.y = 0;
-        if (channel.channel_no > 1) {
-          channelLabel.y =
-            (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
-        }
-        this.pixiApp.stage.addChild(channelLabel);
-
-        // do the label
+      this.config.patient_monitor.forEach((channel) => {
+        // add the value label
         let valueLabelStyle = new PIXI.TextStyle({
-          fill: channel.valueLabel_color,
-          fontSize: channel.valueLabel_font_size,
+          fill: channel.value_label_color,
+          fontSize: channel.value_label_font_size,
           fontFamily: "Arial",
           strokeThickness: 0,
         });
-        let valueLabel = new PIXI.Text(channel.valueLabel, valueLabelStyle);
+        let valueLabel = new PIXI.Text(channel.value_label, valueLabelStyle);
         valueLabel.x = this.graphWidth - 0.2 * this.graphWidth;
         valueLabel.y = 10;
         if (channel.channel_no > 1) {
-          valueLabel.y =
-            10 +
-            (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
+          valueLabel.y = this.channel_height * (channel.channel_no - 1);
+        }
+        this.pixiApp.stage.addChild(valueLabel);
+
+        // add the value
+        let valueStyle = new PIXI.TextStyle({
+          fill: channel.value_color,
+          fontSize: channel.value_font_size,
+          fontFamily: "Arial",
+          strokeThickness: 0,
+        });
+        let value = new PIXI.Text(channel.value, valueStyle);
+        value.x = this.graphWidth - 0.2 * this.graphWidth;
+        value.y = 10 + channel.value_label_font_size;
+        if (channel.channel_no > 1) {
+          value.y = this.channel_height * (channel.channel_no - 1);
         }
         explain.watchModelPropertiesSlow([channel.value_prop1]);
         if (channel.value_prop2 != "") {
           explain.watchModelPropertiesSlow([channel.value_prop2]);
         }
-        this.pixiApp.stage.addChild(valueLabel);
+        this.pixiApp.stage.addChild(value);
 
-        // do the curve label
+        // do curve label
         let curveLabelStyle = new PIXI.TextStyle({
-          fill: channel.curve_color,
-          fontSize: channel.curve_font_size,
+          fill: channel.curve_label_color,
+          fontSize: channel.curve_label_font_size,
           fontFamily: "Arial",
           strokeThickness: 0,
         });
@@ -289,13 +152,14 @@ export default {
             10 +
             (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
         }
+
         this.pixiApp.stage.addChild(curveLabel);
 
         // set the grid
         let grid = {};
-        if (channel.channel_grid) {
+        if (channel.grid) {
           grid = new PIXI.Graphics();
-          grid.lineStyle(1, channel.channel_grid_color, 0.2);
+          grid.lineStyle(1, parseInt(channel.grid_color, 16), 0.2);
           let y = 10;
           if (channel.channel_no > 1) {
             y =
@@ -322,11 +186,11 @@ export default {
         // store the channel
         this.channels.push({
           channel_no: channel.channel_no,
-          channelLabel: channelLabel,
           valueLabel: valueLabel,
-          valueFactor: channel.valueFactor,
-          valueRounding: channel.valueRounding,
           curveLabel: curveLabel,
+          value: value,
+          valueFactor: channel.value_factor,
+          valueRounding: channel.value_rounding,
           grid: grid,
           curve: curve,
           curve_min: 0,
@@ -336,7 +200,7 @@ export default {
           curve_y_min: 0,
           curve_y_max: 100,
           curve_prop: channel.curve_prop,
-          curve_color: channel.curve_color,
+          curve_color: parseInt(channel.curve_color, 16),
           value_prop1: channel.value_prop1,
           value_prop2: channel.value_prop2,
           curve_data: [],
@@ -358,7 +222,7 @@ export default {
               channel.valueRounding
             );
         }
-        channel.valueLabel.text = valueText;
+        channel.value.text = valueText;
       });
     },
     remap(value, from1, to1, from2, to2) {

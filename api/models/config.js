@@ -29,6 +29,9 @@ const configSchema = new mongoose.Schema({
   monitors: {
     type: Object,
   },
+  patient_monitor: {
+    type: Object,
+  },
   dateUpdated: {
     type: Date,
   },
@@ -50,6 +53,7 @@ function validateConfig(new_config) {
     groupers: Joi.object(),
     charts: Joi.object(),
     monitors: Joi.object(),
+    patient_monitor: Joi.object(),
   });
 
   return configSchema.validate(new_config);

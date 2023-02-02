@@ -35,6 +35,7 @@ router.post("/update_config", auth, async (req, res) => {
           "groupers",
           "charts",
           "monitors",
+          "patient_monitor",
         ])
       );
       // add the creation date
@@ -60,6 +61,7 @@ router.post("/update_config", auth, async (req, res) => {
       groupers: req.body.groupers,
       charts: req.body.charts,
       monitors: req.body.monitors,
+      patient_monitor: req.body.patient_monitor,
       dateUpdated: Date.now(),
     });
 

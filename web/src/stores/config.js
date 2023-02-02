@@ -13,6 +13,7 @@ export const useConfigStore = defineStore("config", {
     groupers: {},
     charts: {},
     monitors: {},
+    patient_monitor: [],
   }),
 
   getters: {},
@@ -29,6 +30,7 @@ export const useConfigStore = defineStore("config", {
         groupers: this.groupers,
         charts: this.charts,
         monitors: this.monitors,
+        patient_monitor: this.patient_monitor,
       };
     },
     async getConfig(
@@ -67,6 +69,7 @@ export const useConfigStore = defineStore("config", {
         this.groupers = data.groupers;
         this.charts = data.charts;
         this.monitors = data.monitors;
+        this.patient_monitor = data.patient_monitor;
         return true;
       } else {
         return false;
