@@ -9,11 +9,11 @@ export const useConfigStore = defineStore("config", {
     name: "",
     user: "",
     definition: "",
-    models: {},
     groupers: {},
     charts: {},
     monitors: {},
     patient_monitor: [],
+    trends_monitor: [],
   }),
 
   getters: {},
@@ -26,11 +26,11 @@ export const useConfigStore = defineStore("config", {
         name: this.name,
         user: this.user,
         definition: this.definition,
-        models: this.models,
         groupers: this.groupers,
         charts: this.charts,
         monitors: this.monitors,
         patient_monitor: this.patient_monitor,
+        trends_monitor: this.trends_monitor,
       };
     },
     async getConfig(
@@ -65,11 +65,11 @@ export const useConfigStore = defineStore("config", {
         this.user = data.user;
         this.definition = data.definition;
         this.apiUrl = data.apiUrl;
-        this.models = data.models;
         this.groupers = data.groupers;
         this.charts = data.charts;
         this.monitors = data.monitors;
         this.patient_monitor = data.patient_monitor;
+        this.trends_monitor = data.trends_monitor;
         return true;
       } else {
         return false;

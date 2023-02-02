@@ -96,6 +96,7 @@
           <q-tab-panels v-model="tab_right" keep-alive>
             <q-tab-panel name="monitor">
               <PatientMonitor></PatientMonitor>
+              <TrendsMonitor></TrendsMonitor>
             </q-tab-panel>
             <q-tab-panel name="numerics">
               <div v-for="(monitor, index) in monitors" :key="index">
@@ -141,6 +142,7 @@ import DiagramComponent from "src/components/DiagramComponent.vue";
 import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import PatientMonitor from "src/components/PatientMonitor.vue";
+import TrendsMonitor from "src/components/TrendsMonitor.vue";
 import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
 import { useGeneralStore } from "../stores/general";
@@ -157,6 +159,7 @@ export default {
     };
   },
   components: {
+    TrendsMonitor,
     PatientMonitor,
     ScriptComponentVue: ScriptsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,

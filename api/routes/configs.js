@@ -31,11 +31,11 @@ router.post("/update_config", auth, async (req, res) => {
           "engine_version",
           "engine_name",
           "definition",
-          "models",
           "groupers",
           "charts",
           "monitors",
           "patient_monitor",
+          "trends_monitor",
         ])
       );
       // add the creation date
@@ -57,10 +57,10 @@ router.post("/update_config", auth, async (req, res) => {
       user: req.body.user,
       name: req.body.name,
       definition: req.body.definition,
-      models: req.body.models,
       groupers: req.body.groupers,
       charts: req.body.charts,
       monitors: req.body.monitors,
+      trends_monitor: req.body.trends_monitor,
       patient_monitor: req.body.patient_monitor,
       dateUpdated: Date.now(),
     });

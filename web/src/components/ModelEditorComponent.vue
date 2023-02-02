@@ -290,7 +290,6 @@ export default {
       console.log(newModelState);
     },
     findModelProperties() {
-      console.log(explain.modelState);
       explain.getModelState();
       this.selectedModelItems.forEach((item) => {
         this.value = explain.modelState.Models[this.modelName][item.modelProp];

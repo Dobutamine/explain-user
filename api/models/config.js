@@ -17,9 +17,6 @@ const configSchema = new mongoose.Schema({
   definition: {
     type: String,
   },
-  models: {
-    type: Object,
-  },
   groupers: {
     type: Object,
   },
@@ -30,6 +27,9 @@ const configSchema = new mongoose.Schema({
     type: Object,
   },
   patient_monitor: {
+    type: Object,
+  },
+  trends_monitor: {
     type: Object,
   },
   dateUpdated: {
@@ -49,11 +49,11 @@ function validateConfig(new_config) {
     engine_version: Joi.number(),
     engine_name: Joi.string(),
     definition: Joi.string(),
-    models: Joi.object(),
     groupers: Joi.object(),
     charts: Joi.object(),
     monitors: Joi.object(),
     patient_monitor: Joi.object(),
+    trends_monitor: Joi.object(),
   });
 
   return configSchema.validate(new_config);
