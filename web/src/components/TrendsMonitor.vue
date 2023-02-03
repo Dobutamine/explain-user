@@ -6,18 +6,6 @@
     >
       TRENDS MONITOR
     </div>
-    <div class="row q-gutter-md text-overline justify-left">
-      <q-icon
-        name="fa-solid fa-network-wired"
-        class="q-ml-lg q-mt-sm q-mb-sm q-mr-lg"
-      ></q-icon>
-      1A-16
-      <q-icon
-        name="fa-solid fa-baby"
-        class="q-ml-lg q-mt-sm q-mb-sm q-mr-lg"
-      ></q-icon>
-      Explain
-    </div>
     <div class="stageTrends" :style="{ display: display }">
       <canvas id="stageTrends"></canvas>
     </div>
@@ -146,11 +134,11 @@ export default {
 
         // set the grid
         let gridLabelValue = channel.value_max;
-        let gridLabelStep = (channel.value_max - channel.value_min) / 4;
+        let gridLabelStep = (channel.value_max - channel.value_min) / 5;
         let grid = {};
         let gridLabelStyle = new PIXI.TextStyle({
           fill: channel.curve_label_color,
-          fontSize: 10,
+          fontSize: 12,
           fontFamily: "Arial",
           strokeThickness: 0,
         });
@@ -159,17 +147,16 @@ export default {
           grid.lineStyle(1, parseInt(channel.grid_color, 16), 0.2);
           let y = 0;
           if (channel.channel_no > 1) {
-            y =
-              (this.graphHeight / this.no_channels) * (channel.channel_no - 1);
+            y = this.channel_height * (channel.channel_no - 1);
           }
-          grid.moveTo(0, y);
-          grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
-          let gridLabel1 = new PIXI.Text(gridLabelValue, gridLabelStyle);
-          gridLabel1.x = 10;
-          gridLabel1.y = y;
-          this.pixiApp.stage.addChild(gridLabel1);
+          // grid.moveTo(0, y);
+          // grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
+          // let gridLabel1 = new PIXI.Text(gridLabelValue, gridLabelStyle);
+          // gridLabel1.x = 10;
+          // gridLabel1.y = y;
+          // this.pixiApp.stage.addChild(gridLabel1);
 
-          y = y + this.graphHeight / this.no_channels / 4;
+          y = y + this.channel_height / 5;
           grid.moveTo(0, y);
           grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
           gridLabelValue -= gridLabelStep;
@@ -181,7 +168,7 @@ export default {
           gridLabel2.y = y;
           this.pixiApp.stage.addChild(gridLabel2);
 
-          y = y + this.graphHeight / this.no_channels / 4;
+          y = y + this.channel_height / 5;
           grid.moveTo(0, y);
           grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
           gridLabelValue -= gridLabelStep;
@@ -193,7 +180,7 @@ export default {
           gridLabel3.y = y;
           this.pixiApp.stage.addChild(gridLabel3);
 
-          y = y + this.graphHeight / this.no_channels / 4;
+          y = y + this.channel_height / 5;
           grid.moveTo(0, y);
           grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
           gridLabelValue -= gridLabelStep;
@@ -202,10 +189,10 @@ export default {
           gridLabel4.y = y;
           this.pixiApp.stage.addChild(gridLabel4);
 
-          y = y + this.graphHeight / this.no_channels / 4;
+          y = y + this.channel_height / 5;
           grid.moveTo(0, y);
           grid.lineTo(this.graphWidth - 0.2 * this.graphWidth, y);
-          gridLabelValue = channel.value_min;
+          gridLabelValue -= gridLabelStep;
           let gridLabel5 = new PIXI.Text(gridLabelValue, gridLabelStyle);
           gridLabel5.x = 10;
           gridLabel5.y = y;
@@ -216,6 +203,10 @@ export default {
         // initialize the curve
         let curve = new PIXI.Graphics();
         this.pixiApp.stage.addChild(curve);
+        let curve2 = new PIXI.Graphics();
+        this.pixiApp.stage.addChild(curve2);
+        let connect = new PIXI.Graphics();
+        this.pixiApp.stage.addChild(connect);
 
         // store the channel
         this.channels.push({
@@ -226,6 +217,8 @@ export default {
           valueRounding: channel.value_rounding,
           grid: grid,
           curve: curve,
+          curve2: curve2,
+          connect: connect,
           curve_min: channel.value_min,
           curve_max: channel.value_max,
           curve_factor: 1,
@@ -236,6 +229,7 @@ export default {
           value_prop1: channel.value_prop1,
           value_prop2: channel.value_prop2,
           curve_data: [],
+          curve2_data: [],
         });
       });
     },
@@ -261,8 +255,15 @@ export default {
         channel.curve_data.push(
           this.currentData[channel.value_prop1] * channel.valueFactor
         );
+        if (channel.value_prop2 !== "")
+          channel.curve2_data.push(
+            this.currentData[channel.value_prop2] * channel.valueFactor
+          );
         if (channel.curve_data.length > ndp) {
           channel.curve_data.shift();
+        }
+        if (channel.curve2_data.length > ndp) {
+          channel.curve2_data.shift();
         }
       });
 
@@ -278,15 +279,30 @@ export default {
             (channel.curve_max - channel.curve_min);
 
           channel.curve.clear();
+          channel.curve2.clear();
+          channel.connect.clear();
           let first_y =
             channel.curve_y_max -
             (channel.curve_data[0] - channel.curve_min) * channel.curve_factor;
           if (first_y < channel.curve_y_min) {
             first_y = channel.curve_y_min;
           }
-
           channel.curve.moveTo(0, first_y);
+
+          if (channel.value_prop2 != "") {
+            let first_y2 =
+              channel.curve_y_max -
+              (channel.curve2_data[0] - channel.curve_min) *
+                channel.curve_factor;
+            if (first_y2 < channel.curve_y_min) {
+              first_y2 = channel.curve_y_min;
+            }
+            channel.curve2.moveTo(0, first_y2);
+          }
           channel.curve.lineStyle(2, channel.curve_color, 1);
+          channel.curve2.lineStyle(2, channel.curve_color, 1);
+          channel.connect.lineStyle(2, channel.curve_color, 0.1);
+
           for (let i = 0; i < channel.curve_data.length; i += 1) {
             let y_co =
               channel.curve_y_max -
@@ -295,8 +311,24 @@ export default {
             if (y_co < channel.curve_y_min) {
               y_co = channel.curve_y_min;
             }
-            channel.curve.lineTo(i * step, y_co);
+            if (channel.value_prop2 != "") {
+              let y_co2 =
+                channel.curve_y_max -
+                (channel.curve2_data[i] - channel.curve_min) *
+                  channel.curve_factor;
+              if (y_co < channel.curve_y_min) {
+                y_co = channel.curve_y_min;
+              }
+              channel.curve.lineTo(i * step, y_co);
+              channel.connect.moveTo(i * step, y_co);
+              channel.connect.lineTo(i * step, y_co2);
+              channel.curve2.lineTo(i * step, y_co2);
+            } else {
+              channel.curve.lineTo(i * step, y_co);
+            }
           }
+
+          // connector
         });
       }
       this.graphDrawCounter += this.dataUpdateInterval;

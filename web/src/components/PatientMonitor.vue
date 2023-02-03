@@ -6,18 +6,6 @@
     >
       PATIENT MONITOR
     </div>
-    <div class="row q-gutter-md text-overline justify-left">
-      <q-icon
-        name="fa-solid fa-network-wired"
-        class="q-ml-lg q-mt-sm q-mb-sm q-mr-lg"
-      ></q-icon>
-      1A-16
-      <q-icon
-        name="fa-solid fa-baby"
-        class="q-ml-lg q-mt-sm q-mb-sm q-mr-lg"
-      ></q-icon>
-      Explain
-    </div>
     <div class="stagePatMon" :style="{ display: display }">
       <canvas id="stagePatMon"></canvas>
     </div>
