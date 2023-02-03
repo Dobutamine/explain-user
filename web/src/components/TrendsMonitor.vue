@@ -237,101 +237,104 @@ export default {
     dataUpdate() {
       if (!this.isEnabled) return;
 
-      this.currentData =
-        explain.modelDataSlow[explain.modelDataSlow.length - 1];
-      // determine the number of x coordinates available for the graph, so we have maximum of that number of data points
+      for (let i = 0; i < explain.modelDataSlow.length; i++) {
+        this.currentData = explain.modelDataSlow[i];
+        // determine the number of x coordinates available for the graph, so we have maximum of that number of data points
 
-      // number x pixels available
-      let nox = this.graphWidth - 0.2 * this.graphWidth;
+        // number x pixels available
+        let nox = this.graphWidth - 0.2 * this.graphWidth;
 
-      // number of needed datapoints for the requested time frame
-      let ndp = this.dataWindowTime / this.dataUpdateInterval;
+        // number of needed datapoints for the requested time frame
+        let ndp = this.dataWindowTime / this.dataUpdateInterval;
 
-      // so we have nox pixels available for ndp number of datapoints
-      // calculate the number of pixels per datapoint
-      let step = nox / ndp;
+        // so we have nox pixels available for ndp number of datapoints
+        // calculate the number of pixels per datapoint
+        let step = nox / ndp;
 
-      this.channels.forEach((channel) => {
-        channel.curve_data.push(
-          this.currentData[channel.value_prop1] * channel.valueFactor
-        );
-        if (channel.value_prop2 !== "")
-          channel.curve2_data.push(
-            this.currentData[channel.value_prop2] * channel.valueFactor
-          );
-        if (channel.curve_data.length > ndp) {
-          channel.curve_data.shift();
-        }
-        if (channel.curve2_data.length > ndp) {
-          channel.curve2_data.shift();
-        }
-      });
-
-      // // now draw the datapoints, we have ndp data points available which is
-      if (this.graphDrawCounter > this.graphDrawInterval) {
-        this.graphDrawCounter = 0;
         this.channels.forEach((channel) => {
-          channel.curve_y_min = this.channel_height * (channel.channel_no - 1);
-          channel.curve_y_max = this.channel_height * channel.channel_no;
-
-          channel.curve_factor =
-            (channel.curve_y_max - channel.curve_y_min) /
-            (channel.curve_max - channel.curve_min);
-
-          channel.curve.clear();
-          channel.curve2.clear();
-          channel.connect.clear();
-          let first_y =
-            channel.curve_y_max -
-            (channel.curve_data[0] - channel.curve_min) * channel.curve_factor;
-          if (first_y < channel.curve_y_min) {
-            first_y = channel.curve_y_min;
+          channel.curve_data.push(
+            this.currentData[channel.value_prop1] * channel.valueFactor
+          );
+          if (channel.value_prop2 !== "")
+            channel.curve2_data.push(
+              this.currentData[channel.value_prop2] * channel.valueFactor
+            );
+          if (channel.curve_data.length > ndp) {
+            channel.curve_data.shift();
           }
-          channel.curve.moveTo(0, first_y);
-
-          if (channel.value_prop2 != "") {
-            let first_y2 =
-              channel.curve_y_max -
-              (channel.curve2_data[0] - channel.curve_min) *
-                channel.curve_factor;
-            if (first_y2 < channel.curve_y_min) {
-              first_y2 = channel.curve_y_min;
-            }
-            channel.curve2.moveTo(0, first_y2);
+          if (channel.curve2_data.length > ndp) {
+            channel.curve2_data.shift();
           }
-          channel.curve.lineStyle(2, channel.curve_color, 1);
-          channel.curve2.lineStyle(2, channel.curve_color, 1);
-          channel.connect.lineStyle(2, channel.curve_color, 0.1);
+        });
 
-          for (let i = 0; i < channel.curve_data.length; i += 1) {
-            let y_co =
+        // // now draw the datapoints, we have ndp data points available which is
+        if (this.graphDrawCounter > this.graphDrawInterval) {
+          this.graphDrawCounter = 0;
+          this.channels.forEach((channel) => {
+            channel.curve_y_min =
+              this.channel_height * (channel.channel_no - 1);
+            channel.curve_y_max = this.channel_height * channel.channel_no;
+
+            channel.curve_factor =
+              (channel.curve_y_max - channel.curve_y_min) /
+              (channel.curve_max - channel.curve_min);
+
+            channel.curve.clear();
+            channel.curve2.clear();
+            channel.connect.clear();
+            let first_y =
               channel.curve_y_max -
-              (channel.curve_data[i] - channel.curve_min) *
+              (channel.curve_data[0] - channel.curve_min) *
                 channel.curve_factor;
-            if (y_co < channel.curve_y_min) {
-              y_co = channel.curve_y_min;
+            if (first_y < channel.curve_y_min) {
+              first_y = channel.curve_y_min;
             }
+            channel.curve.moveTo(0, first_y);
+
             if (channel.value_prop2 != "") {
-              let y_co2 =
+              let first_y2 =
                 channel.curve_y_max -
-                (channel.curve2_data[i] - channel.curve_min) *
+                (channel.curve2_data[0] - channel.curve_min) *
+                  channel.curve_factor;
+              if (first_y2 < channel.curve_y_min) {
+                first_y2 = channel.curve_y_min;
+              }
+              channel.curve2.moveTo(0, first_y2);
+            }
+            channel.curve.lineStyle(2, channel.curve_color, 1);
+            channel.curve2.lineStyle(2, channel.curve_color, 1);
+            channel.connect.lineStyle(2, channel.curve_color, 0.1);
+
+            for (let i = 0; i < channel.curve_data.length; i += 1) {
+              let y_co =
+                channel.curve_y_max -
+                (channel.curve_data[i] - channel.curve_min) *
                   channel.curve_factor;
               if (y_co < channel.curve_y_min) {
                 y_co = channel.curve_y_min;
               }
-              channel.curve.lineTo(i * step, y_co);
-              channel.connect.moveTo(i * step, y_co);
-              channel.connect.lineTo(i * step, y_co2);
-              channel.curve2.lineTo(i * step, y_co2);
-            } else {
-              channel.curve.lineTo(i * step, y_co);
+              if (channel.value_prop2 != "") {
+                let y_co2 =
+                  channel.curve_y_max -
+                  (channel.curve2_data[i] - channel.curve_min) *
+                    channel.curve_factor;
+                if (y_co < channel.curve_y_min) {
+                  y_co = channel.curve_y_min;
+                }
+                channel.curve.lineTo(i * step, y_co);
+                channel.connect.moveTo(i * step, y_co);
+                channel.connect.lineTo(i * step, y_co2);
+                channel.curve2.lineTo(i * step, y_co2);
+              } else {
+                channel.curve.lineTo(i * step, y_co);
+              }
             }
-          }
 
-          // connector
-        });
+            // connector
+          });
+        }
+        this.graphDrawCounter += this.dataUpdateInterval;
       }
-      this.graphDrawCounter += this.dataUpdateInterval;
     },
     stateUpdate() {},
   },
