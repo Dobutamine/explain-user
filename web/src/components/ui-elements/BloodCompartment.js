@@ -1,4 +1,3 @@
-import { Tick3D, _themeLoaderDarkTurquoise } from "@arction/lcjs";
 import { PIXI } from "src/boot/pixi.js";
 
 export default class BloodCompartment {
@@ -25,6 +24,9 @@ export default class BloodCompartment {
   to2 = 7.4;
 
   edit_comp_event = null;
+  editingMode = 1;
+  prevX = 0;
+  prevyY = 0;
 
   constructor(pixiApp, key, label, models, layout, xCenter, yCenter, radius) {
     // store the parameters
@@ -124,22 +126,83 @@ export default class BloodCompartment {
     this.text.scale.set(scaleFont, scaleFont);
     this.sprite.tint = this.calculateColor(this.to2);
   }
+  setEditingMode(newMode) {
+    this.editingMode = newMode;
+  }
   onDragStart(e) {
     this.interactionData = e.data;
     this.sprite.alpha = 0.5;
     this.text.alpha = 0.5;
   }
   onDragMove(e) {
-    if (this.interactionData) {
-      this.sprite.x = this.interactionData.global.x;
-      this.sprite.y = this.interactionData.global.y;
-      this.text.x = this.sprite.x + this.layout.text.x;
-      this.text.y = this.sprite.y + this.layout.text.y;
-      this.layout.pos.x = this.sprite.x / this.xCenter;
-      this.layout.pos.y = this.sprite.y / this.yCenter;
-      this.calculateOnCircle(this.sprite.x, this.sprite.y);
-      // redraw the connector
-      this.redrawConnectors();
+    switch (this.editingMode) {
+      case 1: // moving
+        if (this.interactionData) {
+          this.sprite.x = this.interactionData.global.x;
+          this.sprite.y = this.interactionData.global.y;
+          this.text.x = this.sprite.x + this.layout.text.x;
+          this.text.y = this.sprite.y + this.layout.text.y;
+          this.layout.pos.x = this.sprite.x / this.xCenter;
+          this.layout.pos.y = this.sprite.y / this.yCenter;
+          this.calculateOnCircle(this.sprite.x, this.sprite.y);
+          // redraw the connector
+          this.redrawConnectors();
+        }
+        break;
+      case 2: // rotating
+        if (this.interactionData) {
+          if (this.interactionData.global.x > this.prevX) {
+            this.sprite.rotation += 0.05;
+            this.text.rotation += 0.05;
+          } else {
+            this.sprite.rotation -= 0.05;
+            this.text.rotation -= 0.05;
+          }
+          this.prevX = this.interactionData.global.x;
+        }
+        break;
+      case 3: // morphing
+        if (this.interactionData) {
+          if (this.interactionData.global.x > this.prevX) {
+            this.layout.scale.x += 0.01;
+            this.layout.scale.y -= 0.01;
+          } else {
+            this.layout.scale.x -= 0.01;
+            this.layout.scale.y += 0.01;
+          }
+          this.sprite.scale.set(
+            this.volume * this.layout.scale.x,
+            this.volume * this.layout.scale.y
+          );
+          let scaleFont = this.volume * this.layout.text.size;
+          if (scaleFont > 1.1) {
+            scaleFont = 1.1;
+          }
+          this.text.scale.set(scaleFont, scaleFont);
+          this.prevX = this.interactionData.global.x;
+        }
+        break;
+      case 4: // resizing
+        if (this.interactionData) {
+          if (this.interactionData.global.x > this.prevX) {
+            this.layout.scale.x += 0.1;
+            this.layout.scale.y += 0.1;
+          } else {
+            this.layout.scale.x -= 0.1;
+            this.layout.scale.y -= 0.1;
+          }
+          this.sprite.scale.set(
+            this.volume * this.layout.scale.x,
+            this.volume * this.layout.scale.y
+          );
+          let scaleFont = this.volume * this.layout.text.size;
+          if (scaleFont > 1.1) {
+            scaleFont = 1.1;
+          }
+          this.text.scale.set(scaleFont, scaleFont);
+          this.prevX = this.interactionData.global.x;
+        }
+        break;
     }
   }
   onDragEnd(e) {
@@ -182,7 +245,6 @@ export default class BloodCompartment {
     const _radius = Math.pow(_cubicRadius, 1.0 / 3.0);
     return _radius;
   }
-
   calculateColor(to2) {
     if (to2 > 7.6) {
       to2 = 7.6;
@@ -198,7 +260,6 @@ export default class BloodCompartment {
   remap(value, from1, to1, from2, to2) {
     return ((value - from1) / (to1 - from1)) * (to2 - from2) + from2;
   }
-
   rgbToHex(rgb) {
     let hex = Number(rgb).toString(16);
     if (hex.length < 2) {
@@ -206,7 +267,6 @@ export default class BloodCompartment {
     }
     return hex;
   }
-
   fullColorHex(r, g, b) {
     const red = this.rgbToHex(r);
     const green = this.rgbToHex(g);

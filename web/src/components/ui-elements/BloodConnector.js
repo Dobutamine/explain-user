@@ -78,6 +78,7 @@ export default class BloodConnector {
     this.dbcFrom.connectors[this.key] = this;
     this.dbcTo.connectors[this.key] = this;
   }
+  setEditingMode(newMode) {}
   onDragEnd(e) {
     document.dispatchEvent(this.edit_comp_event);
   }

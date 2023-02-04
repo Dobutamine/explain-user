@@ -150,6 +150,7 @@ export default class Shunt {
     this.path.on("touchend", (e) => this.onDragEnd(e));
     this.pixiApp.stage.addChild(this.path);
   }
+  setEditingMode(newMode) {}
   update(data) {
     this.xCenter = this.dbcFrom.xCenter;
     this.yCenter = this.dbcFrom.yCenter;

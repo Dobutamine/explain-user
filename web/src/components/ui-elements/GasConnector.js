@@ -178,6 +178,7 @@ export default class GasConnector {
     this.path.on("touchend", (e) => this.onDragEnd(e));
     this.pixiApp.stage.addChild(this.path);
   }
+  setEditingMode(newMode) {}
   update(data) {
     let direction = 0;
     this.xCenter = this.dbcFrom.xCenter;

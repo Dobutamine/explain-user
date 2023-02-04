@@ -454,7 +454,9 @@ export default {
       this.showPopUpSave = false;
     },
     changeEditingMode(e) {
-      console.log(this.editingSelection);
+      Object.values(this.diagramComponents).forEach((comp) => {
+        comp.setEditingMode(this.editingSelection);
+      });
     },
     statusUpdate() {
       if (explain.statusMessage.includes("realtime model started")) {
