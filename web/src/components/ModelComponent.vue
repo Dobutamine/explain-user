@@ -143,18 +143,45 @@ export default {
   methods: {
     cancelBuild() {},
     selectModel(modelName) {
-      this.editMode = 1;
+      // store the selected model name
+      this.selectedModelName = modelName;
+
+      // clear the selected model type
+      this.selectedModelType = "";
+
       // we now have to build an array of the selected model props
       this.selectedModelItems = [];
-      // find the
 
-      this.selectedModelName = modelName;
+      // set the edit mode to 1 signaling an existing model
+      this.editMode = 1;
+
+      // find the model type to extract the inputs
+      let modeltype = explain.modelState.Models[modelName].ModelType;
+      Object.entries(this.engine.core_models[modeltype].inputs).forEach(
+        ([name, input]) => {
+          let modelObject = { ...input };
+          modelObject["name"] = name;
+          // find the current value
+          modelObject["current_value"] =
+            explain.modelState.Models[modelName][name];
+          this.selectedModelItems.push(modelObject);
+        }
+      );
     },
     selectModelType(modeltype) {
+      // clear the model name as this is a new model
+      this.selectedModelName = "";
+
+      // store the selected type
+      this.selectedModelType = modeltype;
+
+      // we now have to build an array of the modeltype props
       this.selectedModelItems = [];
-      // search the properties needed for this modeltype in the uiconfig
+
+      // set the edit mode to 0 signaling a new model
       this.editMode = 0;
-      // we now have to build an array pf the selected modeltype inputs
+
+      // we now have to build an array of the selected modeltype inputs
       Object.entries(this.engine.core_models[modeltype].inputs).forEach(
         ([name, input]) => {
           let modelObject = input;
@@ -163,10 +190,8 @@ export default {
           this.selectedModelItems.push(modelObject);
         }
       );
-      console.log(this.selectedModelItems);
-      // this.selectedModelItems = this.engine.core_models[modeltype].inputs;
-      // this.selectedModelType = modeltype;
     },
+
     removeAllProps() {},
     buildModelItemTree() {
       // reset all lists

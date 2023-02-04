@@ -19,6 +19,17 @@ import { useConfigStore } from "src/stores/config";
 import { useDefinitionStore } from "src/stores/definition";
 import { useEngineStore } from "src/stores/engine";
 export default {
+  props: {
+    name: String,
+    unit: String,
+    default: String,
+    value: String,
+  },
+  watch: {
+    value(nv, ov) {
+      this.newValue = nv;
+    },
+  },
   setup() {
     const uiConfig = useConfigStore();
     const definition = useDefinitionStore();
@@ -29,13 +40,7 @@ export default {
       engine,
     };
   },
-  props: {
-    name: String,
-    unit: String,
-    default: String,
-    value: String,
-  },
-  watch: {},
+
   data() {
     return {
       title: "",
@@ -43,7 +48,7 @@ export default {
       convertedUnit: "",
       conversionFactor: 1,
       roundingFactor: 2,
-      newValue: 0.0,
+      newValue: "",
       unitClass: "bg-indigo-10 col-9",
     };
   },
@@ -75,7 +80,7 @@ export default {
     // get all the options
     this.getOptions(searchList);
     // no unit to display
-    this.convertedUnit = "";
+    //this.convertedUnit = "";
     // set the current value
     this.newValue = this.value;
   },

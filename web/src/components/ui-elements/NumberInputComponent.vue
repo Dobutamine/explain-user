@@ -21,7 +21,11 @@ export default {
     default: Number,
     value: Number,
   },
-  watch: {},
+  watch: {
+    value(nv, ov) {
+      this.newValue = nv;
+    },
+  },
   data() {
     return {
       title: "",

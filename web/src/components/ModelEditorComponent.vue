@@ -21,7 +21,7 @@
             :name="selectedModelItem.name"
             :default="selectedModelItem.default"
             :unit="selectedModelItem.unit"
-            :value="selectedModelItem.value"
+            :value="selectedModelItem.current_value"
             @propupdate="propUpdate"
           >
           </NumberInputComponentVue>
@@ -31,10 +31,20 @@
             :name="selectedModelItem.name"
             :default="selectedModelItem.default"
             :unit="selectedModelItem.unit"
-            :value="selectedModelItem.value"
+            :value="selectedModelItem.current_value"
             @propupdate="propUpdate"
           >
           </ListInputComponentVue>
+        </div>
+        <div v-if="selectedModelItem.type == 'Array'">
+          <MultipleListInputComponentVue
+            :name="selectedModelItem.name"
+            :default="selectedModelItem.default"
+            :unit="selectedModelItem.unit"
+            :value="selectedModelItem.current_value"
+            @propupdate="propUpdate"
+          >
+          </MultipleListInputComponentVue>
         </div>
       </div>
     </div>
@@ -109,7 +119,7 @@ export default {
     };
   },
   components: {
-    // MultipleListInputComponentVue,
+    MultipleListInputComponentVue,
     // ListInputComponentVue,
     NumberInputComponentVue,
     ListInputComponentVue,
@@ -123,8 +133,12 @@ export default {
   },
   watch: {
     modelName(nv, ov) {
-      this.newModelName = nv;
-      this.findModelProperties();
+      if (this.editMode === 1) {
+        this.newModelName = nv;
+        this.findModelProperties();
+      } else {
+        this.newModelName = "";
+      }
     },
   },
   data() {
