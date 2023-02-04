@@ -171,11 +171,11 @@ export default class BloodCompartment {
       case 3: // morphing
         if (this.interactionData) {
           if (this.interactionData.global.x > this.prevX) {
-            this.layout.scale.x += 0.01;
-            this.layout.scale.y -= 0.01;
+            this.layout.scale.x += 0.05;
+            this.layout.scale.y -= 0.05;
           } else {
-            this.layout.scale.x -= 0.01;
-            this.layout.scale.y += 0.01;
+            this.layout.scale.x -= 0.05;
+            this.layout.scale.y += 0.05;
           }
           this.sprite.scale.set(
             this.volume * this.layout.scale.x,
