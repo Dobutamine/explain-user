@@ -511,6 +511,15 @@ export default {
       document.removeEventListener("status", this.statusUpdate);
     } catch {}
     document.addEventListener("status", this.statusUpdate);
+
+    this.$bus.on("stop_rt", () => {
+      explain.stop();
+      this.rtState = false;
+      this.butColor = "white";
+      this.butIcon = "fa-solid fa-play";
+      this.butCaption = "PLAY";
+      explain.getModelState();
+    });
   },
 };
 </script>

@@ -694,6 +694,8 @@ export default {
         this.selected_sec_prop_name1;
     },
     selectPrimProp1(selection) {
+      // stop the realtime model
+      this.$bus.emit("stop_rt");
       // store the current selection
       this.uiConfig.charts[this.id].selectedPrimProp1 =
         this.selected_prim_prop_name1;
@@ -736,6 +738,8 @@ export default {
         this.selected_sec_prop_name2;
     },
     selectPrimProp2(selection) {
+      // stop the realtime model
+      this.$bus.emit("stop_rt");
       // store the current selection
       this.uiConfig.charts[this.id].selectedPrimProp2 =
         this.selected_prim_prop_name2;
@@ -778,6 +782,8 @@ export default {
         this.selected_sec_prop_name2;
     },
     selectPrimProp3(selection) {
+      // stop the realtime model
+      this.$bus.emit("stop_rt");
       // store the current selection
       this.uiConfig.charts[this.id].selectedPrimProp3 =
         this.selected_prim_prop_name3;

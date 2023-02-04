@@ -235,8 +235,6 @@ export default {
     },
 
     dataUpdate() {
-      if (!this.isEnabled) return;
-
       for (let i = 0; i < explain.modelDataSlow.length; i++) {
         this.currentData = explain.modelDataSlow[i];
         // determine the number of x coordinates available for the graph, so we have maximum of that number of data points
@@ -333,7 +331,9 @@ export default {
             // connector
           });
         }
-        this.graphDrawCounter += this.dataUpdateInterval;
+        if (this.isEnabled) {
+          this.graphDrawCounter += this.dataUpdateInterval;
+        }
       }
     },
     stateUpdate() {},
@@ -354,6 +354,15 @@ export default {
     document.addEventListener("state", this.stateUpdate);
 
     this.initMonitor();
+
+    this.$bus.on("monitors_off", () => {
+      this.isEnabled = false;
+      console.log("monitors switch off");
+    });
+    this.$bus.on("monitors_on", () => {
+      this.isEnabled = true;
+      console.log("monitors switch on");
+    });
   },
 };
 </script>

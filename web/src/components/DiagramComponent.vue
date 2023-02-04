@@ -411,6 +411,7 @@ export default {
       this.showPopUpServer = false;
     },
     loadDiagramFromServer() {
+      this.$bus.emit("stop_rt");
       this.diagram.getDiagram(
         this.general.apiUrl,
         this.selectedDiagramOnServer,

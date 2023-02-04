@@ -43,7 +43,6 @@
             <q-tab name="scripts" label="Scripts" />
             <q-tab name="charts" label="Charts" />
             <q-tab name="diagram" label="Diagram" />
-            <q-tab name="trends" label="Trends" />
           </q-tabs>
 
           <q-separator />
@@ -87,6 +86,7 @@
             indicator-color="primary"
             align="justify"
             narrow-indicator
+            @update:model-value="tabRightChanged"
           >
             <q-tab name="monitor" label="monitor" />
             <q-tab name="numerics" label="numerics" />
@@ -98,6 +98,7 @@
               <PatientMonitor></PatientMonitor>
               <TrendsMonitor></TrendsMonitor>
             </q-tab-panel>
+
             <q-tab-panel name="numerics">
               <div v-for="(monitor, index) in monitors" :key="index">
                 <MonitorComponentVue
@@ -179,7 +180,16 @@ export default {
       models: [],
     };
   },
-  methods: {},
+  methods: {
+    tabRightChanged() {
+      console.log(this.tab_right);
+      if (this.tab_right === "monitor") {
+        this.$bus.emit("monitors_on");
+      } else {
+        this.$bus.emit("monitors_off");
+      }
+    },
+  },
   mounted() {
     this.$q.dark.set(true);
     if (!this.user.loggedIn) {

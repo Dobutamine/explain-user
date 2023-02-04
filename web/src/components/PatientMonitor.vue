@@ -55,6 +55,7 @@ export default {
       channel_height: 100,
       autoscale_counter: 0,
       autoscale_interval: 2,
+      first_run: true,
     };
   },
   methods: {
@@ -219,6 +220,7 @@ export default {
       return ((value - from1) / (to1 - from1)) * (to2 - from2) + from2;
     },
     autoscale() {
+      this.first_run = false;
       this.channels.forEach((channel) => {
         channel.curve_max = Math.max.apply(null, channel.curve_data);
         channel.curve_min = Math.min.apply(null, channel.curve_data);
@@ -275,7 +277,10 @@ export default {
           }
         });
       }
-      this.graphDrawCounter += this.dataUpdateInterval;
+      if (!this.first_run) {
+        this.graphDrawCounter += this.dataUpdateInterval;
+      }
+
       if (this.autoscale_counter > this.autoscale_interval) {
         this.autoscale_interval = 3;
         this.autoscale_counter = 0;
@@ -304,6 +309,13 @@ export default {
     document.addEventListener("state", this.stateUpdate);
 
     this.initMonitor();
+
+    this.$bus.on("monitors_off", () => {
+      this.isEnabled = false;
+    });
+    this.$bus.on("monitors_on", () => {
+      this.isEnabled = true;
+    });
   },
 };
 </script>
