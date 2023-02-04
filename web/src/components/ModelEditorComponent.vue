@@ -1,5 +1,8 @@
 <template>
-  <q-card class="q-ma-sm">
+  <q-card
+    class="q-ma-sm q-pa-sm"
+    :style="{ 'font-size': '12px', width: '100%' }"
+  >
     <div>
       <q-input
         v-if="selectedModelItems.length > 0"
@@ -7,65 +10,31 @@
         dense
         v-model="newModelName"
         label="model name"
-        :style="{ 'font-size': '12px', width: '100%' }"
       />
       <div
+        class="q-col-gutter-none"
         v-for="(selectedModelItem, index) in selectedModelItems"
         :key="index"
       >
-        <div v-if="selectedModelItem.typeProp == 'numeric'" class="row q-mt-sm">
+        <div v-if="selectedModelItem.type == 'Number'">
           <NumberInputComponentVue
-            :modelName="newModelName"
-            :caption="selectedModelItem.caption"
-            :modelProp="selectedModelItem.modelProp"
+            :name="selectedModelItem.name"
+            :default="selectedModelItem.default"
             :unit="selectedModelItem.unit"
-            :min="selectedModelItem.min"
-            :step="selectedModelItem.step"
             :value="selectedModelItem.value"
-            :initValue="selectedModelItem.value"
-            :displayFactor="selectedModelItem.displayFactor"
-            :displayRounding="selectedModelItem.displayRounding"
             @propupdate="propUpdate"
           >
           </NumberInputComponentVue>
         </div>
-        <div v-if="selectedModelItem.typeProp == 'boolean'" class="row q-mt-sm">
-          <BooleanInputComponentVue
-            :caption="selectedModelItem.caption"
-            :modelName="newModelName"
-            :modelProp="selectedModelItem.modelProp"
-            :value="selectedModelItem.value"
-            :initValue="selectedModelItem.value"
-            @propupdate="propUpdate"
-          >
-          </BooleanInputComponentVue>
-        </div>
-        <div v-if="selectedModelItem.typeProp == 'list'" class="row q-mt-sm">
+        <div v-if="selectedModelItem.type == 'String'">
           <ListInputComponentVue
-            :caption="selectedModelItem.caption"
-            :modelName="newModelName"
-            :modelProp="selectedModelItem.modelProp"
-            :options="selectedModelItem.optionalModels"
+            :name="selectedModelItem.name"
+            :default="selectedModelItem.default"
+            :unit="selectedModelItem.unit"
             :value="selectedModelItem.value"
-            :initValue="selectedModelItem.value"
             @propupdate="propUpdate"
           >
           </ListInputComponentVue>
-        </div>
-        <div
-          v-if="selectedModelItem.typeProp == 'multilist'"
-          class="row q-mt-sm"
-        >
-          <MultipleListInputComponentVue
-            :caption="selectedModelItem.caption"
-            :modelName="newModelName"
-            :modelProp="selectedModelItem.modelProp"
-            :options="selectedModelItem.optionalModels"
-            :value="selectedModelItem.value"
-            :initValue="selectedModelItem.value"
-            @propupdate="propUpdate"
-          >
-          </MultipleListInputComponentVue>
         </div>
       </div>
     </div>
@@ -140,14 +109,16 @@ export default {
     };
   },
   components: {
-    MultipleListInputComponentVue,
-    ListInputComponentVue,
+    // MultipleListInputComponentVue,
+    // ListInputComponentVue,
     NumberInputComponentVue,
-    BooleanInputComponentVue,
+    ListInputComponentVue,
+    // BooleanInputComponentVue,
   },
   props: {
-    modelName: String,
     selectedModelItems: Array,
+    modelType: String,
+    modelName: String,
     editMode: Number, // 0 is new, 1 = existing
   },
   watch: {
@@ -166,7 +137,7 @@ export default {
   },
   mounted() {
     // get the model state
-    explain.getModelState();
+    // explain.getModelState();
   },
   methods: {
     propUpdate(modelName, propName, propValue) {

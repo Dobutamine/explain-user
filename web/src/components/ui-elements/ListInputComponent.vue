@@ -1,94 +1,83 @@
 <template>
-  <q-card bordered dark :style="{ width: '100%' }">
-    <div class="row q-pa-sm" :style="{ width: '100%' }">
-      <div class="row" :style="{ 'font-size': '12px', width: '100%' }">
-        <div class="col q-mr-xs text-left text-bold">
-          {{ modelName }} {{ caption }}
-        </div>
-      </div>
-      <q-select
-        class="col-9"
-        label-color="grey-4"
-        v-model="currentSelection"
-        :options="listOptions"
-        hide-bottom-space
-        dense
-        :readonly="locked"
-        style="font-size: 12px"
-        @update:model-value="updateParent"
-      />
-      <q-btn
-        class="q-ma-sm col"
-        color="grey-9"
-        outline
-        size="xs"
-        dense
-        icon="fa-solid fa-delete-left"
-        @click="deleteMe"
-      ></q-btn>
-    </div>
-  </q-card>
+  <q-select
+    class="q-pa-xs"
+    v-model="newValue"
+    square
+    :label="name + ' ' + convertedUnit"
+    hide-hint
+    :options="options"
+    dense
+    dark
+    stack-label
+    @update:model-value="updateParent"
+  />
 </template>
 
 <script>
 import { explain } from "src/boot/explain";
-
+import { useConfigStore } from "src/stores/config";
+import { useDefinitionStore } from "src/stores/definition";
+import { useEngineStore } from "src/stores/engine";
 export default {
+  setup() {
+    const uiConfig = useConfigStore();
+    const definition = useDefinitionStore();
+    const engine = useEngineStore();
+    return {
+      uiConfig,
+      definition,
+      engine,
+    };
+  },
   props: {
-    caption: String,
-    modelName: String,
-    modelProp: String,
+    name: String,
+    unit: String,
+    default: String,
     value: String,
-    options: Array,
-    locked: Boolean,
   },
-  watch: {
-    options(no, oo) {
-      this.fillSelectors();
-    },
-    value(nv, ov) {
-      this.currentSelection = nv;
-    },
-  },
+  watch: {},
   data() {
     return {
       title: "",
-      fontSize: "8px",
-      unitClass: "row bg-indigo-10",
-      currentSelection: "",
-      listOptions: [],
+      options: [],
+      convertedUnit: "",
+      conversionFactor: 1,
+      roundingFactor: 2,
+      newValue: 0.0,
+      unitClass: "bg-indigo-10 col-9",
     };
   },
   methods: {
     deleteMe() {
-      this.$emit("propdelete", this.modelName, this.modelProp);
+      //this.$emit("propdelete", this.modelName, this.modelProp);
     },
     updateParent() {
-      this.$emit(
-        "propupdate",
-        this.modelName,
-        this.modelProp,
-        this.currentSelection
-      );
+      // this.$emit(
+      //   "propupdate",
+      //   this.modelName,
+      //   this.modelProp,
+      //   parseFloat(this.newValue) / this.displayFactor
+      // );
     },
-    fillSelectors() {
-      // we now have to find all the optionals
-      for (let model in explain.modelState.Models) {
-        if (this.options.includes(explain.modelState.Models[model].ModelType)) {
-          this.listOptions.push(model);
+    getOptions(searchList) {
+      this.options = [];
+      // find all models of this type
+      Object.entries(explain.modelState.Models).forEach(([name, model]) => {
+        if (searchList.includes(model.ModelType)) {
+          this.options.push(name);
         }
-      }
-      // now find the current value
-      try {
-        this.currentSelection =
-          explain.modelState.Models[this.modelName][this.modelProp];
-      } catch {
-        this.currentSelection = "";
-      }
+      });
     },
   },
   mounted() {
-    this.fillSelectors();
+    // split the unit
+    let searchList = this.unit.split("|");
+    // get all the options
+    this.getOptions(searchList);
+    // no unit to display
+    this.convertedUnit = "";
+    // set the current value
+    this.newValue = this.value;
   },
 };
 </script>

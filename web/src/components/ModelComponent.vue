@@ -37,7 +37,7 @@
         <q-btn color="primary" class="col q-mr-sm" label="add" dark size="sm">
           <q-menu dark>
             <q-list dense>
-              <div v-for="(modelType, index) in modelTypes" :key="index">
+              <div v-for="(modelType, index) in modelTypeNames" :key="index">
                 <q-item clickable dense>
                   <q-item-section
                     clickable
@@ -77,7 +77,7 @@
         <q-btn color="negative" class="col" label="delete" dark size="sm">
           <q-menu dark>
             <q-list dense>
-              <div v-for="(modelType, index) in modelTypes" :key="index">
+              <div v-for="(modelType, index) in modelTypeNames" :key="index">
                 <q-item clickable dense>
                   <q-item-section
                     clickable
@@ -93,13 +93,14 @@
         </q-btn>
       </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
-        <BuildPropEditComponent
-          :modelName="selectedModelName"
+        <ModelEditorComponent
           :selectedModelItems="selectedModelItems"
+          :modelName="selectedModelName"
+          :modelType="selectedModelType"
           :editMode="editMode"
           @cancelbuild="cancelBuild"
         >
-        </BuildPropEditComponent>
+        </ModelEditorComponent>
       </div>
     </div>
   </q-card>
@@ -110,16 +111,19 @@ import { explain } from "../boot/explain";
 import ModelEditorComponent from "./ModelEditorComponent.vue";
 import { useConfigStore } from "src/stores/config";
 import { useDefinitionStore } from "src/stores/definition";
+import { useEngineStore } from "src/stores/engine";
 export default {
   components: {
-    BuildPropEditComponent: ModelEditorComponent,
+    ModelEditorComponent,
   },
   setup() {
     const uiConfig = useConfigStore();
     const definition = useDefinitionStore();
+    const engine = useEngineStore();
     return {
       uiConfig,
       definition,
+      engine,
     };
   },
   data() {
@@ -128,69 +132,57 @@ export default {
       title: "MODEL EDITOR",
       collapsed: false,
       modelsTree: {},
-      selectedModelType: [],
+      selectedModelType: "",
       selectedModelItems: [],
       editMode: 0,
-      modelTypes: [],
+      modelTypeNames: [],
       modelNames: [],
       selectedModelName: "",
     };
   },
   methods: {
-    cancelBuild() {
-      this.selectedModelItems = [];
-    },
+    cancelBuild() {},
     selectModel(modelName) {
-      // find the properties of the model
-      let modelType = explain.modelState.Models[modelName].ModelType;
-      // store the model name
-      this.selectedModelName = modelName;
-      // search the properties needed for this modeltype in the uiconfig
       this.editMode = 1;
+      // we now have to build an array of the selected model props
       this.selectedModelItems = [];
-      this.selectedModelItems = this.uiConfig.models[modelType].properties;
+      // find the
+
+      this.selectedModelName = modelName;
     },
     selectModelType(modeltype) {
+      this.selectedModelItems = [];
       // search the properties needed for this modeltype in the uiconfig
       this.editMode = 0;
-      this.selectedModelName = "";
-      this.selectedModelItems = [];
-      this.selectedModelItems = this.uiConfig.models[modeltype].properties;
+      // we now have to build an array pf the selected modeltype inputs
+      Object.entries(this.engine.core_models[modeltype].inputs).forEach(
+        ([name, input]) => {
+          let modelObject = input;
+          modelObject["name"] = name;
+          modelObject["value"] = input.default;
+          this.selectedModelItems.push(modelObject);
+        }
+      );
+      console.log(this.selectedModelItems);
+      // this.selectedModelItems = this.engine.core_models[modeltype].inputs;
+      // this.selectedModelType = modeltype;
     },
-    removeAllProps() {
-      // this.selectedModelItems = [];
-    },
+    removeAllProps() {},
     buildModelItemTree() {
-      // build the grouperItem tree from the ui store
-      this.modelsTree = {};
+      // reset all lists
+      this.modelTypes = [];
       this.modelNames = [];
-      // // first find all models
-      // for (let model in explain.modelState.Models) {
-      //   this.modelNames.push(model);
-      //   let modelType = explain.modelState.Models[model].ModelType;
-      //   let props = [];
-      //   if (!this.modelTypes.includes(modelType)) {
-      //     this.modelTypes.push(modelType);
-      //   }
-      //   if (this.uiConfig.models[modelType]) {
-      //     for (let prop in this.uiConfig.models[modelType].properties) {
-      //       let propName =
-      //         this.uiConfig.models[modelType].properties[prop].modelProp;
-      //       let propSettings = this.uiConfig.models[modelType].properties[prop];
-      //       props.push({
-      //         propName: propName,
-      //         propSettings: propSettings,
-      //       });
-      //     }
-
-      //     this.modelsTree[model] = {
-      //       model: model,
-      //       modelType: modelType,
-      //       props: props,
-      //       value: "",
-      //     };
-      //   }
-      // }
+      // find all model types and model names
+      for (let model in explain.modelState.Models) {
+        // push the model instance name to the model list
+        this.modelNames.push(model);
+        // find the model type
+        let modelType = explain.modelState.Models[model].ModelType;
+        // if not already in the list push this modeltype name to the list
+        if (!this.modelTypeNames.includes(modelType)) {
+          this.modelTypeNames.push(modelType);
+        }
+      }
     },
   },
   beforeUnmount() {

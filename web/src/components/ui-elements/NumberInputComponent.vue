@@ -1,81 +1,71 @@
 <template>
-  <q-card bordered dark :style="{ width: '100%' }">
-    <div class="row q-pa-sm" :style="{ width: '100%' }">
-      <div class="row" :style="{ 'font-size': '12px', width: '100%' }">
-        <div class="col q-mr-xs text-left text-bold">
-          {{ modelName }} {{ caption }} ({{ unit }})
-        </div>
-      </div>
-      <q-input
-        class="col-9"
-        v-model="newValue"
-        square
-        hide-hint
-        type="number"
-        :min="min"
-        :step="step"
-        dense
-        dark
-        stack-label
-        @update:model-value="updateParent"
-      />
-      <q-btn
-        class="q-ma-sm col"
-        color="grey-9"
-        outline
-        size="xs"
-        dense
-        icon="fa-solid fa-delete-left"
-        @click="deleteMe"
-      ></q-btn>
-    </div>
-  </q-card>
+  <q-input
+    class="q-pa-xs"
+    v-model="newValue"
+    square
+    :label="name + ' ' + convertedUnit"
+    hide-hint
+    type="number"
+    dense
+    dark
+    stack-label
+    @update:model-value="updateParent"
+  />
 </template>
 
 <script>
 export default {
   props: {
-    modelName: String,
-    caption: String,
-    modelProp: String,
-    value: Number,
-    initValue: Number,
+    name: String,
     unit: String,
-    min: Number,
-    step: Number,
-    displayFactor: Number,
-    displayRounding: Number,
-    locked: Boolean,
+    default: Number,
+    value: Number,
   },
-  watch: {
-    value(nv, ov) {
-      this.newValue = (nv * this.displayFactor).toFixed(this.displayRounding);
-    },
-  },
+  watch: {},
   data() {
     return {
       title: "",
+      convertedUnit: "",
+      conversionFactor: 1,
+      roundingFactor: 2,
       newValue: 0.0,
       unitClass: "bg-indigo-10 col-9",
     };
   },
   methods: {
     deleteMe() {
-      this.$emit("propdelete", this.modelName, this.modelProp);
+      //this.$emit("propdelete", this.modelName, this.modelProp);
     },
     updateParent() {
-      this.$emit(
-        "propupdate",
-        this.modelName,
-        this.modelProp,
-        parseFloat(this.newValue) / this.displayFactor
-      );
+      // this.$emit(
+      //   "propupdate",
+      //   this.modelName,
+      //   this.modelProp,
+      //   parseFloat(this.newValue) / this.displayFactor
+      // );
     },
   },
   mounted() {
-    this.newValue = (this.value * this.displayFactor).toFixed(
-      this.displayRounding
-    );
+    switch (this.unit) {
+      case "":
+        this.convertedUnit = "";
+        break;
+      case "l":
+        this.convertedUnit = "(mL)";
+        this.conversionFactor = 1000;
+        break;
+      case "mmHg/l":
+        this.convertedUnit = "(mmHg/mL)";
+        this.conversionFactor = 0.001;
+        break;
+      case "mmHg/l*s":
+        this.convertedUnit = "(mmHg/mL*s)";
+        this.conversionFactor = 0.001;
+        break;
+      default:
+        this.convertedUnit = "(" + this.unit + ")";
+    }
+    this.newValue = this.value * this.conversionFactor;
   },
 };
 </script>
