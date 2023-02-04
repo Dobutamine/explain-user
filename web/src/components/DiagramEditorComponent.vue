@@ -386,6 +386,7 @@ export default {
       compType: "",
       compModels: [],
       compLayoutType: true,
+      compRotation: 0,
       compLayoutX: 1,
       compLayoutY: 1,
       compMorphX: 1,
@@ -446,6 +447,7 @@ export default {
                 x: parseFloat(this.compScaleX),
                 y: parseFloat(this.compScaleY),
               },
+              rotation: parseFloat(this.compRotation),
               text: {
                 x: parseFloat(this.compTextX),
                 y: parseFloat(this.compTextY),
@@ -479,6 +481,7 @@ export default {
                 x: parseFloat(this.compScaleX),
                 y: parseFloat(this.compScaleY),
               },
+              rotation: parseFloat(this.compRotation),
               text: {
                 x: parseFloat(this.compTextX),
                 y: parseFloat(this.compTextY),
@@ -512,6 +515,7 @@ export default {
                 x: parseFloat(this.compScaleX),
                 y: parseFloat(this.compScaleY),
               },
+              rotation: parseFloat(this.compRotation),
               text: {
                 x: parseFloat(this.compTextX),
                 y: parseFloat(this.compTextY),
@@ -579,6 +583,7 @@ export default {
                 x: parseFloat(this.compScaleX),
                 y: parseFloat(this.compScaleY),
               },
+              rotation: parseFloat(this.compRotation),
               text: {
                 x: parseFloat(this.compTextX),
                 y: parseFloat(this.compTextY),
@@ -685,6 +690,9 @@ export default {
           this.compTextY = parseFloat(
             this.selectedDiagramComponent.layout.text.y.toFixed(2)
           );
+          this.compRotation = parseFloat(
+            this.selectedDiagramComponent.layout.rotation.toFixed(2)
+          );
           this.compTextSize = parseFloat(
             this.selectedDiagramComponent.layout.text.size.toFixed(2)
           );
@@ -729,6 +737,9 @@ export default {
           this.compTextY = parseFloat(
             this.selectedDiagramComponent.layout.text.y.toFixed(2)
           );
+          this.compRotation = parseFloat(
+            this.selectedDiagramComponent.layout.rotation.toFixed(2)
+          );
           this.compTextSize = parseFloat(
             this.selectedDiagramComponent.layout.text.size.toFixed(2)
           );
@@ -772,6 +783,9 @@ export default {
           );
           this.compTextY = parseFloat(
             this.selectedDiagramComponent.layout.text.y.toFixed(2)
+          );
+          this.compRotation = parseFloat(
+            this.selectedDiagramComponent.layout.rotation.toFixed(2)
           );
           this.compTextSize = parseFloat(
             this.selectedDiagramComponent.layout.text.size.toFixed(2)
@@ -818,6 +832,9 @@ export default {
           this.compTextY = parseFloat(
             this.selectedDiagramComponent.layout.text.y.toFixed(2)
           );
+          this.compRotation = parseFloat(
+            this.selectedDiagramComponent.layout.rotation.toFixed(2)
+          );
           this.compTextSize = parseFloat(
             this.selectedDiagramComponent.layout.text.size.toFixed(2)
           );
@@ -848,6 +865,7 @@ export default {
       this.compScaleY = 1;
       this.compTextX = 0;
       this.compTextY = 0;
+      this.compRotation = 0;
       this.compTextSize = 10;
       this.compDbcFroms = [];
       this.compDbcFrom = "";

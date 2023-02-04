@@ -10,6 +10,7 @@ export default class GasExchanger {
   xCenter = 0;
   yCenter = 0;
   radius = 0;
+  rotation = 0;
 
   sprite = {};
   text = {};
@@ -99,6 +100,7 @@ export default class GasExchanger {
     this.text.anchor = { x: 0.5, y: 0.5 };
     this.text.x = this.sprite.x + this.layout.text.x;
     this.text.y = this.sprite.y + this.layout.text.y;
+    this.text.rotation = this.layout.rotation;
     this.text.zIndex = 4;
 
     this.pixiApp.stage.addChild(this.text);
@@ -120,6 +122,7 @@ export default class GasExchanger {
     }
     //console.log(this.rotation);
     this.sprite.rotation = -this.rotation;
+    this.text.rotation = this.layout.rotation;
   }
   onDragStart(e) {
     this.interactionData = e.data;
@@ -144,12 +147,11 @@ export default class GasExchanger {
       case 2: // rotating
         if (this.interactionData) {
           if (this.interactionData.global.x > this.prevX) {
-            this.sprite.rotation += 0.05;
-            this.text.rotation += 0.05;
+            this.layout.rotation + 0.05;
           } else {
-            this.sprite.rotation -= 0.05;
-            this.text.rotation -= 0.05;
+            this.layout.rotation -= 0.05;
           }
+          this.text.rotation = this.layout.rotation;
           this.prevX = this.interactionData.global.x;
         }
         break;

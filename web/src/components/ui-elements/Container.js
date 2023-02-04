@@ -10,6 +10,7 @@ export default class Container {
   xCenter = 0;
   yCenter = 0;
   radius = 0;
+  rotation = 0;
 
   sprite = {};
   text = {};
@@ -55,6 +56,7 @@ export default class Container {
     );
     this.sprite.anchor = { x: 0.5, y: 0.5 };
     this.sprite.tint = "0x151a7b";
+    this.sprite.rotation = this.layout.rotation;
     this.sprite.zIndex = 2;
 
     // place the sprite on the stage
@@ -90,6 +92,7 @@ export default class Container {
     this.text.anchor = { x: 0.5, y: 0.5 };
     this.text.x = this.sprite.x + this.layout.text.x;
     this.text.y = this.sprite.y + this.layout.text.y;
+    this.text.rotation = this.layout.rotation;
     this.text.zIndex = 2;
 
     this.pixiApp.stage.addChild(this.text);
@@ -110,6 +113,8 @@ export default class Container {
     if (scaleFont > 1.1) {
       scaleFont = 1.1;
     }
+    this.sprite.rotation = this.layout.rotation;
+    this.text.rotation = this.layout.rotation;
     this.text.scale.set(scaleFont, scaleFont);
   }
   setEditingMode(newMode) {
@@ -138,12 +143,12 @@ export default class Container {
       case 2: // rotating
         if (this.interactionData) {
           if (this.interactionData.global.x > this.prevX) {
-            this.sprite.rotation += 0.05;
-            this.text.rotation += 0.05;
+            this.layout.rotation += 0.05;
           } else {
-            this.sprite.rotation -= 0.05;
-            this.text.rotation -= 0.05;
+            this.layout.rotation -= 0.05;
           }
+          this.sprite.rotation = this.layout.rotation;
+          this.text.rotation = this.layout.rotation;
           this.prevX = this.interactionData.global.x;
         }
         break;
