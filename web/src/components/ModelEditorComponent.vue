@@ -4,13 +4,6 @@
     :style="{ 'font-size': '12px', width: '100%' }"
   >
     <div>
-      <q-input
-        v-if="selectedModelItems.length > 0"
-        class="row q-mb-md"
-        dense
-        v-model="newModelName"
-        label="model name"
-      />
       <div
         class="q-col-gutter-none"
         v-for="(selectedModelItem, index) in selectedModelItems"
@@ -32,6 +25,7 @@
             :default="selectedModelItem.default"
             :unit="selectedModelItem.unit"
             :value="selectedModelItem.current_value"
+            :editMode="editMode"
             @propupdate="propUpdate"
           >
           </ListInputComponentVue>
@@ -45,6 +39,26 @@
             @propupdate="propUpdate"
           >
           </MultipleListInputComponentVue>
+        </div>
+        <div v-if="selectedModelItem.type == 'Object'">
+          <ObjectInputComponent
+            :name="selectedModelItem.name"
+            :default="selectedModelItem.default"
+            :unit="selectedModelItem.unit"
+            :value="selectedModelItem.current_value"
+            @propupdate="propUpdate"
+          >
+          </ObjectInputComponent>
+        </div>
+        <div v-if="selectedModelItem.type == 'Boolean'">
+          <BooleanInputComponentVue
+            :name="selectedModelItem.name"
+            :default="selectedModelItem.default"
+            :unit="selectedModelItem.unit"
+            :value="selectedModelItem.current_value"
+            @propupdate="propUpdate"
+          >
+          </BooleanInputComponentVue>
         </div>
       </div>
     </div>
@@ -96,6 +110,7 @@ import { explain } from "../boot/explain";
 import MultipleListInputComponentVue from "./ui-elements/MultipleListInputComponent.vue";
 import ListInputComponentVue from "./ui-elements/ListInputComponent.vue";
 import BooleanInputComponentVue from "./ui-elements/BooleanInputComponent.vue";
+import ObjectInputComponent from "./ui-elements/ObjectInputComponent.vue";
 import NumberInputComponentVue from "./ui-elements/NumberInputComponent.vue";
 import { useScriptStore } from "stores/script";
 import { useConfigStore } from "src/stores/config";
@@ -120,26 +135,16 @@ export default {
   },
   components: {
     MultipleListInputComponentVue,
-    // ListInputComponentVue,
+    ObjectInputComponent,
     NumberInputComponentVue,
     ListInputComponentVue,
-    // BooleanInputComponentVue,
+    BooleanInputComponentVue,
   },
   props: {
     selectedModelItems: Array,
     modelType: String,
     modelName: String,
     editMode: Number, // 0 is new, 1 = existing
-  },
-  watch: {
-    modelName(nv, ov) {
-      if (this.editMode === 1) {
-        this.newModelName = nv;
-        this.findModelProperties();
-      } else {
-        this.newModelName = "";
-      }
-    },
   },
   data() {
     return {
@@ -152,6 +157,7 @@ export default {
   mounted() {
     // get the model state
     // explain.getModelState();
+    console.log(this.editMode);
   },
   methods: {
     propUpdate(modelName, propName, propValue) {
@@ -274,21 +280,12 @@ export default {
       });
       console.log(newModelState);
     },
-    findModelProperties() {
-      explain.getModelState();
-      this.selectedModelItems.forEach((item) => {
-        this.value = explain.modelState.Models[this.modelName][item.modelProp];
-        item["value"] = this.value;
-      });
-    },
     addToModel() {
       if (this.newModelName === "") {
         alert("Give your model component a name!");
       }
     },
-    cancel() {
-      this.$emit("cancelbuild");
-    },
+    cancel() {},
   },
 };
 </script>

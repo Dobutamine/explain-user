@@ -155,6 +155,20 @@ export default {
       // set the edit mode to 1 signaling an existing model
       this.editMode = 1;
 
+      this.$bus.emit("edit_mode_1");
+
+      // find the basemodel settings
+      Object.entries(this.engine.base_model_settings).forEach(
+        ([name, input]) => {
+          let modelObject = { ...input };
+          modelObject["name"] = name;
+          // find the current value
+          modelObject["current_value"] =
+            explain.modelState.Models[modelName][name];
+          this.selectedModelItems.push(modelObject);
+        }
+      );
+
       // find the model type to extract the inputs
       let modeltype = explain.modelState.Models[modelName].ModelType;
       Object.entries(this.engine.core_models[modeltype].inputs).forEach(
@@ -181,12 +195,26 @@ export default {
       // set the edit mode to 0 signaling a new model
       this.editMode = 0;
 
+      this.$bus.emit("edit_mode_0");
+
+      // find the basemodel settings
+      Object.entries(this.engine.base_model_settings).forEach(
+        ([name, input]) => {
+          let modelObject = { ...input };
+          modelObject["name"] = name;
+          // set the default value
+          modelObject["current_value"] = input.default;
+          modelObject["model_type"] = modeltype;
+          this.selectedModelItems.push(modelObject);
+        }
+      );
+
       // we now have to build an array of the selected modeltype inputs
       Object.entries(this.engine.core_models[modeltype].inputs).forEach(
         ([name, input]) => {
           let modelObject = input;
           modelObject["name"] = name;
-          modelObject["value"] = input.default;
+          modelObject["current_value"] = input.default;
           this.selectedModelItems.push(modelObject);
         }
       );

@@ -1,18 +1,20 @@
 <template>
   <div>
-    <q-toggle
-      v-if="type === 'select'"
-      class="q-pa-xs q-mt-sm"
-      v-model="newValue"
-      square
-      size="sm"
-      :label="name + ' ' + convertedUnit"
-      dense
-      dark
-      left-label
-      @update:model-value="updateParent"
-    />
+    {{ value }}
   </div>
+  <!-- <q-select
+    class="q-pa-xs"
+    v-model="newValue"
+    square
+    :label="name + ' ' + convertedUnit"
+    hide-hint
+    :options="options"
+    dense
+    multiple
+    dark
+    stack-label
+    @update:model-value="updateParent"
+  /> -->
 </template>
 
 <script>
@@ -24,8 +26,8 @@ export default {
   props: {
     name: String,
     unit: String,
-    default: Boolean,
-    value: Boolean,
+    default: Object,
+    value: Object,
   },
   watch: {
     value(nv, ov) {
@@ -50,10 +52,8 @@ export default {
       convertedUnit: "",
       conversionFactor: 1,
       roundingFactor: 2,
-      newValue: "",
+      newValue: [],
       unitClass: "bg-indigo-10 col-9",
-      type: "select",
-      disabled: false,
     };
   },
   methods: {
@@ -68,8 +68,24 @@ export default {
       //   parseFloat(this.newValue) / this.displayFactor
       // );
     },
+    getOptions(searchList) {
+      this.options = [];
+      // find all models of this type
+      Object.entries(explain.modelState.Models).forEach(([name, model]) => {
+        if (searchList.includes(model.ModelType)) {
+          this.options.push(name);
+        }
+      });
+    },
   },
   mounted() {
+    // split the unit
+    let searchList = this.unit.split("|");
+    // get all the options
+    this.getOptions(searchList);
+    // no unit to display
+    //this.convertedUnit = "";
+    // set the current value
     this.newValue = this.value;
   },
 };
