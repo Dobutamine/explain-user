@@ -25,8 +25,8 @@ export default {
     name: String,
     unit: String,
     options: String,
-    default: String,
-    value: String,
+    default: Array,
+    value: Array,
   },
   watch: {
     options(no, oo) {
