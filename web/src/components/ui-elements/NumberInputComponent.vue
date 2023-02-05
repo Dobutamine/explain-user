@@ -46,26 +46,7 @@ export default {
     },
   },
   mounted() {
-    switch (this.unit) {
-      case "":
-        this.convertedUnit = "";
-        break;
-      case "l":
-        this.convertedUnit = "(mL)";
-        this.conversionFactor = 1000;
-        break;
-      case "mmHg/l":
-        this.convertedUnit = "(mmHg/mL)";
-        this.conversionFactor = 0.001;
-        break;
-      case "mmHg/l*s":
-        this.convertedUnit = "(mmHg/mL*s)";
-        this.conversionFactor = 0.001;
-        break;
-      default:
-        this.convertedUnit = "(" + this.unit + ")";
-    }
-    this.newValue = this.value * this.conversionFactor;
+    this.newValue = this.value;
   },
 };
 </script>

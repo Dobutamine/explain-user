@@ -4,13 +4,26 @@
     :style="{ 'font-size': '12px', width: '100%' }"
   >
     <div>
-      {{ modelName }} = {{ modelType }}
       <div
         class="q-col-gutter-none"
         v-for="(modelProp, index) in modelProps"
         :key="index"
       >
-        {{ modelProp }}
+        <!-- {{ modelProp }} -->
+        <StringInputComponent
+          v-if="modelProp.type === 'String'"
+          :name="modelProp.name"
+          :unit="modelProp.unit"
+          :default="modelProp.current_value"
+          :value="modelProp.current_value"
+        ></StringInputComponent>
+        <NumberInputComponent
+          v-if="modelProp.type === 'Number'"
+          :name="modelProp.name"
+          :unit="modelProp.unit"
+          :default="modelProp.current_value"
+          :value="modelProp.current_value"
+        ></NumberInputComponent>
       </div>
     </div>
 
@@ -51,10 +64,15 @@
 
 <script>
 import { explain } from "../boot/explain";
+import StringInputComponent from "./ui-elements/StringInputComponent.vue";
+import NumberInputComponent from "./ui-elements/NumberInputComponent.vue";
 
 export default {
   setup() {},
-  components: {},
+  components: {
+    StringInputComponent,
+    NumberInputComponent,
+  },
   props: {
     modelProps: Array,
     modelType: String,
