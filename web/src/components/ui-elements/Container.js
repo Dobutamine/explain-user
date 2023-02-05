@@ -55,7 +55,7 @@ export default class Container {
       this.volume * this.layout.scale.y
     );
     this.sprite.anchor = { x: 0.5, y: 0.5 };
-    this.sprite.tint = "0x151a7b";
+    this.sprite.tint = "0x666666";
     this.sprite.rotation = this.layout.rotation;
     this.sprite.zIndex = 2;
 

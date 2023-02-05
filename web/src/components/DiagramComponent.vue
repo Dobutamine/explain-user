@@ -351,15 +351,18 @@ export default {
       // draw the components
       this.drawComponents();
       // add a ticker to update all sprites
-      this.ticker = this.pixiApp.ticker.add((delta) => {
-        if (this.rt_running) {
-          Object.values(this.diagramComponents).forEach((sprite) => {
-            if (explain.modelData.length > 0) {
-              sprite.update(explain.modelData[0]);
-            }
-          });
-        }
-      });
+
+      if (!this.ticker) {
+        this.ticker = this.pixiApp.ticker.add((delta) => {
+          if (this.rt_running) {
+            Object.values(this.diagramComponents).forEach((sprite) => {
+              if (explain.modelData.length > 0) {
+                sprite.update(explain.modelData[0]);
+              }
+            });
+          }
+        });
+      }
     },
     clearDiagram() {
       this.pixiApp.stage.removeChildren();
