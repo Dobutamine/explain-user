@@ -55,9 +55,9 @@ export default class Container {
       this.volume * this.layout.scale.y
     );
     this.sprite.anchor = { x: 0.5, y: 0.5 };
-    this.sprite.tint = "0x666666";
+    this.sprite.tint = "0x444444";
     this.sprite.rotation = this.layout.rotation;
-    this.sprite.zIndex = 2;
+    this.sprite.zIndex = 0;
 
     // place the sprite on the stage
     switch (this.layout.pos.type) {
