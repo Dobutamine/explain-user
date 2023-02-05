@@ -1,28 +1,14 @@
 <template>
   <div>
     <q-select
-      v-if="type === 'select'"
       class="q-pa-xs"
       v-model="newValue"
       square
       :label="name + ' ' + convertedUnit"
       hide-hint
-      :options="options"
+      :options="optionList"
       dense
       dark
-      stack-label
-      @update:model-value="updateParent"
-    />
-    <q-input
-      v-if="type === 'input'"
-      class="q-pa-xs"
-      v-model="newValue"
-      square
-      :label="name + ' ' + convertedUnit"
-      hide-hint
-      dense
-      dark
-      :disable="disabled"
       stack-label
       @update:model-value="updateParent"
     />
@@ -31,28 +17,25 @@
 
 <script>
 import { explain } from "src/boot/explain";
-import { useConfigStore } from "src/stores/config";
 import { useDefinitionStore } from "src/stores/definition";
 import { useEngineStore } from "src/stores/engine";
 export default {
   props: {
     name: String,
     unit: String,
+    options: String,
     default: String,
     value: String,
-    editMode: Number,
   },
   watch: {
-    value(nv, ov) {
-      this.newValue = nv;
+    options(no, oo) {
+      this.getOptions();
     },
   },
   setup() {
-    const uiConfig = useConfigStore();
     const definition = useDefinitionStore();
     const engine = useEngineStore();
     return {
-      uiConfig,
       definition,
       engine,
     };
@@ -61,7 +44,7 @@ export default {
   data() {
     return {
       title: "",
-      options: [],
+      optionList: [],
       convertedUnit: "",
       conversionFactor: 1,
       roundingFactor: 2,
@@ -75,58 +58,21 @@ export default {
     updateParent() {
       this.$emit("propupdate", this.name, this.newValue);
     },
-    getOptions(searchList) {
-      this.type = "select";
-      this.options = [];
+    getOptions() {
+      this.optionList = [];
+      let searchList = this.options.split("|");
+
       // find all models of this type
       Object.entries(explain.modelState.Models).forEach(([name, model]) => {
         if (searchList.includes(model.ModelType)) {
-          this.options.push(name);
+          this.optionList.push(name);
         }
       });
     },
   },
   mounted() {
-    this.disabled = false;
-    // split the unit
-    if (this.unit) {
-      let searchList = this.unit.split("|");
-      // get all the options
-      this.getOptions(searchList);
-    } else {
-      this.type = "input";
-    }
-
-    if (this.unit === "String") {
-      this.type = "input";
-    }
-
-    if (this.name === "ModelType" && this.editMode === 0) {
-      this.type = "";
-    }
-
-    if (
-      (this.name === "ModelType" || this.name === "Name") &&
-      this.editMode === 1
-    ) {
-      this.disabled = true;
-      this.type = "input";
-    }
-
-    this.$bus.on("edit_mode_1", () => {
-      if (this.name === "ModelType" || this.name === "Name") {
-        this.disabled = true;
-        this.type = "input";
-      }
-    });
-    this.$bus.on("edit_mode_0", () => {
-      this.disabled = false;
-      if (this.name === "ModelType") {
-        this.type = "";
-      }
-    });
-
     this.newValue = this.value;
+    this.getOptions();
   },
 };
 </script>

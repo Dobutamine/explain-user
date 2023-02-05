@@ -1,42 +1,42 @@
 <template>
-  <q-select
-    class="q-pa-xs"
-    v-model="newValue"
-    square
-    :label="name + ' ' + convertedUnit"
-    hide-hint
-    :options="options"
-    dense
-    multiple
-    dark
-    stack-label
-    @update:model-value="updateParent"
-  />
+  <div>
+    <q-select
+      class="q-pa-xs"
+      v-model="newValue"
+      square
+      :label="name + ' ' + convertedUnit"
+      hide-hint
+      :options="optionList"
+      dense
+      dark
+      multiple
+      stack-label
+      @update:model-value="updateParent"
+    />
+  </div>
 </template>
 
 <script>
 import { explain } from "src/boot/explain";
-import { useConfigStore } from "src/stores/config";
 import { useDefinitionStore } from "src/stores/definition";
 import { useEngineStore } from "src/stores/engine";
 export default {
   props: {
     name: String,
     unit: String,
-    default: Array,
-    value: Array,
+    options: String,
+    default: String,
+    value: String,
   },
   watch: {
-    value(nv, ov) {
-      this.newValue = nv;
+    options(no, oo) {
+      this.getOptions();
     },
   },
   setup() {
-    const uiConfig = useConfigStore();
     const definition = useDefinitionStore();
     const engine = useEngineStore();
     return {
-      uiConfig,
       definition,
       engine,
     };
@@ -45,37 +45,35 @@ export default {
   data() {
     return {
       title: "",
-      options: [],
+      optionList: [],
       convertedUnit: "",
       conversionFactor: 1,
       roundingFactor: 2,
       newValue: [],
       unitClass: "bg-indigo-10 col-9",
+      type: "select",
+      disabled: false,
     };
   },
   methods: {
     updateParent() {
       this.$emit("propupdate", this.name, this.newValue);
     },
-    getOptions(searchList) {
-      this.options = [];
+    getOptions() {
+      this.optionList = [];
+      let searchList = this.options.split("|");
+
       // find all models of this type
       Object.entries(explain.modelState.Models).forEach(([name, model]) => {
         if (searchList.includes(model.ModelType)) {
-          this.options.push(name);
+          this.optionList.push(name);
         }
       });
     },
   },
   mounted() {
-    // split the unit
-    let searchList = this.unit.split("|");
-    // get all the options
-    this.getOptions(searchList);
-    // no unit to display
-    //this.convertedUnit = "";
-    // set the current value
     this.newValue = this.value;
+    this.getOptions();
   },
 };
 </script>

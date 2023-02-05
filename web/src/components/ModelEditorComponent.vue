@@ -24,6 +24,29 @@
           :default="modelProp.current_value"
           :value="modelProp.current_value"
         ></NumberInputComponent>
+        <BooleanInputComponent
+          v-if="modelProp.type === 'Boolean'"
+          :name="modelProp.name"
+          :unit="modelProp.unit"
+          :default="modelProp.current_value"
+          :value="modelProp.current_value"
+        ></BooleanInputComponent>
+        <ListInputComponent
+          v-if="modelProp.type === 'ModelObject'"
+          :name="modelProp.name"
+          :options="modelProp.options"
+          :unit="modelProp.unit"
+          :default="modelProp.current_value"
+          :value="modelProp.current_value"
+        ></ListInputComponent>
+        <MultipleListInputComponent
+          v-if="modelProp.type === '[ModelObject]'"
+          :name="modelProp.name"
+          :options="modelProp.options"
+          :unit="modelProp.unit"
+          :default="modelProp.current_value"
+          :value="modelProp.current_value"
+        ></MultipleListInputComponent>
       </div>
     </div>
 
@@ -66,12 +89,18 @@
 import { explain } from "../boot/explain";
 import StringInputComponent from "./ui-elements/StringInputComponent.vue";
 import NumberInputComponent from "./ui-elements/NumberInputComponent.vue";
+import BooleanInputComponent from "./ui-elements/BooleanInputComponent.vue";
+import ListInputComponent from "./ui-elements/ListInputComponent.vue";
+import MultipleListInputComponent from "./ui-elements/MultipleListInputComponent.vue";
 
 export default {
   setup() {},
   components: {
     StringInputComponent,
     NumberInputComponent,
+    BooleanInputComponent,
+    ListInputComponent,
+    MultipleListInputComponent,
   },
   props: {
     modelProps: Array,
