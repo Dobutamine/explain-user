@@ -4,7 +4,7 @@
     :style="{ 'font-size': '12px', width: '100%' }"
   >
     <div>
-      {{ modelName }} = {{ modelType }}
+      new model of type {{ modelType }}
       <div
         class="q-col-gutter-none"
         v-for="(modelProp, index) in modelProps"
@@ -60,9 +60,9 @@ export default {
     modelType: String,
     modelName: String,
   },
+
   data() {
     return {
-      props: [],
       statusMessage: "",
       value: 0.0,
       updateList: [],
@@ -133,6 +133,60 @@ export default {
 
       // reset the updateProps list
       this.updateList = {};
+    },
+    saveModelProperties() {
+      // save the model state to the server
+      let modelState = { ...explain.modelState };
+
+      // build a new model definition object
+      let newModelState = {
+        engine_version: 0.1,
+        name: this.definition.name,
+        description: this.definition.description,
+        weight: this.definition.weight,
+        user: this.user.name,
+        protected: this.definition.protected,
+        shared: this.definition.shared,
+        models: {},
+      };
+      // iterate over the models in the modelState object
+      Object.entries(modelState.Models).forEach(([model_name, model]) => {
+        let modelType = model.ModelType;
+        newModelState.models[model_name] = {};
+        // find the modelType in the engine definition file
+        Object.entries(this.engine.base_model_settings).forEach(
+          ([prop_name, prop]) => {
+            // get the value of this input from the current modelstate
+            let current_value = modelState.Models[model_name][prop_name];
+            // set the current_value in the models object
+            newModelState.models[model_name][prop_name] = current_value;
+          }
+        );
+        Object.entries(this.engine.core_models[modelType].inputs).forEach(
+          ([input_name, input]) => {
+            // get the value of this input from the current modelstate
+            let current_value = modelState.Models[model_name][input_name];
+            if (current_value !== undefined) {
+              // set the current_value in the models object
+              newModelState.models[model_name][input_name] = current_value;
+            }
+          }
+        );
+        if (this.engine.core_models[modelType].outputs !== undefined) {
+          Object.entries(this.engine.core_models[modelType].outputs).forEach(
+            ([output_name, input]) => {
+              try {
+                // get the value of this input from the current modelstate
+                let current_value = modelState.Models[model_name][output_name];
+                if (current_value !== undefined) {
+                  // set the current_value in the models object
+                  newModelState.models[model_name][output_name] = current_value;
+                }
+              } catch {}
+            }
+          );
+        }
+      });
     },
     addToModel() {
       if (this.newModelName === "") {

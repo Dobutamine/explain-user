@@ -94,13 +94,21 @@
       </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
         <ModelEditorComponent
-          :selectedModelItems="selectedModelItems"
+          v-if="editMode === 1"
+          :modelProps="selectedModelItems"
           :modelName="selectedModelName"
           :modelType="selectedModelType"
-          :editMode="editMode"
-          @cancelbuild="cancelBuild"
+          @cancel="cancelBuild"
         >
         </ModelEditorComponent>
+        <NewModelComponent
+          v-if="editMode === 0"
+          :modelProps="selectedModelItems"
+          :modelName="selectedModelName"
+          :modelType="selectedModelType"
+          @cancel="cancelBuild"
+        >
+        </NewModelComponent>
       </div>
     </div>
   </q-card>
@@ -109,19 +117,18 @@
 <script>
 import { explain } from "../boot/explain";
 import ModelEditorComponent from "./ModelEditorComponent.vue";
-import { useConfigStore } from "src/stores/config";
+import NewModelComponent from "./NewModelComponent.vue";
 import { useDefinitionStore } from "src/stores/definition";
 import { useEngineStore } from "src/stores/engine";
 export default {
   components: {
     ModelEditorComponent,
+    NewModelComponent,
   },
   setup() {
-    const uiConfig = useConfigStore();
     const definition = useDefinitionStore();
     const engine = useEngineStore();
     return {
-      uiConfig,
       definition,
       engine,
     };
@@ -132,16 +139,18 @@ export default {
       title: "MODEL EDITOR",
       collapsed: false,
       modelsTree: {},
+      selectedModelName: "",
       selectedModelType: "",
       selectedModelItems: [],
       editMode: 0,
       modelTypeNames: [],
       modelNames: [],
-      selectedModelName: "",
     };
   },
   methods: {
-    cancelBuild() {},
+    cancelBuild() {
+      this.selectedModelItems = [];
+    },
     selectModel(modelName) {
       // store the selected model name
       this.selectedModelName = modelName;
@@ -154,8 +163,6 @@ export default {
 
       // set the edit mode to 1 signaling an existing model
       this.editMode = 1;
-
-      this.$bus.emit("edit_mode_1");
 
       // find the basemodel settings
       Object.entries(this.engine.base_model_settings).forEach(
@@ -170,17 +177,17 @@ export default {
       );
 
       // find the model type to extract the inputs
-      let modeltype = explain.modelState.Models[modelName].ModelType;
-      Object.entries(this.engine.core_models[modeltype].inputs).forEach(
-        ([name, input]) => {
-          let modelObject = { ...input };
-          modelObject["name"] = name;
-          // find the current value
-          modelObject["current_value"] =
-            explain.modelState.Models[modelName][name];
-          this.selectedModelItems.push(modelObject);
-        }
-      );
+      this.selectedModelType = explain.modelState.Models[modelName].ModelType;
+      Object.entries(
+        this.engine.core_models[this.selectedModelType].inputs
+      ).forEach(([name, input]) => {
+        let modelObject = { ...input };
+        modelObject["name"] = name;
+        // find the current value
+        modelObject["current_value"] =
+          explain.modelState.Models[modelName][name];
+        this.selectedModelItems.push(modelObject);
+      });
     },
     selectModelType(modeltype) {
       // clear the model name as this is a new model
@@ -194,8 +201,6 @@ export default {
 
       // set the edit mode to 0 signaling a new model
       this.editMode = 0;
-
-      this.$bus.emit("edit_mode_0");
 
       // find the basemodel settings
       Object.entries(this.engine.base_model_settings).forEach(
@@ -219,8 +224,6 @@ export default {
         }
       );
     },
-
-    removeAllProps() {},
     buildModelItemTree() {
       // reset all lists
       this.modelTypes = [];

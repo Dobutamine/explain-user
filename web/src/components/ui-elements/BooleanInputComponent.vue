@@ -57,16 +57,8 @@ export default {
     };
   },
   methods: {
-    deleteMe() {
-      //this.$emit("propdelete", this.modelName, this.modelProp);
-    },
     updateParent() {
-      // this.$emit(
-      //   "propupdate",
-      //   this.modelName,
-      //   this.modelProp,
-      //   parseFloat(this.newValue) / this.displayFactor
-      // );
+      this.$emit("propupdate", this.name, this.newValue);
     },
   },
   mounted() {
