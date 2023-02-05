@@ -105,6 +105,10 @@ export default {
       this.type = "input";
     }
 
+    if (this.unit === "String") {
+      this.type = "input";
+    }
+
     if (this.name === "ModelType" && this.editMode === 0) {
       this.type = "";
     }

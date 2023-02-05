@@ -14,10 +14,12 @@
     "@arction/lcjs": "^3.4.0",
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.5",
+    "json-editor-vue": "^0.10.5",
     "pinia": "^2.0.11",
     "pixi.js": "^7.0.5",
     "quasar": "^2.6.0",
     "simple-statistics": "^7.8.0",
+    "vanilla-jsoneditor": "^0.14.4",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },

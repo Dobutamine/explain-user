@@ -1,20 +1,5 @@
 <template>
-  <div>
-    {{ value }}
-  </div>
-  <!-- <q-select
-    class="q-pa-xs"
-    v-model="newValue"
-    square
-    :label="name + ' ' + convertedUnit"
-    hide-hint
-    :options="options"
-    dense
-    multiple
-    dark
-    stack-label
-    @update:model-value="updateParent"
-  /> -->
+  <div class="row"></div>
 </template>
 
 <script>
@@ -22,12 +7,17 @@ import { explain } from "src/boot/explain";
 import { useConfigStore } from "src/stores/config";
 import { useDefinitionStore } from "src/stores/definition";
 import { useEngineStore } from "src/stores/engine";
+import NumberInputComponent from "./NumberInputComponent.vue";
+import ListInputComponent from "./ListInputComponent.vue";
+
 export default {
+  components: {},
   props: {
     name: String,
     unit: String,
     default: Object,
     value: Object,
+    editMode: Number,
   },
   watch: {
     value(nv, ov) {
@@ -54,6 +44,9 @@ export default {
       roundingFactor: 2,
       newValue: [],
       unitClass: "bg-indigo-10 col-9",
+      props: [],
+      selectedModelItemLeft: {},
+      selectedModelItemRight: {},
     };
   },
   methods: {
@@ -79,10 +72,31 @@ export default {
     },
   },
   mounted() {
+    //
+    console.log("Structure :", this.unit);
+    console.log("Values : ", this.value);
+
     // split the unit
-    let searchList = this.unit.split("|");
+    // let objectProperties = this.unit.split(":");
+    // // determine the left side
+    // let left_side = objectProperties[0];
+    // this.selectedModelItemLeft = {
+    //   type: "String",
+    //   name: this.name,
+    //   default: "",
+    //   unit: left_side,
+    //   value: "",
+    // };
+    // let right_side = objectProperties[1];
+    // this.selectedModelItemRight = {
+    //   type: "Number",
+    //   name: this.name,
+    //   default: 0,
+    //   unit: right_side,
+    //   value: 0,
+    // };
     // get all the options
-    this.getOptions(searchList);
+    //this.getOptions(objectProperties);
     // no unit to display
     //this.convertedUnit = "";
     // set the current value

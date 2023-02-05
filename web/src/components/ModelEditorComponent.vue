@@ -46,6 +46,7 @@
             :default="selectedModelItem.default"
             :unit="selectedModelItem.unit"
             :value="selectedModelItem.current_value"
+            :editMode="editMode"
             @propupdate="propUpdate"
           >
           </ObjectInputComponent>
@@ -157,7 +158,6 @@ export default {
   mounted() {
     // get the model state
     // explain.getModelState();
-    console.log(this.editMode);
   },
   methods: {
     propUpdate(modelName, propName, propValue) {
