@@ -49,7 +49,7 @@ export default {
       graphInterval: 10,
       graphSpeed: 2,
       dataUpdateInterval: 0.015,
-      dataWindowTime: 3,
+      dataWindowTime: 10,
       channels: {},
       no_channels: 6,
       channel_height: 100,
@@ -237,9 +237,6 @@ export default {
     dataUpdate() {
       if (!this.isEnabled) return;
 
-      this.currentData = explain.modelData[explain.modelData.length - 1];
-      // determine the number of x coordinates available for the graph, so we have maximum of that number of data points
-
       // number x pixels available
       let nox = this.graphWidth - 0.2 * this.graphWidth;
 
@@ -250,12 +247,18 @@ export default {
       // calculate the number of pixels per datapoint
       let step = nox / ndp;
 
-      this.channels.forEach((channel) => {
-        channel.curve_data.push(this.currentData[channel.curve_prop]);
-        if (channel.curve_data.length > ndp) {
-          channel.curve_data.shift();
-        }
-      });
+      for (let i = 0; i < explain.modelData.length; i++) {
+        this.currentData = explain.modelData[i];
+
+        // determine the number of x coordinates available for the graph, so we have maximum of that number of data points
+
+        this.channels.forEach((channel) => {
+          channel.curve_data.push(this.currentData[channel.curve_prop]);
+          if (channel.curve_data.length > ndp) {
+            channel.curve_data.shift();
+          }
+        });
+      }
 
       // // now draw the datapoints, we have ndp data points available which is
       if (this.graphDrawCounter > this.graphDrawInterval) {

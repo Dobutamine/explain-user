@@ -14,7 +14,7 @@ export default class Shunt {
   spriteColor = 0xffffff;
 
   path = null;
-  pathColor = 0x555555;
+  pathColor = 0x553333;
   pathWidth = 4;
 
   arc = {
@@ -62,7 +62,7 @@ export default class Shunt {
     this.sprite.anchor = { x: 0.5, y: 0.5 };
     this.sprite.x = this.dbcFrom.sprite.x;
     this.sprite.y = this.dbcFrom.sprite.y;
-    this.sprite.scale.set(0.025, 0.07);
+    this.sprite.scale.set(0.02, 0.05);
     this.sprite.interactive = true;
     this.sprite.on("mouseup", (e) => this.onDragEnd(e));
     this.sprite.on("touchend", (e) => this.onDragEnd(e));
@@ -98,54 +98,12 @@ export default class Shunt {
     this.line.y1 = this.dbcFrom.sprite.y;
     this.line.x2 = this.dbcTo.sprite.x;
     this.line.y2 = this.dbcTo.sprite.y;
-    this.line.radius = this.dbcFrom.xCenter * this.dbcFrom.radius;
 
-    let radsq = this.line.radius * this.line.radius;
-    let q = Math.sqrt(
-      (this.line.x2 - this.line.x1) * (this.line.x2 - this.line.x1) +
-        (this.line.y2 - this.line.y1) * (this.line.y2 - this.line.y1)
-    );
-    let x3 = (this.line.x1 + this.line.x2) / 2;
-    let y3 = (this.line.y1 + this.line.y2) / 2;
-    this.line.xCenter =
-      x3 +
-      Math.sqrt(radsq - (q / 2) * (q / 2)) *
-        ((this.line.y1 - this.line.y2) / q);
-    this.line.yCenter =
-      y3 +
-      Math.sqrt(radsq - (q / 2) * (q / 2)) *
-        ((this.line.x2 - this.line.x1) / q);
-    let angle1 =
-      Math.atan2(
-        this.line.yCenter - this.line.y1,
-        this.line.x1 - this.line.xCenter
-      ) * 57.2958;
-    if (this.line.yCenter - this.line.y1 > 0) {
-      angle1 = 180 + (180 - angle1);
-    } else {
-      angle1 = -angle1;
-    }
-    this.line.from = angle1 * 0.0174533;
-    let angle2 =
-      Math.atan2(
-        this.line.yCenter - this.line.y2,
-        this.line.x2 - this.line.xCenter
-      ) * 57.2958;
-    if (this.line.yCenter - this.line.y2 > 0) {
-      angle2 = 180 + (180 - angle2);
-    } else {
-      angle2 = -angle2;
-    }
-    this.line.to = angle2 * 0.0174533;
     this.path.lineStyle(this.pathWidth, this.pathColor, 1);
-    this.path.arc(
-      this.line.xCenter,
-      this.line.yCenter,
-      this.line.radius,
-      this.line.from,
-      this.line.to
-    );
+    this.path.moveTo(this.line.x1, this.line.y1);
+    this.path.lineTo(this.line.x2, this.line.y2);
     this.path.interactive = true;
+
     this.path.on("mouseup", (e) => this.onDragEnd(e));
     this.path.on("touchend", (e) => this.onDragEnd(e));
     this.pixiApp.stage.addChild(this.path);
@@ -185,36 +143,19 @@ export default class Shunt {
       angle = Math.atan2(this.sprite.y - y1, this.sprite.x - x1) - 0.785 * 2;
     }
 
-    // caulcate the new position if the
-    if (this.line.enabled) {
-      if (this.spritePosition > this.line.to) {
-        this.spritePosition = this.line.from;
-      }
-      if (this.spritePosition < this.line.from) {
-        this.spritePosition = this.line.to;
-      }
-      this.sprite.x =
-        this.line.xCenter + Math.cos(this.spritePosition) * this.line.radius;
-      this.sprite.y =
-        this.line.yCenter + Math.sin(this.spritePosition) * this.line.radius;
+    const remapT = this.remap(this.spritePosition, 0, 1, 0, 1);
+    const t = remapT / 1;
+    this.sprite.x = (1 - t) * x1 + t * x2;
+    this.sprite.y = (1 - t) * y1 + t * y2;
 
-      angle = this.spritePosition + Math.PI;
+    if (remapT > 1) {
+      this.spritePosition = 0;
+    }
+    if (remapT < 0) {
+      this.spritePosition = 1;
     }
 
-    if (this.arc.enabled) {
-      if (this.spritePosition > this.arc.to) {
-        this.spritePosition = this.arc.from;
-      }
-      if (this.spritePosition < this.arc.from) {
-        this.spritePosition = this.arc.to;
-      }
-      this.sprite.x =
-        this.arc.xCenter + Math.cos(this.spritePosition) * this.arc.radius;
-      this.sprite.y =
-        this.arc.yCenter + Math.sin(this.spritePosition) * this.arc.radius;
-
-      angle = this.spritePosition + Math.PI;
-    }
+    //angle = this.spritePosition + Math.PI;
 
     this.sprite.rotation = angle + direction;
 

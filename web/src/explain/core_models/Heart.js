@@ -88,9 +88,9 @@ export class Heart extends ModelBaseClass {
       this.HeartPeriodChangeMyo;
 
     // limit the heart period depending on the HeartRateUpperLimit property
-    if (sa_node_period < this._sa_node_period_limit) {
-      sa_node_period = this._sa_node_period_limit;
-    }
+    // if (sa_node_period < this._sa_node_period_limit) {
+    //   sa_node_period = this._sa_node_period_limit;
+    // }
 
     // calculate the current heartrate
     this.HeartRate = 60.0 / sa_node_period;

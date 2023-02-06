@@ -347,6 +347,11 @@ export default {
         return;
       }
 
+      if (this.script.name === "") {
+        alert("Script has no valid name!");
+        return;
+      }
+
       const url = `${this.apiUrl}/api/scripts/update_script?token=${this.user.token}`;
       let response = await fetch(url, {
         method: "POST",
