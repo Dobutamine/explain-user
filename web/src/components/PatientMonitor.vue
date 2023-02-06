@@ -195,6 +195,9 @@ export default {
           value_prop1: channel.value_prop1,
           value_prop2: channel.value_prop2,
           curve_data: [],
+          autoscale: channel.autoscale,
+          min: channel.min,
+          max: channel.max,
         });
       });
     },
@@ -222,8 +225,13 @@ export default {
     autoscale() {
       this.first_run = false;
       this.channels.forEach((channel) => {
-        channel.curve_max = Math.max.apply(null, channel.curve_data);
-        channel.curve_min = Math.min.apply(null, channel.curve_data);
+        if (channel.autoscale) {
+          channel.curve_max = Math.max.apply(null, channel.curve_data);
+          channel.curve_min = Math.min.apply(null, channel.curve_data);
+        } else {
+          channel.curve_max = channel.max;
+          channel.curve_min = channel.min;
+        }
 
         channel.curve_y_min = this.channel_height * (channel.channel_no - 1);
         channel.curve_y_max = this.channel_height * channel.channel_no;
