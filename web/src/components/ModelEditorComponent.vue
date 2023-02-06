@@ -48,7 +48,9 @@
           :value="modelProp.current_value"
         ></MultipleListInputComponent>
         <ObjectInputComponent
-          v-if="modelProp.type === '{ModelObject}'"
+          v-if="
+            modelProp.type === '{ModelObject}' || modelProp.type === '{Object}'
+          "
           :name="modelProp.name"
           :options="modelProp.options"
           :unit="modelProp.unit"
