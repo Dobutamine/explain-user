@@ -45,15 +45,18 @@
 import { explain } from "../boot/explain";
 import { useScriptStore } from "stores/script";
 import { useConfigStore } from "src/stores/config";
+import { useDefinitionStore } from "src/stores/definition";
 import SliderComponentVue from "./groupers/SliderComponent.vue";
 
 export default {
   setup() {
     const script = useScriptStore();
     const uiConfig = useConfigStore();
+    const definition = useDefinitionStore();
     return {
       script,
       uiConfig,
+      definition,
     };
   },
   components: {
@@ -72,7 +75,48 @@ export default {
     };
   },
   methods: {
-    updateGroupers() {
+    translateGrouper(group, prop, value, update) {
+      // get current grouper value
+      let current_grouper_value = this.uiConfig.groupers[group][prop].value;
+      // store new grouper value
+      this.uiConfig.groupers[group][prop].value = value;
+      // get the grouper props
+      let grouperProps = this.uiConfig.groupers[group][prop];
+      // define an model update object
+      let updatePropObject = [];
+      // iterate over the grouper properties
+      grouperProps.properties.forEach((prop) => {
+        // get the current value from explain
+        let current_value =
+          explain.modelState.Models[prop.model][prop.modelProp];
+        // set the new value to the current value (safety)
+        let new_value = current_value;
+        // relative change?
+        if (grouperProps.unit === "%") {
+          let change =
+            parseFloat(grouperProps.value) - parseFloat(current_grouper_value);
+          // calculate the new value
+          new_value =
+            current_value +
+            (current_value / current_grouper_value) * change * prop.factor;
+        } else {
+          new_value = value;
+        }
+        // build a new script entry
+        updatePropObject.push({
+          m: prop.model,
+          p: prop.modelProp,
+          v: new_value,
+          it: 0.0,
+          at: 0.0,
+        });
+      });
+      // set the new model properties on the model
+      if (update) {
+        explain.setModelProperties(updatePropObject);
+      }
+    },
+    updateGroupers(update = true) {
       let counter = 0;
       for (let item in this.updateList) {
         counter += 1;
@@ -80,7 +124,8 @@ export default {
         let group = processedItem[0];
         let prop = processedItem[1];
         let value = this.updateList[item];
-        this.uiConfig.groupers[group][prop].value = value;
+
+        this.translateGrouper(group, prop, value, update);
       }
       if (counter > 0) {
         // display the status message
@@ -145,6 +190,7 @@ export default {
       this.updateList = {};
       this.$emit("removeallgroupers");
     },
+
     newGrouperSelected() {
       // check for all the grouperItems if the initial value should be set other then 100%
       for (let g in this.grouperItems) {
@@ -172,7 +218,7 @@ export default {
   },
   mounted() {
     this.$bus.on("update_groupers", () => {
-      this.updateGroupers();
+      this.updateGroupers(false);
       this.cancel();
     });
   },
