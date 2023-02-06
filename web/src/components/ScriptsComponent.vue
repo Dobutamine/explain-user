@@ -306,14 +306,17 @@
 import { explain } from "src/boot/explain";
 import { useScriptStore } from "stores/script";
 import { useUserStore } from "stores/user";
+import { useConfigStore } from "stores/config";
 
 export default {
   setup() {
     const script = useScriptStore();
     const user = useUserStore();
+    const config = useConfigStore();
     return {
       script,
       user,
+      config,
     };
   },
   components: {},
@@ -512,17 +515,37 @@ export default {
       this.selectedScript = "";
       this.script.script = [];
     },
-    startScript() {
-      let processed_script = [];
+    translateGrouperEntries() {
+      // script t tag has the groupers
       this.script.script.forEach((scriptline) => {
-        // only transfer the pending script states
-        if (scriptline.state === "pending") {
-          processed_script.push(scriptline);
-          scriptline.state = "transferred";
+        if (scriptline.t === "grouper") {
+          // find the grouper props in the config
+          let grouperProps = this.config.groupers[scriptline.m][scriptline.p];
+          if (grouperProps.unit === "%") {
+            grouperProps.properties.forEach((prop) => {
+              let model = prop.model;
+              let modelProp = prop.modelProp;
+              // get the current value from explain
+
+              // calculate the new value as this is a relative value
+              console.log(prop);
+            });
+          }
         }
       });
-      // transfer to model
-      explain.addScriptToTaskScheduler(processed_script);
+    },
+    startScript() {
+      let processed_script = [];
+      this.translateGrouperEntries();
+      // this.script.script.forEach((scriptline) => {
+      //   // only transfer the pending script states
+      //   if (scriptline.state === "pending") {
+      //     processed_script.push(scriptline);
+      //     scriptline.state = "transferred";
+      //   }
+      // });
+      // // transfer to model
+      // explain.addScriptToTaskScheduler(processed_script);
     },
   },
   mounted() {},

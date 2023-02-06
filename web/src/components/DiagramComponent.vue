@@ -576,7 +576,6 @@ export default {
             );
             break;
           case "Shunt":
-            console.log("shunt added");
             this.diagramComponents[key] = new Shunt(
               this.pixiApp,
               key,
