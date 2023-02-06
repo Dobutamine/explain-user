@@ -12,7 +12,9 @@ export default class TaskScheduler {
   PropChange(prop_change) {
     console.log(prop_change);
   }
-  AddTask() {}
+  AddTask(new_task) {
+    console.log(new_task);
+  }
 
   RemoveTask() {}
 

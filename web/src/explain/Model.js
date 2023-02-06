@@ -41,6 +41,18 @@ export default class Model {
     this.setUpComChannel();
   }
 
+  addToTaskScheduler(new_task) {
+    this.sendMessage({
+      type: "command",
+      message: "add_task",
+      payload: [JSON.stringify(new_task)],
+    });
+  }
+  addScriptToTaskScheduler(new_script) {
+    new_script.forEach((task) => {
+      this.addToTaskScheduler(task);
+    });
+  }
   start() {
     // start realtime model
     this.sendMessage({

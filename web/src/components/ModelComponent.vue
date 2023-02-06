@@ -101,14 +101,14 @@
           @cancel="cancelBuild"
         >
         </ModelEditorComponent>
-        <NewModelComponent
+        <!-- <NewModelComponent
           v-if="editMode === 0"
           :modelProps="selectedModelItems"
           :modelName="selectedModelName"
           :modelType="selectedModelType"
           @cancel="cancelBuild"
         >
-        </NewModelComponent>
+        </NewModelComponent> -->
       </div>
     </div>
   </q-card>
@@ -123,7 +123,7 @@ import { useEngineStore } from "src/stores/engine";
 export default {
   components: {
     ModelEditorComponent,
-    NewModelComponent,
+    //NewModelComponent,
   },
   setup() {
     const definition = useDefinitionStore();

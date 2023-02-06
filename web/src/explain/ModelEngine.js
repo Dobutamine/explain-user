@@ -59,6 +59,10 @@ onmessage = function (e) {
   switch (e.data.type) {
     // command types
     case "command":
+      if (e.data.message == "add_task") {
+        addTaskToScheduler(JSON.parse(e.data.payload[0]));
+        break;
+      }
       if (e.data.message == "init_engine") {
         initEngine(JSON.parse(e.data.payload[0]));
         break;
@@ -150,6 +154,10 @@ onmessage = function (e) {
         break;
       }
   }
+};
+
+const addTaskToScheduler = function (new_task) {
+  model.TaskScheduler.AddTask(new_task);
 };
 
 const initEngine = function (engine_definition) {

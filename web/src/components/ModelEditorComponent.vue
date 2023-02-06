@@ -16,6 +16,7 @@
           :unit="modelProp.unit"
           :default="modelProp.current_value"
           :value="modelProp.current_value"
+          @propupdate="propUpdate"
         ></StringInputComponent>
         <NumberInputComponent
           v-if="modelProp.type === 'Number'"
@@ -23,6 +24,7 @@
           :unit="modelProp.unit"
           :default="modelProp.current_value"
           :value="modelProp.current_value"
+          @propupdate="propUpdate"
         ></NumberInputComponent>
         <BooleanInputComponent
           v-if="modelProp.type === 'Boolean'"
@@ -30,6 +32,7 @@
           :unit="modelProp.unit"
           :default="modelProp.current_value"
           :value="modelProp.current_value"
+          @propupdate="propUpdate"
         ></BooleanInputComponent>
         <ListInputComponent
           v-if="modelProp.type === 'ModelObject'"
@@ -38,6 +41,7 @@
           :unit="modelProp.unit"
           :default="modelProp.current_value"
           :value="modelProp.current_value"
+          @propupdate="propUpdate"
         ></ListInputComponent>
         <MultipleListInputComponent
           v-if="modelProp.type === '[ModelObject]'"
@@ -46,6 +50,7 @@
           :unit="modelProp.unit"
           :default="modelProp.current_value"
           :value="modelProp.current_value"
+          @propupdate="propUpdate"
         ></MultipleListInputComponent>
         <ObjectInputComponent
           v-if="
@@ -104,9 +109,15 @@ import BooleanInputComponent from "./ui-elements/BooleanInputComponent.vue";
 import ListInputComponent from "./ui-elements/ListInputComponent.vue";
 import MultipleListInputComponent from "./ui-elements/MultipleListInputComponent.vue";
 import ObjectInputComponent from "./ui-elements/ObjectInputComponent.vue";
+import { useScriptStore } from "src/stores/script";
 
 export default {
-  setup() {},
+  setup() {
+    const script = useScriptStore();
+    return {
+      script,
+    };
+  },
   components: {
     StringInputComponent,
     NumberInputComponent,
@@ -132,7 +143,6 @@ export default {
     propUpdate(propName, propValue) {
       let key = this.modelName + "." + propName;
       this.updateList[key] = propValue;
-      console.log(this.updateList);
     },
     addToScript() {
       let counter = 0;

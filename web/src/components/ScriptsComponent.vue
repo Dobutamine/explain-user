@@ -98,6 +98,7 @@
           size="sm"
           style="width: 50px"
           icon="fa-solid fa-play"
+          @click="startScript"
         ></q-btn>
         <q-btn
           v-if="script.script.length > 0"
@@ -302,6 +303,7 @@
 </template>
 
 <script>
+import { explain } from "src/boot/explain";
 import { useScriptStore } from "stores/script";
 import { useUserStore } from "stores/user";
 
@@ -503,9 +505,20 @@ export default {
     },
     clearScript() {
       this.selectedScript = "";
-      this.script = [];
+      this.script.script = [];
     },
-    updateScriptFromStore() {},
+    startScript() {
+      let processed_script = [];
+      this.script.script.forEach((scriptline) => {
+        // only transfer the pending script states
+        if (scriptline.state === "pending") {
+          processed_script.push(scriptline);
+          scriptline.state = "transferred";
+        }
+      });
+      // transfer to model
+      explain.addScriptToTaskScheduler(processed_script);
+    },
   },
   mounted() {},
 };
