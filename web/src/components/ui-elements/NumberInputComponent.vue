@@ -38,11 +38,7 @@ export default {
   },
   methods: {
     updateParent() {
-      this.$emit(
-        "propupdate",
-        this.name,
-        parseFloat(this.newValue / this.conversionFactor)
-      );
+      this.$emit("propupdate", this.name, parseFloat(this.newValue));
     },
   },
   mounted() {

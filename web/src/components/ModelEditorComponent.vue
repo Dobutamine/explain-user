@@ -47,6 +47,15 @@
           :default="modelProp.current_value"
           :value="modelProp.current_value"
         ></MultipleListInputComponent>
+        <ObjectInputComponent
+          v-if="modelProp.type === '{ModelObject}'"
+          :name="modelProp.name"
+          :options="modelProp.options"
+          :unit="modelProp.unit"
+          :default="modelProp.current_value"
+          :value="modelProp.current_value"
+          @propupdate="propUpdate"
+        ></ObjectInputComponent>
       </div>
     </div>
 
@@ -92,6 +101,7 @@ import NumberInputComponent from "./ui-elements/NumberInputComponent.vue";
 import BooleanInputComponent from "./ui-elements/BooleanInputComponent.vue";
 import ListInputComponent from "./ui-elements/ListInputComponent.vue";
 import MultipleListInputComponent from "./ui-elements/MultipleListInputComponent.vue";
+import ObjectInputComponent from "./ui-elements/ObjectInputComponent.vue";
 
 export default {
   setup() {},
@@ -101,6 +111,7 @@ export default {
     BooleanInputComponent,
     ListInputComponent,
     MultipleListInputComponent,
+    ObjectInputComponent,
   },
   props: {
     modelProps: Array,
@@ -119,6 +130,7 @@ export default {
     propUpdate(propName, propValue) {
       let key = this.modelName + "." + propName;
       this.updateList[key] = propValue;
+      console.log(this.updateList);
     },
     addToScript() {
       let counter = 0;
