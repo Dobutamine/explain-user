@@ -106,7 +106,8 @@ export default {
         // get the current value
         if (newValue != this.uiConfig.groupers[group][prop].value) {
           // delete the prop as the prop is moved to the script, otherwise we get state problems
-          this.removeGrouperItem(group, prop);
+          //this.updateGroupers();
+          //this.removeGrouperItem(group, prop);
           counter += 1;
           // update the script and ui store
           this.script.script.push({
@@ -169,7 +170,12 @@ export default {
       }
     },
   },
-  mounted() {},
+  mounted() {
+    this.$bus.on("update_groupers", () => {
+      this.updateGroupers();
+      this.cancel();
+    });
+  },
 };
 </script>
 

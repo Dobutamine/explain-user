@@ -516,36 +516,56 @@ export default {
       this.script.script = [];
     },
     translateGrouperEntries() {
+      let waste = [];
       // script t tag has the groupers
-      this.script.script.forEach((scriptline) => {
+      this.script.script.forEach((scriptline, index) => {
         if (scriptline.t === "grouper") {
+          waste.push(index);
           // find the grouper props in the config
           let grouperProps = this.config.groupers[scriptline.m][scriptline.p];
           if (grouperProps.unit === "%") {
             grouperProps.properties.forEach((prop) => {
-              let model = prop.model;
-              let modelProp = prop.modelProp;
               // get the current value from explain
-
-              // calculate the new value as this is a relative value
-              console.log(prop);
+              let current_value =
+                explain.modelState.Models[prop.model][prop.modelProp];
+              // get the desired change
+              let change = parseFloat(scriptline.v);
+              // calculate the new value
+              let new_value = (current_value / 100) * change * prop.factor;
+              // build a new script entry
+              this.script.script.push({
+                m: prop.model,
+                p: prop.modelProp,
+                o: current_value,
+                v: new_value,
+                it: scriptline.it,
+                at: scriptline.at,
+                t: "model",
+                state: "pending",
+              });
             });
           }
         }
+      });
+      // delete all the relative scriptlines
+      waste.forEach((i) => {
+        this.script.script.splice(i, 1);
       });
     },
     startScript() {
       let processed_script = [];
       this.translateGrouperEntries();
-      // this.script.script.forEach((scriptline) => {
-      //   // only transfer the pending script states
-      //   if (scriptline.state === "pending") {
-      //     processed_script.push(scriptline);
-      //     scriptline.state = "transferred";
-      //   }
-      // });
-      // // transfer to model
-      // explain.addScriptToTaskScheduler(processed_script);
+      this.script.script.forEach((scriptline) => {
+        // only transfer the pending script states
+        if (scriptline.state === "pending") {
+          processed_script.push(scriptline);
+          scriptline.state = "transferred";
+        }
+      });
+      // transfer to model
+      explain.addScriptToTaskScheduler(processed_script);
+      this.clearScript();
+      this.$bus.emit("update_groupers");
     },
   },
   mounted() {},
