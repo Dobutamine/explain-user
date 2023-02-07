@@ -160,7 +160,7 @@ export default {
             p: prop,
             o: this.uiConfig.groupers[group][prop].value,
             v: newValue,
-            it: 0.0,
+            it: 5.0,
             at: 0.0,
             t: "grouper",
             state: "pending",

@@ -22,6 +22,7 @@ export default class Model {
   state_event = new CustomEvent("state");
   status_event = new CustomEvent("status");
   error_event = new CustomEvent("error");
+  script_event = new CustomEvent("script");
 
   // declare an object holding the status log
   statusMessage = "";
@@ -32,6 +33,9 @@ export default class Model {
   errorMessage = "";
   errorLog = [];
   maxErrorLog = 10;
+
+  // declare a object holding the finished scripts ids
+  finishedScripts = [];
 
   constructor() {
     // spin up a model engine
@@ -206,6 +210,10 @@ export default class Model {
           case "rt":
             this.modelData = e.data.payload[0];
             document.dispatchEvent(this.rt_event);
+            break;
+          case "script":
+            this.finishedScripts.push(e.data.payload[0]);
+            document.dispatchEvent(this.script_event);
             break;
         }
       };

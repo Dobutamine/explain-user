@@ -160,7 +160,7 @@ export default {
             p: prop,
             o: currentValue,
             v: this.updateList[item],
-            it: 0.0,
+            it: 5.0,
             at: 0.0,
             t: "model",
             state: "pending",

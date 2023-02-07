@@ -33,10 +33,8 @@
         />
       </div>
 
-      <q-card
-        v-if="script.script.length > 0"
-        class="q-pb-xs q-pt-xs q-ma-md q-mt-xs"
-      >
+      <q-card class="q-pb-xs q-pt-xs q-ma-md q-mt-xs">
+        <div class="row justify-center text-overline">Planned scripts</div>
         <q-list bordered separator dark style="font-size: 12px">
           <div v-for="(script_line, index) in script.script" :key="index">
             <div class="row">
@@ -71,6 +69,27 @@
                 icon="fa-solid fa-angle-down"
                 @click="scriptLineDown(index)"
               ></q-btn>
+            </div>
+          </div>
+        </q-list>
+      </q-card>
+
+      <q-card class="q-pb-xs q-pt-xs q-ma-md q-mt-xs">
+        <div class="row justify-center text-overline">Active scripts</div>
+        <q-list bordered separator dark style="font-size: 12px">
+          <div v-for="(script_line, index) in runningScripts" :key="index">
+            <div class="row">
+              <q-item class="col-7" clickable v-ripple>
+                <q-item-section>
+                  <q-item-label
+                    >{{ script_line.m }}.{{ script_line.p }}
+                  </q-item-label>
+                  <q-item-label caption>
+                    {{ script_line.o }} -> {{ script_line.v }} in
+                    {{ script_line.it }} s. at {{ script_line.at }} s.
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
             </div>
           </div>
         </q-list>
@@ -340,6 +359,7 @@ export default {
       selectedAtTime: 0.0,
       availableScriptsOnServer: ["PDA"],
       selectedScriptOnServer: "",
+      runningScripts: [],
     };
   },
   methods: {
@@ -547,18 +567,36 @@ export default {
           }
         }
       });
+      console.log(this.script.script);
       // delete all the relative scriptlines
       waste.forEach((i) => {
         this.script.script.splice(i, 1);
+      });
+    },
+    scriptUpdate() {
+      let indices = [];
+      explain.finishedScripts.forEach((id) => {
+        this.runningScripts.forEach((script, index) => {
+          if (script.id === id) {
+            indices.push(index);
+          }
+        });
+      });
+      explain.finishedScripts = [];
+      indices.forEach((index) => {
+        this.runningScripts.splice(index, 1);
       });
     },
     startScript() {
       let processed_script = [];
       this.translateGrouperEntries();
       this.script.script.forEach((scriptline) => {
+        // add an id
+        scriptline["id"] = Math.floor(Math.random() * 1000);
         // only transfer the pending script states
         if (scriptline.state === "pending") {
           processed_script.push(scriptline);
+          this.runningScripts.push(scriptline);
           scriptline.state = "transferred";
         }
       });
@@ -568,7 +606,15 @@ export default {
       this.$bus.emit("update_groupers");
     },
   },
-  mounted() {},
+  beforeUnmount() {
+    document.removeEventListener("script", this.scriptUpdate);
+  },
+  mounted() {
+    try {
+      document.removeEventListener("script", this.scriptUpdate);
+    } catch {}
+    document.addEventListener("script", this.scriptUpdate);
+  },
 };
 </script>
 
