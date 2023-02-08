@@ -148,7 +148,8 @@
                     {{ script_line.id }}
                   </q-item-label>
                   <q-item-label caption :class="script_line.color">
-                    {{ script_line.o }} -> {{ script_line.v }} in
+                    {{ parseFloat(script_line.o).toFixed(rounding) }} ->
+                    {{ parseFloat(script_line.v).toFixed(rounding) }} in
                     {{ script_line.it }} s. at {{ script_line.at }} s.
                   </q-item-label>
                 </q-item-section>
@@ -372,6 +373,7 @@ export default {
       selectedScriptOnServer: "",
       runningScripts: [],
       finishedScripts: [],
+      rounding: 3,
     };
   },
   methods: {
@@ -548,11 +550,9 @@ export default {
       this.script.script = [];
     },
     translateGrouperEntries() {
-      let waste = [];
       // script t tag has the groupers
       this.script.script.forEach((scriptline, index) => {
         if (scriptline.t === "grouper") {
-          waste.push(index);
           // find the grouper props in the config
           let grouperProps = this.config.groupers[scriptline.m][scriptline.p];
           if (grouperProps.unit === "%") {
@@ -579,10 +579,6 @@ export default {
           }
         }
       });
-      // delete all the relative scriptlines
-      waste.forEach((i) => {
-        this.script.script.splice(i, 1);
-      });
     },
     scriptUpdate() {
       let indices = [];
@@ -601,21 +597,25 @@ export default {
     startScript() {
       let processed_script = [];
       this.translateGrouperEntries();
+      // remove all groupers from script
+
       this.script.script.forEach((scriptline) => {
         // add an id
-        scriptline["id"] = Math.floor(Math.random() * 1000);
-        if (scriptline.it < 1) {
-          scriptline.it = 1;
-        }
-        if (scriptline.at < 0) {
-          scriptline.at = 0;
-        }
-        // only transfer the pending script states
-        if (scriptline.state === "pending") {
-          processed_script.push(scriptline);
-          scriptline["color"] = "text-white";
-          this.runningScripts.push(scriptline);
-          scriptline.state = "transferred";
+        if (scriptline.t !== "grouper") {
+          scriptline["id"] = Math.floor(Math.random() * 1000);
+          if (scriptline.it < 1) {
+            scriptline.it = 1;
+          }
+          if (scriptline.at < 0) {
+            scriptline.at = 0;
+          }
+          // only transfer the pending script states
+          if (scriptline.state === "pending") {
+            processed_script.push(scriptline);
+            scriptline["color"] = "text-white";
+            this.runningScripts.push(scriptline);
+            scriptline.state = "transferred";
+          }
         }
       });
       // transfer to model
@@ -624,27 +624,36 @@ export default {
       this.$bus.emit("update_groupers");
     },
     dataUpdateSlow() {
-      let ended_scripts = [];
       explain.modelDataSlow.forEach((data) => {
         data.scripts.forEach((script) => {
           this.runningScripts.forEach((running_script, index) => {
             if (running_script.id === script.id) {
               running_script.o = script.v;
+              this.rounding = 4;
+              if (running_script.o > 1) this.rounding = 3;
+              if (running_script.o > 10) this.rounding = 2;
+              if (running_script.o > 100) this.rounding = 1;
+              if (running_script.o > 1000) this.rounding = 0;
+
               running_script.color = "text-red";
               running_script.at = Math.abs(parseFloat(script.at)).toFixed(0);
               running_script.it = Math.abs(parseFloat(script.it)).toFixed(0);
               if (script.it < 0.1 && script.at < 0.1) {
-                ended_scripts.push(index);
+                running_script.state = "completed";
                 running_script.color = "text-grey-7";
               }
             }
           });
         });
       });
-
-      // clear the finished scripts
-      if (ended_scripts.length > 6) {
-        this.runningScripts.shift();
+      let completed_scripts = [];
+      this.runningScripts.forEach((running_script, index) => {
+        if (running_script.state === "completed") {
+          completed_scripts.push(index);
+        }
+      });
+      if (completed_scripts.length > 2) {
+        this.runningScripts.splice(completed_scripts[0], 1);
       }
     },
   },

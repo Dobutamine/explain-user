@@ -39,8 +39,16 @@ export default class TaskScheduler {
 
   cleanUp() {
     this._cleanUpCounter = 0;
-    this._completed_tasks.forEach((cti) => {
-      this.tasks.splice(cti, 1);
+    this._completed_tasks.forEach((id) => {
+      let index = -1;
+      this.tasks.forEach((task, i) => {
+        if (task.id == id) {
+          index = i;
+        }
+      });
+      if (index > -1) {
+        this.tasks.splice(index, 1);
+      }
     });
   }
   doTasks() {
@@ -59,11 +67,20 @@ export default class TaskScheduler {
                 task.v = parseFloat(task.t);
                 task.status = "completed";
                 this.tasksReady = true;
-                this._completed_tasks.push(index);
+                this._completed_tasks.push(task.id);
               }
               task.v += task.step;
               // update the property
-              this.model.Models[task.m][task.p] = parseFloat(task.v);
+              try {
+                this.model.Models[task.m][task.p] = parseFloat(task.v);
+              } catch {
+                task.status = "completed";
+                task.it = 0;
+                task.at = 0;
+                this.tasksReady = true;
+                this._completed_tasks.push(task.id);
+              }
+
               break;
             case "boolean":
               if (task.it <= 0) {
@@ -72,7 +89,7 @@ export default class TaskScheduler {
                 this.tasksReady = true;
                 // update the property
                 this.model.Models[task.m][task.p] = task.v;
-                this._completed_tasks.push(index);
+                this._completed_tasks.push(task.id);
               }
               break;
             case "string":
@@ -82,7 +99,7 @@ export default class TaskScheduler {
                 this.tasksReady = true;
                 // update the property
                 this.model.Models[task.m][task.p] = task.v;
-                this._completed_tasks.push(index);
+                this._completed_tasks.push(task.id);
               }
               break;
           }
@@ -94,6 +111,7 @@ export default class TaskScheduler {
   AddTask(new_task) {
     // first cleanup
     this.cleanUp();
+
     // build tasl
     let task = {
       id: new_task.id,
