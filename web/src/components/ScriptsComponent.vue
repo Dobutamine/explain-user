@@ -17,27 +17,39 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
-      <div v-if="script.script.length > 0" class="q-mt-es row justify-center">
+      <div v-if="script.script.length > 0" class="q-ma-sm row justify-center">
         <q-input
-          class="q-ml-md q-mr-md q-mt-sm"
+          class="q-ml-md q-mr-md q-mt-sm col-8"
           v-model="script.name"
           label-color="red"
           label="script name"
-          filled
           square
           hide-hint
           dense
           dark
           stack-label
-          style="width: 90%; font-size: 12px"
         />
+        <q-checkbox
+          v-if="user.isAdmin"
+          class="col q-mt-md"
+          label="protected"
+          size="sm"
+          dense
+          v-model="this.script.protected"
+        ></q-checkbox>
+        <q-checkbox
+          class="col q-mt-md"
+          label="shared"
+          size="sm"
+          dense
+          v-model="this.script.shared"
+        ></q-checkbox>
       </div>
 
       <q-card
         v-if="script.script.length > 0"
         class="q-pb-xs q-pt-xs q-ma-md q-mt-xs"
       >
-        <div class="row justify-center text-overline">Planned scripts</div>
         <q-list bordered separator dark style="font-size: 12px">
           <div v-for="(script_line, index) in script.script" :key="index">
             <div class="row">
@@ -80,19 +92,7 @@
       <div
         v-if="script.script.length > 0"
         class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs"
-      >
-        <q-checkbox
-          v-if="user.isAdmin"
-          label="protected"
-          dense
-          v-model="this.script.protected"
-        ></q-checkbox>
-        <q-checkbox
-          label="shared"
-          dense
-          v-model="this.script.shared"
-        ></q-checkbox>
-      </div>
+      ></div>
       <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-sm">
         <q-btn
           v-if="script.script.length > 0"
@@ -100,26 +100,26 @@
           dense
           size="sm"
           style="width: 50px"
-          icon="fa-solid fa-plus"
           @click="startScript"
-        ></q-btn>
+          >RUN</q-btn
+        >
         <q-btn
           v-if="script.script.length > 0"
           color="red-10"
           dense
           size="sm"
           style="width: 50px"
-          icon="fa-solid fa-upload"
           @click="saveScriptToServer"
-        ></q-btn>
+          >SAVE</q-btn
+        >
         <q-btn
           color="blue-10"
           dense
           size="sm"
           style="width: 50px"
-          icon="fa-solid fa-download"
           @click="openServerCommunication"
-        ></q-btn>
+          >LOAD</q-btn
+        >
         <q-btn
           v-if="script.script.length > 0"
           color="grey-14"
@@ -130,34 +130,6 @@
           icon="fa-solid fa-trash-can"
         ></q-btn>
       </div>
-
-      <q-card
-        v-if="runningScripts.length > 0"
-        class="q-pb-xs q-pt-xs q-ma-md q-mt-xs"
-      >
-        <div class="row justify-center text-overline">
-          Running and completed scripts
-        </div>
-        <q-list bordered separator dark style="font-size: 12px">
-          <div v-for="(script_line, index) in runningScripts" :key="index">
-            <div class="row">
-              <q-item class="col-7" clickable v-ripple>
-                <q-item-section :class="script_line.color">
-                  <q-item-label
-                    >{{ script_line.m }}.{{ script_line.p }} :
-                    {{ script_line.id }}
-                  </q-item-label>
-                  <q-item-label caption :class="script_line.color">
-                    {{ parseFloat(script_line.o).toFixed(rounding) }} ->
-                    {{ parseFloat(script_line.v).toFixed(rounding) }} in
-                    {{ script_line.it }} s. at {{ script_line.at }} s.
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </div>
-          </div>
-        </q-list>
-      </q-card>
 
       <div
         class="q-gutter-sm row text-overline justify-center q-mb-xs"
@@ -312,7 +284,7 @@
             size="sm"
             style="width: 50px"
             @click="deleteScriptFromServer"
-            icon="fa-solid fa-delete-left"
+            icon="fa-solid fa-trash-can"
           ></q-btn>
           <q-btn
             color="indigo-10"
@@ -330,6 +302,30 @@
         </div>
       </q-card>
     </q-popup-edit>
+  </q-card>
+  <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
+    <div class="row justify-center text-overline">
+      Running and completed scripts
+    </div>
+    <q-list bordered separator dark style="font-size: 12px">
+      <div v-for="(script_line, index) in runningScripts" :key="index">
+        <div class="row">
+          <q-item class="col-7" clickable v-ripple>
+            <q-item-section :class="script_line.color">
+              <q-item-label
+                >{{ script_line.m }}.{{ script_line.p }} :
+                {{ script_line.id }}
+              </q-item-label>
+              <q-item-label caption :class="script_line.color">
+                {{ parseFloat(script_line.o).toFixed(rounding) }} ->
+                {{ parseFloat(script_line.v).toFixed(rounding) }} in
+                {{ script_line.it }} s. at {{ script_line.at }} s.
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </div>
+      </div>
+    </q-list>
   </q-card>
 </template>
 
