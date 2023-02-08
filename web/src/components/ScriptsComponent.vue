@@ -17,7 +17,7 @@
       ></q-icon>
     </div>
     <div v-if="!collapsed">
-      <div class="q-mt-es row justify-center">
+      <div v-if="script.script.length > 0" class="q-mt-es row justify-center">
         <q-input
           class="q-ml-md q-mr-md q-mt-sm"
           v-model="script.name"
@@ -33,7 +33,10 @@
         />
       </div>
 
-      <q-card class="q-pb-xs q-pt-xs q-ma-md q-mt-xs">
+      <q-card
+        v-if="script.script.length > 0"
+        class="q-pb-xs q-pt-xs q-ma-md q-mt-xs"
+      >
         <div class="row justify-center text-overline">Planned scripts</div>
         <q-list bordered separator dark style="font-size: 12px">
           <div v-for="(script_line, index) in script.script" :key="index">
@@ -74,7 +77,10 @@
           </div>
         </q-list>
       </q-card>
-      <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
+      <div
+        v-if="script.script.length > 0"
+        class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs"
+      >
         <q-checkbox
           v-if="user.isAdmin"
           label="protected"
