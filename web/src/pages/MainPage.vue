@@ -20,7 +20,9 @@
 
           <q-tab-panels v-model="tab_left" keep-alive>
             <q-tab-panel name="play">
+              <InterventionsComponent></InterventionsComponent>
               <GroupersComponent></GroupersComponent>
+              <CaseStudiesComponent></CaseStudiesComponent>
               <BuildModelComponent></BuildModelComponent>
             </q-tab-panel>
             <q-tab-panel name="build">
@@ -136,7 +138,9 @@
 
 <script>
 import ModelComponent from "../components/ModelComponent.vue";
+import CaseStudiesComponent from "src/components/CaseStudiesComponent.vue";
 import GroupersComponent from "../components/GroupersComponent.vue";
+import InterventionsComponent from "src/components/InterventionsComponent.vue";
 import ScriptsComponentVue from "../components/ScriptsComponent.vue";
 import MonitorsComponentVue from "../components/MonitorsComponent.vue";
 import DiagramComponent from "src/components/DiagramComponent.vue";
@@ -160,8 +164,10 @@ export default {
     };
   },
   components: {
+    CaseStudiesComponent,
     TrendsMonitor,
     PatientMonitor,
+    InterventionsComponent,
     ScriptComponentVue: ScriptsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,
     GroupersComponent,

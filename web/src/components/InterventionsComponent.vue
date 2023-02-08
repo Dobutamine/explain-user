@@ -21,7 +21,7 @@
         <q-btn
           color="primary"
           dark
-          label="select propery group"
+          label="select intervention"
           style="width: 55%"
           size="sm"
         >
@@ -58,23 +58,23 @@
         </q-btn>
       </div>
       <div class="q-ma-sm row items-center">
-        <GrouperUpdaterComponentVue
+        <InterventionsEditorComponent
           :grouperItems="selectedGrouperItems"
           style="width: 100%"
           @removeallgroupers="removeAllGroupers"
           @removegrouperitem="removeGrouperItem"
-        ></GrouperUpdaterComponentVue>
+        ></InterventionsEditorComponent>
       </div>
     </div>
   </q-card>
 </template>
 
 <script>
-import GrouperEditorComponentVue from "./GrouperEditorComponent.vue";
+import InterventionsEditorComponent from "./InterventionsEditorComponent.vue";
 import { useConfigStore } from "src/stores/config";
 export default {
   components: {
-    GrouperUpdaterComponentVue: GrouperEditorComponentVue,
+    InterventionsEditorComponent,
   },
   setup() {
     const uiConfig = useConfigStore();
@@ -84,7 +84,7 @@ export default {
   },
   data() {
     return {
-      title: "GROUPED MODEL PROPERTIES",
+      title: "THERAPEUTIC INTERVENTIONS",
       test: true,
       collapsed: false,
       groupersTree: {},

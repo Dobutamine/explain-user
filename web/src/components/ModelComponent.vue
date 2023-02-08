@@ -18,12 +18,6 @@
     </div>
     <div v-if="!collapsed">
       <div
-        v-if="definition.name !== ''"
-        class="row text-overline justify-center"
-      >
-        {{ definition.name }}
-      </div>
-      <div
         v-if="definition.name === ''"
         class="row text-overline justify-center"
       >
@@ -53,8 +47,8 @@
         </q-btn> -->
         <q-btn
           color="primary"
-          class="col q-mr-sm"
           label="select model"
+          style="width: 60%"
           dark
           size="sm"
         >
@@ -136,7 +130,7 @@ export default {
   data() {
     return {
       notyet: true,
-      title: "MODEL EDITOR",
+      title: "MODEL PROPERTIES",
       collapsed: false,
       modelsTree: {},
       selectedModelName: "",

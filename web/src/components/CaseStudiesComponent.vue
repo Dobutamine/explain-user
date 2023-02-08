@@ -21,7 +21,7 @@
         <q-btn
           color="primary"
           dark
-          label="select propery group"
+          label="select case"
           style="width: 55%"
           size="sm"
         >
@@ -58,23 +58,23 @@
         </q-btn>
       </div>
       <div class="q-ma-sm row items-center">
-        <GrouperUpdaterComponentVue
+        <CaseStudiesEditorComponent
           :grouperItems="selectedGrouperItems"
           style="width: 100%"
           @removeallgroupers="removeAllGroupers"
           @removegrouperitem="removeGrouperItem"
-        ></GrouperUpdaterComponentVue>
+        ></CaseStudiesEditorComponent>
       </div>
     </div>
   </q-card>
 </template>
 
 <script>
-import GrouperEditorComponentVue from "./GrouperEditorComponent.vue";
+import CaseStudiesEditorComponent from "./CaseStudiesEditorComponent.vue";
 import { useConfigStore } from "src/stores/config";
 export default {
   components: {
-    GrouperUpdaterComponentVue: GrouperEditorComponentVue,
+    CaseStudiesEditorComponent,
   },
   setup() {
     const uiConfig = useConfigStore();
@@ -84,7 +84,7 @@ export default {
   },
   data() {
     return {
-      title: "GROUPED MODEL PROPERTIES",
+      title: "CASE STUDIES",
       test: true,
       collapsed: false,
       groupersTree: {},
