@@ -206,9 +206,13 @@ export default {
 
       let slowData = explain.modelDataSlow[explain.modelDataSlow.length - 1];
       this.channels.forEach((channel) => {
-        let valueText = (
-          slowData[channel.value_prop1] * channel.valueFactor
-        ).toFixed(channel.valueRounding);
+        let valueText = "";
+        try {
+          valueText = (
+            slowData[channel.value_prop1] * channel.valueFactor
+          ).toFixed(channel.valueRounding);
+        } catch {}
+
         if (channel.value_prop2 !== "") {
           valueText +=
             "/" +

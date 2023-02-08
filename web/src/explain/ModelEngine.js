@@ -435,17 +435,6 @@ const modelStep = function () {
   // update the Task Scheduler
   model["TaskScheduler"].update(model.ModelTimeTotal);
 
-  // get the completed tasks
-  if (model.TaskScheduler.tasksReady) {
-    let task_ids = model.TaskScheduler.getCompletedTasks();
-
-    postMessage({
-      type: "script",
-      message: "ready",
-      payload: task_ids,
-    });
-  }
-
   // increase the model time
   model.ModelTimeTotal += model.ModelingStepsize;
 };

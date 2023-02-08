@@ -41,7 +41,8 @@
               <q-item class="col-7" clickable v-ripple>
                 <q-item-section>
                   <q-item-label
-                    >{{ script_line.m }}.{{ script_line.p }}
+                    >{{ script_line.m }}.{{ script_line.p }} :
+                    {{ script_line.id }}
                   </q-item-label>
                   <q-item-label caption>
                     {{ script_line.o }} -> {{ script_line.v }} in
@@ -82,7 +83,8 @@
               <q-item class="col-7" clickable v-ripple>
                 <q-item-section>
                   <q-item-label
-                    >{{ script_line.m }}.{{ script_line.p }}
+                    >{{ script_line.m }}.{{ script_line.p }} :
+                    {{ script_line.id }}
                   </q-item-label>
                   <q-item-label caption>
                     {{ script_line.o }} -> {{ script_line.v }} in
@@ -90,6 +92,7 @@
                   </q-item-label>
                 </q-item-section>
               </q-item>
+              <q-linear-progress dark :value="script_line.pb" class="q-mt-md" />
             </div>
           </div>
         </q-list>
@@ -360,6 +363,7 @@ export default {
       availableScriptsOnServer: ["PDA"],
       selectedScriptOnServer: "",
       runningScripts: [],
+      finishedScripts: [],
     };
   },
   methods: {
@@ -567,7 +571,6 @@ export default {
           }
         }
       });
-      console.log(this.script.script);
       // delete all the relative scriptlines
       waste.forEach((i) => {
         this.script.script.splice(i, 1);
@@ -596,6 +599,11 @@ export default {
         // only transfer the pending script states
         if (scriptline.state === "pending") {
           processed_script.push(scriptline);
+          scriptline["pb"] = 0.0;
+          scriptline["pb_step"] = 1 / parseFloat(scriptline.it);
+          console.log(
+            `script id: ${scriptline.id}, it: ${scriptline.it}, step: ${scriptline.pb_step}`
+          );
           this.runningScripts.push(scriptline);
           scriptline.state = "transferred";
         }
@@ -605,15 +613,38 @@ export default {
       this.clearScript();
       this.$bus.emit("update_groupers");
     },
+    dataUpdateSlow() {
+      let ended_scripts = [];
+      explain.modelDataSlow.forEach((data) => {
+        data.scripts.forEach((script) => {
+          this.runningScripts.forEach((running_script, index) => {
+            if (running_script.id === script.id) {
+              running_script.pb = 1 - script.it * running_script.pb_step;
+              console.log(
+                `script id: ${running_script.id}, it: ${script.it}, step: ${running_script.pb_step}`
+              );
+              if (running_script.pb > 0.99) {
+                ended_scripts.push(index);
+              }
+            }
+          });
+        });
+      });
+      // clear the finished scripts
+      ended_scripts.forEach((index) => {
+        this.runningScripts.splice(index, 1);
+      });
+    },
   },
   beforeUnmount() {
-    document.removeEventListener("script", this.scriptUpdate);
+    document.removeEventListener("data_slow", this.dataUpdateSlow);
   },
   mounted() {
     try {
-      document.removeEventListener("script", this.scriptUpdate);
+      document.removeEventListener("data_slow", this.dataUpdateSlow);
     } catch {}
-    document.addEventListener("script", this.scriptUpdate);
+
+    document.addEventListener("data_slow", this.dataUpdateSlow);
   },
 };
 </script>

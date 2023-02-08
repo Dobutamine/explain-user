@@ -136,7 +136,13 @@ export default class DataCollector {
         }
 
         data_object[this.watch_list_slow[i].label] = value;
+        data_object["scripts"] = [];
+        this._modelEngine.TaskScheduler.tasks.forEach((task) => {
+          data_object["scripts"].push(task);
+        });
       }
+      // add the script to the data_object
+
       this.collected_data_slow.push(data_object);
     }
 

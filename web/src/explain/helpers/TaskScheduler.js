@@ -12,6 +12,9 @@ export default class TaskScheduler {
   _updateCounter = 0.0;
   _modelingStepsize = 0.0005;
 
+  _cleanUpInterval = 1.0;
+  _cleanUpCounter = 0.0;
+
   constructor(_model) {
     // get a reference to the whole model
     this.model = _model;
@@ -26,8 +29,20 @@ export default class TaskScheduler {
       this.doTasks();
     }
     this._updateCounter += this._modelingStepsize;
+
+    // garbage collector
+    if (this._cleanUpCounter >= this._cleanUpInterval) {
+      this.cleanUp;
+    }
+    this._cleanUpCounter += this._modelingStepsize;
   }
 
+  cleanUp() {
+    this._cleanUpCounter = 0;
+    this._completed_tasks.forEach((cti) => {
+      this.tasks.splice(cti, 1);
+    });
+  }
   doTasks() {
     this.tasks.forEach((task, index) => {
       if (task.status !== "completed") {
@@ -41,14 +56,14 @@ export default class TaskScheduler {
           switch (task.type) {
             case "number":
               if (Math.abs(task.v - task.t) < Math.abs(task.step)) {
-                task.v = task.t;
+                task.v = parseFloat(task.t);
                 task.status = "completed";
                 this.tasksReady = true;
                 this._completed_tasks.push(index);
               }
               task.v += task.step;
               // update the property
-              this.model.Models[task.m][task.p] = task.v;
+              this.model.Models[task.m][task.p] = parseFloat(task.v);
               break;
             case "boolean":
               if (task.it <= 0) {
@@ -76,20 +91,10 @@ export default class TaskScheduler {
     });
   }
 
-  getCompletedTasks() {
-    // delete the completed tasks
-    let ids = [];
-    this._completed_tasks.forEach((task_index) => {
-      ids.push(this.tasks[task_index].id);
-      this.tasks.splice(task_index, 1);
-    });
-    this._completed_tasks = [];
-    // reset the flag
-    this.tasksReady = false;
-    // return the deleted tasks
-    return ids;
-  }
   AddTask(new_task) {
+    // first cleanup
+    this.cleanUp();
+    // build tasl
     let task = {
       id: new_task.id,
       m: new_task.m,
@@ -109,11 +114,6 @@ export default class TaskScheduler {
         task.step = (task.t - task.o) / (task.it / this._updateInterval);
       }
     }
-
     this.tasks.push(task);
   }
-
-  RemoveTask() {}
-
-  UpdateTasks() {}
 }
