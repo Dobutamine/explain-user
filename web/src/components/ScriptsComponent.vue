@@ -74,30 +74,6 @@
           </div>
         </q-list>
       </q-card>
-
-      <q-card class="q-pb-xs q-pt-xs q-ma-md q-mt-xs">
-        <div class="row justify-center text-overline">Active scripts</div>
-        <q-list bordered separator dark style="font-size: 12px">
-          <div v-for="(script_line, index) in runningScripts" :key="index">
-            <div class="row">
-              <q-item class="col-7" clickable v-ripple>
-                <q-item-section>
-                  <q-item-label
-                    >{{ script_line.m }}.{{ script_line.p }} :
-                    {{ script_line.id }}
-                  </q-item-label>
-                  <q-item-label caption>
-                    {{ script_line.o }} -> {{ script_line.v }} in
-                    {{ script_line.it }} s. at {{ script_line.at }} s.
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-linear-progress dark :value="script_line.pb" class="q-mt-md" />
-            </div>
-          </div>
-        </q-list>
-      </q-card>
-
       <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-xs">
         <q-checkbox
           v-if="user.isAdmin"
@@ -111,7 +87,6 @@
           v-model="this.script.shared"
         ></q-checkbox>
       </div>
-
       <div class="q-gutter-sm row text-overline justify-center q-mb-sm q-mt-sm">
         <q-btn
           v-if="script.script.length > 0"
@@ -119,7 +94,7 @@
           dense
           size="sm"
           style="width: 50px"
-          icon="fa-solid fa-play"
+          icon="fa-solid fa-plus"
           @click="startScript"
         ></q-btn>
         <q-btn
@@ -149,6 +124,33 @@
           icon="fa-solid fa-trash-can"
         ></q-btn>
       </div>
+
+      <q-card
+        v-if="runningScripts.length > 0"
+        class="q-pb-xs q-pt-xs q-ma-md q-mt-xs"
+      >
+        <div class="row justify-center text-overline">
+          Running and completed scripts
+        </div>
+        <q-list bordered separator dark style="font-size: 12px">
+          <div v-for="(script_line, index) in runningScripts" :key="index">
+            <div class="row">
+              <q-item class="col-7" clickable v-ripple>
+                <q-item-section :class="script_line.color">
+                  <q-item-label
+                    >{{ script_line.m }}.{{ script_line.p }} :
+                    {{ script_line.id }}
+                  </q-item-label>
+                  <q-item-label caption :class="script_line.color">
+                    {{ script_line.o }} -> {{ script_line.v }} in
+                    {{ script_line.it }} s. at {{ script_line.at }} s.
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
+          </div>
+        </q-list>
+      </q-card>
 
       <div
         class="q-gutter-sm row text-overline justify-center q-mb-xs"
@@ -596,14 +598,16 @@ export default {
       this.script.script.forEach((scriptline) => {
         // add an id
         scriptline["id"] = Math.floor(Math.random() * 1000);
+        if (scriptline.it < 1) {
+          scriptline.it = 1;
+        }
+        if (scriptline.at < 0) {
+          scriptline.at = 0;
+        }
         // only transfer the pending script states
         if (scriptline.state === "pending") {
           processed_script.push(scriptline);
-          scriptline["pb"] = 0.0;
-          scriptline["pb_step"] = 1 / parseFloat(scriptline.it);
-          console.log(
-            `script id: ${scriptline.id}, it: ${scriptline.it}, step: ${scriptline.pb_step}`
-          );
+          scriptline["color"] = "text-white";
           this.runningScripts.push(scriptline);
           scriptline.state = "transferred";
         }
@@ -619,21 +623,23 @@ export default {
         data.scripts.forEach((script) => {
           this.runningScripts.forEach((running_script, index) => {
             if (running_script.id === script.id) {
-              running_script.pb = 1 - script.it * running_script.pb_step;
-              console.log(
-                `script id: ${running_script.id}, it: ${script.it}, step: ${running_script.pb_step}`
-              );
-              if (running_script.pb > 0.99) {
+              running_script.o = script.v;
+              running_script.color = "text-red";
+              running_script.at = Math.abs(parseFloat(script.at)).toFixed(0);
+              running_script.it = Math.abs(parseFloat(script.it)).toFixed(0);
+              if (script.it < 0.1 && script.at < 0.1) {
                 ended_scripts.push(index);
+                running_script.color = "text-grey-7";
               }
             }
           });
         });
       });
+
       // clear the finished scripts
-      ended_scripts.forEach((index) => {
-        this.runningScripts.splice(index, 1);
-      });
+      if (ended_scripts.length > 6) {
+        this.runningScripts.shift();
+      }
     },
   },
   beforeUnmount() {
