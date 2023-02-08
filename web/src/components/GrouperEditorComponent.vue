@@ -27,9 +27,13 @@
           @click="addToScript"
           >SCRIPT</q-btn
         >
-        <q-btn color="negative" size="sm" style="width: 70px" @click="cancel"
-          >CANCEL</q-btn
-        >
+        <q-btn
+          color="negative"
+          size="sm"
+          style="width: 50px"
+          @click="cancel"
+          icon="fa-solid fa-xmark"
+        ></q-btn>
       </div>
       <div
         class="q-gutter-sm row text-overline justify-center q-mb-xs"

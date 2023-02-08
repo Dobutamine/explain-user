@@ -310,11 +310,10 @@
     <q-list bordered separator dark style="font-size: 12px">
       <div v-for="(script_line, index) in runningScripts" :key="index">
         <div class="row">
-          <q-item class="col-7" clickable v-ripple>
+          <q-item class="col-7 text-bold" clickable v-ripple>
             <q-item-section :class="script_line.color">
               <q-item-label
-                >{{ script_line.m }}.{{ script_line.p }} :
-                {{ script_line.id }}
+                >{{ script_line.m }}.{{ script_line.p }}
               </q-item-label>
               <q-item-label caption :class="script_line.color">
                 {{ parseFloat(script_line.o).toFixed(rounding) }} ->

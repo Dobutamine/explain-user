@@ -34,7 +34,7 @@
         v-if="definition.name !== ''"
         class="q-pa-sm q-mt-xs q-mb-sm q-ml-md q-mr-md row text-overline justify-center"
       >
-        <q-btn color="primary" class="col q-mr-sm" label="add" dark size="sm">
+        <!-- <q-btn color="primary" class="col q-mr-sm" label="add" dark size="sm">
           <q-menu dark>
             <q-list dense>
               <div v-for="(modelType, index) in modelTypeNames" :key="index">
@@ -50,11 +50,11 @@
               </div>
             </q-list>
           </q-menu>
-        </q-btn>
+        </q-btn> -->
         <q-btn
-          color="secondary"
+          color="primary"
           class="col q-mr-sm"
-          label="edit"
+          label="select model"
           dark
           size="sm"
         >
@@ -74,7 +74,7 @@
             </q-list>
           </q-menu>
         </q-btn>
-        <q-btn color="negative" class="col" label="delete" dark size="sm">
+        <!-- <q-btn color="negative" class="col" label="delete" dark size="sm">
           <q-menu dark>
             <q-list dense>
               <div v-for="(modelType, index) in modelTypeNames" :key="index">
@@ -90,7 +90,7 @@
               </div>
             </q-list>
           </q-menu>
-        </q-btn>
+        </q-btn> -->
       </div>
       <div class="q-ma-sm q-gutter-sm row items-center">
         <ModelEditorComponent

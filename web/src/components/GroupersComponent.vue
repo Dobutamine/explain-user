@@ -86,7 +86,7 @@ export default {
     return {
       title: "EDIT GROUPERS",
       test: true,
-      collapsed: true,
+      collapsed: false,
       groupersTree: {},
       selectedGrouperItems: [],
     };
