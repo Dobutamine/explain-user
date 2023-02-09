@@ -113,7 +113,7 @@
           >SAVE</q-btn
         >
         <q-btn
-          color="blue-10"
+          color="primary"
           dense
           size="sm"
           style="width: 50px"
@@ -559,6 +559,25 @@ export default {
               let change = parseFloat(scriptline.v);
               // calculate the new value
               let new_value = (current_value / 100) * change * prop.factor;
+              // build a new script entry
+              this.script.script.push({
+                m: prop.model,
+                p: prop.modelProp,
+                o: current_value,
+                v: new_value,
+                it: scriptline.it,
+                at: scriptline.at,
+                t: "model",
+                state: "pending",
+              });
+            });
+          } else {
+            grouperProps.properties.forEach((prop) => {
+              // get the current value from explain
+              let current_value =
+                explain.modelState.Models[prop.model][prop.modelProp];
+              // calculate the new value
+              let new_value = scriptline.v * prop.factor;
               // build a new script entry
               this.script.script.push({
                 m: prop.model,

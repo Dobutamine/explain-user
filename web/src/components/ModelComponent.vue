@@ -46,7 +46,7 @@
           </q-menu>
         </q-btn> -->
         <q-btn
-          color="primary"
+          color="grey-9"
           label="select model"
           style="width: 60%"
           dark
@@ -131,7 +131,7 @@ export default {
     return {
       notyet: true,
       title: "MODEL PROPERTIES",
-      collapsed: false,
+      collapsed: true,
       modelsTree: {},
       selectedModelName: "",
       selectedModelType: "",

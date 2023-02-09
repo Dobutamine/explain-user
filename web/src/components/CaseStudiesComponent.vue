@@ -19,8 +19,8 @@
     <div v-if="!collapsed">
       <div class="q-mt-xs q-mb-sm row text-overline justify-center">
         <q-btn
-          color="primary"
-          label="select model"
+          color="grey-9"
+          label="select case study"
           style="width: 60%"
           dark
           size="sm"
@@ -74,7 +74,7 @@ export default {
     return {
       title: "CASE STUDIES",
       test: true,
-      collapsed: false,
+      collapsed: true,
       selectedCaseName: "",
       selectedCase: {},
       caseNames: [],
