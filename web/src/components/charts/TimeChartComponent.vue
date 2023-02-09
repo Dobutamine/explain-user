@@ -206,6 +206,20 @@
                 dense
                 style="width: 75px; font-size: 10px"
               />
+              <q-checkbox
+                v-model="mLEnabled"
+                dense
+                label="ml"
+                style="font-size: 12px"
+                @click="toggleMl"
+              />
+              <q-checkbox
+                v-model="minEnabled"
+                dense
+                label="min"
+                style="font-size: 12px"
+                @click="toggleMin"
+              />
 
               <q-btn
                 v-if="exportEnabled"
@@ -415,6 +429,7 @@ let chartsXY = {};
 import { explain } from "src/boot/explain";
 import * as Stat from "simple-statistics";
 import { useConfigStore } from "src/stores/config";
+import { useEngineStore } from "src/stores/engine";
 import {
   lightningChart,
   emptyFill,
@@ -429,8 +444,10 @@ import {
 export default {
   setup() {
     const uiConfig = useConfigStore();
+    const engine = useEngineStore();
     return {
       uiConfig,
+      engine,
     };
   },
   props: {
@@ -448,6 +465,14 @@ export default {
   },
   data() {
     return {
+      mLEnabled: false,
+      minEnabled: false,
+      mlFactor1: 1,
+      minFactor1: 1,
+      mlFactor2: 1,
+      minFactor2: 1,
+      mlFactor3: 1,
+      minFactor3: 1,
       isEnabled: true,
       visible: "",
       data_source: 0,
@@ -535,9 +560,14 @@ export default {
       lineSeries2: null,
       lineSeries3: null,
       exportFileName: "data.csv",
+      unit1: "",
+      unit2: "",
+      unit3: "",
     };
   },
   methods: {
+    toggleMl() {},
+    toggleMin() {},
     toggleVisibility() {
       this.isEnabled = !this.isEnabled;
       if (this.isEnabled) {
@@ -693,7 +723,53 @@ export default {
       this.uiConfig.charts[this.id].selectedSecProp1 =
         this.selected_sec_prop_name1;
     },
+    findUnit(comp_name, prop_name) {
+      let unit = "";
+      let mt = explain.modelState.Models[comp_name].ModelType;
+      // find the unit
+      Object.keys(this.engine.core_models[mt].inputs).forEach((input) => {
+        if (input === prop_name) {
+          unit = this.engine.core_models[mt].inputs[prop_name].unit;
+        }
+      });
+      Object.keys(this.engine.core_models[mt].outputs).forEach((output) => {
+        if (output === prop_name) {
+          unit = this.engine.core_models[mt].outputs[prop_name].unit;
+        }
+      });
+
+      return unit;
+    },
+    unitConversion(current_unit, desired_unit) {
+      let factor = 1;
+      switch (desired_unit) {
+        case "l/s":
+          factor = 1000;
+          break;
+        case "ml/min":
+          factor = 60.0;
+          break;
+      }
+      return factor;
+    },
     selectPrimProp1(selection) {
+      // find the unit
+      this.unit1 = this.findUnit(this.selected_component_name1, selection);
+      // split the unit
+      if (this.mLEnabled) {
+        this.mlFactor1 = 1000;
+        this.unit1 = "ml/sec";
+      }
+      if (this.minEnabled) {
+        this.minFactor1 = 60.0;
+      }
+      // set the label
+      this.yLabel = this.unit1;
+      // add the chart to the global chartsXY array
+      chartsXY[this.chartId].chartYAxis
+        .setTitle(this.yLabel)
+        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ff0000") }));
+
       // stop the realtime model
       this.$bus.emit("stop_rt");
       // store the current selection
@@ -738,6 +814,20 @@ export default {
         this.selected_sec_prop_name2;
     },
     selectPrimProp2(selection) {
+      // find the unit
+      this.unit2 = this.findUnit(this.selected_component_name2, selection);
+      console.log(this.selected_component_name1);
+      console.log(this.selected_prim_prop_name1);
+
+      if (this.selected_component_name1 === "") {
+        // set the label only if the first prop1 is empty
+        this.yLabel = this.unit2;
+        // add the chart to the global chartsXY array
+        chartsXY[this.chartId].chartYAxis
+          .setTitle(this.yLabel)
+          .setTitleFillStyle(new SolidFill({ color: ColorHEX("#00ff00") }));
+      }
+
       // stop the realtime model
       this.$bus.emit("stop_rt");
       // store the current selection
@@ -782,6 +872,19 @@ export default {
         this.selected_sec_prop_name2;
     },
     selectPrimProp3(selection) {
+      // find the unit
+      this.unit3 = this.findUnit(this.selected_component_name3, selection);
+      if (
+        this.selected_component_name1 === "" &&
+        this.selected_component_name2 === ""
+      ) {
+        // set the label only if the first prop1 is empty
+        this.yLabel = this.unit3;
+        // add the chart to the global chartsXY array
+        chartsXY[this.chartId].chartYAxis
+          .setTitle(this.yLabel)
+          .setTitleFillStyle(new SolidFill({ color: ColorHEX("#0000ff") }));
+      }
       // stop the realtime model
       this.$bus.emit("stop_rt");
       // store the current selection
@@ -1067,11 +1170,20 @@ export default {
           postFix3 = "conc";
         }
       }
+
       explain.modelData.forEach((data) => {
         if (this.chart1_enabled) {
-          let y1 = parseFloat(data[prop1]) * this.chart1_factor;
+          let y1 =
+            parseFloat(data[prop1]) *
+            this.chart1_factor *
+            this.mlFactor1 *
+            this.minFactor1;
           if (postFix1) {
-            y1 = parseFloat(data[prop1][postFix1]) * this.chart1_factor;
+            y1 =
+              parseFloat(data[prop1][postFix1]) *
+              this.chart1_factor *
+              this.mlFactor1 *
+              this.minFactor1;
           }
           this.chartData1.push({
             x: data.time,
@@ -1082,9 +1194,17 @@ export default {
           }
         }
         if (this.chart2_enabled) {
-          let y2 = parseFloat(data[prop2]) * this.chart2_factor;
+          let y2 =
+            parseFloat(data[prop2]) *
+            this.chart2_factor *
+            this.mlFactor2 *
+            this.minFactor2;
           if (postFix2) {
-            y2 = parseFloat(data[prop2][postFix2]) * this.chart2_factor;
+            y2 =
+              parseFloat(data[prop2][postFix2]) *
+              this.chart2_factor *
+              this.mlFactor2 *
+              this.minFactor2;
           }
           this.chartData2.push({
             x: data.time,
@@ -1095,9 +1215,17 @@ export default {
           }
         }
         if (this.chart3_enabled) {
-          let y3 = parseFloat(data[prop3]) * this.chart3_factor;
+          let y3 =
+            parseFloat(data[prop3]) *
+            this.chart3_factor *
+            this.mlFactor3 *
+            this.minFactor3;
           if (postFix3) {
-            y3 = parseFloat(data[prop3][postFix3]) * this.chart3_factor;
+            y3 =
+              parseFloat(data[prop3][postFix3]) *
+              this.chart3_factor *
+              this.mlFactor3 *
+              this.minFactor3;
           }
           this.chartData3.push({
             x: data.time,
@@ -1175,7 +1303,7 @@ export default {
       chart_object.chartYAxis = chart_object.chart.getDefaultAxisY();
       chart_object.chartYAxis
         .setTitle(this.yLabel)
-        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#fff") }))
+        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ff0000") }))
         .setTitleFont(new FontSettings({ size: 12, style: "normal" }))
         .setTickStrategy(AxisTickStrategies.Numeric)
         .setTickStyle((a) =>
