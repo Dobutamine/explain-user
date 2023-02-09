@@ -309,6 +309,7 @@ export default {
 
       // stop the realtime model
       explain.stop();
+
       this.rtState = false;
       this.butColor = "white";
       this.butIcon = "fa-solid fa-play";
@@ -330,6 +331,8 @@ export default {
       });
       if (response.status === 200) {
         let data = await response.json();
+
+        this.definition.engine_name = data.engine_name;
         this.definition.engine_version = data.engine_version;
         this.definition.name = data.name;
         this.definition.description = data.description;
@@ -340,6 +343,7 @@ export default {
         this.definition.models = { ...data.models };
         // process the result
         this.restartModelWithNewDefinition();
+        this.$bus.emit("restart");
         this.statusMessage = "Model state loaded from server.";
         this.showPopUpServer = false;
         return true;

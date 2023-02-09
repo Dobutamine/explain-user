@@ -59,21 +59,10 @@ export default {
     };
   },
   methods: {
-    initMonitor() {
-      if (this.pixiApp) {
-        this.pixiApp.destroy();
-      }
-      // get the reference to the canvas
-      canvasPatMon = document.getElementById("stagePatMon");
-      // set the resolution of the pix application
-      PIXI.settings.RESOLUTION = 1;
-      // define a pixi app with the canvas as view
-      this.pixiApp = new PIXI.Application({
-        transparent: false,
-        antialias: true,
-        backgroundColor: 0x111111,
-        view: canvasPatMon,
-      });
+    restartMonitor() {
+      // set the first run
+      this.first_run = true;
+
       // allow sortable children
       this.pixiApp.stage.sortableChildren = true;
 
@@ -200,6 +189,25 @@ export default {
           max: channel.max,
         });
       });
+    },
+    initMonitor() {
+      if (this.pixiApp) {
+        this.pixiApp.destroy();
+      }
+      // get the reference to the canvas
+      canvasPatMon = document.getElementById("stagePatMon");
+
+      // set the resolution of the pix application
+      PIXI.settings.RESOLUTION = 1;
+      // define a pixi app with the canvas as view
+      this.pixiApp = new PIXI.Application({
+        transparent: false,
+        antialias: true,
+        backgroundColor: 0x111111,
+        view: canvasPatMon,
+      });
+
+      this.restartMonitor();
     },
     dataUpdateSlow() {
       if (!this.isEnabled) return;
@@ -331,6 +339,7 @@ export default {
     this.$bus.on("monitors_on", () => {
       this.isEnabled = true;
     });
+    this.$bus.on("restart", () => this.restartMonitor());
   },
 };
 </script>
