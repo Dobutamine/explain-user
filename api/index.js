@@ -16,6 +16,9 @@ const scripts = require("./routes/scripts");
 const diagrams = require("./routes/diagrams");
 const engines = require("./routes/engines");
 const configs = require("./routes/configs");
+const interventions = require("./routes/interventions");
+const cases = require("./routes/cases");
+
 const error = require("./middleware/error");
 
 // detect the enviroment in which node is running (= same as process.env.NODE_ENV)
@@ -59,6 +62,9 @@ app.use("/api/scripts", scripts);
 app.use("/api/diagrams", diagrams);
 app.use("/api/engines", engines);
 app.use("/api/configs", configs);
+app.use("/api/interventions", interventions);
+app.use("/api/cases", cases);
+
 // handle errors
 app.use(error);
 
