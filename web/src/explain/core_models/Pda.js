@@ -41,13 +41,13 @@ export class Pda extends ModelBaseClass {
     // n = viscosity in mmHg * s from centiPoise
 
     // convert viscosity from centiPoise to mmHg * s
-    n_mmhgs = this.Viscosity * 0.001 * 0.00750062;
+    let n_mmhgs = this.Viscosity * 0.001 * 0.00750062;
 
     // convert the length to meters
-    length_meters = this.Length / 1000.0;
+    let length_meters = this.Length / 1000.0;
 
     // calculate the radius in meters
-    radius_meters = this.Diameter / 2 / 1000.0;
+    let radius_meters = this.Diameter / 2 / 1000.0;
 
     // calculate the resistance using Poiseuille's Law, the resistance is now in mmHg * s/mm^3
     this._res =
