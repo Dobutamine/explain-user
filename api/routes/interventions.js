@@ -98,7 +98,6 @@ router.post("/get_interventions", auth, async (req, res) => {
   try {
     // get the definition file
     let foundInterventions = await Intervention.find({
-      name: req.body.name,
       definition: req.body.definition,
     });
 

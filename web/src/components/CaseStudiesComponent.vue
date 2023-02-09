@@ -20,37 +20,22 @@
       <div class="q-mt-xs q-mb-sm row text-overline justify-center">
         <q-btn
           color="primary"
+          label="select model"
+          style="width: 60%"
           dark
-          label="select case"
-          style="width: 55%"
           size="sm"
         >
           <q-menu dark>
             <q-list dense>
-              <div v-for="(grouper, index) in groupersTree" :key="index">
+              <div v-for="(caseName, index) in caseNames" :key="index">
                 <q-item clickable dense>
-                  <q-item-section>
-                    {{ grouper.group }}
+                  <q-item-section
+                    clickable
+                    v-close-popup
+                    @click="selectCase(caseName)"
+                  >
+                    {{ caseName }}
                   </q-item-section>
-                  <q-item-section side>
-                    <q-icon name="keyboard_arrow_right" />
-                  </q-item-section>
-
-                  <q-menu dark anchor="top end" self="top start">
-                    <q-list dense>
-                      <div v-for="(grouperItem, i) in grouper.items" :key="i">
-                        <q-item clickable dense>
-                          <q-item-section
-                            clickable
-                            v-close-popup
-                            @click="addGrouperItem(grouper.group, grouperItem)"
-                          >
-                            {{ grouperItem }}
-                          </q-item-section>
-                        </q-item>
-                      </div>
-                    </q-list>
-                  </q-menu>
                 </q-item>
               </div>
             </q-list>
@@ -59,10 +44,7 @@
       </div>
       <div class="q-ma-sm row items-center">
         <CaseStudiesEditorComponent
-          :grouperItems="selectedGrouperItems"
-          style="width: 100%"
-          @removeallgroupers="removeAllGroupers"
-          @removegrouperitem="removeGrouperItem"
+          :selectedCase="selectedCase"
         ></CaseStudiesEditorComponent>
       </div>
     </div>
@@ -71,15 +53,21 @@
 
 <script>
 import CaseStudiesEditorComponent from "./CaseStudiesEditorComponent.vue";
-import { useConfigStore } from "src/stores/config";
+import { useCaseStore } from "src/stores/case";
+import { useGeneralStore } from "src/stores/general";
+import { useUserStore } from "src/stores/user";
 export default {
   components: {
     CaseStudiesEditorComponent,
   },
   setup() {
-    const uiConfig = useConfigStore();
+    const caseStudy = useCaseStore();
+    const general = useGeneralStore();
+    const user = useUserStore();
     return {
-      uiConfig,
+      general,
+      user,
+      caseStudy,
     };
   },
   data() {
@@ -87,64 +75,55 @@ export default {
       title: "CASE STUDIES",
       test: true,
       collapsed: false,
-      groupersTree: {},
-      selectedGrouperItems: [],
+      selectedCaseName: "",
+      selectedCase: {},
+      caseNames: [],
+      cases: [],
     };
   },
   methods: {
-    removeAllGroupers() {
-      this.selectedGrouperItems = [];
-    },
-    removeGrouperItem(group, grouperItem) {
-      // make sure the object does exits
-      let index = -1;
-      for (let gi in this.selectedGrouperItems) {
-        if (
-          this.selectedGrouperItems[gi].group == group &&
-          this.selectedGrouperItems[gi].grouperItem == grouperItem
-        ) {
-          index = gi;
+    selectCase(caseName) {
+      this.selectedCaseName = caseName;
+      this.cases.forEach((c) => {
+        if (c.name === caseName) {
+          this.selectedCase = { ...c };
         }
-      }
-      // if the grouperItem is found then remove it from the list
-      if (index > -1) {
-        this.selectedGrouperItems.splice(index, 1);
-      }
+      });
     },
-    addGrouperItem(group, grouperItem) {
-      // make sure the object doesn't exist in the current list
-      let index = -1;
-      for (let gi in this.selectedGrouperItems) {
-        if (
-          this.selectedGrouperItems[gi].group == group &&
-          this.selectedGrouperItems[gi].grouperItem == grouperItem
-        ) {
-          index = gi;
-        }
-      }
-      // if the grouperItem is not found add it the list
-      if (index < 0) {
-        this.selectedGrouperItems.push({
-          group: group,
-          grouperItem: grouperItem,
-          properties: this.uiConfig.groupers[group][grouperItem],
-        });
+    async getCasesFromServer() {
+      const url = `${this.general.apiUrl}/api/cases/get_cases?token=${this.user.token}`;
+      // get the user login data
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+
+      if (response.status === 200) {
+        let loaded_cases = await response.json();
+        this.buildCaseList(loaded_cases);
+        console.log("Case studies loaded.");
+        return true;
+      } else {
+        return false;
       }
     },
-    buildGrouperItemTree() {
-      // build the grouperItem tree from the ui store
-      this.groupersTree = {};
-      for (let grouper in this.uiConfig.groupers) {
-        let groupersItems = [];
-        for (let grouperItem in this.uiConfig.groupers[grouper]) {
-          groupersItems.push(grouperItem);
-        }
-        this.groupersTree[grouper] = { group: grouper, items: groupersItems };
-      }
+    buildCaseList(loaded_cases) {
+      this.caseNames = [];
+      this.cases = [];
+      loaded_cases.forEach((_case) => {
+        this.caseNames.push(_case.name);
+        this.cases.push(_case);
+      });
     },
   },
   mounted() {
-    this.buildGrouperItemTree();
+    if (this.user.loggedIn) {
+      this.getCasesFromServer();
+    }
   },
 };
 </script>

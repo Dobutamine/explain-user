@@ -96,9 +96,7 @@ router.post("/get_cases", auth, async (req, res) => {
 
   try {
     // get the definition file
-    let foundCases = await Case.find({
-      name: req.body.name,
-    });
+    let foundCases = await Case.find();
 
     // if not found
     if (!foundCases) return res.status(400).send("Can't find case file.");
