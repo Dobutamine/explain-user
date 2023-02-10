@@ -20,3 +20,4 @@ export { Metabolism } from "./core_models/Metabolism";
 export { Myocardium } from "./core_models/Myocardium";
 export { Oxygenation } from "./core_models/Oxygenation";
 export { Pda } from "./core_models/Pda";
+export { Kidneys } from "./core_models/Kidneys";
