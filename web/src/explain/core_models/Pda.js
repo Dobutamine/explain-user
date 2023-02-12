@@ -40,6 +40,14 @@ export class Pda extends ModelBaseClass {
     // r = radius in meters from millimeters
     // n = viscosity in mmHg * s from centiPoise
 
+    if (this.Diameter <= 0) {
+      this.Res = 100000000;
+      this.Flow = 0.0;
+      this.Velocity = 0.0;
+      this._pda.NoFlow = true;
+      return;
+    }
+
     // convert viscosity from centiPoise to mmHg * s
     let n_mmhgs = this.Viscosity * 0.001 * 0.00750062;
 

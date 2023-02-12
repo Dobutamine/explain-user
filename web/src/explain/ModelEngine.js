@@ -365,6 +365,7 @@ const initModel = function (model_definition) {
           for (const [key, value] of Object.entries(component)) {
             args.push({ key, value });
           }
+
           // instantiate the new component with the args array and a reference to the model object
           let newComponent = new available_models[index](args);
 

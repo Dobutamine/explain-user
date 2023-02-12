@@ -1,4 +1,3 @@
-import { Tick3D, _themeLoaderDarkTurquoise } from "@arction/lcjs";
 import { PIXI } from "src/boot/pixi.js";
 
 export default class GasCompartment {

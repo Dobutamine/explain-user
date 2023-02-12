@@ -8,6 +8,12 @@
           @grouperItemUpdate="updateGrouperItemFromChild"
           @removegrouperitem="removeGrouperItem"
         ></SliderComponentVue>
+        <SwitchComponent
+          v-if="grouperItem.properties.typeGrouper == 'switch'"
+          :grouperItem="grouperItem"
+          @grouperItemUpdate="updateGrouperItemFromChild"
+          @removegrouperitem="removeGrouperItem"
+        ></SwitchComponent>
       </div>
     </div>
 
@@ -51,6 +57,7 @@ import { useScriptStore } from "stores/script";
 import { useConfigStore } from "src/stores/config";
 import { useDefinitionStore } from "src/stores/definition";
 import SliderComponentVue from "./groupers/SliderComponent.vue";
+import SwitchComponent from "./groupers/SwitchComponent.vue";
 
 export default {
   setup() {
@@ -65,6 +72,7 @@ export default {
   },
   components: {
     SliderComponentVue,
+    SwitchComponent,
   },
   props: {
     grouperItems: Array,
