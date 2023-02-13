@@ -360,15 +360,12 @@ const initModel = function (model_definition) {
 
         // if the component model was found then instantiate a model
         if (index > -1) {
-          // copy the properties of the modeldefinition file to an args object
-          let args = [];
-          for (const [key, value] of Object.entries(component)) {
-            args.push({ key, value });
-          }
-
-          // instantiate the new component with the args array and a reference to the model object
-          let newComponent = new available_models[index](args);
-
+          // instantiate the new component and give it a name, pass the model type and a reference to the whole model
+          let newComponent = new available_models[index](
+            model,
+            component.Name,
+            component.ModelType
+          );
           // add the new component to the model object
           model.Models[component.Name] = newComponent;
         } else {
@@ -384,16 +381,7 @@ const initModel = function (model_definition) {
     });
 
     if (!error) {
-      // add a datacollector instance to the model object
-      model["DataCollector"] = new DataCollector(model);
-
-      // add a task scheduler instance to the model object
-      model["TaskScheduler"] = new TaskScheduler(model);
-
-      // if no error signal the parent that everything went ok
-      modelInitialized = true;
-
-      // now initiliaze all the models
+      // now initialize all the models with the correct properties stored in the model definition
       Object.values(model.Models).forEach((model_comp) => {
         // // find the arguments for the model in the model definition
         let args = [];
@@ -403,8 +391,27 @@ const initModel = function (model_definition) {
           args.push({ key, value });
         }
         // set the arguments
-        model_comp.InitModel(model, args);
+        try {
+          model_comp.InitModel(args);
+        } catch (e) {
+          console.log(`Error initializing model ${model_comp.Name}`);
+          console.log(e);
+          postMessage({
+            type: "status",
+            message: "Model initialization error!",
+            payload: [e],
+          });
+        }
       });
+
+      // add a datacollector instance to the model object
+      model["DataCollector"] = new DataCollector(model);
+
+      // add a task scheduler instance to the model object
+      model["TaskScheduler"] = new TaskScheduler(model);
+
+      // if no error signal the parent that everything went ok
+      modelInitialized = true;
 
       // update the status
       postMessage({

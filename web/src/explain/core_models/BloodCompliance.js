@@ -1,19 +1,23 @@
 import ModelBaseClass from "../helpers/ModelBaseClass";
 
 export class BloodCompliance extends ModelBaseClass {
-  VolMax = 0.0;
-  VolMin = 0.0;
-  Pres = 0.0;
-  PresMax = 0.0;
-  PresMin = 0.0;
-
-  // external parameters
+  // independent variables
+  Vol = 0.0;
+  UVol = 0.0;
+  ElBase = 0.0;
+  ElK = 0.0;
   Pres0 = 0;
   PresMus = 0;
   PresExt = 0;
   PresCc = 0;
-
   Solutes = {};
+
+  // dependent variables
+  Pres = 0.0;
+  VolMax = 0.0;
+  VolMin = 0.0;
+  PresMax = 0.0;
+  PresMin = 0.0;
   To2 = 0;
   Po2 = 0.0;
   So2 = 0.0;
@@ -22,7 +26,7 @@ export class BloodCompliance extends ModelBaseClass {
   Ph = 0.0;
   Hco3 = 0.0;
 
-  // local parameter
+  // local parameters
   _temp_max_pres = -1000.0;
   _temp_min_pres = 1000.0;
   _temp_max_vol = -1000.0;
@@ -31,14 +35,11 @@ export class BloodCompliance extends ModelBaseClass {
   _update_interval = 1.0;
 
   // model initializer
-  InitModel(model_ref, args) {
+  InitModel(args) {
     // process the arguments/parameters
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
-
-    // store a reference to the model object
-    this._modelEngine = model_ref;
 
     // set the flag to model is initialized
     this._is_initialized = true;

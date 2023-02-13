@@ -1,13 +1,10 @@
 import ModelBaseClass from "../helpers/ModelBaseClass";
 
 export class Blood extends ModelBaseClass {
-  InitModel(model_ref, args) {
+  InitModel(args) {
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
-
-    // store a reference to the model object
-    this._modelEngine = model_ref;
 
     // set the flag to model is initialized
     this._is_initialized = true;

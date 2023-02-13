@@ -51,16 +51,13 @@ export class Heart extends ModelBaseClass {
   r_interval = 0;
   s_interval = 0;
 
-  InitModel(model_ref, args) {
+  InitModel(args) {
     // model initializer
 
     // process the arguments/parameters
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
-
-    // store a reference to the model object
-    this._modelEngine = model_ref;
 
     // set the flag to model is initialized
     this._is_initialized = true;

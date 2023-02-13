@@ -47,14 +47,11 @@ export class GasCompliance extends ModelBaseClass {
   _update_interval = 1.0;
 
   // model initializer
-  InitModel(model_ref, args) {
+  InitModel(args) {
     // process the arguments/parameters
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
-
-    // store a reference to the model object
-    this._modelEngine = model_ref;
 
     // set the flag to model is initialized
     this._is_initialized = true;

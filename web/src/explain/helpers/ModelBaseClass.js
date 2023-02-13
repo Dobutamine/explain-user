@@ -1,32 +1,28 @@
 export default class ModelBaseClass {
   // common class parameters
   Name = "";
-  Description = "";
   ModelType = "";
+  Description = "";
   IsEnabled = false;
   Description = "";
-
   // common local parameters
   _modelEngine = {};
   _t = 0.0005;
   _is_initialized = false;
 
-  constructor(args) {
-    // process the arguments/parameters
-    args.forEach((arg) => {
-      this[arg["key"]] = arg["value"];
-    });
+  constructor(model_ref, name = "", type = "") {
+    this.Name = name;
+    this.ModelType = type;
+    // store a reference to the model object
+    this._modelEngine = model_ref;
   }
 
   // model initializer
-  InitModel(model_ref, args) {
+  InitModel(args) {
     // process the arguments/parameters
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
-
-    // store a reference to the model object
-    this._modelEngine = model_ref;
 
     // set the flag to model is initialized
     this._is_initialized = true;
