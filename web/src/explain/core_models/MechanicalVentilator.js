@@ -23,6 +23,7 @@ export class MechanicalVentilator extends ModelBaseClass {
   VentRate = 30;
   TidalVolume = 0.015;
   Pip = 14.7;
+  PipMax = 40.0;
   Peep = 3.7;
   InspTime = 0.4;
   InspFlow = 10;
@@ -54,7 +55,7 @@ export class MechanicalVentilator extends ModelBaseClass {
   YPieceElastance = 25000;
   YPieceResistance = 25;
   EtTubeResistance = 25;
-
+  VolumeGaranteed = true;
   PresMax = 0;
   PresMin = 0;
   Pres = 0;
@@ -204,6 +205,9 @@ export class MechanicalVentilator extends ModelBaseClass {
       if (this.FlowSensor.Flow > 0) {
         this._vti_counter += this.FlowSensor.Flow * this._t;
       }
+      if (this.PressureSensor.Pres > this._temp_pres_max) {
+        this._temp_pres_max = this.PressureSensor.Pres;
+      }
     }
 
     if (this._expiration) {
@@ -212,21 +216,34 @@ export class MechanicalVentilator extends ModelBaseClass {
       if (this.FlowSensor.Flow < 0) {
         this._vte_counter += this.FlowSensor.Flow * this._t;
       }
+      if (this.PressureSensor.Pres < this._temp_pres_min) {
+        this._temp_pres_min = this.PressureSensor.Pres;
+      }
     }
 
-    // do the valve control
+    // pressure controlled ventilation
     this.PressureControl();
 
-    this.Analytics();
+    // analyze breaths and report
+    this.Reporting();
 
+    // store this state
     this._prevInspiration = this._inspiration;
     this._prevExpiration = this._expiration;
   }
-  Analytics() {
+  Reporting() {
     if (this._prevExpiration && this._inspiration) {
       // inspiration starts
       this.VtExp = Math.abs(this._vte_counter);
       this._vte_counter = 0;
+
+      this.PresMin = this._temp_pres_min - this.Patm;
+      this._temp_pres_min = 1000;
+
+      if (this.VolumeGaranteed) {
+        this.RegulateVolume();
+      }
+
       this.MV = this.VentRate * this.VtExp;
       this.Leak = (1 - this.VtExp / this.VtInsp) * 100;
       if (this.Leak < 0) {
@@ -238,8 +255,66 @@ export class MechanicalVentilator extends ModelBaseClass {
       // expiration starts
       this.VtInsp = this._vti_counter;
       this._vti_counter = 0;
+      this.PresMax = this._temp_pres_max - this.Patm;
+      this._temp_pres_max = -1000;
     }
     this.EtCo2Curve = this._modelEngine.Models["EtTube"].Pco2;
+    this.Volume += this.FlowSensor.Flow * this._t;
+    this.Pres = this.PressureSensor.Pres;
+    this.Flow = this.FlowSensor.Flow;
+  }
+
+  RegulateVolume() {
+    let delta = this.VtExp - this.TidalVolume;
+    if (delta > 0.0005) {
+      this.Pip -= 1.0;
+      if (this.Pip - this.Peep < 2.0) {
+        this.Pip = this.Peep + 2.0;
+      }
+    }
+    if (delta < -0.0005) {
+      this.Pip += 1.0;
+      if (this.Pip - this.Peep < 2.0) {
+        this.Pip = this.Peep + 2.0;
+      }
+      if (this.Pip > this.PipMax) {
+        this.Pip = this.PipMax;
+      }
+    }
+  }
+  PressureRegulatedVolumeControl() {
+    if (this._inspiration) {
+      // open the inspiratory valve
+      // calculate the inspiratory valve position depending on the desired flow
+      let res = 200.0 / (this.InspFlow / 60.0);
+
+      this._modelEngine.Models.ValveInsp.NoFlow = false;
+      this._modelEngine.Models.ValveInsp.NoBackFlow = true;
+      this._modelEngine.Models.ValveInsp.RFor = res;
+      if (this._modelEngine.Models["TubingIn"].Pres > this.Pip + this.Patm) {
+        this._modelEngine.Models.ValveInsp.NoFlow = true;
+      }
+
+      // close the expiratory valve
+      this._modelEngine.Models.ValveExp.NoFlow = true;
+      this._modelEngine.Models.ValveExp.NoBackFlow = true;
+      this._modelEngine.Models.ValveExp.RFor = 25.0;
+    }
+
+    if (this._expiration) {
+      // close the inspiratory valve
+      this._modelEngine.Models.ValveInsp.NoFlow = true;
+      this._modelEngine.Models.ValveInsp.NoBackFlow = true;
+      this._modelEngine.Models.ValveInsp.RFor = 25.0;
+
+      // open the expiratory valve
+      this._modelEngine.Models.ValveExp.NoFlow = false;
+      this._modelEngine.Models.ValveExp.NoBackFlow = true;
+      this._modelEngine.Models.ValveExp.RFor = 25.0;
+      if (this._modelEngine.Models["TubingOut"].Pres < this.Peep + this.Patm) {
+        this._modelEngine.Models.ValveExp.NoFlow = true;
+      }
+    }
   }
   PressureControl() {
     if (this._inspiration) {
@@ -275,7 +350,6 @@ export class MechanicalVentilator extends ModelBaseClass {
       }
     }
   }
-  PressureRegulatedVolumeControl() {}
   SetVentIn() {
     // this is the internal reservoir of the ventilator which is set at a
     // fixed composition and volume with a pressure of 200 mmHg above atmospheric pressure
