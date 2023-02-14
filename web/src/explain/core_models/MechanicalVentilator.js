@@ -18,6 +18,8 @@ export class MechanicalVentilator extends ModelBaseClass {
   _temp_vol_max = -1000;
   _temp_vol_min = 1000;
   _trigger_counter = 0;
+  _vent_rate_counter = 0;
+  _triggered_breath = false;
 
   // properties
   Patm = 760;
@@ -72,6 +74,7 @@ export class MechanicalVentilator extends ModelBaseClass {
   Freq = 0;
   FreqSpont = 0;
   EtCo2 = 0;
+  TriggeredBreath = false;
 
   // delcare objects holding the ventilator components
   VentIn = {};
@@ -217,6 +220,7 @@ export class MechanicalVentilator extends ModelBaseClass {
 
     if (this._expiration) {
       this._expCounter += this._t;
+
       // increase the experitory tidal volume
       if (this.FlowSensor.Flow < 0) {
         this._vte_counter += this.FlowSensor.Flow * this._t;
@@ -257,11 +261,19 @@ export class MechanicalVentilator extends ModelBaseClass {
     if (this._trigger_counter > this.TriggerVolume) {
       this._trigger_counter = 0;
       this._expCounter = this._expTime + 0.1;
-      console.log("Tiggered breath");
+
+      this._triggered_breath = true;
     }
   }
   Reporting() {
+    this._vent_rate_counter += this._t;
+
     if (this._prevExpiration && this._inspiration) {
+      console.log("Tiggered breath = ", this.TriggeredBreath);
+      // report vent rate
+      this.MeasuredVentRate = 60 / this._vent_rate_counter;
+      this._vent_rate_counter = 0;
+
       // inspiration starts
       this.VtExp = Math.abs(this._vte_counter);
       this._vte_counter = 0;
@@ -280,7 +292,16 @@ export class MechanicalVentilator extends ModelBaseClass {
       }
       this.EtCo2 = this._modelEngine.Models["EtTube"].Pco2;
     }
+
     if (this._prevInspiration && this._expiration) {
+      if (this._triggered_breath) {
+        this.TriggeredBreath = true;
+      } else {
+        this.TriggeredBreath = false;
+      }
+      // reset the triggered breath
+      this._triggered_breath = false;
+
       // expiration starts
       this.VtInsp = this._vti_counter;
       this._vti_counter = 0;
