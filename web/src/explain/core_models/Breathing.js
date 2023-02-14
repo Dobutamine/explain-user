@@ -41,6 +41,9 @@ export class Breathing extends ModelBaseClass {
     }
   }
   CalcModel() {
+    // check whether the patient is intubted
+    this._modelEngine.Models["MOUTH_DS"].NoFlow = this.Intubated;
+
     // calculate the respiratory rate and target tidal volume from the target minute volume
     this.VtRrController();
 
@@ -126,8 +129,16 @@ export class Breathing extends ModelBaseClass {
       }
     }
 
-    // calculate the respiratory muscle pressure
-    this.CalcRespMusclePressure();
+    // reset respiratory muscle pressure
+    this.RespMusclePressure = 0;
+
+    // calculate the new respiratory muscle pressure
+    if (this.BreathingEnabled) {
+      this.CalcRespMusclePressure();
+    } else {
+      this.RespRate = 0;
+      this.TargetTidalVolume = 0;
+    }
 
     // transfer muscle pressure to the targets
     for (let i = 0; i < this.Targets.length; i++) {
@@ -137,9 +148,6 @@ export class Breathing extends ModelBaseClass {
   }
 
   CalcRespMusclePressure() {
-    // reset respiratory muscle pressure
-    this.RespMusclePressure = 0;
-
     // inspiration
     if (this._insp_running) {
       this.RespMusclePressure =
@@ -163,6 +171,15 @@ export class Breathing extends ModelBaseClass {
     // calculate the target tidal volume depending on the target resp rate and target minute volume (from ANS)
     if (this.RespRate > 0) {
       this.TargetTidalVolume = this.TargetMinuteVolume / this.RespRate;
+    }
+  }
+
+  ToggleIntubation(intubated) {
+    if (intubated) {
+      // close connection between dead space and mouth
+      this._modelEngine.Models["MOUTH_DS"].NoFlow = true;
+    } else {
+      this._modelEngine.Models["MOUTH_DS"].NoFlow = false;
     }
   }
 }

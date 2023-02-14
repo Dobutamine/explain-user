@@ -178,9 +178,9 @@ export default {
   },
   data() {
     return {
-      tab: "scripts",
-      tab_left: "play",
-      tab_right: "monitor",
+      tab: "diagram",
+      tab_left: "build",
+      tab_right: "numerics",
       monitors: [],
       charts: [],
       models: [],
