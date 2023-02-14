@@ -17,10 +17,12 @@ export class MechanicalVentilator extends ModelBaseClass {
   _temp_pres_min = 1000;
   _temp_vol_max = -1000;
   _temp_vol_min = 1000;
+  _trigger_counter = 0;
 
   // properties
   Patm = 760;
   VentRate = 30;
+  MeasuredVentRate = 30;
   TidalVolume = 0.015;
   Pip = 14.7;
   PipMax = 40.0;
@@ -209,6 +211,8 @@ export class MechanicalVentilator extends ModelBaseClass {
       if (this.PressureSensor.Pres > this._temp_pres_max) {
         this._temp_pres_max = this.PressureSensor.Pres;
       }
+      // reset the triggering counter
+      this._trigger_counter = 0;
     }
 
     if (this._expiration) {
@@ -220,6 +224,8 @@ export class MechanicalVentilator extends ModelBaseClass {
       if (this.PressureSensor.Pres < this._temp_pres_min) {
         this._temp_pres_min = this.PressureSensor.Pres;
       }
+      // Detect triggering
+      this.Triggering();
     }
 
     // pressure controlled ventilation
@@ -243,6 +249,16 @@ export class MechanicalVentilator extends ModelBaseClass {
     // store this state
     this._prevInspiration = this._inspiration;
     this._prevExpiration = this._expiration;
+  }
+  Triggering() {
+    if (this.FlowSensor.Flow > 0) {
+      this._trigger_counter += this.FlowSensor.Flow * this._t;
+    }
+    if (this._trigger_counter > this.TriggerVolume) {
+      this._trigger_counter = 0;
+      this._expCounter = this._expTime + 0.1;
+      console.log("Tiggered breath");
+    }
   }
   Reporting() {
     if (this._prevExpiration && this._inspiration) {
