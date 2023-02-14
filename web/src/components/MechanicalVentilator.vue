@@ -45,6 +45,14 @@
             @update:model-value="changeSynchro"
           />
         </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Breathing</div>
+          <q-toggle
+            v-model="breathing"
+            color="secondary"
+            @update:model-value="changeBreathing"
+          />
+        </div>
       </div>
       <div class="q-ma-sm row gutter text-overline justify-center">
         <div>
@@ -226,6 +234,7 @@ export default {
       mode: "PC",
       triggerVolume: 0.5,
       synchronized: false,
+      breathing: false,
       chart: {
         _id: "3456",
         caption: "Flow",
@@ -242,6 +251,17 @@ export default {
     };
   },
   methods: {
+    changeBreathing() {
+      explain.setModelProperties([
+        {
+          m: "Breathing",
+          p: "BreathingEnabled",
+          v: this.breathing,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
     changeTrigger() {
       explain.setModelProperties([
         {
@@ -388,6 +408,7 @@ export default {
       this.mode = explain.modelState.Models["MechanicalVentilator"].Mode;
       this.synchronized =
         explain.modelState.Models["MechanicalVentilator"].Synchronized;
+      this.breathing = explain.modelState.Models["Breathing"].BreathingEnabled;
     },
   },
   beforeUnmount() {
