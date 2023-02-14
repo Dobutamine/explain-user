@@ -20,7 +20,6 @@
 
           <q-tab-panels v-model="tab_left" keep-alive>
             <q-tab-panel name="play">
-              <MechanicalVentilator></MechanicalVentilator>
               <InterventionsComponent></InterventionsComponent>
               <GroupersComponent></GroupersComponent>
               <CaseStudiesComponent></CaseStudiesComponent>
@@ -43,6 +42,7 @@
             align="justify"
             narrow-indicator
           >
+            <q-tab name="ventilator" label="Ventilator" />
             <q-tab name="scripts" label="Scripts" />
             <q-tab name="charts" label="Charts" />
             <q-tab name="diagram" label="Diagram" />
@@ -51,6 +51,9 @@
           <q-separator />
 
           <q-tab-panels v-model="tab" keep-alive>
+            <q-tab-panel name="ventilator">
+              <MechanicalVentilator></MechanicalVentilator>
+            </q-tab-panel>
             <q-tab-panel name="scripts">
               <ScriptComponentVue></ScriptComponentVue>
             </q-tab-panel>

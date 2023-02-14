@@ -8,6 +8,7 @@
     </div>
 
     <MultiChannelChart
+      class="q-ma-sm"
       :id="chart._id"
       :caption="chart.caption"
       :models="chart.models"
@@ -21,6 +22,106 @@
       :exportEnabled="chart.exportEnabled"
       :fixedProp="true"
     ></MultiChannelChart>
+    <q-card class="q-pb-sm q-ma-md bg-black" bordered>
+      <div class="q-ma-sm row gutter text-overline justify-center">
+        <div>
+          <div class="row justify-center">Tin</div>
+          <q-knob
+            v-model="inspTime"
+            :min="0.1"
+            :max="1.0"
+            :step="0.1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changeInspTime"
+          ></q-knob>
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Freq</div>
+          <q-knob
+            v-model="freq"
+            :min="0"
+            :max="100"
+            :step="1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changeFreq"
+          />
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Pip</div>
+          <q-knob
+            v-model="pip"
+            :min="0"
+            :max="50"
+            :step="1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changePip"
+          />
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Peep</div>
+          <q-knob
+            v-model="peep"
+            :min="0"
+            :max="50"
+            :step="1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changePeep"
+          />
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Flow</div>
+          <q-knob
+            v-model="inspFlow"
+            :min="1"
+            :max="20"
+            :step="1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changeInspFlow"
+          ></q-knob>
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">TV</div>
+          <q-knob
+            v-model="tidalVolume"
+            :min="1"
+            :max="50"
+            :step="1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changeTidalVolume"
+          ></q-knob>
+        </div>
+      </div>
+    </q-card>
   </q-card>
 </template>
 
@@ -43,11 +144,17 @@ export default {
       collapsed: false,
       isEnabled: true,
       currentData: {},
+      inspTime: 0.4,
+      inspFlow: 8,
+      freq: 40,
+      pip: 10,
+      peep: 5,
+      tidalVolume: 15,
       chart: {
         _id: "3456",
         caption: "Flow",
         models: ["MechanicalVentilator"],
-        props: ["Flow", "Pres", "Volume"],
+        props: ["Pres", "Flow", "Volume"],
         channels: 3,
         collapsed: false,
         enabled: true,
@@ -58,7 +165,89 @@ export default {
       },
     };
   },
-  methods: {},
+  methods: {
+    changeTidalVolume() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "TidalVolume",
+          v: parseFloat(this.tidalVolume / 1000.0),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changePip() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "Pip",
+          v: parseFloat(this.pip * 0.7355),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changePeep() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "Peep",
+          v: parseFloat(this.peep * 0.7355),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeInspTime() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "InspTime",
+          v: parseFloat(this.inspTime),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeInspFlow() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "InspFlow",
+          v: parseFloat(this.inspFlow),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeFreq() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "VentRate",
+          v: parseFloat(this.freq),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    stateUpdate(state) {
+      this.inspTime =
+        explain.modelState.Models["MechanicalVentilator"].InspTime;
+      this.inspFlow =
+        explain.modelState.Models["MechanicalVentilator"].InspFlow;
+      this.freq = explain.modelState.Models["MechanicalVentilator"].VentRate;
+      this.pip = explain.modelState.Models["MechanicalVentilator"].Pip * 1.359;
+      this.pip = parseFloat(this.pip.toFixed(0));
+      this.peep =
+        explain.modelState.Models["MechanicalVentilator"].Peep * 1.359;
+      this.peep = parseFloat(this.peep.toFixed(0));
+      this.tidalVolume =
+        explain.modelState.Models["MechanicalVentilator"].TidalVolume * 1000;
+      this.tidalVolume = parseFloat(this.tidalVolume.toFixed(0));
+    },
+  },
   beforeUnmount() {
     document.removeEventListener("data_slow", this.dataUpdateSlow);
     document.removeEventListener("state", this.stateUpdate);
