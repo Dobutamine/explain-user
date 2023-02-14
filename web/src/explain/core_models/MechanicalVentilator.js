@@ -55,7 +55,8 @@ export class MechanicalVentilator extends ModelBaseClass {
   YPieceElastance = 25000;
   YPieceResistance = 25;
   EtTubeResistance = 25;
-  VolumeGaranteed = true;
+  VolumeGaranteed = false;
+  VolumeControl = false;
   PresMax = 0;
   PresMin = 0;
   Pres = 0;
@@ -222,7 +223,19 @@ export class MechanicalVentilator extends ModelBaseClass {
     }
 
     // pressure controlled ventilation
-    this.PressureControl();
+    switch (this.Mode) {
+      case "PC":
+        this.PressureControl();
+        break;
+      case "PRVC":
+        this.VolumeGaranteed = true;
+        this.PressureRegulatedVolumeControl();
+        break;
+      case "VC":
+        this.VolumeGaranteed = false;
+        this.VolumeControlled();
+        break;
+    }
 
     // analyze breaths and report
     this.Reporting();
@@ -263,7 +276,6 @@ export class MechanicalVentilator extends ModelBaseClass {
     this.Pres = this.PressureSensor.Pres;
     this.Flow = this.FlowSensor.Flow;
   }
-
   RegulateVolume() {
     let delta = this.VtExp - this.TidalVolume;
     if (delta > 0.0005) {
@@ -282,6 +294,41 @@ export class MechanicalVentilator extends ModelBaseClass {
       }
     }
   }
+  VolumeControlled() {
+    if (this._inspiration) {
+      // open the inspiratory valve
+      // calculate the inspiratory valve position depending on the desired flow
+      let res = 200.0 / (this.InspFlow / 60.0);
+
+      this._modelEngine.Models.ValveInsp.NoFlow = false;
+      this._modelEngine.Models.ValveInsp.NoBackFlow = true;
+      this._modelEngine.Models.ValveInsp.RFor = res;
+      if (this._vti_counter > this.TidalVolume) {
+        this._modelEngine.Models.ValveInsp.NoFlow = true;
+      }
+
+      // close the expiratory valve
+      this._modelEngine.Models.ValveExp.NoFlow = true;
+      this._modelEngine.Models.ValveExp.NoBackFlow = true;
+      this._modelEngine.Models.ValveExp.RFor = 25.0;
+    }
+
+    if (this._expiration) {
+      // close the inspiratory valve
+      this._modelEngine.Models.ValveInsp.NoFlow = true;
+      this._modelEngine.Models.ValveInsp.NoBackFlow = true;
+      this._modelEngine.Models.ValveInsp.RFor = 25.0;
+
+      // open the expiratory valve
+      this._modelEngine.Models.ValveExp.NoFlow = false;
+      this._modelEngine.Models.ValveExp.NoBackFlow = true;
+      this._modelEngine.Models.ValveExp.RFor = 25.0;
+      if (this._modelEngine.Models["TubingOut"].Pres < this.Peep + this.Patm) {
+        this._modelEngine.Models.ValveExp.NoFlow = true;
+      }
+    }
+  }
+
   PressureRegulatedVolumeControl() {
     if (this._inspiration) {
       // open the inspiratory valve
