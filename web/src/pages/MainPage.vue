@@ -20,6 +20,7 @@
 
           <q-tab-panels v-model="tab_left" keep-alive>
             <q-tab-panel name="play">
+              <MechanicalVentilator></MechanicalVentilator>
               <InterventionsComponent></InterventionsComponent>
               <GroupersComponent></GroupersComponent>
               <CaseStudiesComponent></CaseStudiesComponent>
@@ -147,6 +148,7 @@ import DiagramComponent from "src/components/DiagramComponent.vue";
 import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import PatientMonitor from "src/components/PatientMonitor.vue";
+import MechanicalVentilator from "src/components/MechanicalVentilator.vue";
 import TrendsMonitor from "src/components/TrendsMonitor.vue";
 import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
@@ -167,6 +169,7 @@ export default {
     CaseStudiesComponent,
     TrendsMonitor,
     PatientMonitor,
+    MechanicalVentilator,
     InterventionsComponent,
     ScriptComponentVue: ScriptsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,

@@ -14,6 +14,7 @@ export const useConfigStore = defineStore("config", {
     monitors: {},
     patient_monitor: [],
     trends_monitor: [],
+    mechanical_ventilator: [],
   }),
 
   getters: {},
@@ -30,6 +31,7 @@ export const useConfigStore = defineStore("config", {
         charts: this.charts,
         monitors: this.monitors,
         patient_monitor: this.patient_monitor,
+        mechanical_ventilator: this.mechanical_ventilator,
         trends_monitor: this.trends_monitor,
       };
     },
@@ -69,6 +71,7 @@ export const useConfigStore = defineStore("config", {
         this.charts = data.charts;
         this.monitors = data.monitors;
         this.patient_monitor = data.patient_monitor;
+        this.mechanical_ventilator = data.mechanical_ventilator;
         this.trends_monitor = data.trends_monitor;
         return true;
       } else {

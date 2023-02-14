@@ -35,6 +35,7 @@ router.post("/update_config", auth, async (req, res) => {
           "charts",
           "monitors",
           "patient_monitor",
+          "mechanical_ventilator",
           "trends_monitor",
         ])
       );
@@ -62,6 +63,7 @@ router.post("/update_config", auth, async (req, res) => {
       monitors: req.body.monitors,
       trends_monitor: req.body.trends_monitor,
       patient_monitor: req.body.patient_monitor,
+      mechanical_ventilator: req.body.mechanical_ventilator,
       dateUpdated: Date.now(),
     });
 

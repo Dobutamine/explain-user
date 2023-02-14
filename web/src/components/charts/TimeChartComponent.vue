@@ -20,7 +20,10 @@
       <div :style="visible">
         <div class="row q-mt-sm">
           <div class="col">
-            <div class="q-gutter-md row justify-center q-mb-sm">
+            <div
+              v-if="!fixedProp"
+              class="q-gutter-md row justify-center q-mb-sm"
+            >
               <q-select
                 label-color="red-6"
                 v-model="comp_name1"
@@ -132,7 +135,7 @@
 
         <div class="row q-mt-sm">
           <div class="col">
-            <div class="q-gutter-sm row justify-center">
+            <div v-if="!fixedProp" class="q-gutter-sm row justify-center">
               <q-checkbox
                 v-if="analysisEnabled"
                 v-model="show_summary"
@@ -440,6 +443,7 @@ import {
   AxisScrollStrategies,
   FontSettings,
   Themes,
+  _themeLoaderDuskInLapland,
 } from "@arction/lcjs";
 export default {
   setup() {
@@ -462,6 +466,7 @@ export default {
     autoscaleEnabled: Boolean,
     multipliersEnabled: Boolean,
     exportEnabled: Boolean,
+    fixedProp: Boolean,
   },
   data() {
     return {
@@ -1365,8 +1370,26 @@ export default {
       document.removeEventListener("rt", this.rtUpdate);
     } catch {}
 
+    if (this.fixedProp) {
+      this.selected_component_name1 = this.models[0];
+      this.selected_prim_prop_name1 = this.props[0];
+      this.selected_sec_prop_name1 = "";
+      this.selected_component_name2 = this.models[0];
+      this.selected_prim_prop_name2 = this.props[1];
+      this.selected_component_name3 = this.models[0];
+      this.selected_prim_prop_name3 = this.props[2];
+      this.selected_sec_prop_name2 = "";
+      explain.watchModelProperties([
+        this.selected_component_name1 + "." + this.selected_prim_prop_name1,
+        this.selected_component_name1 + "." + this.selected_prim_prop_name2,
+        this.selected_component_name1 + "." + this.selected_prim_prop_name3,
+      ]);
+      this.height = "100px";
+    }
+
     // create the chart
     this.createChart();
+
     // get the model state
     explain.getModelState();
     document.addEventListener("rt", this.rtUpdate);
@@ -1387,7 +1410,7 @@ export default {
 .chart {
   background: black;
   width: 100%;
-  height: 250px;
+  height: 200px;
   align-self: flex-start;
 }
 </style>

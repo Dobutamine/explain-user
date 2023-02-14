@@ -29,6 +29,9 @@ const configSchema = new mongoose.Schema({
   patient_monitor: {
     type: Object,
   },
+  mechanical_ventilator: {
+    type: Object,
+  },
   trends_monitor: {
     type: Object,
   },
@@ -53,6 +56,7 @@ function validateConfig(new_config) {
     charts: Joi.object(),
     monitors: Joi.object(),
     patient_monitor: Joi.object(),
+    mechanical_ventilator: Joi.object(),
     trends_monitor: Joi.object(),
   });
 
