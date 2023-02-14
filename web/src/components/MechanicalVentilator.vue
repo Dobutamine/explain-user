@@ -25,6 +25,29 @@
     <q-card class="q-pb-sm q-ma-md bg-black" bordered>
       <div class="q-ma-sm row gutter text-overline justify-center">
         <div>
+          <div class="row justify-center">Mode</div>
+          <q-btn-toggle
+            v-model="mode"
+            toggle-color="secondary"
+            :options="[
+              { label: 'PC', value: 'PC' },
+              { label: 'PRVC', value: 'PRVC' },
+              { label: 'VC', value: 'VC' },
+            ]"
+            @update:model-value="changeMode"
+          />
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Synchronized</div>
+          <q-toggle
+            v-model="synchronized"
+            color="secondary"
+            @update:model-value="changeSynchro"
+          />
+        </div>
+      </div>
+      <div class="q-ma-sm row gutter text-overline justify-center">
+        <div>
           <div class="row justify-center">Tin</div>
           <q-knob
             v-model="inspTime"
@@ -56,7 +79,7 @@
             @update:model-value="changeFreq"
           />
         </div>
-        <div class="q-ml-md">
+        <div v-if="mode === 'PC'" class="q-ml-md">
           <div class="row justify-center">Pip</div>
           <q-knob
             v-model="pip"
@@ -70,6 +93,22 @@
             track-color="grey-3"
             class="row"
             @update:model-value="changePip"
+          />
+        </div>
+        <div v-if="mode !== 'PC'" class="q-ml-md">
+          <div class="row justify-center">PipMax</div>
+          <q-knob
+            v-model="pipMax"
+            :min="0"
+            :max="50"
+            :step="1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changePipMax"
           />
         </div>
         <div class="q-ml-md">
@@ -104,7 +143,7 @@
             @update:model-value="changeInspFlow"
           ></q-knob>
         </div>
-        <div class="q-ml-md">
+        <div v-if="mode !== 'PC'" class="q-ml-md">
           <div class="row justify-center">TV</div>
           <q-knob
             v-model="tidalVolume"
@@ -118,6 +157,38 @@
             track-color="grey-3"
             class="row"
             @update:model-value="changeTidalVolume"
+          ></q-knob>
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">FiO2</div>
+          <q-knob
+            v-model="fio2"
+            :min="21"
+            :max="100"
+            :step="1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changeFiO2"
+          ></q-knob>
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Trigger</div>
+          <q-knob
+            v-model="triggerVolume"
+            :min="0.1"
+            :max="10"
+            :step="0.1"
+            show-value
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row"
+            @update:model-value="changeTrigger"
           ></q-knob>
         </div>
       </div>
@@ -148,8 +219,13 @@ export default {
       inspFlow: 8,
       freq: 40,
       pip: 10,
+      pipMax: 40,
       peep: 5,
       tidalVolume: 15,
+      fio2: 21,
+      mode: "PC",
+      triggerVolume: 0.5,
+      synchronized: false,
       chart: {
         _id: "3456",
         caption: "Flow",
@@ -166,6 +242,39 @@ export default {
     };
   },
   methods: {
+    changeTrigger() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "TriggerVolume",
+          v: parseFloat(this.triggerVolume / 1000.0),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeMode() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "Mode",
+          v: this.mode,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeFiO2() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "FiO2",
+          v: parseFloat(this.fio2 / 100),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
     changeTidalVolume() {
       explain.setModelProperties([
         {
@@ -183,6 +292,17 @@ export default {
           m: "MechanicalVentilator",
           p: "Pip",
           v: parseFloat(this.pip * 0.7355),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changePipMax() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "PipMax",
+          v: parseFloat(this.pipMax * 0.7355),
           at: 0.0,
           it: 0.0,
         },
@@ -232,6 +352,17 @@ export default {
         },
       ]);
     },
+    changeSynchro() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "Synchronized",
+          v: this.synchronized,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
     stateUpdate(state) {
       this.inspTime =
         explain.modelState.Models["MechanicalVentilator"].InspTime;
@@ -240,12 +371,23 @@ export default {
       this.freq = explain.modelState.Models["MechanicalVentilator"].VentRate;
       this.pip = explain.modelState.Models["MechanicalVentilator"].Pip * 1.359;
       this.pip = parseFloat(this.pip.toFixed(0));
+      this.pipMax =
+        explain.modelState.Models["MechanicalVentilator"].PipMax * 1.359;
+      this.pipMax = parseFloat(this.pipMax.toFixed(0));
       this.peep =
         explain.modelState.Models["MechanicalVentilator"].Peep * 1.359;
       this.peep = parseFloat(this.peep.toFixed(0));
+      this.fio2 = explain.modelState.Models["MechanicalVentilator"].FiO2 * 100;
+      this.fio2 = parseFloat(this.fio2.toFixed(0));
       this.tidalVolume =
         explain.modelState.Models["MechanicalVentilator"].TidalVolume * 1000;
       this.tidalVolume = parseFloat(this.tidalVolume.toFixed(0));
+      this.triggerVolume =
+        explain.modelState.Models["MechanicalVentilator"].TriggerVolume * 1000;
+      this.triggerVolume = parseFloat(this.triggerVolume.toFixed(1));
+      this.mode = explain.modelState.Models["MechanicalVentilator"].Mode;
+      this.synchronized =
+        explain.modelState.Models["MechanicalVentilator"].Synchronized;
     },
   },
   beforeUnmount() {

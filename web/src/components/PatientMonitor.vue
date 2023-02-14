@@ -56,6 +56,7 @@ export default {
       autoscale_counter: 0,
       autoscale_interval: 2,
       first_run: true,
+      cursor: 0,
     };
   },
   methods: {
@@ -273,11 +274,22 @@ export default {
         // determine the number of x coordinates available for the graph, so we have maximum of that number of data points
 
         this.channels.forEach((channel) => {
-          channel.curve_data.push(this.currentData[channel.curve_prop]);
-          if (channel.curve_data.length > ndp) {
-            channel.curve_data.shift();
+          // channel.curve_data.push(this.currentData[channel.curve_prop]);
+          // if (channel.curve_data.length > ndp) {
+          //   channel.curve_data.shift();
+          // }
+          if (channel.curve_data.length < ndp) {
+            channel.curve_data.push(this.currentData[channel.curve_prop]);
+            this.cursor = 0;
+          } else {
+            channel.curve_data[this.cursor] =
+              this.currentData[channel.curve_prop];
           }
         });
+        this.cursor += 1;
+        if (this.cursor > ndp) {
+          this.cursor = 0;
+        }
       }
 
       // // now draw the datapoints, we have ndp data points available which is

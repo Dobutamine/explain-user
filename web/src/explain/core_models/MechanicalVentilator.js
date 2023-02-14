@@ -75,6 +75,8 @@ export class MechanicalVentilator extends ModelBaseClass {
   FreqSpont = 0;
   EtCo2 = 0;
   TriggeredBreath = false;
+  FiO2 = 0.21;
+  Synchronized = false;
 
   // delcare objects holding the ventilator components
   VentIn = {};
@@ -229,7 +231,9 @@ export class MechanicalVentilator extends ModelBaseClass {
         this._temp_pres_min = this.PressureSensor.Pres;
       }
       // Detect triggering
-      this.Triggering();
+      if (this.Synchronized) {
+        this.Triggering();
+      }
     }
 
     // pressure controlled ventilation
