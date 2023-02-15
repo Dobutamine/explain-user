@@ -5,6 +5,9 @@ export class Gas extends ModelBaseClass {
   // local parameters
   _gasConstant = 62.36367;
 
+  _updateInterval = 5.0;
+  _updateCounter = 0;
+
   InitModel(args) {
     // process the arguments/parameters
     args.forEach((arg) => {
@@ -24,9 +27,32 @@ export class Gas extends ModelBaseClass {
 
       // // initialize the gas compliances holding the inspired air
       this.SetInspiredAir();
+
+      // initialize the outside air
+      this.SetOutsideAir();
     }
   }
 
+  SetOutsideAir() {
+    this._modelEngine.Models[this.OutsideAir].Pres0 = this.PresAtm;
+    SetAirComposition(
+      this._modelEngine.Models[this.OutsideAir],
+      this.Humidity,
+      this.Temp,
+      this.DryAir.Fo2,
+      this.DryAir.Fco2,
+      this.DryAir.Fn2,
+      this.DryAir.Fother
+    );
+  }
+
+  CalcModel() {
+    if (this._updateCounter > this._updateInterval) {
+      this._updateCounter = 0;
+      this.SetOutsideAir();
+    }
+    this._updateCounter += this._t;
+  }
   SetTemperatures() {
     // set the temperatures
     Object.entries(this.TempSettings).forEach(([model, temp]) => {

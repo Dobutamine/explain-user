@@ -49,8 +49,7 @@ export class Ecls extends ModelBaseClass {
   EclsGasIn = {};
   EclsGasIn_EclsGasLung = {};
   EclsGasLung = {};
-  EclsGasLung_EclsGasOut = {};
-  EclsGasOut = {};
+  EclsGasLung_Out = {};
   EclsGasEx = {};
 
   _updateCounter = 0;
@@ -72,12 +71,6 @@ export class Ecls extends ModelBaseClass {
     this._modelEngine.Models.EclsGasLung = new GasCompliance(
       this._modelEngine,
       "EclsGasLung",
-      "GasCompliance"
-    );
-
-    this._modelEngine.Models.EclsGasOut = new GasCompliance(
-      this._modelEngine,
-      "EclsGasOut",
       "GasCompliance"
     );
 
@@ -103,7 +96,6 @@ export class Ecls extends ModelBaseClass {
 
     this.SetEclsGasIn();
     this.SetEclsGasLung();
-    this.SetEclsGasOut();
     this.SetEclsGasResistors();
     this.SetGasExchanger();
 
@@ -189,32 +181,6 @@ export class Ecls extends ModelBaseClass {
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
   }
-  SetEclsGasOut() {
-    // this is the external reservoir of the ventilator which is set at a
-    // fixed composition and volume with a pressure of 200 mmHg above atmospheric pressure
-    this._modelEngine.Models.EclsGasOut.InitModel([
-      { key: "Vol", value: 5.0 },
-      { key: "UVol", value: 5.0 },
-      { key: "ElBase", value: 1000.0 },
-      { key: "ElK", value: 0.0 },
-      { key: "Humidity", value: this._outsideAirHumidity },
-      { key: "Temp", value: this._outsideAirTemp },
-      { key: "TargetTemp", value: this._outsideAirTemp },
-      { key: "FixedComposition", value: true },
-      { key: "Pres", value: this.Patm },
-      { key: "Pres0", value: this.Patm },
-      { key: "IsEnabled", value: this.IsEnabled },
-    ]);
-    SetAirComposition(
-      this._modelEngine.Models.EclsGasOut,
-      this._outsideAirHumidity,
-      this._outsideAirTemp,
-      this._outsideAirFo2Dry,
-      this._outsideAirFco2Dry,
-      this._outsideAirFn2Dry,
-      this._outsideAirFotherDry
-    );
-  }
 
   SetEclsGasLung() {
     this._modelEngine.Models.EclsGasLung.InitModel([
@@ -259,7 +225,7 @@ export class Ecls extends ModelBaseClass {
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
       { key: "CompFrom", value: "EclsGasLung" },
-      { key: "CompTo", value: "EclsGasOut" },
+      { key: "CompTo", value: "OUT" },
     ]);
   }
 }
