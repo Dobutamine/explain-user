@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-pb-xs q-pt-xs q-ma-sm" bordered>
+  <q-card class="q-mt-sm" bordered>
     <div
       class="q-mt-es q-mb-sm row gutter text-overline justify-center"
       @click="isEnabled = !isEnabled"
@@ -7,7 +7,7 @@
       MECHANICAL VENTILATOR
     </div>
 
-    <MultiChannelChart
+    <VentilatorCharts
       class="q-ma-sm"
       :id="chart._id"
       :caption="chart.caption"
@@ -21,39 +21,8 @@
       :multipliersEnabled="chart.multipliersEnabled"
       :exportEnabled="chart.exportEnabled"
       :fixedProp="true"
-    ></MultiChannelChart>
-    <q-card class="q-pb-sm q-ma-md bg-black" bordered>
-      <div class="q-ma-sm row gutter text-overline justify-center">
-        <div>
-          <div class="row justify-center">Mode</div>
-          <q-btn-toggle
-            v-model="mode"
-            toggle-color="secondary"
-            :options="[
-              { label: 'PC', value: 'PC' },
-              { label: 'PRVC', value: 'PRVC' },
-              { label: 'VC', value: 'VC' },
-            ]"
-            @update:model-value="changeMode"
-          />
-        </div>
-        <div class="q-ml-md">
-          <div class="row justify-center">Synchronized</div>
-          <q-toggle
-            v-model="synchronized"
-            color="secondary"
-            @update:model-value="changeSynchro"
-          />
-        </div>
-        <div class="q-ml-md">
-          <div class="row justify-center">Breathing</div>
-          <q-toggle
-            v-model="breathing"
-            color="secondary"
-            @update:model-value="changeBreathing"
-          />
-        </div>
-      </div>
+    ></VentilatorCharts>
+    <q-card class="q-ma-md bg-black" bordered>
       <div class="q-ma-sm row gutter text-overline justify-center">
         <div>
           <div class="row justify-center">Tin</div>
@@ -183,7 +152,7 @@
             @update:model-value="changeFiO2"
           ></q-knob>
         </div>
-        <div class="q-ml-md">
+        <div v-if="synchronized" class="q-ml-md">
           <div class="row justify-center">Trigger</div>
           <q-knob
             v-model="triggerVolume"
@@ -200,6 +169,77 @@
           ></q-knob>
         </div>
       </div>
+      <div class="q-ma-sm row gutter text-overline justify-center">
+        <div>
+          <div class="row justify-center">Mode</div>
+          <q-btn-toggle
+            v-model="mode"
+            outline
+            toggle-color="secondary"
+            :options="[
+              { label: 'PC', value: 'PC' },
+              { label: 'PRVC', value: 'PRVC' },
+              { label: 'VC', value: 'VC' },
+              { label: 'PS', value: 'PS' },
+            ]"
+            @update:model-value="changeMode"
+          />
+        </div>
+      </div>
+      <div class="q-ma-sm row gutter text-overline justify-center">
+        <div class="q-ml-lg">
+          <div class="row justify-center">Tube diameter</div>
+          <q-input
+            v-model="tubeSize"
+            stack-label
+            label="diameter mm"
+            type="number"
+            :min="2.0"
+            :max="5.0"
+            :step="0.5"
+            outlined
+            dense
+            hide-hint
+            color="secondary"
+            @update:model-value="changeTubeDiameter"
+          />
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Tube length</div>
+          <q-input
+            v-model="tubeLength"
+            stack-label
+            label="length cm"
+            type="number"
+            :min="5.0"
+            :max="25.0"
+            :step="0.5"
+            outlined
+            dense
+            hide-hint
+            color="secondary"
+            @update:model-value="changeTubeLength"
+          />
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Synchro</div>
+          <q-toggle
+            v-model="synchronized"
+            size="sm"
+            color="secondary"
+            @update:model-value="changeSynchro"
+          />
+        </div>
+        <div class="q-ml-md">
+          <div class="row justify-center">Breathing</div>
+          <q-toggle
+            v-model="breathing"
+            size="sm"
+            color="secondary"
+            @update:model-value="changeBreathing"
+          />
+        </div>
+      </div>
     </q-card>
   </q-card>
 </template>
@@ -207,7 +247,7 @@
 <script>
 import { explain } from "../boot/explain";
 import { useConfigStore } from "src/stores/config";
-import MultiChannelChart from "./charts/MultiChannelChart.vue";
+import VentilatorCharts from "./charts/VentilatorCharts.vue";
 export default {
   setup() {
     const config = useConfigStore();
@@ -216,13 +256,17 @@ export default {
     };
   },
   components: {
-    MultiChannelChart,
+    VentilatorCharts,
   },
   data() {
     return {
       collapsed: false,
       isEnabled: true,
       currentData: {},
+      tubeSize: 3.0,
+      tubeSizes: [2.5, 3.0, 3.5, 4.0, 4.5],
+      tubeLength: 10.0,
+      tubeLengths: [5.0, 10.0, 15, 20, 25],
       inspTime: 0.4,
       inspFlow: 8,
       freq: 40,
@@ -251,6 +295,28 @@ export default {
     };
   },
   methods: {
+    changeTubeDiameter() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "TubeDiameter",
+          v: parseFloat(this.tubeSize / 1000.0),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeTubeLength() {
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "TubeLength",
+          v: parseFloat(this.tubeLength / 100.0),
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
     changeBreathing() {
       explain.setModelProperties([
         {
@@ -409,6 +475,14 @@ export default {
       this.synchronized =
         explain.modelState.Models["MechanicalVentilator"].Synchronized;
       this.breathing = explain.modelState.Models["Breathing"].BreathingEnabled;
+
+      this.tubeSize =
+        explain.modelState.Models["MechanicalVentilator"].TubeDiameter * 1000;
+      this.tubeSize = parseFloat(this.tubeSize.toFixed(1));
+
+      this.tubeLength =
+        explain.modelState.Models["MechanicalVentilator"].TubeLength * 100;
+      this.tubeLength = parseFloat(this.tubeLength.toFixed(1));
     },
   },
   beforeUnmount() {

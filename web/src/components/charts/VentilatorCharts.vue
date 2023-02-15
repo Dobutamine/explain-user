@@ -472,6 +472,16 @@ export default {
     // get the visibilty
     this.isEnabled = this.collapsed;
     this.toggleVisibility();
+
+    this.$bus.on("ventilator_on", () => {
+      console.log("ventilator screen on");
+      this.isEnabled = true;
+    });
+
+    this.$bus.on("ventilator_off", () => {
+      console.log("ventilator screen off");
+      this.isEnabled = false;
+    });
   },
 };
 </script>

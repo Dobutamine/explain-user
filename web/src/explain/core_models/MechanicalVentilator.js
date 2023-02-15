@@ -58,7 +58,7 @@ export class MechanicalVentilator extends ModelBaseClass {
   YPieceVol = 0.011;
   YPieceElastance = 25000;
   YPieceResistance = 25;
-  EtTubeResistance = 25;
+  EtTubeResistance = 35;
   VolumeGaranteed = false;
   VolumeControl = false;
   PresMax = 0;
@@ -185,7 +185,29 @@ export class MechanicalVentilator extends ModelBaseClass {
     // set the flag to model is initialized
     this._is_initialized = true;
   }
+  SetFiO2() {
+    let co2Factor = this.Fco2Dry / (1.0 - this.Fo2Dry);
+    let n2Factor = this.Fn2Dry / (1.0 - this.Fo2Dry);
+    let otherFactor = this.FotherDry / (1.0 - this.Fo2Dry);
+
+    let newFo2 = this.FiO2;
+    let newFco2 = co2Factor * (1.0 - this.FiO2);
+    let newFn2 = n2Factor * (1.0 - this.FiO2);
+    let newFother = otherFactor * (1.0 - this.FiO2);
+
+    SetAirComposition(
+      this._modelEngine.Models["VentIn"],
+      this.Humidity,
+      this.Temp,
+      newFo2,
+      newFco2,
+      newFn2,
+      newFother
+    );
+  }
   CalcModel() {
+    // set the correct FiO2
+
     // calculate the expiration time
     this._expTime = 60.0 / this.VentRate - this.InspTime;
 
@@ -249,6 +271,10 @@ export class MechanicalVentilator extends ModelBaseClass {
         this.VolumeGaranteed = false;
         this.VolumeControlled();
         break;
+      case "PS":
+        this.VolumeGaranteed = false;
+        this.PressureSupport();
+        break;
     }
 
     // analyze breaths and report
@@ -273,7 +299,8 @@ export class MechanicalVentilator extends ModelBaseClass {
     this._vent_rate_counter += this._t;
 
     if (this._prevExpiration && this._inspiration) {
-      console.log("Tiggered breath = ", this.TriggeredBreath);
+      this.SetFiO2();
+      this.TubeResistance();
       // report vent rate
       this.MeasuredVentRate = 60 / this._vent_rate_counter;
       this._vent_rate_counter = 0;
@@ -369,7 +396,74 @@ export class MechanicalVentilator extends ModelBaseClass {
       }
     }
   }
+  PressureSupport() {
+    if (this._inspiration) {
+      // open the inspiratory valve
+      // calculate the inspiratory valve position depending on the desired flow
+      let res = 200.0 / (this.InspFlow / 60.0);
 
+      this._modelEngine.Models.ValveInsp.NoFlow = false;
+      this._modelEngine.Models.ValveInsp.NoBackFlow = true;
+      this._modelEngine.Models.ValveInsp.RFor = res;
+      // limit the pressure
+      if (this._modelEngine.Models["TubingIn"].Pres > this.PipMax + this.Patm) {
+        this._modelEngine.Models.ValveInsp.NoFlow = true;
+      }
+      if (this.FlowSensor.Flow < 0.01) {
+        // end the inspiration when the flow stops
+        this._inspCounter = this.InspTime + 0.1;
+      }
+
+      // close the expiratory valve
+      this._modelEngine.Models.ValveExp.NoFlow = true;
+      this._modelEngine.Models.ValveExp.NoBackFlow = true;
+      this._modelEngine.Models.ValveExp.RFor = 25.0;
+    }
+
+    if (this._expiration) {
+      // close the inspiratory valve
+      this._modelEngine.Models.ValveInsp.NoFlow = true;
+      this._modelEngine.Models.ValveInsp.NoBackFlow = true;
+      this._modelEngine.Models.ValveInsp.RFor = 25.0;
+
+      // open the expiratory valve
+      this._modelEngine.Models.ValveExp.NoFlow = false;
+      this._modelEngine.Models.ValveExp.NoBackFlow = true;
+      this._modelEngine.Models.ValveExp.RFor = 25.0;
+      if (this._modelEngine.Models["TubingOut"].Pres < this.Peep + this.Patm) {
+        this._modelEngine.Models.ValveExp.NoFlow = true;
+      }
+    }
+  }
+  TubeResistance() {
+    // calculate the tube resistance in mmHg * s / l
+
+    // // Poiseuille's law
+    // // Q = (pi * P * r^4) / (8 * n * L)
+    // // resistance is calculated using Poiseuille's Law : R = (8 * n * L) / (PI * r^4)
+    // const viscosity = 0.01837;
+    // let n_mmhgs = viscosity * 0.001 * 0.00750062;
+    // let r =
+    //   (8 * n_mmhgs * this.TubeLength) /
+    //   (Math.PI * Math.pow(this.TubeDiameter / 2, 4));
+    const cmTommHg = 0.735559;
+    let a = 4;
+    let b = 5;
+    let diameter = this.TubeDiameter * 1000;
+
+    if (diameter <= 3.0) {
+      a = 2;
+      b = 35;
+    }
+    if (diameter <= 2.5) {
+      a = 11.6;
+      b = 23;
+    }
+
+    let res = (a * this.InspFlow + b) * cmTommHg;
+    this._modelEngine.Models["EtTube_DS"].RFor = res;
+    this._modelEngine.Models["EtTube_DS"].RBack = res;
+  }
   PressureRegulatedVolumeControl() {
     if (this._inspiration) {
       // open the inspiratory valve
