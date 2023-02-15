@@ -27,7 +27,7 @@
         <div class="q-ml-md">
           <q-toggle
             v-model="intubated"
-            label="Intubated"
+            label="ventilator"
             size="sm"
             color="secondary"
             @update:model-value="changeIntubation"

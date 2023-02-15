@@ -608,7 +608,34 @@ export default {
       this.compName = compName;
     },
     deleteComponentFromStore() {
-      delete this.diagram.components[this.compName];
+      // also delete all connector which are pointing to this component
+      let compToDelete = [];
+      compToDelete.push(this.compName);
+
+      let compType = this.diagram.components[this.compName].compType;
+      if (compType === "GasCompartment" || compType === "BloodCompartment") {
+        Object.entries(this.diagram.components).forEach(
+          ([component_name, component]) => {
+            if (
+              component.compType === "GasConnector" ||
+              component.compType === "BloodConnector" ||
+              component.compType === "Shunt"
+            ) {
+              if (
+                component.dbcFrom === this.compName ||
+                component.dbcTo === this.compName
+              ) {
+                compToDelete.push(component_name);
+              }
+            }
+          }
+        );
+      }
+      compToDelete.forEach((c) => {
+        delete this.diagram.components[c];
+      });
+
+      //delete this.diagram.components[this.compName];
       this.$bus.emit("rebuild_diagram");
       this.cancelDiagramBuild();
     },

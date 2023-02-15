@@ -492,7 +492,7 @@ export default {
 .chart {
   background: black;
   width: 100%;
-  height: 300px;
+  height: 275px;
   align-self: flex-start;
 }
 </style>
