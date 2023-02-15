@@ -84,7 +84,6 @@ export class MechanicalVentilator extends ModelBaseClass {
   YPiece = {};
   TubingOut = {};
   EtTube = {};
-  VentOut = {};
   ValveInsp = {};
   ValveExp = {};
   TubingIn_YPiece = {};
@@ -132,12 +131,6 @@ export class MechanicalVentilator extends ModelBaseClass {
       "GasCompliance"
     );
 
-    this._modelEngine.Models.VentOut = new GasCompliance(
-      this._modelEngine,
-      "VentOut",
-      "GasCompliance"
-    );
-
     this._modelEngine.Models.EtTube_DS = new GasResistor(
       this._modelEngine,
       "EtTube_DS",
@@ -176,7 +169,6 @@ export class MechanicalVentilator extends ModelBaseClass {
     this.SetTubing();
     this.SetYPiece();
     this.SetEtTube();
-    this.SetVentOut();
     this.SetYPieceResistors();
     this.SetEtTubeResistors();
     this.SetValveInsp();
@@ -605,32 +597,7 @@ export class MechanicalVentilator extends ModelBaseClass {
       this.FotherDry
     );
   }
-  SetVentOut() {
-    // this is the external reservoir of the ventilator which is set at a
-    // fixed composition and volume with a pressure of 200 mmHg above atmospheric pressure
-    this._modelEngine.Models.VentOut.InitModel([
-      { key: "Vol", value: 5.0 },
-      { key: "UVol", value: 5.0 },
-      { key: "ElBase", value: 1000.0 },
-      { key: "ElK", value: 0.0 },
-      { key: "Humidity", value: this.OutsideAirHumidity },
-      { key: "Temp", value: this.OutsideAirTemp },
-      { key: "TargetTemp", value: this.OutsideAirTemp },
-      { key: "FixedComposition", value: true },
-      { key: "Pres", value: this.Patm },
-      { key: "Pres0", value: this.Patm },
-      { key: "IsEnabled", value: this.IsEnabled },
-    ]);
-    SetAirComposition(
-      this._modelEngine.Models.VentOut,
-      this.OutsideAirHumidity,
-      this.OutsideAirTemp,
-      this.OutsideAitFo2Dry,
-      this.OutsideAirFco2Dry,
-      this.OutsideAirFn2Dry,
-      this.OutsideAirFotherDry
-    );
-  }
+
   SetYPiece() {
     this._modelEngine.Models.YPiece.InitModel([
       { key: "Vol", value: this.YPieceVol },
@@ -746,7 +713,7 @@ export class MechanicalVentilator extends ModelBaseClass {
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
       { key: "CompFrom", value: "TubingOut" },
-      { key: "CompTo", value: "VentOut" },
+      { key: "CompTo", value: "OUT" },
     ]);
   }
 }
