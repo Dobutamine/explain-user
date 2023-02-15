@@ -24,6 +24,43 @@
     ></VentilatorCharts>
     <q-card class="q-ma-md bg-black" bordered>
       <div class="q-ma-sm row gutter text-overline justify-center">
+        <div class="q-ml-md">
+          <q-toggle
+            v-model="intubated"
+            label="Intubated"
+            size="sm"
+            color="secondary"
+            @update:model-value="changeIntubation"
+          />
+        </div>
+        <div class="q-ml-md">
+          <q-toggle
+            v-model="breathing"
+            label="breathing"
+            size="sm"
+            color="secondary"
+            @update:model-value="changeBreathing"
+          />
+        </div>
+      </div>
+      <div class="q-ma-sm row gutter text-overline justify-center">
+        <div>
+          <q-btn-toggle
+            v-model="mode"
+            outline
+            toggle-color="secondary"
+            :options="[
+              { label: 'PC', value: 'PC' },
+              { label: 'PRVC', value: 'PRVC' },
+              { label: 'VC', value: 'VC' },
+              { label: 'PS', value: 'PS' },
+            ]"
+            @update:model-value="changeMode"
+          />
+        </div>
+      </div>
+
+      <div class="q-ma-sm row gutter text-overline justify-center">
         <div>
           <div class="row justify-center">Tin</div>
           <q-knob
@@ -169,30 +206,13 @@
           ></q-knob>
         </div>
       </div>
-      <div class="q-ma-sm row gutter text-overline justify-center">
-        <div>
-          <div class="row justify-center">Mode</div>
-          <q-btn-toggle
-            v-model="mode"
-            outline
-            toggle-color="secondary"
-            :options="[
-              { label: 'PC', value: 'PC' },
-              { label: 'PRVC', value: 'PRVC' },
-              { label: 'VC', value: 'VC' },
-              { label: 'PS', value: 'PS' },
-            ]"
-            @update:model-value="changeMode"
-          />
-        </div>
-      </div>
-      <div class="q-ma-sm row gutter text-overline justify-center">
+
+      <div class="q-ma-sm q-mt-md row gutter text-overline justify-center">
         <div class="q-ml-lg">
-          <div class="row justify-center">Tube diameter</div>
           <q-input
             v-model="tubeSize"
             stack-label
-            label="diameter mm"
+            label="tube size mm"
             type="number"
             :min="2.0"
             :max="5.0"
@@ -200,16 +220,16 @@
             outlined
             dense
             hide-hint
+            :style="{ width: '100px' }"
             color="secondary"
             @update:model-value="changeTubeDiameter"
           />
         </div>
         <div class="q-ml-md">
-          <div class="row justify-center">Tube length</div>
           <q-input
             v-model="tubeLength"
             stack-label
-            label="length cm"
+            label="tube length cm"
             type="number"
             :min="5.0"
             :max="25.0"
@@ -217,29 +237,15 @@
             outlined
             dense
             hide-hint
+            :style="{ width: '100px' }"
             color="secondary"
             @update:model-value="changeTubeLength"
           />
         </div>
-        <div class="q-ml-md">
-          <div class="row justify-center">Synchro</div>
-          <q-toggle
-            v-model="synchronized"
-            size="sm"
-            color="secondary"
-            @update:model-value="changeSynchro"
-          />
-        </div>
-        <div class="q-ml-md">
-          <div class="row justify-center">Breathing</div>
-          <q-toggle
-            v-model="breathing"
-            size="sm"
-            color="secondary"
-            @update:model-value="changeBreathing"
-          />
-        </div>
       </div>
+      <div
+        class="q-ma-sm q-mt-md row gutter text-overline justify-center"
+      ></div>
     </q-card>
   </q-card>
 </template>
@@ -279,6 +285,7 @@ export default {
       triggerVolume: 0.5,
       synchronized: false,
       breathing: false,
+      intubated: false,
       chart: {
         _id: "3456",
         caption: "Flow",
@@ -295,6 +302,35 @@ export default {
     };
   },
   methods: {
+    changeIntubation() {
+      explain.setModelProperties([
+        {
+          m: "Breathing",
+          p: "Intubated",
+          v: this.intubated,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+      explain.setModelProperties([
+        {
+          m: "MechanicalVentilator",
+          p: "IsEnabled",
+          v: this.intubated,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+      explain.setModelProperties([
+        {
+          m: "EtTube_DS",
+          p: "NoFlow",
+          v: !this.intubated,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
     changeTubeDiameter() {
       explain.setModelProperties([
         {
@@ -475,7 +511,7 @@ export default {
       this.synchronized =
         explain.modelState.Models["MechanicalVentilator"].Synchronized;
       this.breathing = explain.modelState.Models["Breathing"].BreathingEnabled;
-
+      this.intubated = explain.modelState.Models["Breathing"].Intubated;
       this.tubeSize =
         explain.modelState.Models["MechanicalVentilator"].TubeDiameter * 1000;
       this.tubeSize = parseFloat(this.tubeSize.toFixed(1));

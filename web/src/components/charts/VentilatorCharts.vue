@@ -141,12 +141,14 @@ export default {
 
     rtUpdate() {
       if (!this.isEnabled) return;
+      if (!explain.modelState.Models["MechanicalVentilator"].IsEnabled) return;
       this.data_source = 1;
       this.dataUpdate();
       this.data_source = 0;
     },
     dataUpdate() {
       if (!this.isEnabled) return;
+      if (!explain.modelState.Models["MechanicalVentilator"].IsEnabled) return;
 
       if (this.data_source == 0) {
         this.chartData1 = [];
