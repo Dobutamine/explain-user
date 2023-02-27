@@ -243,6 +243,7 @@
 import { PIXI } from "../boot/pixi";
 import { explain } from "../boot/explain";
 import BloodCompartment from "../components/ui-elements/BloodCompartment";
+import BloodPump from "../components/ui-elements/BloodPump";
 import BloodConnector from "../components/ui-elements/BloodConnector";
 import Shunt from "../components/ui-elements/Shunt";
 import Container from "../components/ui-elements/Container";
@@ -541,6 +542,18 @@ export default {
       // render the blood compartments
       Object.entries(this.diagram.components).forEach(([key, component]) => {
         switch (component.compType) {
+          case "BloodPump":
+            this.diagramComponents[key] = new BloodPump(
+              this.pixiApp,
+              key,
+              component.label,
+              component.models,
+              component.layout,
+              xCenter,
+              yCenter,
+              radius
+            );
+            break;
           case "BloodCompartment":
             this.diagramComponents[key] = new BloodCompartment(
               this.pixiApp,

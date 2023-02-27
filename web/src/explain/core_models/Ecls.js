@@ -61,6 +61,8 @@ export class Ecls extends ModelBaseClass {
   PostOxyCo2 = 45;
 
   // local properties
+  _drainageSites = [];
+  _returnSites = [];
   _tubingIn = {};
   _lung = {};
   _tubingPumpLung = {};
@@ -77,6 +79,8 @@ export class Ecls extends ModelBaseClass {
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
+
+    //
 
     // set the flag to model is initialized
     this._is_initialized = true;

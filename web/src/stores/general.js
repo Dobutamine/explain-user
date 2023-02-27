@@ -6,6 +6,7 @@ export const useGeneralStore = defineStore("general", {
     diagramComponentTypes: [
       "BloodCompartment",
       "BloodConnector",
+      "BloodPump",
       "GasCompartment",
       "GasConnector",
       "Shunt",

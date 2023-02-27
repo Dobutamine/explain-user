@@ -24,6 +24,7 @@ export class Blood extends ModelBaseClass {
     Object.values(this._modelEngine.Models).forEach((model) => {
       if (
         model.ModelType === "BloodCompliance" ||
+        model.ModelType === "BloodPump" ||
         model.ModelType === "BloodTimeVaryingElastance"
       ) {
         // only set the solutes when the rest is zero
