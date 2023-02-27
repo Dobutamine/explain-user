@@ -22,6 +22,7 @@ export const useDiagramStore = defineStore("diagram", {
       pathColor: 4473924,
       radius: 0.6,
       componentTypes: [
+        "BloodPump",
         "BloodCompartment",
         "BloodConnector",
         "GasCompartment",
@@ -79,6 +80,12 @@ export const useDiagramStore = defineStore("diagram", {
       // diagrams
       Object.values(this.components).forEach((component) => {
         switch (component.compType) {
+          case "BloodPump":
+            component.models.forEach((model) => {
+              propIdsDiagram.push(model + ".Vol");
+              propIdsDiagram.push(model + ".To2");
+            });
+            break;
           case "BloodCompartment":
             component.models.forEach((model) => {
               propIdsDiagram.push(model + ".Vol");

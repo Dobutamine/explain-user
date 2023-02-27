@@ -90,6 +90,7 @@ onmessage = function (e) {
           prop: e.data.payload[1],
         };
         model.DataCollector.add_to_watchlist(prop);
+
         break;
       }
       if (e.data.message == "watch_props") {
