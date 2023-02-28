@@ -93,15 +93,17 @@ export class Ecls extends ModelBaseClass {
     // get the return site
     this._returnSite = this._modelEngine.Models[this.ReturnSite];
 
-    // initialize the tubingIn blood compliance
+    // instantiate and initialize the tubingIn blood compliance
     this._tubingIn = new BloodCompliance(
       this._modelEngine,
-      "TubingIn",
+      "EclsTubingIn",
       "BloodCompliance"
     );
+    this.SetTubingIn();
 
     // initialize the bloodPump
     this._bloodPump = new BloodPump(this._modelEngine, "EclsPump", "BloodPump");
+    this.SetBloodPump();
 
     // initialize  the oxygenator
     this._oxygenator = new MembraneOxygenator(
@@ -109,39 +111,153 @@ export class Ecls extends ModelBaseClass {
       "EclsOxy",
       "MembraneOxygenator"
     );
+    this.SetOxygenator();
 
     // initialize the tubingOut blood compliance
     this._tubingOut = new BloodCompliance(
       this._modelEngine,
-      "TubingOut",
+      "EclsTubingOut",
       "BloodCompliance"
     );
+    this.SetTubingOut();
 
     // initialize the connectors
     this._drainageSite_TubingIn = new BloodResistor(
       this._modelEngine,
-      "Drainage_TubingIn",
+      "Ecls_Drainage_TubingIn",
       "BloodResistor"
     );
+    this.SetDrainageTubingIn();
 
     // initialize the connectors
     this._bloodPump_Oxy = new BloodResistor(
       this._modelEngine,
-      "EclsBloodPump_EclsOxy",
+      "Ecls_Pump_Oxy",
       "BloodResistor"
     );
+    this.SetPumpOxy();
 
     // initialize the connectors
     this._tubingOut_ReturnSite = new BloodResistor(
       this._modelEngine,
-      "TubingOut_Return",
+      "Ecls_TubingOut_Return",
       "BloodResistor"
     );
+    this.SetTubingOutReturn();
 
     // set the flag to model is initialized
     this._is_initialized = true;
 
-    console.log(this._tubingIn);
+    console.log(this._modelEngine.Models);
+  }
+
+  SetDrainageTubingIn() {
+    this._drainageSite_TubingIn.InitModel([
+      { key: "Description", value: "Ecls drainage to tubing in" },
+      { key: "NoFlow", value: false },
+      { key: "NoBackFlow", value: false },
+      { key: "RFor", value: 2500 },
+      { key: "RBack", value: 2500 },
+      { key: "Rk", value: 0 },
+      { key: "CompFrom", value: "RA" },
+      { key: "CompTo", value: "EclsTubingIn" },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // add the model to the models object
+    this._modelEngine.Models[this._drainageSite_TubingIn.Name] =
+      this._drainageSite_TubingIn;
+  }
+  SetPumpOxy() {
+    this._bloodPump_Oxy.InitModel([
+      { key: "Description", value: "Ecls blood pump to oxy" },
+      { key: "NoFlow", value: false },
+      { key: "NoBackFlow", value: false },
+      { key: "RFor", value: 2500 },
+      { key: "RBack", value: 2500 },
+      { key: "Rk", value: 0 },
+      { key: "CompFrom", value: "EclsPump" },
+      { key: "CompTo", value: "EclsOxy" },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // add the model to the models object
+    this._modelEngine.Models[this._bloodPump_Oxy.Name] = this._bloodPump_Oxy;
+  }
+  SetTubingOutReturn() {
+    this._tubingOut_ReturnSite.InitModel([
+      { key: "Description", value: "Ecls tubing out to return" },
+      { key: "NoFlow", value: false },
+      { key: "NoBackFlow", value: false },
+      { key: "RFor", value: 2500 },
+      { key: "RBack", value: 2500 },
+      { key: "Rk", value: 0 },
+      { key: "CompFrom", value: "EclsTubingOut" },
+      { key: "CompTo", value: "AAR" },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // add the model to the models object
+    this._modelEngine.Models[this._tubingOut_ReturnSite.Name] =
+      this._tubingOut_ReturnSite;
+  }
+  SetOxygenator() {
+    this._oxygenator.InitModel([
+      { key: "Description", value: "Ecls oxygenator" },
+      { key: "Vol", value: 0 },
+      { key: "UVol", value: 0 },
+      { key: "ElBase", value: 0 },
+      { key: "ElK", value: 0 },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // now set the solutes on this blood models
+    this._modelEngine.Models["Blood"].SetSolutesOnModel(this._oxygenator);
+
+    // add the model to the models object
+    this._modelEngine.Models[this._oxygenator.Name] = this._oxygenator;
+  }
+  SetBloodPump() {
+    this._bloodPump.InitModel([
+      { key: "Description", value: "Ecls pump" },
+      { key: "Vol", value: 0 },
+      { key: "UVol", value: 0 },
+      { key: "ElMin", value: 0 },
+      { key: "ElMax", value: 0 },
+      { key: "ElK", value: 0 },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // now set the solutes on this blood models
+    this._modelEngine.Models["Blood"].SetSolutesOnModel(this._bloodPump);
+
+    // add the model to the models object
+    this._modelEngine.Models[this._bloodPump.Name] = this._bloodPump;
+  }
+  SetTubingIn() {
+    this._tubingIn.InitModel([
+      { key: "Description", value: "Ecls tubing in" },
+      { key: "Vol", value: 0 },
+      { key: "UVol", value: 0 },
+      { key: "ElBase", value: 0 },
+      { key: "ElK", value: 0 },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // now set the solutes on this blood models
+    this._modelEngine.Models["Blood"].SetSolutesOnModel(this._tubingIn);
+
+    // add the model to the models object
+    this._modelEngine.Models[this._tubingIn.Name] = this._tubingIn;
+  }
+  SetTubingOut() {
+    this._tubingOut.InitModel([
+      { key: "Description", value: "Ecls tubing out" },
+      { key: "Vol", value: 0 },
+      { key: "UVol", value: 0 },
+      { key: "ElBase", value: 0 },
+      { key: "ElK", value: 0 },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // now set the solutes on this blood models
+    this._modelEngine.Models["Blood"].SetSolutesOnModel(this._tubingOut);
+
+    // add the model to the models object
+    this._modelEngine.Models[this._tubingOut.Name] = this._tubingOut;
   }
   SetGasMixture() {
     let sum = 1.0 - this.FiCo2 - this.FiO2;

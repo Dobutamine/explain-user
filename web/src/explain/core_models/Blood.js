@@ -41,4 +41,24 @@ export class Blood extends ModelBaseClass {
       }
     });
   }
+
+  SetSolutesOnModel(model) {
+    if (
+      model.ModelType === "BloodCompliance" ||
+      model.ModelType === "BloodPump" ||
+      model.ModelType === "BloodTimeVaryingElastance" ||
+      model.ModelType === "MembraneOxygenator"
+    ) {
+      // only set the solutes when the rest is zero
+      if (Object.keys(model.Solutes).length === 0) {
+        model.Solutes = { ...this.Solutes };
+      }
+      if (model.To2 === 0) {
+        console.log("To2 was zero in ", model);
+      }
+      if (model.Tco2 === 0) {
+        model.Tco2 = this.Tco2;
+      }
+    }
+  }
 }
