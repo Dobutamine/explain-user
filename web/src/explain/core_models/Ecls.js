@@ -26,12 +26,17 @@ export class Ecls extends ModelBaseClass {
   Temp = 20;
   Humidity = 0.5;
 
+  // PediVas
+  PumpBloodVolume = 0.014; // in l
+  PumpElastance = 25000;
+
   // oxygenator propertues
   DifO2 = 0.001; // in mmol/mmHg * s
   DifCo2 = 0.001; // in mmol/mmHg * s
   SweepGasFlow = 0.023; // in l/s   ==> 1.4 l/min
   Co2GasFlow = 0.00067; // in l/s => 40 mL/min
-  LungBloodVolume = 0.1; // in l
+  OxyBloodVolume = 0.081; // in l
+  OxyElastance = 25000;
 
   // tubing properties
   TubingInDiameter = 0.00635; // in m => 6.35 mm = 0.25 inch
@@ -72,7 +77,9 @@ export class Ecls extends ModelBaseClass {
 
   // connectors
   _drainageSite_TubingIn = {};
+  _tubingIn_Pump = {};
   _bloodPump_Oxy = {};
+  _oxy_TubingOut = {};
   _tubingOut_ReturnSite = {};
 
   _updateCounter = 0;
@@ -124,23 +131,39 @@ export class Ecls extends ModelBaseClass {
     // initialize the connectors
     this._drainageSite_TubingIn = new BloodResistor(
       this._modelEngine,
-      "Ecls_Drainage_TubingIn",
+      "EclsDrainage_TubingIn",
       "BloodResistor"
     );
     this.SetDrainageTubingIn();
 
     // initialize the connectors
+    this._tubingIn_Pump = new BloodResistor(
+      this._modelEngine,
+      "EclsTubingIn_Pump",
+      "BloodResistor"
+    );
+    this.SetTubingInPump();
+
+    // initialize the connectors
     this._bloodPump_Oxy = new BloodResistor(
       this._modelEngine,
-      "Ecls_Pump_Oxy",
+      "EclsPump_Oxy",
       "BloodResistor"
     );
     this.SetPumpOxy();
 
     // initialize the connectors
+    this._oxy_TubingOut = new BloodResistor(
+      this._modelEngine,
+      "EclsOxy_TubingOut",
+      "BloodResistor"
+    );
+    this.SetOxyTubingOut();
+
+    // initialize the connectors
     this._tubingOut_ReturnSite = new BloodResistor(
       this._modelEngine,
-      "Ecls_TubingOut_Return",
+      "EclsTubingOut_Return",
       "BloodResistor"
     );
     this.SetTubingOutReturn();
@@ -167,13 +190,28 @@ export class Ecls extends ModelBaseClass {
     this._modelEngine.Models[this._drainageSite_TubingIn.Name] =
       this._drainageSite_TubingIn;
   }
+  SetTubingInPump() {
+    this._tubingIn_Pump.InitModel([
+      { key: "Description", value: "Ecls tubing in to pump" },
+      { key: "NoFlow", value: false },
+      { key: "NoBackFlow", value: false },
+      { key: "RFor", value: 25 },
+      { key: "RBack", value: 25 },
+      { key: "Rk", value: 0 },
+      { key: "CompFrom", value: "EclsTubingIn" },
+      { key: "CompTo", value: "EclsPump" },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // add the model to the models object
+    this._modelEngine.Models[this._tubingIn_Pump.Name] = this._tubingIn_Pump;
+  }
   SetPumpOxy() {
     this._bloodPump_Oxy.InitModel([
       { key: "Description", value: "Ecls blood pump to oxy" },
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
-      { key: "RFor", value: 2500 },
-      { key: "RBack", value: 2500 },
+      { key: "RFor", value: 25 },
+      { key: "RBack", value: 25 },
       { key: "Rk", value: 0 },
       { key: "CompFrom", value: "EclsPump" },
       { key: "CompTo", value: "EclsOxy" },
@@ -181,6 +219,21 @@ export class Ecls extends ModelBaseClass {
     ]);
     // add the model to the models object
     this._modelEngine.Models[this._bloodPump_Oxy.Name] = this._bloodPump_Oxy;
+  }
+  SetOxyTubingOut() {
+    this._oxy_TubingOut.InitModel([
+      { key: "Description", value: "Oxy to tubing out" },
+      { key: "NoFlow", value: false },
+      { key: "NoBackFlow", value: false },
+      { key: "RFor", value: 25 },
+      { key: "RBack", value: 25 },
+      { key: "Rk", value: 0 },
+      { key: "CompFrom", value: "EclsOxy" },
+      { key: "CompTo", value: "EclsTubingOut" },
+      { key: "IsEnabled", value: this.IsEnabled },
+    ]);
+    // add the model to the models object
+    this._modelEngine.Models[this._oxy_TubingOut.Name] = this._oxy_TubingOut;
   }
   SetTubingOutReturn() {
     this._tubingOut_ReturnSite.InitModel([
@@ -201,9 +254,9 @@ export class Ecls extends ModelBaseClass {
   SetOxygenator() {
     this._oxygenator.InitModel([
       { key: "Description", value: "Ecls oxygenator" },
-      { key: "Vol", value: 0 },
-      { key: "UVol", value: 0 },
-      { key: "ElBase", value: 0 },
+      { key: "Vol", value: this.OxyBloodVolume },
+      { key: "UVol", value: this.OxyBloodVolume },
+      { key: "ElBase", value: this.OxyElastance },
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
@@ -216,10 +269,9 @@ export class Ecls extends ModelBaseClass {
   SetBloodPump() {
     this._bloodPump.InitModel([
       { key: "Description", value: "Ecls pump" },
-      { key: "Vol", value: 0 },
-      { key: "UVol", value: 0 },
-      { key: "ElMin", value: 0 },
-      { key: "ElMax", value: 0 },
+      { key: "Vol", value: this.PumpBloodVolume },
+      { key: "UVol", value: this.PumpBloodVolume },
+      { key: "ElBase", value: this.PumpElastance },
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
@@ -230,11 +282,18 @@ export class Ecls extends ModelBaseClass {
     this._modelEngine.Models[this._bloodPump.Name] = this._bloodPump;
   }
   SetTubingIn() {
+    // calculate the properties of the tubing
+    let tubingVolume =
+      Math.PI *
+      Math.pow(this.TubingInDiameter / 2, 2) *
+      this.TubingInLength *
+      1000;
+
     this._tubingIn.InitModel([
       { key: "Description", value: "Ecls tubing in" },
-      { key: "Vol", value: 0 },
-      { key: "UVol", value: 0 },
-      { key: "ElBase", value: 0 },
+      { key: "Vol", value: tubingVolume },
+      { key: "UVol", value: tubingVolume },
+      { key: "ElBase", value: this.TubingElastance },
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
@@ -245,11 +304,16 @@ export class Ecls extends ModelBaseClass {
     this._modelEngine.Models[this._tubingIn.Name] = this._tubingIn;
   }
   SetTubingOut() {
+    let tubingVolume =
+      Math.PI *
+      Math.pow(this.TubingOutDiameter / 2, 2) *
+      this.TubingOutLength *
+      1000;
     this._tubingOut.InitModel([
       { key: "Description", value: "Ecls tubing out" },
-      { key: "Vol", value: 0 },
-      { key: "UVol", value: 0 },
-      { key: "ElBase", value: 0 },
+      { key: "Vol", value: tubingVolume },
+      { key: "UVol", value: tubingVolume },
+      { key: "ElBase", value: this.TubingElastance },
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
