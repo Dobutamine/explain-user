@@ -25,7 +25,8 @@ export class Blood extends ModelBaseClass {
       if (
         model.ModelType === "BloodCompliance" ||
         model.ModelType === "BloodPump" ||
-        model.ModelType === "BloodTimeVaryingElastance"
+        model.ModelType === "BloodTimeVaryingElastance" ||
+        model.ModelType === "MembraneOxygenator"
       ) {
         // only set the solutes when the rest is zero
         if (Object.keys(model.Solutes).length === 0) {

@@ -353,12 +353,13 @@ const initModel = function (model_definition) {
     // initialize all model components
     Object.values(modelDefinition.Models).forEach((component) => {
       // check whether the model is in the model engine list
+
       if (Object.keys(modelEngine.core_models).includes(component.ModelType)) {
         // check if the model is available in the available model list
         let index = available_models.findIndex(
           (model) => model.name === component.ModelType
         );
-
+        //console.log(component.ModelType, index);
         // if the component model was found then instantiate a model
         if (index > -1) {
           // instantiate the new component and give it a name, pass the model type and a reference to the whole model

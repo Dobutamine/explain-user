@@ -6,7 +6,7 @@ import { GasExchanger } from "./GasExchanger";
 import { BloodResistor } from "./BloodResistor";
 import { BloodCompliance } from "./BloodCompliance";
 import { BloodPump } from "./BloodPump";
-import { Oxygenation } from "./Oxygenation";
+import { MembraneOxygenator } from "./MembraneOxygenator";
 
 export class Ecls extends ModelBaseClass {
   // swee[ air atmospheric pressure
@@ -14,8 +14,8 @@ export class Ecls extends ModelBaseClass {
 
   // general settings
   EclsMode = "VA";
-  DrainageSites = ["RA"];
-  ReturnSites = ["AAR"];
+  DrainageSite = "RA";
+  ReturnSite = "AAR";
 
   // sweep gas air composition when no co2 is added
   FiO2 = 0.205;
@@ -62,15 +62,18 @@ export class Ecls extends ModelBaseClass {
   PostOxyCo2 = 45;
 
   // local properties
-  _drainageSites = [];
-  _returnSites = [];
+  _outside = {};
+  _drainageSite = {};
+  _returnSite = {};
   _tubingIn = {};
-  _lung = {};
-  _tubingPumpLung = {};
   _bloodPump = {};
   _oxygenator = {};
-
   _tubingOut = {};
+
+  // connectors
+  _drainageSite_TubingIn = {};
+  _bloodPump_Oxy = {};
+  _tubingOut_ReturnSite = {};
 
   _updateCounter = 0;
   _updateInterval = 1.0;
@@ -80,6 +83,15 @@ export class Ecls extends ModelBaseClass {
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
+
+    // get the outside air gas compartment
+    this._outside = this._modelEngine.Models["OUT"];
+
+    // get the drainage site
+    this._drainageSite = this._modelEngine.Models[this.DrainageSite];
+
+    // get the return site
+    this._returnSite = this._modelEngine.Models[this.ReturnSite];
 
     // initialize the tubingIn blood compliance
     this._tubingIn = new BloodCompliance(
@@ -91,7 +103,12 @@ export class Ecls extends ModelBaseClass {
     // initialize the bloodPump
     this._bloodPump = new BloodPump(this._modelEngine, "EclsPump", "BloodPump");
 
-    // initialize the oxygenator
+    // initialize  the oxygenator
+    this._oxygenator = new MembraneOxygenator(
+      this._modelEngine,
+      "EclsOxy",
+      "MembraneOxygenator"
+    );
 
     // initialize the tubingOut blood compliance
     this._tubingOut = new BloodCompliance(
@@ -100,8 +117,31 @@ export class Ecls extends ModelBaseClass {
       "BloodCompliance"
     );
 
+    // initialize the connectors
+    this._drainageSite_TubingIn = new BloodResistor(
+      this._modelEngine,
+      "Drainage_TubingIn",
+      "BloodResistor"
+    );
+
+    // initialize the connectors
+    this._bloodPump_Oxy = new BloodResistor(
+      this._modelEngine,
+      "EclsBloodPump_EclsOxy",
+      "BloodResistor"
+    );
+
+    // initialize the connectors
+    this._tubingOut_ReturnSite = new BloodResistor(
+      this._modelEngine,
+      "TubingOut_Return",
+      "BloodResistor"
+    );
+
     // set the flag to model is initialized
     this._is_initialized = true;
+
+    console.log(this._tubingIn);
   }
   SetGasMixture() {
     let sum = 1.0 - this.FiCo2 - this.FiO2;

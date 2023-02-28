@@ -3,6 +3,8 @@ import ModelBaseClass from "../helpers/ModelBaseClass";
 export class BloodPump extends ModelBaseClass {
   // state variables
   Pres = 0;
+  PresInlet = 0;
+  PresOutlet = 0;
   PresEd = 0;
   PresEs = 0;
   PresMax = 0.0;
@@ -61,6 +63,9 @@ export class BloodPump extends ModelBaseClass {
       this.PresExt +
       this.PresCc +
       this.PresMus;
+
+    this.PresInlet = this.Pres;
+    this.PresOutlet = this.Pres;
 
     // reset the external pressures as they have to be set every model cycle
     this.Pres0 = 0.0;

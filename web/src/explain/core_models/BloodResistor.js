@@ -38,6 +38,21 @@ export class BloodResistor extends ModelBaseClass {
     let p_u = this._comp_from.Pres;
     let p_d = this._comp_to.Pres;
 
+    // if blood resistor is connected to a blood pump or membrane oxygenator
+    if (
+      this._comp_from.ModelType === "BloodPump" ||
+      this._comp_from.ModelType === "MembraneOxygenator"
+    ) {
+      p_u = this._comp_from.PresOutlet;
+    }
+
+    if (
+      this._comp_to.ModelType === "BloodPump" ||
+      this._comp_to.ModelType === "MembraneOxygenator"
+    ) {
+      p_d = this._comp_to.PresInlet;
+    }
+
     // calculate the flow in l/s
     if (p_u > p_d) {
       this.Res = this.RFor * (1.0 + this.Rk * this.Flow);
