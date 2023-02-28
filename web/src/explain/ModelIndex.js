@@ -13,6 +13,7 @@ export { GasResistor } from "./core_models/GasResistor";
 export { GasExchanger } from "./core_models/GasExchanger";
 export { Heart } from "./core_models/Heart";
 export { Ecls } from "./core_models/Ecls";
+export { MembraneOxygenator } from "./core_models/MembraneOxygenator";
 export { IntrathoracicPressure } from "./core_models/IntrathoracicPressure";
 export { MechanicalVentilator } from "./core_models/MechanicalVentilator";
 export { Resuscitation } from "./core_models/Resuscitation";

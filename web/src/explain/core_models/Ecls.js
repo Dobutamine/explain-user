@@ -6,6 +6,7 @@ import { GasExchanger } from "./GasExchanger";
 import { BloodResistor } from "./BloodResistor";
 import { BloodCompliance } from "./BloodCompliance";
 import { BloodPump } from "./BloodPump";
+import { Oxygenation } from "./Oxygenation";
 
 export class Ecls extends ModelBaseClass {
   // swee[ air atmospheric pressure
@@ -66,8 +67,8 @@ export class Ecls extends ModelBaseClass {
   _tubingIn = {};
   _lung = {};
   _tubingPumpLung = {};
-  _pumpIn = {};
-  _pumpOut = {};
+  _bloodPump = {};
+  _oxygenator = {};
 
   _tubingOut = {};
 
@@ -80,7 +81,24 @@ export class Ecls extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
-    //
+    // initialize the tubingIn blood compliance
+    this._tubingIn = new BloodCompliance(
+      this._modelEngine,
+      "TubingIn",
+      "BloodCompliance"
+    );
+
+    // initialize the bloodPump
+    this._bloodPump = new BloodPump(this._modelEngine, "EclsPump", "BloodPump");
+
+    // initialize the oxygenator
+
+    // initialize the tubingOut blood compliance
+    this._tubingOut = new BloodCompliance(
+      this._modelEngine,
+      "TubingOut",
+      "BloodCompliance"
+    );
 
     // set the flag to model is initialized
     this._is_initialized = true;

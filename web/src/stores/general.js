@@ -12,6 +12,7 @@ export const useGeneralStore = defineStore("general", {
       "Shunt",
       "Container",
       "GasExchanger",
+      "Oxygenator",
     ],
   }),
 

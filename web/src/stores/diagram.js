@@ -29,6 +29,7 @@ export const useDiagramStore = defineStore("diagram", {
         "GasConnector",
         "Container",
         "GasExchanger",
+        "Oxygenator",
         "Shunt",
       ],
     },
@@ -80,6 +81,12 @@ export const useDiagramStore = defineStore("diagram", {
       // diagrams
       Object.values(this.components).forEach((component) => {
         switch (component.compType) {
+          case "Oxygenator":
+            component.models.forEach((model) => {
+              propIdsDiagram.push(model + ".Vol");
+              propIdsDiagram.push(model + ".To2");
+            });
+            break;
           case "BloodPump":
             component.models.forEach((model) => {
               propIdsDiagram.push(model + ".Vol");

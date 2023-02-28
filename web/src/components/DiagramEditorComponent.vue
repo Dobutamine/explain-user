@@ -140,6 +140,7 @@
               advancedMode &&
               (compType == 'BloodCompartment' ||
                 compType == 'BloodPump' ||
+                compType == 'Oxygenator' ||
                 compType == 'GasCompartment' ||
                 compType == 'Container' ||
                 compType == 'GasExchanger')
@@ -458,6 +459,40 @@ export default {
           };
           this.$bus.emit("rebuild_diagram");
           break;
+        case "Oxygenator":
+          layoutType = "rel";
+          if (this.compLayoutType) {
+            layoutType = "arc";
+          }
+          this.diagram.components[this.compName] = {
+            label: this.compLabel,
+            models: this.compModelSelection,
+            compType: this.compType,
+            layout: {
+              pos: {
+                type: layoutType,
+                x: parseFloat(this.compLayoutX),
+                y: parseFloat(this.compLayoutY),
+                dgs: parseFloat(this.compLayoutDgs),
+              },
+              morph: {
+                x: parseFloat(this.compMorphX),
+                y: parseFloat(this.compMorphY),
+              },
+              scale: {
+                x: parseFloat(this.compScaleX),
+                y: parseFloat(this.compScaleY),
+              },
+              rotation: parseFloat(this.compRotation),
+              text: {
+                x: parseFloat(this.compTextX),
+                y: parseFloat(this.compTextY),
+                size: parseFloat(this.compTextSize),
+              },
+            },
+          };
+          this.$bus.emit("rebuild_diagram");
+          break;
         case "BloodPump":
           layoutType = "rel";
           if (this.compLayoutType) {
@@ -651,7 +686,8 @@ export default {
       if (
         compType === "GasCompartment" ||
         compType === "BloodCompartment" ||
-        compType === "BloodPump"
+        compType === "BloodPump" ||
+        compType === "Oxygenator"
       ) {
         Object.entries(this.diagram.components).forEach(
           ([component_name, component]) => {
@@ -698,6 +734,7 @@ export default {
           this.compDbcTo = this.selectedDiagramComponent.dbcTo;
           this.findDiagramComponents("BloodCompartment");
           this.findDiagramComponents("BloodPump");
+          this.findDiagramComponents("Oxygenator");
           break;
 
         case "GasConnector":
@@ -721,9 +758,57 @@ export default {
           this.compDbcTo = this.selectedDiagramComponent.dbcTo;
           this.findDiagramComponents("BloodCompartment");
           this.findDiagramComponents("BloodPump");
+          this.findDiagramComponents("Oxygenator");
           break;
 
         case "BloodCompartment":
+          this.compType = this.selectedDiagramComponent.compType;
+          this.compName = compName;
+          this.compLabel = this.selectedDiagramComponent.label;
+          this.selectModelTypeToAdd(this.selectedDiagramComponent.compType);
+          this.compModelSelection = this.selectedDiagramComponent.models;
+          if (this.selectedDiagramComponent.layout.pos.type == "arc") {
+            this.compLayoutType = true;
+          } else {
+            this.compLayoutType = false;
+          }
+          this.compLayoutDgs = parseFloat(
+            this.selectedDiagramComponent.layout.pos.dgs.toFixed(2)
+          );
+          this.compLayoutX = parseFloat(
+            this.selectedDiagramComponent.layout.pos.x.toFixed(2)
+          );
+          this.compLayoutY = parseFloat(
+            this.selectedDiagramComponent.layout.pos.y.toFixed(2)
+          );
+          this.compMorphX = parseFloat(
+            this.selectedDiagramComponent.layout.morph.x.toFixed(2)
+          );
+          this.compMorphY = parseFloat(
+            this.selectedDiagramComponent.layout.morph.y.toFixed(2)
+          );
+          this.compScaleX = parseFloat(
+            this.selectedDiagramComponent.layout.scale.x.toFixed(2)
+          );
+          this.compScaleY = parseFloat(
+            this.selectedDiagramComponent.layout.scale.y.toFixed(2)
+          );
+          this.compTextX = parseFloat(
+            this.selectedDiagramComponent.layout.text.x.toFixed(2)
+          );
+          this.compTextY = parseFloat(
+            this.selectedDiagramComponent.layout.text.y.toFixed(2)
+          );
+          this.compRotation = parseFloat(
+            this.selectedDiagramComponent.layout.rotation.toFixed(2)
+          );
+          this.compTextSize = parseFloat(
+            this.selectedDiagramComponent.layout.text.size.toFixed(2)
+          );
+
+          // add the other possible models
+          break;
+        case "Oxygenator":
           this.compType = this.selectedDiagramComponent.compType;
           this.compName = compName;
           this.compLabel = this.selectedDiagramComponent.label;
@@ -998,6 +1083,7 @@ export default {
         case "BloodConnector":
           this.findDiagramComponents("BloodCompartment");
           this.findDiagramComponents("BloodPump");
+          this.findDiagramComponents("Oxygenator");
           break;
         case "GasConnector":
           this.findDiagramComponents("GasCompartment");
@@ -1006,10 +1092,12 @@ export default {
           this.findDiagramComponents("BloodCompartment");
           this.findDiagramComponents("GasCompartment");
           this.findDiagramComponents("BloodPump");
+          this.findDiagramComponents("Oxygenator");
           break;
         case "Shunt":
           this.findDiagramComponents("BloodCompartment");
           this.findDiagramComponents("BloodPump");
+          this.findDiagramComponents("Oxygenator");
           break;
         case "Pump":
           break;
@@ -1048,11 +1136,8 @@ export default {
         case "GasExchanger":
           models = ["GasExchanger"];
           break;
-        case "Pump":
-          models = ["Pump"];
-          break;
         case "Oxygenator":
-          models = ["Oxygenator"];
+          models = ["MembraneOxygenator"];
           break;
       }
       Object.keys(explain.modelState.Models).forEach((model) => {
