@@ -108,8 +108,10 @@ router.post("/get_diagrams", auth, async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   try {
-    // get the state file
-    let foundDiagrams = await Diagram.find({ user: req.body.user });
+    // get the diagram file
+    let foundDiagrams = await Diagram.find({
+      $or: [{ user: req.body.user }, { shared: true }],
+    });
 
     // if not found
     if (!foundDiagrams) return res.status(400).send("Can't find diagram file.");
@@ -133,8 +135,10 @@ router.post("/get_diagram", auth, async (req, res) => {
   try {
     // get the state file
     let foundDiagram = await Diagram.findOne({
-      name: req.body.name,
-      user: req.body.user,
+      $or: [
+        { name: req.body.name, user: req.body.user },
+        { name: req.body.name, shared: true },
+      ],
     });
 
     // if not found

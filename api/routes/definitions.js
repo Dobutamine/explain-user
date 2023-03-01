@@ -137,8 +137,10 @@ router.post("/get_definitions", auth, async (req, res) => {
   try {
     // get the state file
     let foundDefinitions = await Definition.find({
-      engine_version: req.body.engine_version,
-      user: req.body.user,
+      $or: [
+        { engine_version: req.body.engine_version, user: req.body.user },
+        { engine_version: req.body.engine_version, shared: true },
+      ],
     });
 
     // if not found
