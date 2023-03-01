@@ -353,7 +353,6 @@ export default {
       // draw the components
       this.drawComponents();
       // add a ticker to update all sprites
-
       if (!this.ticker) {
         this.ticker = this.pixiApp.ticker.add((delta) => {
           if (this.rt_running) {
@@ -365,6 +364,7 @@ export default {
           }
         });
       }
+      this.$bus.emit("short_run");
     },
     clearDiagram() {
       this.pixiApp.stage.removeChildren();

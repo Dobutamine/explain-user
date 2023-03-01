@@ -524,6 +524,15 @@ export default {
       this.butCaption = "PLAY";
       explain.getModelState();
     });
+
+    this.$bus.on("short_run", () => {
+      console.log("short run");
+      this.uiConfig.updateDataCollector();
+      this.diagram.updateDataCollector();
+      explain.stop();
+      explain.start();
+      setTimeout(() => explain.stop(), 200);
+    });
   },
 };
 </script>
