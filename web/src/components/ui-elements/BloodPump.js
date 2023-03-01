@@ -80,7 +80,6 @@ export default class BloodPump {
     this.spriteFlow.tint = "0xbbbbbb";
     this.spriteFlow.zIndex = 8;
 
-    console.log(models);
     // place the sprite on the stage
     switch (this.layout.pos.type) {
       case "arc":

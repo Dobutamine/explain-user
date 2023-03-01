@@ -12,10 +12,12 @@ export default class BloodConnector {
 
   sprite = {};
   spriteColor = 0xffffff;
+  angleCorrection = 0;
 
   path = null;
   pathColor = 0x555555;
   pathWidth = 4;
+  prevPosition = 0;
 
   arc = {
     enabled: false,
@@ -177,6 +179,12 @@ export default class BloodConnector {
         this.line.from,
         this.line.to
       );
+
+      this.angleCorrection = 0;
+      // if the position line.from is greater then line.to we need a correction factor
+      if (this.line.from > this.line.to) {
+        this.angleCorrection = Math.PI * 2.0;
+      }
     }
     this.path.interactive = true;
     this.path.on("mouseup", (e) => this.onDragEnd(e));
@@ -219,14 +227,11 @@ export default class BloodConnector {
 
     // caulcate the new position if the
     if (this.line.enabled) {
-      // if (this.models[0] === "RA_RV") {
-      //   console.log(this.line.to - this.line.from);
-      // }
       // it only looks at x coordinates which why it fails
       if (this.spritePosition > this.line.to) {
-        this.spritePosition = this.line.from;
+        this.spritePosition = this.line.from - this.angleCorrection;
       }
-      if (this.spritePosition < this.line.from) {
+      if (this.spritePosition < this.line.from - this.angleCorrection) {
         this.spritePosition = this.line.to;
       }
 
@@ -254,6 +259,7 @@ export default class BloodConnector {
     }
 
     this.sprite.rotation = angle + direction;
+    this.prevPosition = this.spritePosition;
 
     this.prevSpriteX = this.sprite.x;
     this.prevSpriteY = this.sprite.y;
