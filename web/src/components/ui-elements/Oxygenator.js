@@ -43,7 +43,7 @@ export default class Oxygenator {
     this.edit_comp_event = new CustomEvent("edit_comp", { detail: this.key });
 
     // this is a blood compartment sprite which uses
-    this.sprite = PIXI.Sprite.from("container.png");
+    this.sprite = PIXI.Sprite.from("gas_container.png");
     this.sprite.interactive = true;
     this.sprite.on("mousedown", (e) => this.onDragStart(e));
     this.sprite.on("touchstart", (e) => this.onDragStart(e));

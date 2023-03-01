@@ -91,6 +91,7 @@ export const useDiagramStore = defineStore("diagram", {
             component.models.forEach((model) => {
               propIdsDiagram.push(model + ".Vol");
               propIdsDiagram.push(model + ".To2");
+              propIdsDiagram.push(model + ".Rpm");
             });
             break;
           case "BloodCompartment":

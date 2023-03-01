@@ -13,6 +13,7 @@ export class BloodPump extends ModelBaseClass {
   Solutes = {};
   Mode = 0; // 0 = centrifugal, 1 = roller pump
   PumpPressure = 0.0;
+  Rpm = 0.0;
 
   // dependent variables
   Pres = 0.0;

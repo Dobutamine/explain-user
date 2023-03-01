@@ -12,9 +12,11 @@ export default class BloodPump {
   radius = 0;
   angle = 0;
   rotation = 0;
+  rotationFlow = 0;
   distanceToCenter = 0;
 
   sprite = {};
+  spriteFlow = {};
   text = {};
   textStyle = {};
 
@@ -62,6 +64,23 @@ export default class BloodPump {
     this.sprite.rotation = this.layout.rotation;
     this.sprite.zIndex = 4;
 
+    // this is a blood compartment spriteFlow which uses
+    this.spriteFlow = PIXI.Sprite.from("exchange.png");
+    this.spriteFlow.interactive = true;
+    this.spriteFlow.on("mousedown", (e) => this.onDragStart(e));
+    this.spriteFlow.on("touchstart", (e) => this.onDragStart(e));
+    this.spriteFlow.on("mouseupoutside", (e) => this.onDragEnd(e));
+    this.spriteFlow.on("touchendoutside", (e) => this.onDragEnd(e));
+    this.spriteFlow.on("mouseup", (e) => this.onDragEnd(e));
+    this.spriteFlow.on("touchend", (e) => this.onDragEnd(e));
+    this.spriteFlow.on("mousemove", (e) => this.onDragMove(e));
+    this.spriteFlow.on("touchmove", (e) => this.onDragMove(e));
+    this.spriteFlow.scale.set(this.layout.scale.x / 5, this.layout.scale.y / 5);
+    this.spriteFlow.anchor = { x: 0.5, y: 0.5 };
+    this.spriteFlow.tint = "0xbbbbbb";
+    this.spriteFlow.zIndex = 8;
+
+    console.log(models);
     // place the sprite on the stage
     switch (this.layout.pos.type) {
       case "arc":
@@ -81,8 +100,11 @@ export default class BloodPump {
         this.sprite.y = this.layout.pos.y * this.yCenter;
         break;
     }
+    this.spriteFlow.x = this.sprite.x;
+    this.spriteFlow.y = this.sprite.y;
 
     this.pixiApp.stage.addChild(this.sprite);
+    this.pixiApp.stage.addChild(this.spriteFlow);
 
     //define the caption style and text object and add it to the stage
     this.textStyle = new PIXI.TextStyle({
@@ -104,11 +126,24 @@ export default class BloodPump {
     let volume = 0;
     let volumes = [];
     let to2s = [];
+    let rot = 0;
+
     this.models.forEach((model) => {
       volume += data[model + ".Vol"];
       volumes.push(data[model + ".Vol"]);
       to2s.push(data[model + ".To2"]);
+      rot += data[model + ".Rpm"];
     });
+
+    // calculate factors
+    this.rotationFlow += rot / this.models.length / 1000.0;
+    if (this.rotationFlow > 2 * Math.PI) {
+      this.rotationFlow = 0;
+    }
+
+    //console.log(this.rotation);
+    this.spriteFlow.rotation = this.rotationFlow;
+
     // calculate factors
     this.to2 = 0;
     for (let i = 0; i < volumes.length; i++) {
@@ -121,6 +156,9 @@ export default class BloodPump {
       this.volume * this.layout.scale.x,
       this.volume * this.layout.scale.y
     );
+    this.spriteFlow.scale.x = this.sprite.scale.x * 1.5;
+    this.spriteFlow.scale.y = this.sprite.scale.y * 1.5;
+
     let scaleFont = this.volume * this.layout.text.size;
     if (scaleFont > 1.1) {
       scaleFont = 1.1;
@@ -150,6 +188,8 @@ export default class BloodPump {
           this.text.y = this.sprite.y + this.layout.text.y;
           this.layout.pos.x = this.sprite.x / this.xCenter;
           this.layout.pos.y = this.sprite.y / this.yCenter;
+          this.spriteFlow.x = this.sprite.x;
+          this.spriteFlow.y = this.sprite.y;
           this.calculateOnCircle(this.sprite.x, this.sprite.y);
           // redraw the connector
           this.redrawConnectors();
@@ -242,6 +282,8 @@ export default class BloodPump {
         this.yCenter + Math.sin(angle * 0.0174533) * this.xCenter * this.radius;
       this.text.x = this.sprite.x + this.layout.text.x;
       this.text.y = this.sprite.y + this.layout.text.y;
+      this.spriteFlow.x = this.sprite.x;
+      this.spriteFlow.y = this.sprite.y;
     } else {
       this.layout.pos.type = "rel";
     }

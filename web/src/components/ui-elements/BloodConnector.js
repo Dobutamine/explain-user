@@ -135,31 +135,35 @@ export default class BloodConnector {
       );
       let x3 = (this.line.x1 + this.line.x2) / 2;
       let y3 = (this.line.y1 + this.line.y2) / 2;
+
       this.line.xCenter =
         x3 +
         Math.sqrt(radsq - (q / 2) * (q / 2)) *
           ((this.line.y1 - this.line.y2) / q);
+
       this.line.yCenter =
         y3 +
         Math.sqrt(radsq - (q / 2) * (q / 2)) *
           ((this.line.x2 - this.line.x1) / q);
+
       let angle1 =
         Math.atan2(
           this.line.yCenter - this.line.y1,
           this.line.x1 - this.line.xCenter
         ) * 57.2958;
-      if (this.line.yCenter - this.line.y1 > 0) {
+      if (this.line.yCenter - this.line.y1 >= 0) {
         angle1 = 180 + (180 - angle1);
       } else {
         angle1 = -angle1;
       }
       this.line.from = angle1 * 0.0174533;
+
       let angle2 =
         Math.atan2(
           this.line.yCenter - this.line.y2,
           this.line.x2 - this.line.xCenter
         ) * 57.2958;
-      if (this.line.yCenter - this.line.y2 > 0) {
+      if (this.line.yCenter - this.line.y2 >= 0) {
         angle2 = 180 + (180 - angle2);
       } else {
         angle2 = -angle2;
@@ -215,12 +219,17 @@ export default class BloodConnector {
 
     // caulcate the new position if the
     if (this.line.enabled) {
+      // if (this.models[0] === "RA_RV") {
+      //   console.log(this.line.to - this.line.from);
+      // }
+      // it only looks at x coordinates which why it fails
       if (this.spritePosition > this.line.to) {
         this.spritePosition = this.line.from;
       }
       if (this.spritePosition < this.line.from) {
         this.spritePosition = this.line.to;
       }
+
       this.sprite.x =
         this.line.xCenter + Math.cos(this.spritePosition) * this.line.radius;
       this.sprite.y =

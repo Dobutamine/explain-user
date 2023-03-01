@@ -27,10 +27,9 @@ export class Ecls extends ModelBaseClass {
   _pumpElastance = 25000;
   _cannulaElastance = 25000; // in mmHg/L
   _oxyElastance = 25000;
+  _bedHeightPressureDrop = 0.0;
 
   // state variables
-  Rpm = 0.0;
-  SetFlow = 0.0;
   Flow = 0.0;
   InletPres = 0.0;
   PreOxyPres = 0.0;
@@ -376,15 +375,65 @@ export class Ecls extends ModelBaseClass {
 
     return resistance;
   }
-  CalcModel() {
-    let pressureDrop =
+  UpdateProperties() {
+    // drainage cannula
+    let cannulaResistanceDrainage = this.CalcResistance(
+      this.DrainageCannulaDiameter,
+      this.DrainageCannulaLength
+    );
+    this._drainageSite_TubingIn.RFor = cannulaResistanceDrainage;
+    this._drainageSite_TubingIn.RBack = cannulaResistanceDrainage;
+
+    // drainage cannula
+    let cannulaResistanceReturn = this.CalcResistance(
+      this.ReturnCannulaDiameter,
+      this.ReturnCannulaLength
+    );
+    this._tubingOut_ReturnSite.RFor = cannulaResistanceReturn;
+    this._tubingOut_ReturnSite.RBack = cannulaResistanceReturn;
+
+    // tubing resistance
+    let tubingInResistance = this.CalcResistance(
+      this.TubingDiameter,
+      this.TubingInLength
+    );
+    this._tubingIn_Pump.RFor = tubingInResistance;
+    this._tubingIn_Pump.RBack = tubingInResistance;
+
+    // tubing resistance
+    let tubingOutResistance = this.CalcResistance(
+      this.TubingDiameter,
+      this.TubingOutLength
+    );
+    this._oxy_TubingOut.RFor = tubingOutResistance;
+    this._oxy_TubingOut.RBack = tubingOutResistance;
+
+    // tubing elastance
+    this._tubingIn.ElBase = this.TubingElastance;
+    this._tubingOut.ElBase = this.TubingElastance;
+
+    // oxy bloodvolume
+    this._oxygenator.UVol = this.OxyBloodVolume;
+    this._bloodPump.UVol = this.PumpBloodVolume;
+
+    // bed height
+    this._bedHeightPressureDrop =
       this._bloodDensity * this._gravity * this.BedHeight * 0.00750062;
-    //console.log(pressureDrop);
+  }
+  CalcModel() {
     // set the pres0 on the ecls compartments depending on the bed height
-    this._bloodPump.Pres0 = -pressureDrop;
-    this._oxygenator.Pres0 = -pressureDrop;
+    this._bloodPump.Pres0 = -this._bedHeightPressureDrop;
+    this._oxygenator.Pres0 = -this._bedHeightPressureDrop;
+
     // set the pump to centrifugal mode
     this._bloodPump.Mode = 0;
-    this._bloodPump.PumpPressure = -75;
+    this._bloodPump.PumpPressure = -this.Rpm;
+    this._bloodPump.Rpm = this.Rpm;
+
+    if (this._updateCounter > this._updateInterval) {
+      this._updateCounter = 0;
+      this.UpdateProperties();
+    }
+    this._updateCounter += this._t;
   }
 }
