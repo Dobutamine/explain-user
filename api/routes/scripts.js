@@ -139,7 +139,9 @@ router.post("/get_scripts", auth, async (req, res) => {
 
   try {
     // get the state file
-    let foundScripts = await Script.find({ user: req.body.user });
+    let foundScripts = await Script.find({
+      $or: [{ user: req.body.user }, { shared: true }],
+    });
 
     // if not found
     if (!foundScripts) return res.status(400).send("Can't find script file.");
@@ -163,8 +165,10 @@ router.post("/get_script", auth, async (req, res) => {
   try {
     // get the state file
     let foundScript = await Script.findOne({
-      name: req.body.name,
-      user: req.body.user,
+      $or: [
+        { name: req.body.name, user: req.body.user },
+        { name: req.body.name, shared: true },
+      ],
     });
 
     // if not found
