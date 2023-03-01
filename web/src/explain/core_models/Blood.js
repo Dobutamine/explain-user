@@ -32,9 +32,9 @@ export class Blood extends ModelBaseClass {
         if (Object.keys(model.Solutes).length === 0) {
           model.Solutes = { ...this.Solutes };
         }
-        if (model.To2 === 0) {
-          console.log("To2 was zero in ", model);
-        }
+        // if (model.To2 === 0) {
+        //   console.log("To2 was zero in ", model);
+        // }
         if (model.Tco2 === 0) {
           model.Tco2 = this.Tco2;
         }
@@ -53,9 +53,9 @@ export class Blood extends ModelBaseClass {
       if (Object.keys(model.Solutes).length === 0) {
         model.Solutes = { ...this.Solutes };
       }
-      if (model.To2 === 0) {
-        console.log("To2 was zero in ", model);
-      }
+      // if (model.To2 === 0) {
+      //   console.log("To2 was zero in ", model);
+      // }
       if (model.Tco2 === 0) {
         model.Tco2 = this.Tco2;
       }

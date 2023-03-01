@@ -526,12 +526,11 @@ export default {
     });
 
     this.$bus.on("short_run", () => {
-      console.log("short run");
       this.uiConfig.updateDataCollector();
       this.diagram.updateDataCollector();
       explain.stop();
       explain.start();
-      setTimeout(() => explain.stop(), 200);
+      setTimeout(() => explain.stop(), 50);
     });
   },
 };

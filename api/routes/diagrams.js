@@ -22,10 +22,10 @@ router.post("/delete_diagram", auth, async (req, res) => {
     });
 
     // send a response to the client without the password or account and with a header containing the webtoken
-    if (newDiagram.deletedCount === 0) {
-      res.send('{ "message" : "error" }');
-    } else {
+    if (newDiagram.deletedCount > 0) {
       res.send('{ "message" : "success" }');
+    } else {
+      res.send('{ "message" : "error" }');
     }
   } catch (ex) {
     console.log(ex);

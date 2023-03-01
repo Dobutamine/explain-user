@@ -39,6 +39,28 @@ export const useDiagramStore = defineStore("diagram", {
   getters: {},
 
   actions: {
+    async deleteDiagram(apiUrl, diagram_name, user_name, token) {
+      // do a server request
+      const url = `${apiUrl}/api/diagrams/delete_diagram?token=${token}`;
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: diagram_name,
+          user: user_name,
+        }),
+      });
+
+      if (response.status === 200) {
+        let data = await response.json();
+        return data.message;
+      } else {
+        return false;
+      }
+    },
     async getDiagram(apiUrl, diagram_name, user_name, token) {
       // do a server request
       const url = `${apiUrl}/api/diagrams/get_diagram?token=${token}`;

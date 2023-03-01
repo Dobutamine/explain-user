@@ -446,7 +446,28 @@ export default {
         }
       }
     },
-    async deleteDiagramFromServer() {},
+    async deleteDiagramFromServer() {
+      let result = await this.diagram.deleteDiagram(
+        this.general.apiUrl,
+        this.selectedDiagramOnServer,
+        this.user.name,
+        this.user.token
+      );
+      if (result !== "error") {
+        this.statusMessage = `${this.selectedDiagramOnServer} deleted from server.`;
+        setTimeout(() => {
+          this.statusMessage = "";
+          this.showPopUpServer = false;
+        }, 1000);
+      } else {
+        this.statusMessage = `${this.selectedDiagramOnServer} NOT deleted from server.`;
+        setTimeout(() => {
+          this.statusMessage = "";
+          this.showPopUpServer = false;
+        }, 1000);
+      }
+    },
+
     openServerCommunication() {
       // show server communication pop up
       this.showPopUpServer = true;

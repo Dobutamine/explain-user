@@ -151,7 +151,6 @@ export class Ecls extends ModelBaseClass {
       this.DrainageCannulaDiameter,
       this.DrainageCannulaLength
     );
-    console.log(`Drainage cannula resistance ${cannulaResistance}.`);
     this._drainageSite_TubingIn.InitModel([
       { key: "Description", value: "Ecls drainage to tubing in" },
       { key: "NoFlow", value: false },
@@ -173,8 +172,6 @@ export class Ecls extends ModelBaseClass {
       this.TubingDiameter,
       this.TubingInLength
     );
-    console.log(`Tubing in resistance ${tubingResistance}.`);
-
     this._tubingIn_Pump.InitModel([
       { key: "Description", value: "Ecls tubing in to pump" },
       { key: "NoFlow", value: false },
@@ -210,8 +207,6 @@ export class Ecls extends ModelBaseClass {
       this.TubingDiameter,
       this.TubingOutLength
     );
-    console.log(`Tubing out resistance ${tubingResistance}.`);
-
     this._oxy_TubingOut.InitModel([
       { key: "Description", value: "Oxy to tubing out" },
       { key: "NoFlow", value: false },
@@ -232,7 +227,6 @@ export class Ecls extends ModelBaseClass {
       this.ReturnCannulaDiameter,
       this.ReturnCannulaLength
     );
-    console.log(`Return cannula resistance ${cannulaResistance}.`);
     this._tubingOut_ReturnSite.InitModel([
       { key: "Description", value: "Ecls tubing out to return" },
       { key: "NoFlow", value: false },
