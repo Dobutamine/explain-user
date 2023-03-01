@@ -3,17 +3,22 @@ import ModelBaseClass from "../helpers/ModelBaseClass";
 export class BloodPump extends ModelBaseClass {
   // independent variables
   Vol = 0.0;
+  VolInlet = 0.0;
+  VolOutlet = 0.0;
   UVol = 0.0;
   ElBase = 0.0;
   ElK = 0.0;
   Pres0 = 0;
   PresExt = 0;
   Solutes = {};
+  Mode = 0; // 0 = centrifugal, 1 = roller pump
+  PumpPressure = 0.0;
 
   // dependent variables
   Pres = 0.0;
   PresInlet = 0;
   PresOutlet = 0;
+
   VolMax = 0.0;
   VolMin = 0.0;
   PresMax = 0.0;
@@ -56,11 +61,16 @@ export class BloodPump extends ModelBaseClass {
       this.PresExt;
 
     // reset the external pressures as they have to be set every model cycle
-    this.Pres0 = 0.0;
+    // this.Pres0 = 0.0;
     this.PresExt = 0.0;
 
-    this.PresInlet = this.Pres - 55.0;
-    this.PresOutlet = this.Pres;
+    if (this.Mode === 0) {
+      this.PresInlet = this.Pres + this.PumpPressure;
+      this.PresOutlet = this.Pres;
+    } else {
+      this.PresInlet = this.Pres;
+      this.PresOutlet = this.Pres + this.PumpPressure;
+    }
 
     // find the min and max values of the last update interval
     if (this.Pres > this._temp_max_pres) {

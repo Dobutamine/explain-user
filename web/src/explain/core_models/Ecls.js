@@ -9,13 +9,9 @@ import { BloodPump } from "./BloodPump";
 import { MembraneOxygenator } from "./MembraneOxygenator";
 
 export class Ecls extends ModelBaseClass {
-  // swee[ air atmospheric pressure
-  Patm = 760;
-
-  // general settings
-  EclsMode = "VA";
-  DrainageSite = "RA";
-  ReturnSite = "AAR";
+  _bloodDensity = 1060; // kg * m-3
+  _gravity = 9.81; // m * s-2
+  _viscosity = 5.5;
 
   // sweep gas air composition when no co2 is added
   FiO2 = 0.205;
@@ -27,32 +23,10 @@ export class Ecls extends ModelBaseClass {
   Humidity = 0.5;
 
   // PediVas
-  PumpBloodVolume = 0.014; // in l
-  PumpElastance = 25000;
 
-  // oxygenator propertues
-  DifO2 = 0.001; // in mmol/mmHg * s
-  DifCo2 = 0.001; // in mmol/mmHg * s
-  SweepGasFlow = 0.023; // in l/s   ==> 1.4 l/min
-  Co2GasFlow = 0.00067; // in l/s => 40 mL/min
-  OxyBloodVolume = 0.081; // in l
-  OxyElastance = 25000;
-
-  // tubing properties
-  TubingInDiameter = 0.00635; // in m => 6.35 mm = 0.25 inch
-  TubingInLength = 1.0; // in m
-  TubingOutDiameter = 0.00635; // in m => 6.35 mm = 0.25 inch
-  TubingOutLength = 1.0; // in m
-  TubingElastance = 2500; // in mmHg/L
-
-  // cannula properties
-  // neonatal single lumen length = 25 cm, double lumen = 8 cm
-  // 3-6 kg : arterial 10 fr and venous 12 Fr, double lumen 13 Fr
-  DrainageCannulaDiameter = 0.004; // in m => 12 Fr cannula
-  ReturnCannulaDiameter = 0.0033; // in m => 10 Fr cannula
-  DrainageCannulaLength = 0.025; // in m
-  ReturnCannulaLength = 0.025; // in m
-  CannulaElastance = 25000; // in mmHg/L
+  _pumpElastance = 25000;
+  _cannulaElastance = 25000; // in mmHg/L
+  _oxyElastance = 25000;
 
   // state variables
   Rpm = 0.0;
@@ -170,17 +144,21 @@ export class Ecls extends ModelBaseClass {
 
     // set the flag to model is initialized
     this._is_initialized = true;
-
-    console.log(this._modelEngine.Models);
   }
 
   SetDrainageTubingIn() {
+    // calculate the cannula resistance
+    let cannulaResistance = this.CalcResistance(
+      this.DrainageCannulaDiameter,
+      this.DrainageCannulaLength
+    );
+    console.log(`Drainage cannula resistance ${cannulaResistance}.`);
     this._drainageSite_TubingIn.InitModel([
       { key: "Description", value: "Ecls drainage to tubing in" },
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
-      { key: "RFor", value: 2500 },
-      { key: "RBack", value: 2500 },
+      { key: "RFor", value: cannulaResistance },
+      { key: "RBack", value: cannulaResistance },
       { key: "Rk", value: 0 },
       { key: "CompFrom", value: "RA" },
       { key: "CompTo", value: "EclsTubingIn" },
@@ -191,12 +169,19 @@ export class Ecls extends ModelBaseClass {
       this._drainageSite_TubingIn;
   }
   SetTubingInPump() {
+    // calculate the tubing resistance
+    let tubingResistance = this.CalcResistance(
+      this.TubingDiameter,
+      this.TubingInLength
+    );
+    console.log(`Tubing in resistance ${tubingResistance}.`);
+
     this._tubingIn_Pump.InitModel([
       { key: "Description", value: "Ecls tubing in to pump" },
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
-      { key: "RFor", value: 25 },
-      { key: "RBack", value: 25 },
+      { key: "RFor", value: tubingResistance },
+      { key: "RBack", value: tubingResistance },
       { key: "Rk", value: 0 },
       { key: "CompFrom", value: "EclsTubingIn" },
       { key: "CompTo", value: "EclsPump" },
@@ -221,12 +206,19 @@ export class Ecls extends ModelBaseClass {
     this._modelEngine.Models[this._bloodPump_Oxy.Name] = this._bloodPump_Oxy;
   }
   SetOxyTubingOut() {
+    // calculate the tubing resistance
+    let tubingResistance = this.CalcResistance(
+      this.TubingDiameter,
+      this.TubingOutLength
+    );
+    console.log(`Tubing out resistance ${tubingResistance}.`);
+
     this._oxy_TubingOut.InitModel([
       { key: "Description", value: "Oxy to tubing out" },
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
-      { key: "RFor", value: 25 },
-      { key: "RBack", value: 25 },
+      { key: "RFor", value: tubingResistance },
+      { key: "RBack", value: tubingResistance },
       { key: "Rk", value: 0 },
       { key: "CompFrom", value: "EclsOxy" },
       { key: "CompTo", value: "EclsTubingOut" },
@@ -236,12 +228,18 @@ export class Ecls extends ModelBaseClass {
     this._modelEngine.Models[this._oxy_TubingOut.Name] = this._oxy_TubingOut;
   }
   SetTubingOutReturn() {
+    // calculate the cannula resistance
+    let cannulaResistance = this.CalcResistance(
+      this.ReturnCannulaDiameter,
+      this.ReturnCannulaLength
+    );
+    console.log(`Return cannula resistance ${cannulaResistance}.`);
     this._tubingOut_ReturnSite.InitModel([
       { key: "Description", value: "Ecls tubing out to return" },
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
-      { key: "RFor", value: 2500 },
-      { key: "RBack", value: 2500 },
+      { key: "RFor", value: cannulaResistance },
+      { key: "RBack", value: cannulaResistance },
       { key: "Rk", value: 0 },
       { key: "CompFrom", value: "EclsTubingOut" },
       { key: "CompTo", value: "AAR" },
@@ -256,7 +254,7 @@ export class Ecls extends ModelBaseClass {
       { key: "Description", value: "Ecls oxygenator" },
       { key: "Vol", value: this.OxyBloodVolume },
       { key: "UVol", value: this.OxyBloodVolume },
-      { key: "ElBase", value: this.OxyElastance },
+      { key: "ElBase", value: this._oxyElastance },
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
@@ -271,10 +269,13 @@ export class Ecls extends ModelBaseClass {
       { key: "Description", value: "Ecls pump" },
       { key: "Vol", value: this.PumpBloodVolume },
       { key: "UVol", value: this.PumpBloodVolume },
-      { key: "ElBase", value: this.PumpElastance },
+      { key: "ElBase", value: this._pumpElastance },
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
+    // set the pump to centrifugal mode
+    this._bloodPump.Mode = 0;
+
     // now set the solutes on this blood models
     this._modelEngine.Models["Blood"].SetSolutesOnModel(this._bloodPump);
 
@@ -285,7 +286,7 @@ export class Ecls extends ModelBaseClass {
     // calculate the properties of the tubing
     let tubingVolume =
       Math.PI *
-      Math.pow(this.TubingInDiameter / 2, 2) *
+      Math.pow(this.TubingDiameter / 2, 2) *
       this.TubingInLength *
       1000;
 
@@ -306,7 +307,7 @@ export class Ecls extends ModelBaseClass {
   SetTubingOut() {
     let tubingVolume =
       Math.PI *
-      Math.pow(this.TubingOutDiameter / 2, 2) *
+      Math.pow(this.TubingDiameter / 2, 2) *
       this.TubingOutLength *
       1000;
     this._tubingOut.InitModel([
@@ -343,5 +344,47 @@ export class Ecls extends ModelBaseClass {
       this.FotherDry
     );
   }
-  CalcModel() {}
+  CalcResistance(diameter, length) {
+    // calculate the resistance of the cannula where the cannula is modeled as a perfect tube with a diameter and a length in millimeters
+    // the viscosity is in centiPoise
+
+    // resistance is calculated using Poiseuille's Law : R = (8 * n * L) / (PI * r^4)
+
+    // we have to watch the units carefully where we have to make sure that the units in the formula are
+    // resistance is in mmHg * s / l
+    // L = length in meters from millimeters
+    // r = radius in meters from millimeters
+    // n = viscosity in mmHg * s from centiPoise
+
+    let resistance = 25;
+
+    // convert the length to meters
+    let length_meters = length;
+
+    // calculate the radius in meters
+    let radius_meters = diameter / 2.0;
+
+    // convert viscosity from centiPoise to mmHg * s
+    let n_mmhgs = this._viscosity * 0.001 * 0.00750062;
+
+    // calculate the resistance using Poiseuille's Law, the resistance is now in mmHg * s/mm^3
+    resistance =
+      (8.0 * n_mmhgs * length_meters) / (Math.PI * Math.pow(radius_meters, 4));
+
+    // convert resistance of mmHg * s / mm^3 to mmHg *s / l
+    resistance = resistance / 1000.0;
+
+    return resistance;
+  }
+  CalcModel() {
+    let pressureDrop =
+      this._bloodDensity * this._gravity * this.BedHeight * 0.00750062;
+    //console.log(pressureDrop);
+    // set the pres0 on the ecls compartments depending on the bed height
+    this._bloodPump.Pres0 = -pressureDrop;
+    this._oxygenator.Pres0 = -pressureDrop;
+    // set the pump to centrifugal mode
+    this._bloodPump.Mode = 0;
+    this._bloodPump.PumpPressure = -75;
+  }
 }
