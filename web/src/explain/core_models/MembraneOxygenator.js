@@ -113,8 +113,6 @@ export class MembraneOxygenator extends ModelBaseClass {
 
     // // set the flag to model is initialized
     this._is_initialized = true;
-
-    // console.log(this._modelEngine.Models);
   }
 
   SetGasExchanger() {
@@ -126,7 +124,6 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "DifO2", value: this.DifO2 },
       { key: "DifCo2", value: this.DifCo2 },
     ]);
-    console.log(this._gasExchanger);
     // add the model to the models object
     this._modelEngine.Models[this._gasExchanger.Name] = this._gasExchanger;
   }

@@ -419,6 +419,27 @@ export class Ecls extends ModelBaseClass {
     this._bedHeightPressureDrop =
       this._bloodDensity * this._gravity * this.BedHeight * 0.00750062;
   }
+  CalcPostOxyGas() {
+    // calculate the acid base and oxygenation properties of chemoreceptor site
+    let ab = this._modelEngine.Models.AcidBase.calc_acid_base(
+      this._modelEngine.Models["EclsTubingOut"].Tco2
+    );
+
+    if (!ab.Error) {
+      this._modelEngine.Models["EclsTubingOut"].Pco2 = ab.Pco2;
+      this._modelEngine.Models["EclsTubingOut"].Ph = ab.Ph;
+      this._modelEngine.Models["EclsTubingOut"].Hco3 = ab.Hco3;
+    }
+
+    let ad_oxy = this._modelEngine.Models.Oxygenation.calc_oxygenation(
+      this._modelEngine.Models["EclsTubingOut"].To2
+    );
+    // store the results of the calculations
+    if (!ad_oxy.Error) {
+      this._modelEngine.Models["EclsTubingOut"].Po2 = ad_oxy.Po2;
+      this._modelEngine.Models["EclsTubingOut"].So2 = ad_oxy.So2;
+    }
+  }
   CalcModel() {
     // set the pres0 on the ecls compartments depending on the bed height
     this._bloodPump.Pres0 = -this._bedHeightPressureDrop;
@@ -432,6 +453,7 @@ export class Ecls extends ModelBaseClass {
     if (this._updateCounter > this._updateInterval) {
       this._updateCounter = 0;
       this.UpdateProperties();
+      this.CalcPostOxyGas();
     }
     this._updateCounter += this._t;
   }
