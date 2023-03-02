@@ -65,6 +65,8 @@ export class BloodPump extends ModelBaseClass {
     // this.Pres0 = 0.0;
     this.PresExt = 0.0;
 
+    this.PumpPressure = -this.Rpm / 25.0;
+
     if (this.Mode === 0) {
       this.PresInlet = this.Pres + this.PumpPressure;
       this.PresOutlet = this.Pres;
@@ -129,8 +131,8 @@ export class BloodPump extends ModelBaseClass {
 
     // guard against negative volumes and a mass balance disturbance
     if (this.Vol < 0) {
-      vol_deficit = -this.Vol;
-      this.Vol = 0.0;
+      vol_deficit = -this.Vol + 0.00001;
+      this.Vol = 0.00001;
     }
     // return the volume deficit
     return vol_deficit;

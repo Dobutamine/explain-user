@@ -135,7 +135,7 @@ export default class BloodPump {
     });
 
     // calculate factors
-    this.rotationFlow += rot / this.models.length / 1000.0;
+    this.rotationFlow += rot / this.models.length / 25000.0;
     if (this.rotationFlow > 2 * Math.PI) {
       this.rotationFlow = 0;
     }

@@ -125,8 +125,8 @@ export class BloodTimeVaryingElastance extends ModelBaseClass {
 
     // guard against negative volumes and a mass balance disturbance
     if (this.Vol < 0) {
-      vol_deficit = -this.Vol;
-      this.Vol = 0.0;
+      vol_deficit = -this.Vol + 0.00001;
+      this.Vol = 0.00001;
     }
 
     // return the volume deficit

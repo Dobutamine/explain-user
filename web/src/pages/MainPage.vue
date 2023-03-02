@@ -30,6 +30,9 @@
             <q-tab-panel name="ventilator">
               <MechanicalVentilator></MechanicalVentilator>
             </q-tab-panel>
+            <q-tab-panel name="ecls">
+              <EclsComponent></EclsComponent>
+            </q-tab-panel>
             <q-tab-panel name="build">
               <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
               <BuildModelComponent></BuildModelComponent>
@@ -153,6 +156,8 @@ import DiagramEditorComponent from "src/components/DiagramEditorComponent.vue";
 import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import PatientMonitor from "src/components/PatientMonitor.vue";
 import MechanicalVentilator from "src/components/MechanicalVentilator.vue";
+import EclsComponent from "src/components/EclsComponent.vue";
+
 import TrendsMonitor from "src/components/TrendsMonitor.vue";
 import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
@@ -174,6 +179,7 @@ export default {
     TrendsMonitor,
     PatientMonitor,
     MechanicalVentilator,
+    EclsComponent,
     InterventionsComponent,
     ScriptComponentVue: ScriptsComponentVue,
     MonitorComponentVue: MonitorsComponentVue,

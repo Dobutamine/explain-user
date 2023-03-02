@@ -153,7 +153,7 @@ export class Ecls extends ModelBaseClass {
     );
     this._drainageSite_TubingIn.InitModel([
       { key: "Description", value: "Ecls drainage to tubing in" },
-      { key: "NoFlow", value: false },
+      { key: "NoFlow", value: true },
       { key: "NoBackFlow", value: false },
       { key: "RFor", value: cannulaResistance },
       { key: "RBack", value: cannulaResistance },
@@ -190,9 +190,9 @@ export class Ecls extends ModelBaseClass {
     this._bloodPump_Oxy.InitModel([
       { key: "Description", value: "Ecls blood pump to oxy" },
       { key: "NoFlow", value: false },
-      { key: "NoBackFlow", value: false },
+      { key: "NoBackFlow", value: true },
       { key: "RFor", value: 25 },
-      { key: "RBack", value: 25 },
+      { key: "RBack", value: 250 },
       { key: "Rk", value: 0 },
       { key: "CompFrom", value: "EclsPump" },
       { key: "CompTo", value: "EclsOxy" },
@@ -229,7 +229,7 @@ export class Ecls extends ModelBaseClass {
     );
     this._tubingOut_ReturnSite.InitModel([
       { key: "Description", value: "Ecls tubing out to return" },
-      { key: "NoFlow", value: false },
+      { key: "NoFlow", value: true },
       { key: "NoBackFlow", value: false },
       { key: "RFor", value: cannulaResistance },
       { key: "RBack", value: cannulaResistance },
@@ -411,6 +411,16 @@ export class Ecls extends ModelBaseClass {
     this._tubingIn.ElBase = this.TubingElastance;
     this._tubingOut.ElBase = this.TubingElastance;
 
+    // tubing unstressed volume
+    let tubingVolume =
+      Math.PI *
+      Math.pow(this.TubingDiameter / 2, 2) *
+      this.TubingOutLength *
+      1000;
+
+    this._tubingIn.UVol = tubingVolume;
+    this._tubingOut.UVol = tubingVolume;
+
     // oxy bloodvolume
     this._oxygenator.UVol = this.OxyBloodVolume;
     this._bloodPump.UVol = this.PumpBloodVolume;
@@ -447,7 +457,6 @@ export class Ecls extends ModelBaseClass {
 
     // set the pump to centrifugal mode
     this._bloodPump.Mode = 0;
-    this._bloodPump.PumpPressure = -this.Rpm;
     this._bloodPump.Rpm = this.Rpm;
 
     if (this._updateCounter > this._updateInterval) {
