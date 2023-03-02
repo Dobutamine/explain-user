@@ -530,7 +530,14 @@ export default {
       this.diagram.updateDataCollector();
       explain.stop();
       explain.start();
-      setTimeout(() => explain.stop(), 50);
+      setTimeout(() => {
+        explain.stop();
+        this.butColor = "white";
+        this.butIcon = "fa-solid fa-play";
+        this.butCaption = "PLAY";
+        this.rtState = false;
+        explain.getModelState();
+      }, 50);
     });
   },
 };
