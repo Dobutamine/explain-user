@@ -1,8 +1,5 @@
 import ModelBaseClass from "../helpers/ModelBaseClass";
-import { GasCompliance } from "./GasCompliance";
-import { GasResistor } from "./GasResistor";
 import { SetAirComposition } from "../helpers/AirComposition";
-import { GasExchanger } from "./GasExchanger";
 import { BloodResistor } from "./BloodResistor";
 import { BloodCompliance } from "./BloodCompliance";
 import { BloodPump } from "./BloodPump";
@@ -383,7 +380,7 @@ export class Ecls extends ModelBaseClass {
     this._drainageSite_TubingIn.RFor = cannulaResistanceDrainage;
     this._drainageSite_TubingIn.RBack = cannulaResistanceDrainage;
 
-    // drainage cannula
+    // return cannula
     let cannulaResistanceReturn = this.CalcResistance(
       this.ReturnCannulaDiameter,
       this.ReturnCannulaLength
@@ -428,6 +425,19 @@ export class Ecls extends ModelBaseClass {
     // bed height
     this._bedHeightPressureDrop =
       this._bloodDensity * this._gravity * this.BedHeight * 0.00750062;
+
+    // fio2
+
+    // sweep
+    let resSweep = 200.0 / (this.SweepGasFlow / 60.0) - 25.0;
+    this._oxygenator._gasIn.RFor = resSweep;
+    this._oxygenator._gasIn.RBack = resSweep;
+
+    // co2
+    let resCo2 = 200.0 / (this.Co2GasFlow / 60.0) - 25.0;
+    this._oxygenator._co2In.RFor = resCo2;
+    this._oxygenator._co2In.RBack = resCo2;
+    // temp
   }
   CalcPostOxyGas() {
     // calculate the acid base and oxygenation properties of chemoreceptor site

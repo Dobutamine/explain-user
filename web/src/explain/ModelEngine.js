@@ -149,11 +149,18 @@ onmessage = function (e) {
         break;
       }
       break;
+
     case "set":
-      if ((e.data.message = "prop")) {
+      if (e.data.message == "prop") {
         setProperties(e.data.payload);
         break;
       }
+      break;
+    case "rewire":
+      if (e.data.message == "resistor") {
+        rewireResistor(e.data.payload);
+      }
+      break;
   }
 };
 
@@ -230,6 +237,43 @@ const calculate = function (timeToCalculate = 10.0) {
       payload: [],
     });
   }
+};
+
+const rewireResistor = function (payload) {
+  payload.forEach((data) => {
+    if (data.m.includes(".")) {
+      let [m, p] = data.m.split(".");
+      if (data.p === "CompFrom") {
+        model.Models[m][p].CompFrom = data.v;
+        model.Models[m][p]._comp_from = model.Models[data.v];
+      }
+      if (data.p === "CompTo") {
+        model.Models[m][p].CompTo = data.v;
+        model.Models[m][p]._comp_to = model.Models[data.v];
+      }
+      if (data.p === "CompBlood") {
+        model.Models[m][p].CompBlood = data.v;
+      }
+      if (data.p === "CompGas") {
+        model.Models[m][p].CompGas = data.v;
+      }
+    } else {
+      if (data.p === "CompFrom") {
+        model.Models[data.m][data.p] = data.v;
+        model.Models[data.m]._comp_from = model.Models[data.v];
+      }
+      if (data.p === "CompTo") {
+        model.Models[data.m][data.p] = data.v;
+        model.Models[data.m]._comp_to = model.Models[data.v];
+      }
+      if (data.p === "CompBlood") {
+        model.Models[data.m][data.p] = data.v;
+      }
+      if (data.p === "CompGas") {
+        model.Models[data.m][data.p] = data.v;
+      }
+    }
+  });
 };
 
 const setProperties = function (payload) {

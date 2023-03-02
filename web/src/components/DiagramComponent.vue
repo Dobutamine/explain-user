@@ -710,6 +710,36 @@ export default {
 
     // listen for an event triggering a rebuild
     this.$bus.on("rebuild_diagram", this.buildDiagram);
+
+    this.$bus.on("rewire", (e) => {
+      // find all diagram components with name e.m
+      let diagramName = "";
+      let rerouted = false;
+      Object.entries(this.diagramComponents).forEach(([name, dc]) => {
+        if (dc.models.includes(e.m)) {
+          diagramName = name;
+          // try to reconnect
+          if (e.p === "CompFrom") {
+            if (Object.keys(this.diagram.components).includes(e.v)) {
+              rerouted = true;
+              this.diagram.components[diagramName].dbcFrom = e.v;
+            }
+          }
+          if (e.p === "CompTo") {
+            if (Object.keys(this.diagram.components).includes(e.v)) {
+              rerouted = true;
+              this.diagram.components[diagramName].dbcTo = e.v;
+            }
+          }
+        }
+      });
+      if (diagramName && !rerouted) {
+        // first try to find the new connection
+        delete this.diagram.components[diagramName];
+        alert("Diagram could not be automatically update after rewiring!");
+      }
+      this.buildDiagram();
+    });
   },
 };
 </script>

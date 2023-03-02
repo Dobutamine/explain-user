@@ -28,21 +28,6 @@
           />
         </div>
       </div>
-      <div class="q-ma-sm row gutter text-overline justify-center">
-        <div>
-          <q-btn-toggle
-            v-model="mode"
-            outline
-            toggle-color="secondary"
-            :options="[
-              { label: 'VA', value: 'VA' },
-              { label: 'VV', value: 'VV' },
-              { label: 'MSVV', value: 'MSVV' },
-            ]"
-            @update:model-value="changeMode"
-          />
-        </div>
-      </div>
 
       <div class="q-ma-sm row gutter text-overline justify-center">
         <div>
@@ -62,22 +47,6 @@
           ></q-knob>
         </div>
         <div class="q-ml-md">
-          <div class="row justify-center">Flow</div>
-          <q-knob
-            v-model="flow"
-            :min="0"
-            :max="2000"
-            :step="50"
-            show-value
-            size="50px"
-            :thickness="0.22"
-            color="secondary"
-            track-color="grey-3"
-            class="row"
-            @update:model-value="changeInspFlow"
-          ></q-knob>
-        </div>
-        <div class="q-ml-md">
           <div class="row justify-center">FiO2</div>
           <q-knob
             v-model="fio2"
@@ -90,7 +59,7 @@
             color="secondary"
             track-color="grey-3"
             class="row"
-            @update:model-value="changeFreq"
+            @update:model-value="changeFiO2"
           />
         </div>
         <div class="q-ml-md">
@@ -106,7 +75,7 @@
             color="secondary"
             track-color="grey-3"
             class="row"
-            @update:model-value="changePip"
+            @update:model-value="changeSweep"
           />
         </div>
         <div class="q-ml-md">
@@ -122,7 +91,7 @@
             color="secondary"
             track-color="grey-3"
             class="row"
-            @update:model-value="changePipMax"
+            @update:model-value="changeCo2"
           />
         </div>
         <div class="q-ml-md">
@@ -138,7 +107,7 @@
             color="secondary"
             track-color="grey-3"
             class="row"
-            @update:model-value="changePeep"
+            @update:model-value="changeTemp"
           />
         </div>
       </div>
@@ -156,6 +125,7 @@
             hide-hint
             :style="{ width: '120px' }"
             color="secondary"
+            @update:model-value="changeDrainageSite"
           />
         </div>
         <div class="q-ml-lg q-mt-sm">
@@ -185,6 +155,7 @@
             hide-hint
             :style="{ width: '120px' }"
             color="secondary"
+            @update:model-value="changeReturnSite"
           />
         </div>
         <div class="q-ml-lg q-mt-sm">
@@ -264,7 +235,7 @@
             hide-hint
             :style="{ width: '120px' }"
             color="secondary"
-            @update:model-value="changeTubeDiameter"
+            @update:model-value="changeBedHeight"
           />
         </div>
       </div>
@@ -315,6 +286,69 @@ export default {
     };
   },
   methods: {
+    changeFiO2() {},
+    changeSweep() {
+      explain.setModelProperties([
+        {
+          m: "Ecls",
+          p: "SweepGasFlow",
+          v: this.sweep,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeCo2() {
+      explain.setModelProperties([
+        {
+          m: "Ecls",
+          p: "Co2GasFlow",
+          v: this.co2 / 1000,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeTemp() {},
+    changeBedHeight() {
+      explain.setModelProperties([
+        {
+          m: "Ecls",
+          p: "BedHeight",
+          v: this.height,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeDrainageSite() {
+      explain.rewireResistor([
+        {
+          m: "Ecls._drainageSite_TubingIn",
+          p: "CompFrom",
+          v: this.drainageSite,
+        },
+      ]);
+      this.$bus.emit("rewire", {
+        m: "EclsDrainage_TubingIn",
+        p: "CompFrom",
+        v: this.drainageSite,
+      });
+    },
+    changeReturnSite() {
+      explain.rewireResistor([
+        {
+          m: "Ecls._tubingOut_ReturnSite",
+          p: "CompTo",
+          v: this.returnSite,
+        },
+      ]);
+      this.$bus.emit("rewire", {
+        m: "EclsTubingOut_Return",
+        p: "CompTo",
+        v: this.returnSite,
+      });
+    },
     changeTubingDiameter() {
       let newDiameter = 0.0254 * 0.25;
       switch (this.tubingSize) {
@@ -379,7 +413,6 @@ export default {
         },
       ]);
     },
-
     changeReturnCannulaDiameter() {
       let newDiameter = (0.33 * this.returnCannula) / 1000.0;
       explain.setModelProperties([
@@ -403,6 +436,7 @@ export default {
         },
       ]);
     },
+
     toggleClamp() {
       explain.setModelProperties([
         {
@@ -443,29 +477,6 @@ export default {
       ]);
     },
 
-    changeMode() {
-      // explain.setModelProperties([
-      //   {
-      //     m: "MechanicalVentilator",
-      //     p: "Mode",
-      //     v: this.mode,
-      //     at: 0.0,
-      //     it: 0.0,
-      //   },
-      // ]);
-    },
-    changeFiO2() {
-      // explain.setModelProperties([
-      //   {
-      //     m: "MechanicalVentilator",
-      //     p: "FiO2",
-      //     v: parseFloat(this.fio2 / 100),
-      //     at: 0.0,
-      //     it: 0.0,
-      //   },
-      // ]);
-    },
-
     stateUpdate(state) {
       this.cannulationSites = [];
 
@@ -487,6 +498,8 @@ export default {
 
       this.tubingElastance = explain.modelState.Models["Ecls"].TubingElastance;
       this.rpm = explain.modelState.Models["Ecls"].Rpm;
+      this.sweep = explain.modelState.Models["Ecls"].SweepGasFlow;
+      this.co2 = explain.modelState.Models["Ecls"].Co2GasFlow * 1000.0;
       this.tubingLength =
         explain.modelState.Models["Ecls"].TubingInLength +
         explain.modelState.Models["Ecls"].TubingOutLength;

@@ -153,9 +153,6 @@ export class MembraneOxygenator extends ModelBaseClass {
       this.Fn2Dry,
       this.FotherDry
     );
-
-    console.log(this._gasCompartment);
-
     // add the model to the models object
     this._modelEngine.Models[this._gasCompartment.Name] = this._gasCompartment;
   }

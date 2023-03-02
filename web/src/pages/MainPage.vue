@@ -201,7 +201,6 @@ export default {
   },
   methods: {
     tabLeftChanged() {
-      console.log(this.tab_left);
       if (this.tab_left === "ventilator") {
         this.$bus.emit("ventilator_on");
       } else {
@@ -209,7 +208,6 @@ export default {
       }
     },
     tabRightChanged() {
-      console.log(this.tab_right);
       if (this.tab_right === "monitor") {
         this.$bus.emit("monitors_on");
       } else {
