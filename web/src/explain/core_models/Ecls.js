@@ -249,6 +249,11 @@ export class Ecls extends ModelBaseClass {
       { key: "UVol", value: this.OxyBloodVolume },
       { key: "ElBase", value: this._oxyElastance },
       { key: "ElK", value: 0 },
+      { key: "SweepGasFlow", value: this.SweepGasFlow },
+      { key: "Co2GasFlow", value: this.Co2GasFlow },
+      { key: "Fo2", value: this.Fo2 },
+      { key: "DifO2", value: this.DifO2 },
+      { key: "DifCo2", value: this.DifCo2 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
     // now set the solutes on this blood models

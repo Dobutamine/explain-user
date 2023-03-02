@@ -3,7 +3,6 @@ import { GasCompliance } from "./GasCompliance";
 import { GasResistor } from "./GasResistor";
 import { GasExchanger } from "./GasExchanger";
 import { SetAirComposition } from "../helpers/AirComposition";
-import GasConnector from "src/components/ui-elements/GasConnector";
 
 export class MembraneOxygenator extends ModelBaseClass {
   // independent variables
@@ -40,7 +39,6 @@ export class MembraneOxygenator extends ModelBaseClass {
   FotherDry = 0;
   Humidity = 0.5;
   Temp = 20.0;
-  SweepGasFlow = 1.4;
 
   // local parameters
   _temp_max_pres = -1000.0;
@@ -51,7 +49,9 @@ export class MembraneOxygenator extends ModelBaseClass {
   _update_interval = 1.0;
 
   _gasSource = {};
+  _co2Source = {};
   _gasIn = {};
+  _co2In = {};
   _gasCompartment = {};
   _gasOut = {};
   _gasExchanger = {};
@@ -62,6 +62,14 @@ export class MembraneOxygenator extends ModelBaseClass {
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
     });
+
+    // build the gas parts of the oxygenator
+    this._co2Source = new GasCompliance(
+      this._modelEngine,
+      "OxyCo2Source",
+      "GasCompliance"
+    );
+    this.SetCo2Source();
 
     // build the gas parts of the oxygenator
     this._gasSource = new GasCompliance(
@@ -91,6 +99,11 @@ export class MembraneOxygenator extends ModelBaseClass {
       "OxySource_Gas",
       "GasResistor"
     );
+    this._co2In = new GasResistor(
+      this._modelEngine,
+      "OxyCo2_Gas",
+      "GasResistor"
+    );
     this._gasOut = new GasResistor(
       this._modelEngine,
       "OxyGas_OUT",
@@ -98,10 +111,10 @@ export class MembraneOxygenator extends ModelBaseClass {
     );
     this.SetGasResistors();
 
-    // set the flag to model is initialized
+    // // set the flag to model is initialized
     this._is_initialized = true;
 
-    console.log(this._modelEngine.Models);
+    // console.log(this._modelEngine.Models);
   }
 
   SetGasExchanger() {
@@ -110,9 +123,10 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "IsEnabled", value: this.IsEnabled },
       { key: "CompBlood", value: this.Name },
       { key: "CompGas", value: "OxyGas" },
-      { key: "DifO2", value: 0.01 },
-      { key: "DifCo2", value: 0.01 },
+      { key: "DifO2", value: this.DifO2 },
+      { key: "DifCo2", value: this.DifCo2 },
     ]);
+    console.log(this._gasExchanger);
     // add the model to the models object
     this._modelEngine.Models[this._gasExchanger.Name] = this._gasExchanger;
   }
@@ -143,8 +157,32 @@ export class MembraneOxygenator extends ModelBaseClass {
       this.FotherDry
     );
 
+    console.log(this._gasCompartment);
+
     // add the model to the models object
     this._modelEngine.Models[this._gasCompartment.Name] = this._gasCompartment;
+  }
+
+  SetCo2Source() {
+    this._co2Source.InitModel([
+      { key: "Description", value: "co2 source for the membrane oxygenator" },
+      { key: "IsEnabled", value: this.IsEnabled },
+      { key: "Vol", value: 5.2 },
+      { key: "UVol", value: 5.0 },
+      { key: "ElBase", value: 1000.0 },
+      { key: "ElK", value: 0.0 },
+      { key: "Pres", value: this.PAtm + 200.0 },
+      { key: "Pres0", value: this.PAtm },
+      { key: "Humidity", value: this.Humidity },
+      { key: "Temp", value: this.Temp },
+      { key: "TargetTemp", value: this.Temp },
+      { key: "FixedComposition", value: true },
+    ]);
+
+    SetAirComposition(this._co2Source, this.Humidity, this.Temp, 0, 1, 0, 0);
+
+    // add the model to the models object
+    this._modelEngine.Models[this._co2Source.Name] = this._co2Source;
   }
 
   SetGasSource() {
@@ -207,6 +245,22 @@ export class MembraneOxygenator extends ModelBaseClass {
 
     // add the model to the models object
     this._modelEngine.Models[this._gasOut.Name] = this._gasOut;
+
+    let resCo2 = 200.0 / (this.Co2GasFlow / 60.0) - 25.0;
+
+    this._co2In.InitModel([
+      { key: "IsEnabled", value: this.IsEnabled },
+      { key: "RFor", value: resCo2 },
+      { key: "RBack", value: resCo2 },
+      { key: "Rk", value: 0.0 },
+      { key: "NoFlow", value: false },
+      { key: "NoBackFlow", value: false },
+      { key: "CompFrom", value: "OxyCo2Source" },
+      { key: "CompTo", value: "OxyGas" },
+    ]);
+
+    // add the model to the models object
+    this._modelEngine.Models[this._co2In.Name] = this._co2In;
   }
 
   // override the base class CalcModel method

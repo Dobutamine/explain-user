@@ -1,6 +1,9 @@
 import ModelBaseClass from "../helpers/ModelBaseClass";
 
 export class Blood extends ModelBaseClass {
+  _updateCounter = 0.0;
+  _updateInterval = 1.0;
+
   InitModel(args) {
     args.forEach((arg) => {
       this[arg["key"]] = arg["value"];
@@ -18,6 +21,33 @@ export class Blood extends ModelBaseClass {
 
     this._modelEngine.Models.RL.Po2 = 100.0;
     this._modelEngine.Models.RL.Po2 = 45.0;
+  }
+
+  CalcModel() {
+    if (this._updateCounter > this._updateInterval) {
+      this._updateCounter = 0;
+
+      // calculate the acid base and oxygenation properties of chemoreceptor site
+      let ab = this._modelEngine.Models.AcidBase.calc_acid_base(
+        this._modelEngine.Models["AD"].Tco2
+      );
+
+      if (!ab.Error) {
+        this._modelEngine.Models["AD"].Pco2 = ab.Pco2;
+        this._modelEngine.Models["AD"].Ph = ab.Ph;
+        this._modelEngine.Models["AD"].Hco3 = ab.Hco3;
+      }
+
+      let ad_oxy = this._modelEngine.Models.Oxygenation.calc_oxygenation(
+        this._modelEngine.Models["AD"].To2
+      );
+      // store the results of the calculations
+      if (!ad_oxy.Error) {
+        this._modelEngine.Models["AD"].Po2 = ad_oxy.Po2;
+        this._modelEngine.Models["AD"].So2 = ad_oxy.So2;
+      }
+    }
+    this._updateCounter += this._t;
   }
 
   SetSolutes() {
