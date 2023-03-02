@@ -155,6 +155,16 @@ export class AutonomicNervousSystem extends ModelBaseClass {
       this._chemoreceptor.So2 = oxy.So2;
     }
 
+    let ad_oxy = this._modelEngine.Models.Oxygenation.calc_oxygenation(
+      this._modelEngine.Models["AD"].To2
+    );
+
+    // store the results of the calculations
+    if (!ad_oxy.Error) {
+      this._modelEngine.Models["AD"].Po2 = ad_oxy.Po2;
+      this._modelEngine.Models["AD"].So2 = ad_oxy.So2;
+    }
+
     // calculate the mean. In neonates the most accurate mean is given by MAP = DBP + (0.466 * (SBP-DBP))
     // map = _baroreceptor.PresMin  + 0.466 * (_baroreceptor.PresMax - _baroreceptor.PresMin);
     let map = this._baroreceptor.Pres;

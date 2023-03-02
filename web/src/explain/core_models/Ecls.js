@@ -158,7 +158,7 @@ export class Ecls extends ModelBaseClass {
       { key: "RFor", value: cannulaResistance },
       { key: "RBack", value: cannulaResistance },
       { key: "Rk", value: 0 },
-      { key: "CompFrom", value: "RA" },
+      { key: "CompFrom", value: this.DrainageSite },
       { key: "CompTo", value: "EclsTubingIn" },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
@@ -235,7 +235,7 @@ export class Ecls extends ModelBaseClass {
       { key: "RBack", value: cannulaResistance },
       { key: "Rk", value: 0 },
       { key: "CompFrom", value: "EclsTubingOut" },
-      { key: "CompTo", value: "AAR" },
+      { key: "CompTo", value: this.ReturnSite },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
     // add the model to the models object
