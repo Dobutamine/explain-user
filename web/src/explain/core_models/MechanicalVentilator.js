@@ -101,78 +101,97 @@ export class MechanicalVentilator extends ModelBaseClass {
     });
 
     // instantiate the internal ventilator compliance
-    this._modelEngine.Models.VentIn = new GasCompliance(
-      this._modelEngine,
-      "VentIn",
-      "GasCompliance"
-    );
+    if (!this._modelEngine.Models.VentIn) {
+      this._modelEngine.Models.VentIn = new GasCompliance(
+        this._modelEngine,
+        "VentIn",
+        "GasCompliance"
+      );
+      this.SetVentIn();
+    }
 
-    this._modelEngine.Models.TubingIn = new GasCompliance(
-      this._modelEngine,
-      "TubingIn",
-      "GasCompliance"
-    );
+    if (!this._modelEngine.Models.TubingIn) {
+      this._modelEngine.Models.TubingIn = new GasCompliance(
+        this._modelEngine,
+        "TubingIn",
+        "GasCompliance"
+      );
 
-    this._modelEngine.Models.YPiece = new GasCompliance(
-      this._modelEngine,
-      "YPiece",
-      "GasCompliance"
-    );
+      this._modelEngine.Models.TubingOut = new GasCompliance(
+        this._modelEngine,
+        "TubingOut",
+        "GasCompliance"
+      );
 
-    this._modelEngine.Models.EtTube = new GasCompliance(
-      this._modelEngine,
-      "EtTube",
-      "GasCompliance"
-    );
+      this.SetTubing();
+    }
 
-    this._modelEngine.Models.TubingOut = new GasCompliance(
-      this._modelEngine,
-      "TubingOut",
-      "GasCompliance"
-    );
+    if (!this._modelEngine.Models.YPiece) {
+      this._modelEngine.Models.YPiece = new GasCompliance(
+        this._modelEngine,
+        "YPiece",
+        "GasCompliance"
+      );
+      this.SetYPiece();
+    }
 
-    this._modelEngine.Models.EtTube_DS = new GasResistor(
-      this._modelEngine,
-      "EtTube_DS",
-      "GasResistor"
-    );
-    this._modelEngine.Models.ValveExp = new GasResistor(
-      this._modelEngine,
-      "ValveExp",
-      "GasResistor"
-    );
-    this._modelEngine.Models.YPiece_TubingOut = new GasResistor(
-      this._modelEngine,
-      "YPiece_TubingOut",
-      "GasResistor"
-    );
-    this._modelEngine.Models.YPiece_EtTube = new GasResistor(
-      this._modelEngine,
-      "YPiece_EtTube",
-      "GasResistor"
-    );
-    this._modelEngine.Models.TubingIn_YPiece = new GasResistor(
-      this._modelEngine,
-      "TubingIn_YPiece",
-      "GasResistor"
-    );
-    this._modelEngine.Models.ValveInsp = new GasResistor(
-      this._modelEngine,
-      "ValveInsp",
-      "GasResistor"
-    );
+    if (!this._modelEngine.Models.EtTube) {
+      this._modelEngine.Models.EtTube = new GasCompliance(
+        this._modelEngine,
+        "EtTube",
+        "GasCompliance"
+      );
+      this.SetEtTube();
+    }
+
+    if (!this._modelEngine.Models.EtTube_DS) {
+      this._modelEngine.Models.EtTube_DS = new GasResistor(
+        this._modelEngine,
+        "EtTube_DS",
+        "GasResistor"
+      );
+      this.SetEtTubeResistors();
+    }
+
+    if (!this._modelEngine.Models.YPiece_TubingOut) {
+      this._modelEngine.Models.YPiece_TubingOut = new GasResistor(
+        this._modelEngine,
+        "YPiece_TubingOut",
+        "GasResistor"
+      );
+      this._modelEngine.Models.YPiece_EtTube = new GasResistor(
+        this._modelEngine,
+        "YPiece_EtTube",
+        "GasResistor"
+      );
+      this._modelEngine.Models.TubingIn_YPiece = new GasResistor(
+        this._modelEngine,
+        "TubingIn_YPiece",
+        "GasResistor"
+      );
+      this.SetYPieceResistors();
+    }
+
+    if (!this._modelEngine.Models.ValveExp) {
+      this._modelEngine.Models.ValveExp = new GasResistor(
+        this._modelEngine,
+        "ValveExp",
+        "GasResistor"
+      );
+      this.SetValveExp();
+    }
+
+    if (!this._modelEngine.Models.ValveInsp) {
+      this._modelEngine.Models.ValveInsp = new GasResistor(
+        this._modelEngine,
+        "ValveInsp",
+        "GasResistor"
+      );
+      this.SetValveInsp();
+    }
 
     this.FlowSensor = this._modelEngine.Models["YPiece_EtTube"];
     this.PressureSensor = this._modelEngine.Models["TubingIn"];
-
-    this.SetVentIn();
-    this.SetTubing();
-    this.SetYPiece();
-    this.SetEtTube();
-    this.SetYPieceResistors();
-    this.SetEtTubeResistors();
-    this.SetValveInsp();
-    this.SetValveExp();
 
     // set the flag to model is initialized
     this._is_initialized = true;
@@ -605,7 +624,6 @@ export class MechanicalVentilator extends ModelBaseClass {
       this.FotherDry
     );
   }
-
   SetYPiece() {
     this._modelEngine.Models.YPiece.InitModel([
       { key: "Vol", value: this.YPieceVol },
