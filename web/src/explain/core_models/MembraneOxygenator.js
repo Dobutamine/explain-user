@@ -124,8 +124,13 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "DifO2", value: this.DifO2 },
       { key: "DifCo2", value: this.DifCo2 },
     ]);
-    // add the model to the models object
-    this._modelEngine.Models[this._gasExchanger.Name] = this._gasExchanger;
+
+    if (this._modelEngine.Models[this._gasExchanger.Name]) {
+      this._gasExchanger = this._modelEngine.Models[this._gasExchanger.Name];
+    } else {
+      // add the model to the models object
+      this._modelEngine.Models[this._gasExchanger.Name] = this._gasExchanger;
+    }
   }
 
   SetGasCompartment() {
@@ -153,8 +158,15 @@ export class MembraneOxygenator extends ModelBaseClass {
       this.Fn2Dry,
       this.FotherDry
     );
-    // add the model to the models object
-    this._modelEngine.Models[this._gasCompartment.Name] = this._gasCompartment;
+
+    if (this._modelEngine.Models[this._gasCompartment.Name]) {
+      this._gasCompartment =
+        this._modelEngine.Models[this._gasCompartment.Name];
+    } else {
+      // add the model to the models object
+      this._modelEngine.Models[this._gasCompartment.Name] =
+        this._gasCompartment;
+    }
   }
 
   SetCo2Source() {
@@ -175,8 +187,12 @@ export class MembraneOxygenator extends ModelBaseClass {
 
     SetAirComposition(this._co2Source, this.Humidity, this.Temp, 0, 1, 0, 0);
 
-    // add the model to the models object
-    this._modelEngine.Models[this._co2Source.Name] = this._co2Source;
+    if (this._modelEngine.Models[this._co2Source.Name]) {
+      this._co2Source = this._modelEngine.Models[this._co2Source.Name];
+    } else {
+      // add the model to the models object
+      this._modelEngine.Models[this._co2Source.Name] = this._co2Source;
+    }
   }
 
   SetGasSource() {
@@ -205,8 +221,12 @@ export class MembraneOxygenator extends ModelBaseClass {
       this.FotherDry
     );
 
-    // add the model to the models object
-    this._modelEngine.Models[this._gasSource.Name] = this._gasSource;
+    if (this._modelEngine.Models[this._gasSource.Name]) {
+      this._gasSource = this._modelEngine.Models[this._gasSource.Name];
+    } else {
+      // add the model to the models object
+      this._modelEngine.Models[this._gasSource.Name] = this._gasSource;
+    }
   }
 
   SetGasResistors() {
@@ -234,11 +254,19 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "CompTo", value: "OUT" },
     ]);
 
-    // add the model to the models object
-    this._modelEngine.Models[this._gasIn.Name] = this._gasIn;
+    if (this._modelEngine.Models[this._gasIn.Name]) {
+      this._gasIn = this._modelEngine.Models[this._gasIn.Name];
+    } else {
+      // add the model to the models object
+      this._modelEngine.Models[this._gasIn.Name] = this._gasIn;
+    }
 
-    // add the model to the models object
-    this._modelEngine.Models[this._gasOut.Name] = this._gasOut;
+    if (this._modelEngine.Models[this._gasOut.Name]) {
+      this._gasOut = this._modelEngine.Models[this._gasOut.Name];
+    } else {
+      // add the model to the models object
+      this._modelEngine.Models[this._gasOut.Name] = this._gasOut;
+    }
 
     let resCo2 = 200.0 / (this.Co2GasFlow / 60.0) - 25.0;
 
@@ -253,8 +281,12 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "CompTo", value: "OxyGas" },
     ]);
 
-    // add the model to the models object
-    this._modelEngine.Models[this._co2In.Name] = this._co2In;
+    if (this._modelEngine.Models[this._co2In.Name]) {
+      this._co2In = this._modelEngine.Models[this._co2In.Name];
+    } else {
+      // add the model to the models object
+      this._modelEngine.Models[this._co2In.Name] = this._co2In;
+    }
   }
 
   // override the base class CalcModel method

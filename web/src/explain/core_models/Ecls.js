@@ -160,8 +160,13 @@ export class Ecls extends ModelBaseClass {
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
     // add the model to the models object
-    this._modelEngine.Models[this._drainageSite_TubingIn.Name] =
-      this._drainageSite_TubingIn;
+    if (this._modelEngine.Models[this._drainageSite_TubingIn.Name]) {
+      this._drainageSite_TubingIn =
+        this._modelEngine.Models[this._drainageSite_TubingIn.Name];
+    } else {
+      this._modelEngine.Models[this._drainageSite_TubingIn.Name] =
+        this._drainageSite_TubingIn;
+    }
   }
   SetTubingInPump() {
     // calculate the tubing resistance
@@ -181,7 +186,11 @@ export class Ecls extends ModelBaseClass {
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
     // add the model to the models object
-    this._modelEngine.Models[this._tubingIn_Pump.Name] = this._tubingIn_Pump;
+    if (this._modelEngine.Models[this._tubingIn_Pump.Name]) {
+      this._tubingIn_Pump = this._modelEngine.Models[this._tubingIn_Pump.Name];
+    } else {
+      this._modelEngine.Models[this._tubingIn_Pump.Name] = this._tubingIn_Pump;
+    }
   }
   SetPumpOxy() {
     this._bloodPump_Oxy.InitModel([
@@ -196,7 +205,11 @@ export class Ecls extends ModelBaseClass {
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
     // add the model to the models object
-    this._modelEngine.Models[this._bloodPump_Oxy.Name] = this._bloodPump_Oxy;
+    if (this._modelEngine.Models[this._bloodPump_Oxy.Name]) {
+      this._bloodPump_Oxy = this._modelEngine.Models[this._bloodPump_Oxy.Name];
+    } else {
+      this._modelEngine.Models[this._bloodPump_Oxy.Name] = this._bloodPump_Oxy;
+    }
   }
   SetOxyTubingOut() {
     // calculate the tubing resistance
@@ -216,7 +229,11 @@ export class Ecls extends ModelBaseClass {
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
     // add the model to the models object
-    this._modelEngine.Models[this._oxy_TubingOut.Name] = this._oxy_TubingOut;
+    if (this._modelEngine.Models[this._oxy_TubingOut.Name]) {
+      this._oxy_TubingOut = this._modelEngine.Models[this._oxy_TubingOut.Name];
+    } else {
+      this._modelEngine.Models[this._oxy_TubingOut.Name] = this._oxy_TubingOut;
+    }
   }
   SetTubingOutReturn() {
     // calculate the cannula resistance
@@ -236,8 +253,13 @@ export class Ecls extends ModelBaseClass {
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
     // add the model to the models object
-    this._modelEngine.Models[this._tubingOut_ReturnSite.Name] =
-      this._tubingOut_ReturnSite;
+    if (this._modelEngine.Models[this._tubingOut_ReturnSite.Name]) {
+      this._tubingOut_ReturnSite =
+        this._modelEngine.Models[this._tubingOut_ReturnSite.Name];
+    } else {
+      this._modelEngine.Models[this._tubingOut_ReturnSite.Name] =
+        this._tubingOut_ReturnSite;
+    }
   }
   SetOxygenator() {
     this._oxygenator.InitModel([
@@ -253,11 +275,16 @@ export class Ecls extends ModelBaseClass {
       { key: "DifCo2", value: this.DifCo2 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
-    // now set the solutes on this blood models
-    this._modelEngine.Models["Blood"].SetSolutesOnModel(this._oxygenator);
 
-    // add the model to the models object
-    this._modelEngine.Models[this._oxygenator.Name] = this._oxygenator;
+    if (this._modelEngine.Models[this._oxygenator.Name]) {
+      this._oxygenator = this._modelEngine.Models[this._oxygenator.Name];
+    } else {
+      // now set the solutes on this blood models
+      this._modelEngine.Models["Blood"].SetSolutesOnModel(this._oxygenator);
+
+      // add the model to the models object
+      this._modelEngine.Models[this._oxygenator.Name] = this._oxygenator;
+    }
   }
   SetBloodPump() {
     this._bloodPump.InitModel([
@@ -268,14 +295,19 @@ export class Ecls extends ModelBaseClass {
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
-    // set the pump to centrifugal mode
-    this._bloodPump.Mode = 0;
 
-    // now set the solutes on this blood models
-    this._modelEngine.Models["Blood"].SetSolutesOnModel(this._bloodPump);
+    if (this._modelEngine.Models[this._bloodPump.Name]) {
+      this._bloodPump = this._modelEngine.Models[this._bloodPump.Name];
+    } else {
+      // set the pump to centrifugal mode
+      this._bloodPump.Mode = 0;
 
-    // add the model to the models object
-    this._modelEngine.Models[this._bloodPump.Name] = this._bloodPump;
+      // now set the solutes on this blood models
+      this._modelEngine.Models["Blood"].SetSolutesOnModel(this._bloodPump);
+
+      // add the model to the models object
+      this._modelEngine.Models[this._bloodPump.Name] = this._bloodPump;
+    }
   }
   SetTubingIn() {
     // calculate the properties of the tubing
@@ -293,12 +325,18 @@ export class Ecls extends ModelBaseClass {
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
-    // now set the solutes on this blood models
-    this._modelEngine.Models["Blood"].SetSolutesOnModel(this._tubingIn);
 
-    // add the model to the models object
-    this._modelEngine.Models[this._tubingIn.Name] = this._tubingIn;
+    if (this._modelEngine.Models[this._tubingIn.Name]) {
+      this._tubingIn = this._modelEngine.Models[this._tubingIn.Name];
+    } else {
+      // now set the solutes on this blood models
+      this._modelEngine.Models["Blood"].SetSolutesOnModel(this._tubingIn);
+
+      // add the model to the models object
+      this._modelEngine.Models[this._tubingIn.Name] = this._tubingIn;
+    }
   }
+
   SetTubingOut() {
     let tubingVolume =
       Math.PI *
@@ -313,11 +351,16 @@ export class Ecls extends ModelBaseClass {
       { key: "ElK", value: 0 },
       { key: "IsEnabled", value: this.IsEnabled },
     ]);
-    // now set the solutes on this blood models
-    this._modelEngine.Models["Blood"].SetSolutesOnModel(this._tubingOut);
 
-    // add the model to the models object
-    this._modelEngine.Models[this._tubingOut.Name] = this._tubingOut;
+    if (this._modelEngine.Models[this._tubingOut.Name]) {
+      this._tubingOut = this._modelEngine.Models[this._tubingOut.Name];
+    } else {
+      // now set the solutes on this blood models
+      this._modelEngine.Models["Blood"].SetSolutesOnModel(this._tubingOut);
+
+      // add the model to the models object
+      this._modelEngine.Models[this._tubingOut.Name] = this._tubingOut;
+    }
   }
   SetGasMixture() {
     let sum = 1.0 - this.FiCo2 - this.FiO2;
