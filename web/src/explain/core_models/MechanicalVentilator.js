@@ -430,29 +430,37 @@ export class MechanicalVentilator extends ModelBaseClass {
   TubeResistance() {
     // calculate the tube resistance in mmHg * s / l
 
-    // // Poiseuille's law
-    // // Q = (pi * P * r^4) / (8 * n * L)
-    // // resistance is calculated using Poiseuille's Law : R = (8 * n * L) / (PI * r^4)
-    // const viscosity = 0.01837;
-    // let n_mmhgs = viscosity * 0.001 * 0.00750062;
-    // let r =
-    //   (8 * n_mmhgs * this.TubeLength) /
-    //   (Math.PI * Math.pow(this.TubeDiameter / 2, 4));
-    const cmTommHg = 0.735559;
-    let a = 4;
-    let b = 5;
-    let diameter = this.TubeDiameter * 1000;
+    let a = 0.88;
+    let b = 4.4;
 
-    if (diameter <= 3.0) {
-      a = 2;
-      b = 35;
-    }
-    if (diameter <= 2.5) {
-      a = 11.6;
-      b = 23;
+    switch (this.TubeDiameter) {
+      case 2.5:
+        a = 8.82;
+        b = 26.5;
+        break;
+      case 3.0:
+        a = 4.42;
+        b = 13.2;
+        break;
+      case 3.5:
+        a = 1.76;
+        b = 17.8;
+        break;
+      case 4.0:
+        a = 0.88;
+        b = 13.3;
+        break;
+      case 4.5:
+        a = 0.88;
+        b = 4.4;
+        break;
     }
 
-    let res = (a * this.InspFlow + b) * cmTommHg;
+    let res = (a * this.InspFlow + b) * (this.TubeLength / 0.15);
+    if (res < 25) {
+      res = 25;
+    }
+
     this._modelEngine.Models["EtTube_DS"].RFor = res;
     this._modelEngine.Models["EtTube_DS"].RBack = res;
   }

@@ -27,6 +27,14 @@
             @update:model-value="toggleClamp"
           />
         </div>
+        <div class="q-ml-md">
+          <q-toggle
+            v-model="advanced"
+            label="advanced"
+            size="sm"
+            color="secondary"
+          />
+        </div>
       </div>
 
       <div class="q-ma-sm row gutter text-overline justify-center">
@@ -94,7 +102,7 @@
             @update:model-value="changeCo2"
           />
         </div>
-        <div class="q-ml-md">
+        <!-- <div class="q-ml-md">
           <div class="row justify-center">Temp</div>
           <q-knob
             v-model="temp"
@@ -109,10 +117,13 @@
             class="row"
             @update:model-value="changeTemp"
           />
-        </div>
+        </div> -->
       </div>
 
-      <div class="q-ma-sm q-mt-md row gutter text-overline justify-center">
+      <div
+        v-if="advanced"
+        class="q-ma-sm q-mt-md row gutter text-overline justify-center"
+      >
         <div class="q-ml-lg q-mt-sm">
           <q-select
             v-model="drainageSite"
@@ -283,10 +294,21 @@ export default {
       tubingElastance: 1160,
       ecls: true,
       clamp: false,
+      advanced: false,
     };
   },
   methods: {
-    changeFiO2() {},
+    changeFiO2() {
+      explain.setModelProperties([
+        {
+          m: "Ecls",
+          p: "Fo2",
+          v: this.fio2 / 100.0,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
     changeSweep() {
       explain.setModelProperties([
         {

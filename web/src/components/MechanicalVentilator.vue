@@ -209,14 +209,11 @@
 
       <div class="q-ma-sm q-mt-md row gutter text-overline justify-center">
         <div class="q-ml-lg">
-          <q-input
+          <q-select
             v-model="tubeSize"
             stack-label
             label="tube size mm"
-            type="number"
-            :min="2.0"
-            :max="5.0"
-            :step="0.5"
+            :options="tubeSizes"
             outlined
             dense
             hide-hint
@@ -336,7 +333,7 @@ export default {
         {
           m: "MechanicalVentilator",
           p: "TubeDiameter",
-          v: parseFloat(this.tubeSize / 1000.0),
+          v: parseFloat(this.tubeSize),
           at: 0.0,
           it: 0.0,
         },
@@ -513,8 +510,7 @@ export default {
       this.breathing = explain.modelState.Models["Breathing"].BreathingEnabled;
       this.intubated = explain.modelState.Models["Breathing"].Intubated;
       this.tubeSize =
-        explain.modelState.Models["MechanicalVentilator"].TubeDiameter * 1000;
-      this.tubeSize = parseFloat(this.tubeSize.toFixed(1));
+        explain.modelState.Models["MechanicalVentilator"].TubeDiameter;
 
       this.tubeLength =
         explain.modelState.Models["MechanicalVentilator"].TubeLength * 100;

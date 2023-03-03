@@ -426,7 +426,25 @@ export class Ecls extends ModelBaseClass {
     this._bedHeightPressureDrop =
       this._bloodDensity * this._gravity * this.BedHeight * 0.00750062;
 
-    // fio2
+    // fio2 of the gas
+    let co2Factor = this.Fco2Dry / (1.0 - this.Fo2Dry);
+    let n2Factor = this.Fn2Dry / (1.0 - this.Fo2Dry);
+    let otherFactor = this.FotherDry / (1.0 - this.Fo2Dry);
+
+    let newFo2 = this.Fo2;
+    let newFco2 = co2Factor * (1.0 - this.Fo2);
+    let newFn2 = n2Factor * (1.0 - this.Fo2);
+    let newFother = otherFactor * (1.0 - this.Fo2);
+
+    SetAirComposition(
+      this._oxygenator._gasSource,
+      this.Humidity,
+      this.Temp,
+      newFo2,
+      newFco2,
+      newFn2,
+      newFother
+    );
 
     // sweep
     let resSweep = 200.0 / (this.SweepGasFlow / 60.0) - 25.0;
