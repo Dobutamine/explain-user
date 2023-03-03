@@ -66,7 +66,7 @@ export class MembraneOxygenator extends ModelBaseClass {
     // build the gas parts of the oxygenator
     this._co2Source = new GasCompliance(
       this._modelEngine,
-      "OxyCo2Source",
+      this.Name + "Co2Source",
       "GasCompliance"
     );
     this.SetCo2Source();
@@ -74,21 +74,21 @@ export class MembraneOxygenator extends ModelBaseClass {
     // build the gas parts of the oxygenator
     this._gasSource = new GasCompliance(
       this._modelEngine,
-      "OxyGasSource",
+      this.Name + "GasSource",
       "GasCompliance"
     );
     this.SetGasSource();
 
     this._gasCompartment = new GasCompliance(
       this._modelEngine,
-      "OxyGas",
+      this.Name + "Gas",
       "GasCompliance"
     );
     this.SetGasCompartment();
 
     this._gasExchanger = new GasExchanger(
       this._modelEngine,
-      "OxyExchanger",
+      this.Name + "Exchanger",
       "GasExchanger"
     );
     this.SetGasExchanger();
@@ -96,17 +96,17 @@ export class MembraneOxygenator extends ModelBaseClass {
     // build the connectors
     this._gasIn = new GasResistor(
       this._modelEngine,
-      "OxySource_Gas",
+      this.Name + "Source_Gas",
       "GasResistor"
     );
     this._co2In = new GasResistor(
       this._modelEngine,
-      "OxyCo2_Gas",
+      this.Name + "Co2_Gas",
       "GasResistor"
     );
     this._gasOut = new GasResistor(
       this._modelEngine,
-      "OxyGas_OUT",
+      this.Name + "Gas_OUT",
       "GasResistor"
     );
     this.SetGasResistors();
@@ -120,7 +120,7 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "Description", value: "oxygenator gas exchanger" },
       { key: "IsEnabled", value: this.IsEnabled },
       { key: "CompBlood", value: this.Name },
-      { key: "CompGas", value: "OxyGas" },
+      { key: "CompGas", value: this.Name + "Gas" },
       { key: "DifO2", value: this.DifO2 },
       { key: "DifCo2", value: this.DifCo2 },
     ]);
@@ -239,8 +239,8 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "Rk", value: 0.0 },
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "OxyGasSource" },
-      { key: "CompTo", value: "OxyGas" },
+      { key: "CompFrom", value: this.Name + "GasSource" },
+      { key: "CompTo", value: this.Name + "Gas" },
     ]);
 
     this._gasOut.InitModel([
@@ -250,7 +250,7 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "Rk", value: 0.0 },
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "OxyGas" },
+      { key: "CompFrom", value: this.Name + "Gas" },
       { key: "CompTo", value: "OUT" },
     ]);
 
@@ -277,8 +277,8 @@ export class MembraneOxygenator extends ModelBaseClass {
       { key: "Rk", value: 0.0 },
       { key: "NoFlow", value: false },
       { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "OxyCo2Source" },
-      { key: "CompTo", value: "OxyGas" },
+      { key: "CompFrom", value: this.Name + "Co2Source" },
+      { key: "CompTo", value: this.Name + "Gas" },
     ]);
 
     if (this._modelEngine.Models[this._co2In.Name]) {
@@ -288,7 +288,6 @@ export class MembraneOxygenator extends ModelBaseClass {
       this._modelEngine.Models[this._co2In.Name] = this._co2In;
     }
   }
-
   // override the base class CalcModel method
   CalcModel() {
     // calculate the pressure depending on the elastance
@@ -340,6 +339,7 @@ export class MembraneOxygenator extends ModelBaseClass {
 
     this._update_counter += this._t;
   }
+
   VolumeIn(dvol, modelFrom) {
     // increase the volume
     this.Vol += dvol;
