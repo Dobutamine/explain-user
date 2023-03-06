@@ -106,16 +106,20 @@ export default class DataCollector {
     // first clear all data
     this.clear_data();
 
+    // check whether the property exists
+    if (property.model) {
+      this.watch_list.push(property);
+    }
     // add to the watchlist
-    this.watch_list.push(property);
   }
 
   add_to_watchlist_slow(property) {
     // first clear all data
     this.clear_data();
 
-    // add to the watchlist
-    this.watch_list_slow.push(property);
+    if (property.model) {
+      this.watch_list_slow.push(property);
+    }
   }
 
   collect_data(model_clock) {

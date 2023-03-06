@@ -431,14 +431,20 @@ const initModel = function (model_definition) {
       Object.values(model.Models).forEach((model_comp) => {
         // // find the arguments for the model in the model definition
         let args = [];
+        let isEnabled = false;
         for (const [key, value] of Object.entries(
           modelDefinition.Models[model_comp.Name]
         )) {
+          if (key === "IsEnabled" && value === true) {
+            isEnabled = true;
+          }
           args.push({ key, value });
         }
         // set the arguments
         try {
-          model_comp.InitModel(args);
+          if (isEnabled) {
+            model_comp.InitModel(args);
+          }
         } catch (e) {
           console.log(`Error initializing model ${model_comp.Name}`);
           console.log(e);
@@ -465,6 +471,7 @@ const initModel = function (model_definition) {
         message: "Model engine initialized!",
         payload: [model],
       });
+      console.log(model);
     }
   } catch (e) {
     // if error signal the parent that there was an error

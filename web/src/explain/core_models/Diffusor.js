@@ -8,6 +8,9 @@ export class Diffusor extends ModelBaseClass {
   _flux_o2 = 0.0;
   _flux_co2 = 0.0;
 
+  DifO2Factor = 1.0;
+  DifCo2Factor = 1.0;
+
   // model initializer
   InitModel(args) {
     // process the arguments/parameters
@@ -75,10 +78,12 @@ export class Diffusor extends ModelBaseClass {
     this._modelEngine.Models[this.CompBlood2].Pco2 = pco2_blood2;
 
     // calculate the O2 flux from the blood to the gas compartment
-    this._flux_o2 = (po2_blood1 - po2_blood2) * this.DifO2 * this._t;
+    this._flux_o2 =
+      (po2_blood1 - po2_blood2) * this.DifO2 * this.DifO2Factor * this._t;
 
     // calculate the CO2 flux from the blood to the gas compartment
-    this._flux_co2 = (pco2_blood1 - pco2_blood2) * this.DifCo2 * this._t;
+    this._flux_co2 =
+      (pco2_blood1 - pco2_blood2) * this.DifCo2 * this.DifCo2Factor * this._t;
 
     // calculate the new O2 concentrations of the gas and blood compartments
     let new_to2_blood1 =

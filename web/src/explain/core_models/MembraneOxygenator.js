@@ -16,6 +16,10 @@ export class MembraneOxygenator extends ModelBaseClass {
   PresCc = 0;
   Solutes = {};
 
+  UVolFactor = 1.0;
+  ElBaseFactor = 1.0;
+  ElKFactor = 1.0;
+
   // dependent variables
   Pres = 0.0;
   PresInlet = 0;
@@ -293,8 +297,12 @@ export class MembraneOxygenator extends ModelBaseClass {
     // calculate the pressure depending on the elastance
     this.Pres =
       this.ElBase *
-        (1.0 + this.ElK * (this.Vol - this.UVol)) *
-        (this.Vol - this.UVol) +
+        this.ElBaseFactor *
+        (1.0 +
+          this.ElK *
+            this.ElKFactor *
+            (this.Vol - this.UVol * this.UVolFactor)) *
+        (this.Vol - this.UVol * this.UVolFactor) +
       this.Pres0 +
       this.PresExt +
       this.PresCc +

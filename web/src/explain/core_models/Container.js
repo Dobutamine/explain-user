@@ -8,6 +8,10 @@ export class Container extends ModelBaseClass {
   VolMax = 0.0;
   VolMin = 0.0;
 
+  UVolFactor = 1.0;
+  ElBaseFactor = 1.0;
+  ElKFactor = 1.0;
+
   // external parameters
   Pres0 = 0;
   PresMus = 0;
@@ -45,8 +49,12 @@ export class Container extends ModelBaseClass {
     // calculate the pressure depending on the elastance
     this.Pres =
       this.ElBase *
-        (1.0 + this.ElK * (this.Vol - this.UVol)) *
-        (this.Vol - this.UVol) +
+        this.ElBaseFactor *
+        (1.0 +
+          this.ElK *
+            this.ElKFactor *
+            (this.Vol - this.UVol * this.UVolFactor)) *
+        (this.Vol - this.UVol * this.UVolFactor) +
       this.Pres0 +
       this.PresExt +
       this.PresCc +

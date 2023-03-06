@@ -32,6 +32,10 @@ export class BloodPump extends ModelBaseClass {
   Ph = 0.0;
   Hco3 = 0.0;
 
+  UVolFactor = 1.0;
+  ElBaseFactor = 1.0;
+  ElKFactor = 1.0;
+
   // local parameters
   _temp_max_pres = -1000.0;
   _temp_min_pres = 1000.0;
@@ -56,8 +60,9 @@ export class BloodPump extends ModelBaseClass {
     // calculate the pressure depending on the elastance
     this.Pres =
       this.ElBase *
-        (1.0 + this.ElK * (this.Vol - this.UVol)) *
-        (this.Vol - this.UVol) +
+        this.ElBaseFactor *
+        (1.0 + this.ElK * this.ElKFactor * (this.Vol - this.UVol)) *
+        (this.Vol - this.UVol * this.UVolFactor) +
       this.Pres0 +
       this.PresExt;
 

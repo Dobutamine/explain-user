@@ -8,6 +8,10 @@ export class GasResistor extends ModelBaseClass {
   FlowSec = 0;
   Res = 0;
 
+  RForFactor = 1.0;
+  RBackFactor = 1.0;
+  RkFactor = 1.0;
+
   // local parameters
   _comp_from = {};
   _comp_to = {};
@@ -40,11 +44,17 @@ export class GasResistor extends ModelBaseClass {
 
     // calculate the flow in l/s
     if (p_u > p_d) {
-      this.Res = this.RFor * (1.0 + this.Rk * this.Flow);
+      this.Res =
+        this.RFor *
+        this.RForFactor *
+        (1.0 + this.Rk * this.RkFactor * this.Flow);
       this.Flow = (p_u - p_d) / this.Res;
     } else {
       if (!this.NoBackFlow) {
-        this.Res = this.RBack * (1.0 + this.Rk * this.Flow);
+        this.Res =
+          this.RBack *
+          this.RBackFactor *
+          (1.0 + this.Rk * this.RkFactor * this.Flow);
         this.Flow = (p_u - p_d) / this.Res;
       } else {
         this.Flow = 0;

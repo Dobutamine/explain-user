@@ -55,6 +55,11 @@ export class Ecls extends ModelBaseClass {
   _updateCounter = 0;
   _updateInterval = 1.0;
 
+  _o2ToLung = 0.0;
+  _o2FromLung = 0.0;
+
+  OER = 0.0;
+
   InitModel(args) {
     // process the arguments/parameters
     args.forEach((arg) => {
@@ -529,6 +534,13 @@ export class Ecls extends ModelBaseClass {
     // set the pump to centrifugal mode
     this._bloodPump.Mode = 0;
     this._bloodPump.Rpm = this.Rpm;
+
+    // calculate OER
+    this._o2ToLung = this._bloodPump_Oxy.Flow * this._bloodPump.To2;
+    this._o2FromLung = this._oxy_TubingOut.Flow * this._oxygenator.To2;
+    if (this._o2FromLung > 0) {
+      this.OER = this._o2ToLung / this._o2FromLung;
+    }
 
     if (this._updateCounter > this._updateInterval) {
       this._updateCounter = 0;

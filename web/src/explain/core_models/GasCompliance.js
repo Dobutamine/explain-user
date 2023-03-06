@@ -11,6 +11,10 @@ export class GasCompliance extends ModelBaseClass {
   Temp = 37.0;
   TargetTemp = 37.0;
 
+  UVolFactor = 1.0;
+  ElBaseFactor = 1.0;
+  ElKFactor = 1.0;
+
   Ctotal = 0;
   Co2 = 0;
   Cco2 = 0;
@@ -67,8 +71,12 @@ export class GasCompliance extends ModelBaseClass {
     // calculate the pressure depending on the elastance
     this.Pres =
       this.ElBase *
-        (1.0 + this.ElK * (this.Vol - this.UVol)) *
-        (this.Vol - this.UVol) +
+        this.ElBaseFactor *
+        (1.0 +
+          this.ElK *
+            this.ElKFactor *
+            (this.Vol - this.UVol * this.UVolFactor)) *
+        (this.Vol - this.UVol * this.UVolFactor) +
       this.Pres0 +
       this.PresExt +
       this.PresCc +

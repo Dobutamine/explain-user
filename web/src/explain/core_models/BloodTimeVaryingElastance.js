@@ -10,6 +10,11 @@ export class BloodTimeVaryingElastance extends ModelBaseClass {
   VolMax = 0.0;
   VolMin = 0.0;
 
+  UVolFactor = 1.0;
+  ElMinFactor = 1.0;
+  ElMaxFactor = 1.0;
+  ElKFactor = 1.0;
+
   // external parameters
   Pres0 = 0;
   PresMus = 0;
@@ -47,11 +52,13 @@ export class BloodTimeVaryingElastance extends ModelBaseClass {
     // calculate the end diastolic pressure
     this.PresEd =
       this.ElMin *
-      (1.0 + this.ElK * (this.Vol - this.UVol)) *
-      (this.Vol - this.UVol);
+      this.ElMinFactor *
+      (1.0 +
+        this.ElK * this.ElKFactor * (this.Vol - this.UVol * this.UVolFactor)) *
+      (this.Vol - this.UVol * this.UVolFactor);
 
     // calculate the end systolic pressure
-    this.PresEs = this.ElMax * (this.Vol - this.UVol);
+    this.PresEs = this.ElMax * (this.Vol - this.UVol * this.UVolFactor);
 
     // calculate the pressure depending on the elastance
     this.Pres =
