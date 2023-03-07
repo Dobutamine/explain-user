@@ -22,6 +22,7 @@ export class Gas extends ModelBaseClass {
     Object.keys(this.HumiditySettings).forEach((h) => {
       this.Dependencies.push(h);
     });
+
     Object.keys(this.TempSettings).forEach((h) => {
       this.Dependencies.push(h);
     });
@@ -82,7 +83,7 @@ export class Gas extends ModelBaseClass {
 
   SetInspiredAir() {
     Object.values(this._modelEngine.Models).forEach((model) => {
-      if (model.ModelType == "GasCompliance") {
+      if (this.Targets.includes(model.ModelType)) {
         // set the atmospheric pressure
         model.Pres0 = this.PresAtm;
 
@@ -90,7 +91,6 @@ export class Gas extends ModelBaseClass {
         model.StepModel();
 
         // set the inspired air composition to all gas compliances
-
         SetAirComposition(
           model,
           model.Humidity,

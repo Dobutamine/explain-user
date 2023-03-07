@@ -1,11 +1,11 @@
 export default class Model {
-  // declare an object holding the worker thread
+  // declare an object holding the worker thread which does the heavy llifting
   modelEngine = {};
 
-  // declare an object holding the model definition
+  // declare an object holding the model definition as loaded from the server
   modelDefinition = {};
 
-  // declare an object holding the model data coming from the engine
+  // declare an object holding the model data coming from the engine (high and low resolution data)
   modelData = [];
   modelDataSlow = [];
 
@@ -52,11 +52,13 @@ export default class Model {
       payload: [JSON.stringify(new_task)],
     });
   }
+
   addScriptToTaskScheduler(new_script) {
     new_script.forEach((task) => {
       this.addToTaskScheduler(task);
     });
   }
+
   start() {
     // start realtime model
     this.sendMessage({
@@ -90,19 +92,20 @@ export default class Model {
       payload: propsArray,
     });
   }
-  watchModelPropertiesSlow(propsArray) {
-    this.sendMessage({
-      type: "watch_props_slow",
-      message: "",
-      payload: propsArray,
-    });
-  }
 
   watchModelProperty(model, prim_prop, sec_prop) {
     this.sendMessage({
       type: "watch",
       message: "",
       payload: [model, prim_prop, sec_prop],
+    });
+  }
+
+  watchModelPropertiesSlow(propsArray) {
+    this.sendMessage({
+      type: "watch_props_slow",
+      message: "",
+      payload: propsArray,
     });
   }
 
