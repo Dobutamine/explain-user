@@ -1,6 +1,4 @@
 export default class ModelBaseClass {
-  // common class parameters
-
   // Name of model by which the model is identified (must be unique)
   Name = "";
 
@@ -15,8 +13,6 @@ export default class ModelBaseClass {
 
   // Array holding the names of the models on which this model depends
   Dependencies = [];
-
-  // common local parameters
 
   // reference the model engine object
   _modelEngine = {};

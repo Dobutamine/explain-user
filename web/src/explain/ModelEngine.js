@@ -182,6 +182,7 @@ onmessage = function (e) {
   }
 };
 
+// add a new task to the task scheduler
 const addTaskToScheduler = function (new_task) {
   // flag that the execution list needs to be rebuils
   rebuildExecutionList = true;
@@ -189,10 +190,12 @@ const addTaskToScheduler = function (new_task) {
   model.TaskScheduler.AddTask(new_task);
 };
 
+// initialize the model engine with the loaded engine definition
 const initEngine = function (engine_definition) {
   modelEngine = engine_definition;
 };
 
+// start the realtime model
 const start = function () {
   // start the model in realtime
   if (modelInitialized) {
@@ -213,6 +216,7 @@ const start = function () {
   }
 };
 
+// stop the realtime model
 const stop = function () {
   // stop the realtime model
   if (modelInitialized) {
@@ -226,6 +230,7 @@ const stop = function () {
   }
 };
 
+// calculate a certain amount of time of the model
 const calculate = function (timeToCalculate = 10.0) {
   // check whether the execution list needs to be rebuild
   let exec_check = false;
@@ -272,6 +277,7 @@ const calculate = function (timeToCalculate = 10.0) {
   }
 };
 
+// rewire a blood or gasresistor
 const rewireResistor = function (payload) {
   payload.forEach((data) => {
     if (data.m.includes(".")) {
@@ -309,6 +315,7 @@ const rewireResistor = function (payload) {
   });
 };
 
+// set multiple model properties
 const setProperties = function (payload) {
   // process the new model properties list
   payload.forEach((newProp) => {
@@ -331,6 +338,7 @@ const setProperties = function (payload) {
   getModelState();
 };
 
+// get a model property value
 const getProperty = function (m, p) {
   let value = model.Models[m][p];
   if (value) {
@@ -342,6 +350,7 @@ const getProperty = function (m, p) {
   }
 };
 
+// get the current whole model state
 const getModelState = function () {
   // refresh the model state on the model instance
   postMessage({
@@ -351,6 +360,7 @@ const getModelState = function () {
   });
 };
 
+// get the realtime model data from the datacollector
 const getModelDataRt = function () {
   // refresh the model data on the model instance
   modelData = model.DataCollector.get_model_data();
@@ -363,6 +373,7 @@ const getModelDataRt = function () {
   });
 };
 
+// get the model data from the datacollector
 const getModelData = function () {
   // refresh the model data on the model instance
   modelData = model.DataCollector.get_model_data();
@@ -375,6 +386,7 @@ const getModelData = function () {
   });
 };
 
+// get the slow update model data from the datacollector
 const getModelDataSlow = function () {
   // refresh the model data on the model instance
   modelDataSlow = model.DataCollector.get_model_data_slow();
@@ -387,6 +399,7 @@ const getModelDataSlow = function () {
   });
 };
 
+// initialize the model using the loaded model definition
 const initModel = function (model_definition) {
   // store the model definition
   modelDefinition = model_definition;
@@ -507,6 +520,7 @@ const initModel = function (model_definition) {
   }
 };
 
+// do a single model step
 const modelStep = function () {
   // iterate over all models
   Object.values(model.ExecutionList).forEach((model_component) => {
@@ -523,6 +537,7 @@ const modelStep = function () {
   model.ModelTimeTotal += model.ModelingStepsize;
 };
 
+// prepare for a model run
 const prepareForExecution = function () {
   // empty the execution list
   model.ExecutionList = {};
@@ -560,6 +575,7 @@ const prepareForExecution = function () {
   return true;
 };
 
+// check whether or not all dependencies of met
 const checkDependencies = function () {
   let dep_not_found = [];
   // check whether the models in the executionlist match the dependency list
@@ -579,6 +595,7 @@ const checkDependencies = function () {
   return dep_not_found;
 };
 
+// build the dependency list
 const buildDependencyList = function () {
   model.DependencyList = [];
   let depList = [];
@@ -594,6 +611,7 @@ const buildDependencyList = function () {
   });
 };
 
+// do a realtime model step
 const modelStepRt = function () {
   // so the rt_interval determines how often the model is calculated
   const noOfSteps = rtInterval / model.ModelingStepsize;
