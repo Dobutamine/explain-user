@@ -544,6 +544,8 @@ export class Ecls extends ModelBaseClass {
   }
 
   CalcModel() {
+    // enable all submodels if not already done
+
     // set the pres0 on the ecls compartments depending on the bed height
     this._bloodPump.Pres0 = -this._bedHeightPressureDrop;
     this._oxygenator.Pres0 = -this._bedHeightPressureDrop;

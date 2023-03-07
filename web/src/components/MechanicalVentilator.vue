@@ -327,6 +327,11 @@ export default {
           it: 0.0,
         },
       ]);
+      if (this.intubated) {
+        explain.enable("MechanicalVentilator");
+      } else {
+        explain.disable("MechanicalVentilator");
+      }
     },
     changeTubeDiameter() {
       explain.setModelProperties([

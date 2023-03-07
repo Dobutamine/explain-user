@@ -59,6 +59,13 @@ export default class Model {
     });
   }
 
+  call(model, method, args = []) {
+    this.sendMessage({
+      type: "call",
+      message: "",
+      payload: [model, method, args],
+    });
+  }
   start() {
     // start realtime model
     this.sendMessage({
@@ -166,7 +173,7 @@ export default class Model {
     });
   }
 
-  enableModel(model) {
+  enable(model) {
     this.sendMessage({
       type: "enable",
       message: "",
@@ -174,7 +181,7 @@ export default class Model {
     });
   }
 
-  disableModel(model) {
+  disable(model) {
     this.sendMessage({
       type: "disable",
       message: "",

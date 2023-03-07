@@ -161,6 +161,7 @@ onmessage = function (e) {
       model.Models[m_enabled].Enable();
       rebuildExecutionList = true;
       console.log("enabled model ", m_enabled);
+      calculate(3);
       break;
 
     case "disable":
@@ -168,6 +169,7 @@ onmessage = function (e) {
       model.Models[m_disabled].Disable();
       rebuildExecutionList = true;
       console.log("disabled model ", m_disabled);
+      calculate(3);
       break;
 
     case "call":
@@ -178,6 +180,7 @@ onmessage = function (e) {
       console.log(
         `called method ${method_call} on model ${model_call} with args ${args}`
       );
+      calculate(3);
       break;
   }
 };

@@ -94,6 +94,36 @@ export class MechanicalVentilator extends ModelBaseClass {
   FlowSensor = {};
   PressureSensor = {};
 
+  Enable() {
+    this.IsEnabled = true;
+    this._modelEngine.Models.VentIn.IsEnabled = true;
+    this._modelEngine.Models.ValveInsp.IsEnabled = true;
+    this._modelEngine.Models.TubingIn.IsEnabled = true;
+    this._modelEngine.Models.TubingIn_YPiece.IsEnabled = true;
+    this._modelEngine.Models.YPiece.IsEnabled = true;
+    this._modelEngine.Models.YPiece_EtTube.IsEnabled = true;
+    this._modelEngine.Models.EtTube.IsEnabled = true;
+    this._modelEngine.Models.EtTube_DS.IsEnabled = true;
+    this._modelEngine.Models.YPiece_TubingOut.IsEnabled = true;
+    this._modelEngine.Models.TubingOut.IsEnabled = true;
+    this._modelEngine.Models.ValveExp.IsEnabled = true;
+  }
+
+  Disable() {
+    this.IsEnabled = false;
+    this._modelEngine.Models.VentIn.IsEnabled = false;
+    this._modelEngine.Models.ValveInsp.IsEnabled = false;
+    this._modelEngine.Models.TubingIn.IsEnabled = false;
+    this._modelEngine.Models.TubingIn_YPiece.IsEnabled = false;
+    this._modelEngine.Models.YPiece.IsEnabled = false;
+    this._modelEngine.Models.YPiece_EtTube.IsEnabled = false;
+    this._modelEngine.Models.EtTube.IsEnabled = false;
+    this._modelEngine.Models.EtTube_DS.IsEnabled = false;
+    this._modelEngine.Models.YPiece_TubingOut.IsEnabled = false;
+    this._modelEngine.Models.TubingOut.IsEnabled = false;
+    this._modelEngine.Models.ValveExp.IsEnabled = false;
+  }
+
   InitModel(args) {
     // process the arguments/parameters
     args.forEach((arg) => {
