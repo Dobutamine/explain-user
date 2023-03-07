@@ -173,6 +173,7 @@ export class Ecls extends ModelBaseClass {
         this._drainageSite_TubingIn;
     }
   }
+
   SetTubingInPump() {
     // calculate the tubing resistance
     let tubingResistance = this.CalcResistance(
@@ -197,6 +198,7 @@ export class Ecls extends ModelBaseClass {
       this._modelEngine.Models[this._tubingIn_Pump.Name] = this._tubingIn_Pump;
     }
   }
+
   SetPumpOxy() {
     this._bloodPump_Oxy.InitModel([
       { key: "Description", value: "Ecls blood pump to oxy" },
@@ -216,6 +218,7 @@ export class Ecls extends ModelBaseClass {
       this._modelEngine.Models[this._bloodPump_Oxy.Name] = this._bloodPump_Oxy;
     }
   }
+
   SetOxyTubingOut() {
     // calculate the tubing resistance
     let tubingResistance = this.CalcResistance(
@@ -419,6 +422,7 @@ export class Ecls extends ModelBaseClass {
 
     return resistance;
   }
+
   UpdateProperties() {
     // drainage cannula
     let cannulaResistanceDrainage = this.CalcResistance(

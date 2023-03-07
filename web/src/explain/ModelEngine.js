@@ -33,6 +33,8 @@ let model = {
   DependencyList: [],
 };
 
+let rebuildExecutionList = true;
+
 // declare a model engine object holding the engine properties
 let modelEngine = {};
 
@@ -167,6 +169,9 @@ onmessage = function (e) {
 };
 
 const addTaskToScheduler = function (new_task) {
+  // flag that the execution list needs to be rebuils
+  rebuildExecutionList = true;
+
   model.TaskScheduler.AddTask(new_task);
 };
 
@@ -174,11 +179,6 @@ const initEngine = function (engine_definition) {
   modelEngine = engine_definition;
 };
 const start = function () {
-  // first check the dependencies of the execution list
-  let dep_check = checkDependencies();
-  if (!dep_check) {
-    return;
-  }
   // start the model in realtime
   if (modelInitialized) {
     // call the modelStep every rt_interval seconds
@@ -212,12 +212,17 @@ const stop = function () {
 };
 
 const calculate = function (timeToCalculate = 10.0) {
-  // first check the dependencies of the execution list
-  let dep_check = checkDependencies();
+  // check whether the execution list needs to be rebuild
+  let exec_check = false;
 
-  if (!dep_check) {
+  // build the execution list
+  exec_check = prepareForExecution();
+
+  // if the dependency or execution list composition check fails return and don't execute the model run
+  if (!exec_check) {
     return;
   }
+
   // calculate a number of seconds of the model
   if (modelInitialized) {
     let noOfSteps = timeToCalculate / model.ModelingStepsize;
@@ -304,6 +309,9 @@ const setProperties = function (payload) {
     message: `properties updated.`,
     payload: [],
   });
+  // flag that the execution list needs to be rebuild
+  rebuildExecutionList = true;
+
   // refresh the model state on the model instance
   getModelState();
 };
@@ -390,6 +398,9 @@ const initModel = function (model_definition) {
     DependencyList: [],
   };
 
+  // flag that the execution list needs to be rebuild
+  rebuildExecutionList = true;
+
   // clear model data
   modelData = {};
   modelDataSlow = {};
@@ -464,11 +475,6 @@ const initModel = function (model_definition) {
           });
         }
       });
-      // build the execution and dependencies list
-      if (!error) {
-        buildExecutionList();
-        buildDependencyList();
-      }
 
       // add a datacollector instance to the model object
       model["DataCollector"] = new DataCollector(model);
@@ -514,14 +520,41 @@ const modelStep = function () {
   model.ModelTimeTotal += model.ModelingStepsize;
 };
 
-const buildExecutionList = function () {
+const prepareForExecution = function () {
+  // empty the execution list
   model.ExecutionList = {};
+
+  // iterate over the models and add the models which should be executed to the list
   Object.values(model.Models).forEach((model_comp) => {
     if (model_comp.IsEnabled) {
       let key = model_comp.Name;
       model.ExecutionList[key] = model_comp;
     }
   });
+
+  // build the dependency list
+  buildDependencyList();
+
+  // check the dependencies against the execution list
+  let check_result = checkDependencies();
+
+  // handle the check result
+  if (check_result.length > 0) {
+    postMessage({
+      type: "status",
+      message: `dependency error`,
+      payload: check_result,
+    });
+    // flag that the execution list needs to be rebuild as there were errors
+    rebuildExecutionList = true;
+    return false;
+  }
+
+  // flag that the execution list does not have to be rebuilt
+  rebuildExecutionList = false;
+
+  // return that everything went well
+  return true;
 };
 
 const checkDependencies = function () {
@@ -540,15 +573,7 @@ const checkDependencies = function () {
     }
   });
 
-  if (dep_not_found.length > 0) {
-    postMessage({
-      type: "status",
-      message: `dependency error`,
-      payload: dep_not_found,
-    });
-    return false;
-  }
-  return true;
+  return dep_not_found;
 };
 
 const buildDependencyList = function () {
@@ -565,10 +590,6 @@ const buildDependencyList = function () {
     );
   });
 };
-
-const addToExecutionList = function () {};
-
-const removeFromExecutionList = function () {};
 
 const modelStepRt = function () {
   // so the rt_interval determines how often the model is calculated

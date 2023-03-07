@@ -462,6 +462,7 @@ export default {
     },
     statusUpdate() {
       this.statusMessage = "STATUS: " + explain.statusMessage;
+
       if (this.statusMessage.includes("dependency error")) {
         this.calcRunning = false;
         this.butCalcCaption = "CALCULATE";
