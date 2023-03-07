@@ -39,4 +39,12 @@ export default class ModelBaseClass {
 
   // calculate step
   CalcModel() {}
+
+  Enable() {
+    this.IsEnabled = true;
+  }
+
+  Disable() {
+    this.IsEnabled = false;
+  }
 }

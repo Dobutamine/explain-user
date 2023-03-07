@@ -66,6 +66,11 @@ export class Ecls extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push("OUT");
+    this.Dependencies.push(this.DrainageSite);
+    this.Dependencies.push(this.ReturnSite);
+
     // get the outside air gas compartment
     this._outside = this._modelEngine.Models["OUT"];
 
@@ -243,6 +248,7 @@ export class Ecls extends ModelBaseClass {
       this._modelEngine.Models[this._oxy_TubingOut.Name] = this._oxy_TubingOut;
     }
   }
+
   SetTubingOutReturn() {
     // calculate the cannula resistance
     let cannulaResistance = this.CalcResistance(
@@ -269,6 +275,7 @@ export class Ecls extends ModelBaseClass {
         this._tubingOut_ReturnSite;
     }
   }
+
   SetOxygenator() {
     this._oxygenator.InitModel([
       { key: "Description", value: "Ecls oxygenator" },
@@ -294,6 +301,7 @@ export class Ecls extends ModelBaseClass {
       this._modelEngine.Models[this._oxygenator.Name] = this._oxygenator;
     }
   }
+
   SetBloodPump() {
     this._bloodPump.InitModel([
       { key: "Description", value: "Ecls pump" },
@@ -317,6 +325,7 @@ export class Ecls extends ModelBaseClass {
       this._modelEngine.Models[this._bloodPump.Name] = this._bloodPump;
     }
   }
+
   SetTubingIn() {
     // calculate the properties of the tubing
     let tubingVolume =
@@ -370,6 +379,7 @@ export class Ecls extends ModelBaseClass {
       this._modelEngine.Models[this._tubingOut.Name] = this._tubingOut;
     }
   }
+
   SetGasMixture() {
     let sum = 1.0 - this.FiCo2 - this.FiO2;
     this.Fn2Dry = 0;
@@ -390,6 +400,7 @@ export class Ecls extends ModelBaseClass {
       this.FotherDry
     );
   }
+
   CalcResistance(diameter, length) {
     // calculate the resistance of the cannula where the cannula is modeled as a perfect tube with a diameter and a length in millimeters
     // the viscosity is in centiPoise
@@ -509,6 +520,7 @@ export class Ecls extends ModelBaseClass {
     this._oxygenator._co2In.RBack = resCo2;
     // temp
   }
+
   CalcPostOxyGas() {
     // calculate the acid base and oxygenation properties of chemoreceptor site
     let ab = this._modelEngine.Models.AcidBase.calc_acid_base(
@@ -530,6 +542,7 @@ export class Ecls extends ModelBaseClass {
       this._modelEngine.Models["EclsTubingOut"].So2 = ad_oxy.So2;
     }
   }
+
   CalcModel() {
     // set the pres0 on the ecls compartments depending on the bed height
     this._bloodPump.Pres0 = -this._bedHeightPressureDrop;

@@ -29,6 +29,21 @@ export class AutonomicNervousSystem extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push(this.BaroreceptorLocation);
+    this.Dependencies.push(this.ChemoreceptorLocation);
+    this.Dependencies.push(this.HeartModelName);
+    this.Dependencies.push(this.BreathingModelName);
+    this.LungCompartments.forEach((c) => {
+      this.Dependencies.push(c);
+    });
+    this.SystemicResistors.forEach((c) => {
+      this.Dependencies.push(c);
+    });
+    this.UnstressedVolumes.forEach((c) => {
+      this.Dependencies.push(c);
+    });
+
     // set the flag to model is initialized
     this._is_initialized = true;
 
@@ -136,7 +151,7 @@ export class AutonomicNervousSystem extends ModelBaseClass {
 
   CalcAutonomicControl() {
     // calculate the acid base and oxygenation properties of chemoreceptor site
-    let ab = this._modelEngine.Models.AcidBase.calc_acid_base(
+    let ab = this._modelEngine.Models.AcidBase.CalcAcidBase(
       this._baroreceptor.Tco2
     );
 
@@ -146,7 +161,7 @@ export class AutonomicNervousSystem extends ModelBaseClass {
       this._chemoreceptor.Hco3 = ab.Hco3;
     }
 
-    let oxy = this._modelEngine.Models.Oxygenation.calc_oxygenation(
+    let oxy = this._modelEngine.Models.Oxygenation.CalcOxygenation(
       this._baroreceptor.To2
     );
 

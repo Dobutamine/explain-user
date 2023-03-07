@@ -47,8 +47,8 @@ export default class Model {
 
   addToTaskScheduler(new_task) {
     this.sendMessage({
-      type: "command",
-      message: "add_task",
+      type: "add_task",
+      message: "",
       payload: [JSON.stringify(new_task)],
     });
   }
@@ -60,8 +60,8 @@ export default class Model {
   start() {
     // start realtime model
     this.sendMessage({
-      type: "command",
-      message: "start",
+      type: "start",
+      message: "",
       payload: [],
     });
   }
@@ -69,47 +69,47 @@ export default class Model {
   stop() {
     // stop the realtime model
     this.sendMessage({
-      type: "command",
-      message: "stop",
+      type: "stop",
+      message: "",
       payload: [],
     });
   }
 
   calculate(time_to_calculate) {
     this.sendMessage({
-      type: "command",
-      message: "calculate",
+      type: "calculate",
+      message: "",
       payload: [time_to_calculate],
     });
   }
 
   watchModelProperties(propsArray) {
     this.sendMessage({
-      type: "command",
-      message: "watch_props",
+      type: "watch_props",
+      message: "",
       payload: propsArray,
     });
   }
   watchModelPropertiesSlow(propsArray) {
     this.sendMessage({
-      type: "command",
-      message: "watch_props_slow",
+      type: "watch_props_slow",
+      message: "",
       payload: propsArray,
     });
   }
 
   watchModelProperty(model, prim_prop, sec_prop) {
     this.sendMessage({
-      type: "command",
-      message: "watch",
+      type: "watch",
+      message: "",
       payload: [model, prim_prop, sec_prop],
     });
   }
 
   unwatchModelProperty(model, prim_prop, sec_prop) {
     this.sendMessage({
-      type: "command",
-      message: "unwatch",
+      type: "unwatch",
+      message: "",
       payload: [model, prim_prop, sec_prop],
     });
   }
@@ -125,16 +125,16 @@ export default class Model {
   setModelProperties(newProperties) {
     // newProperties is an array of ojects containing the new settings with form {m: model, p: prop, v: value, at: time, it: time}
     this.sendMessage({
-      type: "set",
-      message: "prop",
+      type: "set_prop",
+      message: "",
       payload: newProperties,
     });
   }
 
   getModelState() {
     this.sendMessage({
-      type: "get",
-      message: "state",
+      type: "get_state",
+      message: "",
       payload: [],
     });
   }
@@ -157,15 +157,32 @@ export default class Model {
 
   getModelData() {
     this.sendMessage({
-      type: "get",
-      message: "data",
+      type: "get_data",
+      message: "",
       payload: [],
     });
   }
+
+  enableModel(model) {
+    this.sendMessage({
+      type: "enable",
+      message: "",
+      payload: [model],
+    });
+  }
+
+  disableModel(model) {
+    this.sendMessage({
+      type: "disable",
+      message: "",
+      payload: [model],
+    });
+  }
+
   initModelEngine(engine_definition) {
     this.sendMessage({
-      type: "command",
-      message: "init_engine",
+      type: "init_engine",
+      message: "",
       payload: [JSON.stringify(engine_definition)],
     });
   }
@@ -173,8 +190,8 @@ export default class Model {
   injectModelDefinition(explain_definition) {
     // build explain_definition object
     this.sendMessage({
-      type: "command",
-      message: "load_definition",
+      type: "load_definition",
+      message: "",
       payload: [JSON.stringify(explain_definition)],
     });
   }

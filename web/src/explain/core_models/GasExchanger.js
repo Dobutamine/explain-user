@@ -18,6 +18,10 @@ export class GasExchanger extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push(this.CompBlood);
+    this.Dependencies.push(this.CompGas);
+
     // set the flag to model is initialized
     this._is_initialized = true;
   }
@@ -31,8 +35,8 @@ export class GasExchanger extends ModelBaseClass {
     let pco2_blood = 0;
 
     // calculate the partial pressures of oxygen and carbon dioxide from the total content
-    let ab = this._modelEngine.Models.AcidBase.calc_acid_base(tco2_blood);
-    let oxy = this._modelEngine.Models.Oxygenation.calc_oxygenation(to2_blood);
+    let ab = this._modelEngine.Models.AcidBase.CalcAcidBase(tco2_blood);
+    let oxy = this._modelEngine.Models.Oxygenation.CalcOxygenation(to2_blood);
 
     if (!oxy.Error) {
       po2_blood = oxy.Po2;

@@ -18,6 +18,13 @@ export class Diffusor extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    // clear and refill the dependencies
+    this.Dependencies = [];
+
+    // push the dependencies
+    this.Dependencies.push(this.CompBlood1);
+    this.Dependencies.push(this.CompBlood2);
+
     // set the flag to model is initialized
     this._is_initialized = true;
   }

@@ -14,6 +14,18 @@ export class Gas extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    // clear and refill the dependencies
+    this.Dependencies = [];
+
+    // push the dependencies
+    this.Dependencies.push("OUT");
+    Object.keys(this.HumiditySettings).forEach((h) => {
+      this.Dependencies.push(h);
+    });
+    Object.keys(this.TempSettings).forEach((h) => {
+      this.Dependencies.push(h);
+    });
+
     // set the flag to model is initialized
     this._is_initialized = true;
 

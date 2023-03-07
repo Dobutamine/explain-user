@@ -38,7 +38,7 @@ export class Oxygenation extends ModelBaseClass {
     this._is_initialized = true;
   }
 
-  calc_oxygenation(
+  CalcOxygenation(
     to2,
     hb = 8.0,
     temp = 37.0,
@@ -63,7 +63,7 @@ export class Oxygenation extends ModelBaseClass {
 
     // the brent root finding returns a tuple (result: float, iterations: float, error: bool)
     let r = Brent(
-      (po2) => this.oxygen_content(po2),
+      (po2) => this.OxygenContent(po2),
       this._left_o2,
       this._right_o2,
       this._max_iterations,
@@ -81,9 +81,9 @@ export class Oxygenation extends ModelBaseClass {
     return r;
   }
 
-  oxygen_content(po2) {
+  OxygenContent(po2) {
     // calculate the saturation from the current po2 from the current po2 estimate
-    this._so2 = this.oxygen_dissociation_curve(po2);
+    this._so2 = this.OxygenDissociationCurve(po2);
 
     // store the current po2 estimate as mmHg
     this._po2 = po2 / 0.13333;
@@ -110,7 +110,7 @@ export class Oxygenation extends ModelBaseClass {
     return dto2;
   }
 
-  oxygen_dissociation_curve(po2) {
+  OxygenDissociationCurve(po2) {
     // calculate the saturation from the po2 depending on the ph, be, temperature and dpg level.
     let a =
       1.04 * (7.4 - this._ph) + 0.005 * this._be + 0.07 * (this._dpg - 5.0);

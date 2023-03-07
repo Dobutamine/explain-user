@@ -43,7 +43,7 @@ export class AcidBase extends ModelBaseClass {
   }
 
   // calculate step
-  calc_acid_base(tco2, sid = 35.9, alb = 25.0, pi = 1.64, u = 0.0) {
+  CalcAcidBase(tco2, sid = 35.9, alb = 25.0, pi = 1.64, u = 0.0) {
     // declare a new blood gas instance
     let _result = new BloodGas();
 

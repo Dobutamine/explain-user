@@ -29,6 +29,10 @@ export class GasResistor extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push(this.CompFrom);
+    this.Dependencies.push(this.CompTo);
+
     // set the flag to model is initialized
     this._is_initialized = true;
 

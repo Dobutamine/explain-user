@@ -100,6 +100,10 @@ export class MechanicalVentilator extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push("DS");
+    this.Dependencies.push("OUT");
+
     // instantiate the internal ventilator compliance
     if (!this._modelEngine.Models.VentIn) {
       this._modelEngine.Models.VentIn = new GasCompliance(

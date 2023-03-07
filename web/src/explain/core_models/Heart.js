@@ -59,6 +59,13 @@ export class Heart extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push(this.RightAtrium);
+    this.Dependencies.push(this.LeftAtrium);
+    this.Dependencies.push(this.RightVentricle);
+    this.Dependencies.push(this.LeftVentricle);
+    this.Dependencies.push(this.Coronaries);
+
     // set the flag to model is initialized
     this._is_initialized = true;
 

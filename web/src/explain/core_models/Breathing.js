@@ -25,6 +25,13 @@ export class Breathing extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push("MOUTH_DS");
+    this.Dependencies.push(this.TidalVolumeSource);
+    this.Targets.forEach((t) => {
+      this.Dependencies.push(t);
+    });
+
     // set the flag to model is initialized
     this._is_initialized = true;
   }

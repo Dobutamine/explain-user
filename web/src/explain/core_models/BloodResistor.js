@@ -35,6 +35,13 @@ export class BloodResistor extends ModelBaseClass {
     // find the blood components which this resistors connects to
     this._comp_from = this._modelEngine.Models[this.CompFrom];
     this._comp_to = this._modelEngine.Models[this.CompTo];
+
+    // clear and refill the dependencies
+    this.Dependencies = [];
+
+    // push the depencies
+    this.Dependencies.push(this.CompFrom);
+    this.Dependencies.push(this.CompTo);
   }
 
   CalcModel() {

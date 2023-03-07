@@ -67,6 +67,10 @@ export class Placenta extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push("AD");
+    this.Dependencies.push("IVCI");
+
     this._fetalPlacenta = new BloodCompliance(
       this._modelEngine,
       "FetalPlacenta",

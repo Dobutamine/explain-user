@@ -33,6 +33,7 @@ let model = {
   DependencyList: [],
 };
 
+// flag to rebuild the execution list
 let rebuildExecutionList = true;
 
 // declare a model engine object holding the engine properties
@@ -62,108 +63,121 @@ let rtClock = null;
 onmessage = function (e) {
   switch (e.data.type) {
     // command types
-    case "command":
-      if (e.data.message == "add_task") {
-        addTaskToScheduler(JSON.parse(e.data.payload[0]));
-        break;
-      }
-      if (e.data.message == "init_engine") {
-        initEngine(JSON.parse(e.data.payload[0]));
-        break;
-      }
-      if (e.data.message == "load_definition") {
-        initModel(JSON.parse(e.data.payload[0]));
-        break;
-      }
-      if (e.data.message == "start") {
-        start();
-        break;
-      }
-      if (e.data.message == "stop") {
-        stop();
-        break;
-      }
-      if (e.data.message == "calculate") {
-        calculate(e.data.payload[0]);
-        break;
-      }
-      if (e.data.message == "watch") {
-        let prop = {
-          label: e.data.payload[0] + "." + e.data.payload[1],
-          model: model.Models[e.data.payload[0]],
-          prop: e.data.payload[1],
+    case "add_task":
+      addTaskToScheduler(JSON.parse(e.data.payload[0]));
+      break;
+
+    case "init_engine":
+      initEngine(JSON.parse(e.data.payload[0]));
+      break;
+
+    case "load_definition":
+      initModel(JSON.parse(e.data.payload[0]));
+      break;
+
+    case "start":
+      start();
+      break;
+
+    case "stop":
+      stop();
+      break;
+
+    case "calculate":
+      calculate(e.data.payload[0]);
+      break;
+
+    case "watch":
+      let prop = {
+        label: e.data.payload[0] + "." + e.data.payload[1],
+        model: model.Models[e.data.payload[0]],
+        prop: e.data.payload[1],
+      };
+      model.DataCollector.add_to_watchlist(prop);
+      break;
+
+    case "watch_props":
+      e.data.payload.forEach((prop) => {
+        let propsSplit = prop.split(".");
+        let secProp = "";
+        if (propsSplit.length == 3) {
+          secProp = propsSplit[2];
+        }
+        let processedProp = {
+          label: prop,
+          model: model.Models[propsSplit[0]],
+          prop: propsSplit[1],
+          secProp: secProp,
         };
-        model.DataCollector.add_to_watchlist(prop);
-
-        break;
-      }
-      if (e.data.message == "watch_props") {
-        e.data.payload.forEach((prop) => {
-          let propsSplit = prop.split(".");
-          let secProp = "";
-          if (propsSplit.length == 3) {
-            secProp = propsSplit[2];
-          }
-          let processedProp = {
-            label: prop,
-            model: model.Models[propsSplit[0]],
-            prop: propsSplit[1],
-            secProp: secProp,
-          };
-          try {
-            model.DataCollector.add_to_watchlist(processedProp);
-          } catch {}
-        });
-
-        break;
-      }
-      if (e.data.message == "watch_props_slow") {
-        e.data.payload.forEach((prop) => {
-          let propsSplit = prop.split(".");
-          let secProp = "";
-          if (propsSplit.length == 3) {
-            secProp = propsSplit[2];
-          }
-          let processedProp = {
-            label: prop,
-            model: model.Models[propsSplit[0]],
-            prop: propsSplit[1],
-            secProp: secProp,
-          };
-          try {
-            model.DataCollector.add_to_watchlist_slow(processedProp);
-          } catch {}
-        });
-
-        break;
-      }
+        try {
+          model.DataCollector.add_to_watchlist(processedProp);
+        } catch {}
+      });
       break;
 
-    case "get":
-      if (e.data.message == "state") {
-        getModelState();
-        break;
-      }
-      if (e.data.message == "data") {
-        getModelData();
-        break;
-      }
-      if (e.data.message == "prop") {
-        getProperty(e.data.payload[0], e.data.payload[1]);
-        break;
-      }
+    case "watch_props_slow":
+      e.data.payload.forEach((prop) => {
+        let propsSplit = prop.split(".");
+        let secProp = "";
+        if (propsSplit.length == 3) {
+          secProp = propsSplit[2];
+        }
+        let processedProp = {
+          label: prop,
+          model: model.Models[propsSplit[0]],
+          prop: propsSplit[1],
+          secProp: secProp,
+        };
+        try {
+          model.DataCollector.add_to_watchlist_slow(processedProp);
+        } catch {}
+      });
       break;
 
-    case "set":
-      if (e.data.message == "prop") {
-        setProperties(e.data.payload);
-        break;
-      }
+    case "get_data":
+      getModelData();
       break;
+
+    case "get_state":
+      getModelState();
+      break;
+
+    case "get_prop":
+      getProperty(e.data.payload[0], e.data.payload[1]);
+      break;
+
+    case "set_prop":
+      setProperties(e.data.payload);
+      break;
+
     case "rewire":
       if (e.data.message == "resistor") {
         rewireResistor(e.data.payload);
       }
+      break;
+
+    case "enable":
+      let m_enabled = e.data.payload[0];
+      model.Models[m_enabled].Enable();
+      rebuildExecutionList = true;
+      console.log("enabled model ", m_enabled);
+      break;
+
+    case "disable":
+      let m_disabled = e.data.payload[0];
+      model.Models[m_disabled].Disable();
+      rebuildExecutionList = true;
+      console.log("disabled model ", m_disabled);
+      break;
+
+    case "call":
+      let model_call = e.data.payload[0];
+      let method_call = e.data.payload[1];
+      let args = e.data.payload[2];
+      model.Models[model_call][method_call](args);
+      console.log(
+        `called method ${method_call} on model ${model_call} with args ${args}`
+      );
       break;
   }
 };
@@ -178,6 +192,7 @@ const addTaskToScheduler = function (new_task) {
 const initEngine = function (engine_definition) {
   modelEngine = engine_definition;
 };
+
 const start = function () {
   // start the model in realtime
   if (modelInitialized) {
@@ -345,18 +360,6 @@ const getModelDataRt = function () {
     type: "rt",
     message: "",
     payload: [modelData],
-  });
-};
-
-const getModelDataRtSlow = function () {
-  // refresh the model data on the model instance
-  modelDataSlow = model.DataCollector.get_model_data_slow();
-
-  // send data to the ui
-  postMessage({
-    type: "rt",
-    message: "",
-    payload: [modelDataSlow],
   });
 };
 

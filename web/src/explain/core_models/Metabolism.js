@@ -8,6 +8,10 @@ export class Metabolism extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    Object.keys(this.MetabolicActiveModels).forEach((m) =>
+      this.Dependencies.push(m)
+    );
     // set the flag to model is initialized
     this._is_initialized = true;
   }

@@ -17,6 +17,9 @@ export class Pda extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    this.Dependencies = [];
+    this.Dependencies.push(this.Model);
+
     // set the flag to model is initialized
     this._is_initialized = true;
 

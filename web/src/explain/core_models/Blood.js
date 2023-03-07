@@ -28,7 +28,7 @@ export class Blood extends ModelBaseClass {
       this._updateCounter = 0;
 
       // calculate the acid base and oxygenation properties of chemoreceptor site
-      let ab = this._modelEngine.Models.AcidBase.calc_acid_base(
+      let ab = this._modelEngine.Models.AcidBase.CalcAcidBase(
         this._modelEngine.Models["AD"].Tco2
       );
 
@@ -38,7 +38,7 @@ export class Blood extends ModelBaseClass {
         this._modelEngine.Models["AD"].Hco3 = ab.Hco3;
       }
 
-      let ad_oxy = this._modelEngine.Models.Oxygenation.calc_oxygenation(
+      let ad_oxy = this._modelEngine.Models.Oxygenation.CalcOxygenation(
         this._modelEngine.Models["AD"].To2
       );
       // store the results of the calculations
