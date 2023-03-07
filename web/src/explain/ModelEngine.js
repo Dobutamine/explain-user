@@ -241,6 +241,9 @@ const calculate = function (timeToCalculate = 10.0) {
   // build the execution list
   exec_check = prepareForExecution();
 
+  // clean up the datacollector
+  cleanDataCollector();
+
   // if the dependency or execution list composition check fails return and don't execute the model run
   if (!exec_check) {
     return;
@@ -610,6 +613,25 @@ const buildDependencyList = function () {
     // remove duplicates
     model.DependencyList = depList.filter(
       (item, index) => depList.indexOf(item) === index
+    );
+  });
+};
+
+// clean up datacollector
+const cleanDataCollector = function () {
+  model.DataCollector.watch_list.forEach((prop, index) => {
+    console.log(
+      prop.model.Name,
+      Object.keys(model.ExecutionList).includes(prop.model.Name),
+      index
+    );
+  });
+
+  model.DataCollector.watch_list_slow.forEach((prop, index) => {
+    console.log(
+      prop.model.Name,
+      Object.keys(model.ExecutionList).includes(prop.model.Name),
+      index
     );
   });
 };

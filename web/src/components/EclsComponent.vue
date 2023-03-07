@@ -497,6 +497,12 @@ export default {
           it: 0.0,
         },
       ]);
+
+      if (this.ecls) {
+        explain.enable("Ecls");
+      } else {
+        explain.disable("Ecls");
+      }
     },
 
     stateUpdate(state) {

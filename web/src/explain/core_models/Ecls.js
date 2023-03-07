@@ -60,6 +60,38 @@ export class Ecls extends ModelBaseClass {
 
   OER = 0.0;
 
+  Enable() {
+    this.IsEnabled = true;
+
+    this._tubingIn.IsEnabled = true;
+    this._bloodPump.IsEnabled = true;
+    this._oxygenator.IsEnabled = true;
+    this._oxygenator.Enable();
+    this._tubingOut.IsEnabled = true;
+
+    this._drainageSite_TubingIn.IsEnabled = true;
+    this._tubingIn_Pump.IsEnabled = true;
+    this._bloodPump_Oxy.IsEnabled = true;
+    this._oxy_TubingOut.IsEnabled = true;
+    this._tubingOut_ReturnSite.IsEnabled = true;
+  }
+
+  Disable() {
+    this.IsEnabled = false;
+
+    this._tubingIn.IsEnabled = false;
+    this._bloodPump.IsEnabled = false;
+    this._oxygenator.IsEnabled = false;
+    this._oxygenator.Disable();
+    this._tubingOut.IsEnabled = false;
+
+    this._drainageSite_TubingIn.IsEnabled = false;
+    this._tubingIn_Pump.IsEnabled = false;
+    this._bloodPump_Oxy.IsEnabled = false;
+    this._oxy_TubingOut.IsEnabled = false;
+    this._tubingOut_ReturnSite.IsEnabled = false;
+  }
+
   InitModel(args) {
     // process the arguments/parameters
     args.forEach((arg) => {
@@ -523,7 +555,7 @@ export class Ecls extends ModelBaseClass {
 
   CalcPostOxyGas() {
     // calculate the acid base and oxygenation properties of chemoreceptor site
-    let ab = this._modelEngine.Models.AcidBase.calc_acid_base(
+    let ab = this._modelEngine.Models.AcidBase.CalcAcidBase(
       this._modelEngine.Models["EclsTubingOut"].Tco2
     );
 
@@ -533,7 +565,7 @@ export class Ecls extends ModelBaseClass {
       this._modelEngine.Models["EclsTubingOut"].Hco3 = ab.Hco3;
     }
 
-    let ad_oxy = this._modelEngine.Models.Oxygenation.calc_oxygenation(
+    let ad_oxy = this._modelEngine.Models.Oxygenation.CalcOxygenation(
       this._modelEngine.Models["EclsTubingOut"].To2
     );
     // store the results of the calculations

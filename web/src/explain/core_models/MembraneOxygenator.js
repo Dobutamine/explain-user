@@ -60,6 +60,30 @@ export class MembraneOxygenator extends ModelBaseClass {
   _gasOut = {};
   _gasExchanger = {};
 
+  Enable() {
+    this.IsEnabled = true;
+
+    this._gasSource.IsEnabled = true;
+    this._co2Source.IsEnabled = true;
+    this._gasIn.IsEnabled = true;
+    this._co2In.IsEnabled = true;
+    this._gasCompartment.IsEnabled = true;
+    this._gasOut.IsEnabled = true;
+    this._gasExchanger.IsEnabled = true;
+  }
+
+  Disable() {
+    this.IsEnabled = false;
+
+    this._gasSource.IsEnabled = false;
+    this._co2Source.IsEnabled = false;
+    this._gasIn.IsEnabled = false;
+    this._co2In.IsEnabled = false;
+    this._gasCompartment.IsEnabled = false;
+    this._gasOut.IsEnabled = false;
+    this._gasExchanger.IsEnabled = false;
+  }
+
   // model initializer
   InitModel(args) {
     // process the arguments/parameters
