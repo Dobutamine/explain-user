@@ -29,6 +29,8 @@ Object.values(models).forEach((model) => available_models.push(model));
 // declare a model object holding the current model
 let model = {
   Models: {},
+  ExecutionList: {},
+  DependencyList: [],
 };
 
 // declare a model engine object holding the engine properties
@@ -373,6 +375,8 @@ const initModel = function (model_definition) {
   // clear current model object
   model = {
     Models: {},
+    ExecutionList: {},
+    DependencyList: [],
   };
 
   // clear model data
@@ -431,20 +435,14 @@ const initModel = function (model_definition) {
       Object.values(model.Models).forEach((model_comp) => {
         // // find the arguments for the model in the model definition
         let args = [];
-        let isEnabled = false;
         for (const [key, value] of Object.entries(
           modelDefinition.Models[model_comp.Name]
         )) {
-          if (key === "IsEnabled" && value === true) {
-            isEnabled = true;
-          }
           args.push({ key, value });
         }
         // set the arguments
         try {
-          if (isEnabled) {
-            model_comp.InitModel(args);
-          }
+          model_comp.InitModel(args);
         } catch (e) {
           console.log(`Error initializing model ${model_comp.Name}`);
           console.log(e);
@@ -455,6 +453,11 @@ const initModel = function (model_definition) {
           });
         }
       });
+      // build the execution and dependencies list
+      if (!error) {
+        buildExecutionList();
+        buildDependencyList();
+      }
 
       // add a datacollector instance to the model object
       model["DataCollector"] = new DataCollector(model);
@@ -465,13 +468,13 @@ const initModel = function (model_definition) {
       // if no error signal the parent that everything went ok
       modelInitialized = true;
 
+      console.log(model);
       // update the status
       postMessage({
         type: "status",
         message: "Model engine initialized!",
         payload: [model],
       });
-      console.log(model);
     }
   } catch (e) {
     // if error signal the parent that there was an error
@@ -499,6 +502,35 @@ const modelStep = function () {
   // increase the model time
   model.ModelTimeTotal += model.ModelingStepsize;
 };
+
+const buildExecutionList = function () {
+  model.ExecutionList = {};
+  Object.values(model.Models).forEach((model_comp) => {
+    if (model_comp.IsEnabled) {
+      let key = model_comp.Name;
+      model.ExecutionList[key] = model_comp;
+    }
+  });
+};
+
+const buildDependencyList = function () {
+  model.DependencyList = [];
+  let depList = [];
+  Object.values(model.ExecutionList).forEach((model_comp) => {
+    // // process the dependencies
+    model_comp.Dependencies.forEach((dep) => {
+      depList.push(dep);
+    });
+    // remove duplicates
+    model.DependencyList = depList.filter(
+      (item, index) => depList.indexOf(item) === index
+    );
+  });
+};
+
+const addToExecutionList = function () {};
+
+const removeFromExecutionList = function () {};
 
 const modelStepRt = function () {
   // so the rt_interval determines how often the model is calculated

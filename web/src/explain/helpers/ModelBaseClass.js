@@ -5,6 +5,8 @@ export default class ModelBaseClass {
   Description = "";
   IsEnabled = false;
   Description = "";
+  Dependencies = [];
+
   // common local parameters
   _modelEngine = {};
   _t = 0.0005;
