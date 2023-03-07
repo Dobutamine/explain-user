@@ -462,9 +462,19 @@ export default {
     },
     statusUpdate() {
       this.statusMessage = "STATUS: " + explain.statusMessage;
+      if (this.statusMessage.includes("dependency error")) {
+        this.calcRunning = false;
+        this.butCalcCaption = "CALCULATE";
+        this.butCalcColor = "white";
+        this.rtState = false;
+        this.butColor = "white";
+        this.butIcon = "fa-solid fa-play";
+        this.butCaption = "PLAY";
+      }
 
       this.calculationReady();
     },
+
     togglePlay() {
       this.rtState = !this.rtState;
       if (this.rtState) {

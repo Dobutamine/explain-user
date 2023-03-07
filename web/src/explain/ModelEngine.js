@@ -174,6 +174,11 @@ const initEngine = function (engine_definition) {
   modelEngine = engine_definition;
 };
 const start = function () {
+  // first check the dependencies of the execution list
+  let dep_check = checkDependencies();
+  if (!dep_check) {
+    return;
+  }
   // start the model in realtime
   if (modelInitialized) {
     // call the modelStep every rt_interval seconds
@@ -207,6 +212,12 @@ const stop = function () {
 };
 
 const calculate = function (timeToCalculate = 10.0) {
+  // first check the dependencies of the execution list
+  let dep_check = checkDependencies();
+
+  if (!dep_check) {
+    return;
+  }
   // calculate a number of seconds of the model
   if (modelInitialized) {
     let noOfSteps = timeToCalculate / model.ModelingStepsize;
@@ -489,7 +500,7 @@ const initModel = function (model_definition) {
 
 const modelStep = function () {
   // iterate over all models
-  Object.values(model.Models).forEach((model_component) => {
+  Object.values(model.ExecutionList).forEach((model_component) => {
     model_component.StepModel();
   });
 
@@ -511,6 +522,33 @@ const buildExecutionList = function () {
       model.ExecutionList[key] = model_comp;
     }
   });
+};
+
+const checkDependencies = function () {
+  let dep_not_found = [];
+  // check whether the models in the executionlist match the dependency list
+  model.DependencyList.forEach((dep) => {
+    // check whether this dependency is in the execution list
+    let dep_found = false;
+    Object.values(model.ExecutionList).forEach((model_comp) => {
+      if (model_comp.Name === dep) {
+        dep_found = true;
+      }
+    });
+    if (!dep_found) {
+      dep_not_found.push(dep);
+    }
+  });
+
+  if (dep_not_found.length > 0) {
+    postMessage({
+      type: "status",
+      message: `dependency error`,
+      payload: dep_not_found,
+    });
+    return false;
+  }
+  return true;
 };
 
 const buildDependencyList = function () {

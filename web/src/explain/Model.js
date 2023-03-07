@@ -184,7 +184,13 @@ export default class Model {
       this.modelEngine.onmessage = (e) => {
         switch (e.data.type) {
           case "status":
-            this.statusMessage = e.data.message;
+            if (e.data.message.includes("dependency error")) {
+              this.statusMessage =
+                "dependency error: (" + e.data.payload.toString() + ")";
+            } else {
+              this.statusMessage = e.data.message;
+            }
+
             this.statusLog.push(e.data.message);
             if (this.statusLog.length > this.maxStatusLog) {
               this.statusLog.shift();
