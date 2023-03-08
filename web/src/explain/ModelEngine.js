@@ -241,13 +241,13 @@ const calculate = function (timeToCalculate = 10.0) {
   // build the execution list
   exec_check = prepareForExecution();
 
-  // clean up the datacollector
-  cleanDataCollector();
-
   // if the dependency or execution list composition check fails return and don't execute the model run
   if (!exec_check) {
     return;
   }
+
+  // clean up the datacollector
+  model.DataCollector.clean_up();
 
   // calculate a number of seconds of the model
   if (modelInitialized) {
@@ -615,24 +615,6 @@ const buildDependencyList = function () {
       (item, index) => depList.indexOf(item) === index
     );
   });
-};
-
-// clean up datacollector
-const cleanDataCollector = function () {
-  // model.DataCollector.watch_list.forEach((prop, index) => {
-  //   console.log(
-  //     prop.model.Name,
-  //     Object.keys(model.ExecutionList).includes(prop.model.Name),
-  //     index
-  //   );
-  // });
-  // model.DataCollector.watch_list_slow.forEach((prop, index) => {
-  //   console.log(
-  //     prop.model.Name,
-  //     Object.keys(model.ExecutionList).includes(prop.model.Name),
-  //     index
-  //   );
-  // });
 };
 
 // do a realtime model step

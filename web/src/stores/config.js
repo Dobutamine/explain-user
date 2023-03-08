@@ -168,7 +168,6 @@ export const useConfigStore = defineStore("config", {
           });
         }
       });
-
       explain.watchModelProperties(propIdsCharts);
       explain.watchModelPropertiesSlow(propIdsMonitors);
     },

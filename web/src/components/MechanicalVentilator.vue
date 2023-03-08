@@ -328,7 +328,15 @@ export default {
         },
       ]);
       if (this.intubated) {
+        // enable the mechanical ventilator
         explain.enable("MechanicalVentilator");
+
+        // request the model for the needed mechanical ventilator feedback
+        explain.watchModelProperties([
+          "MechanicalVentilator.Pres",
+          "MechanicalVentilator.Flow",
+          "MechanicalVentilator.Volume",
+        ]);
       } else {
         explain.disable("MechanicalVentilator");
       }

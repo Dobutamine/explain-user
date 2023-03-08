@@ -114,6 +114,9 @@ export default class GasExchanger {
     this.models.forEach((model) => {
       difO2 += data[model + this.gas];
     });
+    if (isNaN(difO2)) {
+      difO2 = 0.0;
+    }
 
     // calculate factors
     this.rotation += (difO2 / this.models.length) * 10000;

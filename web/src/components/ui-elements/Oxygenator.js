@@ -115,7 +115,9 @@ export default class Oxygenator {
       let factor = volumes[i] / volume;
       this.to2 += factor * to2s[i];
     }
-
+    if (isNaN(volume)) {
+      volume = 0.01;
+    }
     this.volume = this.calculateRadius(volume);
 
     this.sprite.scale.set(

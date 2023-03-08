@@ -102,7 +102,9 @@ export default class Container {
     this.models.forEach((model) => {
       volume += data[model + ".Vol"];
     });
-
+    if (isNaN(volume)) {
+      volume = 0.01;
+    }
     this.volume = this.calculateRadius(volume);
 
     this.sprite.scale.set(

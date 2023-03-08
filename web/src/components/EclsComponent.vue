@@ -260,12 +260,15 @@
 <script>
 import { explain } from "../boot/explain";
 import { useConfigStore } from "src/stores/config";
+import { useDiagramStore } from "src/stores/diagram";
 
 export default {
   setup() {
     const config = useConfigStore();
+    const diagram = useDiagramStore();
     return {
       config,
+      diagram,
     };
   },
   components: {},
@@ -499,6 +502,7 @@ export default {
       ]);
 
       if (this.ecls) {
+        this.diagram.updateDataCollector();
         explain.enable("Ecls");
       } else {
         explain.disable("Ecls");

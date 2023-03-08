@@ -110,6 +110,8 @@ export default class Shunt {
   }
   setEditingMode(newMode) {}
   update(data) {
+    let noData = false;
+
     this.xCenter = this.dbcFrom.xCenter;
     this.yCenter = this.dbcFrom.yCenter;
 
@@ -120,6 +122,12 @@ export default class Shunt {
     this.models.forEach((model) => {
       flow += data[model + ".Flow"];
     });
+
+    if (isNaN(flow)) {
+      flow = 0.0;
+      noData = true;
+    }
+
     this.spritePosition += flow / this.models.length;
 
     if (flow >= 0) {
@@ -128,6 +136,10 @@ export default class Shunt {
     } else {
       direction = Math.PI;
       this.sprite.tint = this.dbcTo.sprite.tint;
+    }
+
+    if (noData) {
+      this.sprite.tint = 0x000000;
     }
 
     // get the position of the dbc's

@@ -120,6 +120,22 @@ export default class DataCollector {
     }
   }
 
+  clean_up() {
+    let disabledModels = [];
+
+    Object.entries(this.watch_list).forEach(([dc_name, dc_item]) => {
+      if (!dc_item.model.IsEnabled) {
+        // remove this item from the data-collector
+        disabledModels.push(dc_name);
+      }
+    });
+
+    // remove the disabled models
+    disabledModels.forEach((dm) => {
+      delete this.watch_list[dm];
+    });
+  }
+
   collect_data(model_clock) {
     // check whether the datacollector update counter has expired
     if (this._interval_counter_slow >= this.sample_interval_slow) {
