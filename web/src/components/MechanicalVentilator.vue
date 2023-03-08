@@ -250,12 +250,15 @@
 <script>
 import { explain } from "../boot/explain";
 import { useConfigStore } from "src/stores/config";
+import { useDiagramStore } from "src/stores/diagram";
 import VentilatorCharts from "./charts/VentilatorCharts.vue";
 export default {
   setup() {
     const config = useConfigStore();
+    const diagram = useDiagramStore();
     return {
       config,
+      diagram,
     };
   },
   components: {
@@ -318,19 +321,21 @@ export default {
           it: 0.0,
         },
       ]);
-      explain.setModelProperties([
-        {
-          m: "EtTube_DS",
-          p: "NoFlow",
-          v: !this.intubated,
-          at: 0.0,
-          it: 0.0,
-        },
-      ]);
+      // explain.setModelProperties([
+      //   {
+      //     m: "EtTube_DS",
+      //     p: "NoFlow",
+      //     v: !this.intubated,
+      //     at: 0.0,
+      //     it: 0.0,
+      //   },
+      // ]);
+
       if (this.intubated) {
         // enable the mechanical ventilator
         explain.enable("MechanicalVentilator");
-
+        this.diagram.updateDataCollector();
+        this.config.updateDataCollector();
         // request the model for the needed mechanical ventilator feedback
         explain.watchModelProperties([
           "MechanicalVentilator.Pres",

@@ -252,10 +252,8 @@ export class MechanicalVentilator extends ModelBaseClass {
   }
   CalcModel() {
     // set the correct FiO2
-
     // calculate the expiration time
     this._expTime = 60.0 / this.VentRate - this.InspTime;
-
     // do the time cycling
     if (this._inspCounter > this.InspTime) {
       // reset the inspiration counter
@@ -264,7 +262,6 @@ export class MechanicalVentilator extends ModelBaseClass {
       this._inspiration = false;
       this._expiration = true;
     }
-
     if (this._expCounter > this._expTime) {
       // reset the expiration counter
       this._expCounter = 0;
@@ -272,7 +269,6 @@ export class MechanicalVentilator extends ModelBaseClass {
       this._inspiration = true;
       this._expiration = false;
     }
-
     // increase the counter
     if (this._inspiration) {
       this._inspCounter += this._t;
@@ -286,10 +282,8 @@ export class MechanicalVentilator extends ModelBaseClass {
       // reset the triggering counter
       this._trigger_counter = 0;
     }
-
     if (this._expiration) {
       this._expCounter += this._t;
-
       // increase the experitory tidal volume
       if (this.FlowSensor.Flow < 0) {
         this._vte_counter += this.FlowSensor.Flow * this._t;
@@ -302,7 +296,6 @@ export class MechanicalVentilator extends ModelBaseClass {
         this.Triggering();
       }
     }
-
     // pressure controlled ventilation
     switch (this.Mode) {
       case "PC":
@@ -321,10 +314,8 @@ export class MechanicalVentilator extends ModelBaseClass {
         this.PressureSupport();
         break;
     }
-
     // analyze breaths and report
     this.Reporting();
-
     // store this state
     this._prevInspiration = this._inspiration;
     this._prevExpiration = this._expiration;
@@ -345,6 +336,7 @@ export class MechanicalVentilator extends ModelBaseClass {
 
     if (this._prevExpiration && this._inspiration) {
       this.SetFiO2();
+
       this.TubeResistance();
       // report vent rate
       this.MeasuredVentRate = 60 / this._vent_rate_counter;

@@ -1,7 +1,7 @@
 import { PIXI } from "src/boot/pixi.js";
 
 export default class GasConnector {
-  compType = "BloodConnector";
+  compType = "GasConnector";
   key = "";
   label = "";
   pixiApp = {};
@@ -12,10 +12,12 @@ export default class GasConnector {
 
   sprite = {};
   spriteColor = 0xffffff;
+  angleCorrection = 0;
 
   path = null;
   pathColor = 0x555555;
   pathWidth = 4;
+  prevPosition = 0;
 
   arc = {
     enabled: false,
@@ -62,7 +64,7 @@ export default class GasConnector {
     this.sprite.anchor = { x: 0.5, y: 0.5 };
     this.sprite.x = this.dbcFrom.sprite.x;
     this.sprite.y = this.dbcFrom.sprite.y;
-    this.sprite.scale.set(0.03, 0.07);
+    this.sprite.scale.set(0.025, 0.07);
     this.sprite.interactive = true;
     this.sprite.on("mouseup", (e) => this.onDragEnd(e));
     this.sprite.on("touchend", (e) => this.onDragEnd(e));
@@ -78,6 +80,7 @@ export default class GasConnector {
     this.dbcFrom.connectors[this.key] = this;
     this.dbcTo.connectors[this.key] = this;
   }
+  setEditingMode(newMode) {}
   onDragEnd(e) {
     document.dispatchEvent(this.edit_comp_event);
   }
@@ -134,31 +137,35 @@ export default class GasConnector {
       );
       let x3 = (this.line.x1 + this.line.x2) / 2;
       let y3 = (this.line.y1 + this.line.y2) / 2;
+
       this.line.xCenter =
         x3 +
         Math.sqrt(radsq - (q / 2) * (q / 2)) *
           ((this.line.y1 - this.line.y2) / q);
+
       this.line.yCenter =
         y3 +
         Math.sqrt(radsq - (q / 2) * (q / 2)) *
           ((this.line.x2 - this.line.x1) / q);
+
       let angle1 =
         Math.atan2(
           this.line.yCenter - this.line.y1,
           this.line.x1 - this.line.xCenter
         ) * 57.2958;
-      if (this.line.yCenter - this.line.y1 > 0) {
+      if (this.line.yCenter - this.line.y1 >= 0) {
         angle1 = 180 + (180 - angle1);
       } else {
         angle1 = -angle1;
       }
       this.line.from = angle1 * 0.0174533;
+
       let angle2 =
         Math.atan2(
           this.line.yCenter - this.line.y2,
           this.line.x2 - this.line.xCenter
         ) * 57.2958;
-      if (this.line.yCenter - this.line.y2 > 0) {
+      if (this.line.yCenter - this.line.y2 >= 0) {
         angle2 = 180 + (180 - angle2);
       } else {
         angle2 = -angle2;
@@ -172,28 +179,36 @@ export default class GasConnector {
         this.line.from,
         this.line.to
       );
+
+      this.angleCorrection = 0;
+      // if the position line.from is greater then line.to we need a correction factor
+      if (this.line.from > this.line.to) {
+        this.angleCorrection = Math.PI * 2.0;
+      }
     }
     this.path.interactive = true;
     this.path.on("mouseup", (e) => this.onDragEnd(e));
     this.path.on("touchend", (e) => this.onDragEnd(e));
     this.pixiApp.stage.addChild(this.path);
   }
-  setEditingMode(newMode) {}
   update(data) {
     let noData = false;
-    let direction = 0;
     this.xCenter = this.dbcFrom.xCenter;
     this.yCenter = this.dbcFrom.yCenter;
 
     // get the speed
     let flow = 0;
+    let direction = 0;
+
     this.models.forEach((model) => {
       flow += data[model + ".Flow"];
     });
+
     if (isNaN(flow)) {
       flow = 0.0;
       noData = true;
     }
+
     this.spritePosition += flow / this.models.length;
 
     if (flow >= 0) {
@@ -203,6 +218,7 @@ export default class GasConnector {
       direction = Math.PI;
       this.sprite.tint = this.dbcTo.sprite.tint;
     }
+
     if (noData) {
       this.sprite.tint = 0x000000;
     }
@@ -222,12 +238,14 @@ export default class GasConnector {
 
     // caulcate the new position if the
     if (this.line.enabled) {
+      // it only looks at x coordinates which why it fails
       if (this.spritePosition > this.line.to) {
-        this.spritePosition = this.line.from;
+        this.spritePosition = this.line.from - this.angleCorrection;
       }
-      if (this.spritePosition < this.line.from) {
+      if (this.spritePosition < this.line.from - this.angleCorrection) {
         this.spritePosition = this.line.to;
       }
+
       this.sprite.x =
         this.line.xCenter + Math.cos(this.spritePosition) * this.line.radius;
       this.sprite.y =
@@ -252,6 +270,7 @@ export default class GasConnector {
     }
 
     this.sprite.rotation = angle + direction;
+    this.prevPosition = this.spritePosition;
 
     this.prevSpriteX = this.sprite.x;
     this.prevSpriteY = this.sprite.y;

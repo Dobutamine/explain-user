@@ -26,8 +26,7 @@ export class Breathing extends ModelBaseClass {
     });
 
     this.Dependencies = [];
-    this.Dependencies.push("MOUTH_DS");
-    this.Dependencies.push(this.TidalVolumeSource);
+    this.Dependencies.push("OUT_DS");
     this.Targets.forEach((t) => {
       this.Dependencies.push(t);
     });
@@ -39,17 +38,17 @@ export class Breathing extends ModelBaseClass {
   SwitchBreathing(state) {
     if (state) {
       this.IsEnabled = true;
-      this._modelEngine.Models["MOUTH_DS"].IsEnabled = true;
-      this._modelEngine.Models["MOUTH_DS"].NoFlow = false;
+      this._modelEngine.Models["OUT_DS"].IsEnabled = true;
+      this._modelEngine.Models["OUT_DS"].NoFlow = false;
     } else {
       this.IsEnabled = false;
-      this._modelEngine.Models["MOUTH_DS"].IsEnabled = false;
-      this._modelEngine.Models["MOUTH_DS"].NoFlow = true;
+      this._modelEngine.Models["OUT_DS"].IsEnabled = false;
+      this._modelEngine.Models["OUT_DS"].NoFlow = true;
     }
   }
   CalcModel() {
     // check whether the patient is intubted
-    this._modelEngine.Models["MOUTH_DS"].NoFlow = this.Intubated;
+    this._modelEngine.Models["OUT_DS"].NoFlow = this.Intubated;
 
     // calculate the respiratory rate and target tidal volume from the target minute volume
     this.VtRrController();
@@ -119,9 +118,9 @@ export class Breathing extends ModelBaseClass {
       this._ncc_insp += 1.0;
 
       // calculate the inspiratory  volume
-      if (this._modelEngine.Models[this.TidalVolumeSource].Flow > 0) {
+      if (this._modelEngine.Models["OUT_DS"].Flow > 0) {
         this._temp_insp_volume +=
-          this._modelEngine.Models[this.TidalVolumeSource].Flow * this._t;
+          this._modelEngine.Models["OUT_DS"].Flow * this._t;
       }
     }
 
@@ -130,9 +129,9 @@ export class Breathing extends ModelBaseClass {
       this._ncc_exp += 1.0;
 
       // calculate the expiratory  volume
-      if (this._modelEngine.Models[this.TidalVolumeSource].Flow < 0) {
+      if (this._modelEngine.Models["OUT_DS"].Flow < 0) {
         this._temp_exp_volume +=
-          this._modelEngine.Models[this.TidalVolumeSource].Flow * this._t;
+          this._modelEngine.Models["OUT_DS"].Flow * this._t;
       }
     }
 
@@ -184,9 +183,9 @@ export class Breathing extends ModelBaseClass {
   ToggleIntubation(intubated) {
     if (intubated) {
       // close connection between dead space and mouth
-      this._modelEngine.Models["MOUTH_DS"].NoFlow = true;
+      this._modelEngine.Models["OUT_DS"].NoFlow = true;
     } else {
-      this._modelEngine.Models["MOUTH_DS"].NoFlow = false;
+      this._modelEngine.Models["OUT_DS"].NoFlow = false;
     }
   }
 }
