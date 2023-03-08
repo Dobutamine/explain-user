@@ -16,7 +16,7 @@ export default class DataCollector {
     // store a reference to the model instance
     this._modelEngine = model_ref;
     // define the watch list
-    this.watch_list = [];
+    this.watch_list = {};
     // define the data sample interval
     this.sample_interval = 0.005;
     this._interval_counter = 0;
@@ -39,11 +39,11 @@ export default class DataCollector {
       this.ncc_atrial = { label: "", model: None, prop: "", secProp: "" };
     }
     // add the two always there
-    this.watch_list.push(this.ncc_atrial);
-    this.watch_list.push(this.ncc_ventricular);
+    this.watch_list[this.ncc_atrial] = this.ncc_atrial;
+    this.watch_list[this.ncc_ventricular] = this.ncc_ventricular;
 
-    this.watch_list_slow.push(this.ncc_atrial);
-    this.watch_list_slow.push(this.ncc_ventricular);
+    this.watch_list_slow[this.ncc_atrial] = this.ncc_atrial;
+    this.watch_list_slow[this.ncc_ventricular] = this.ncc_ventricular;
 
     // define the data list
     this.collected_data = [];
@@ -63,10 +63,10 @@ export default class DataCollector {
     this.clear_data_slow();
 
     // empty the watch list
-    this.watch_list_slow = [];
+    this.watch_list_slow = {};
 
-    this.watch_list_slow.push(this.ncc_atrial);
-    this.watch_list_slow.push(this.ncc_ventricular);
+    this.watch_list_slow[this.ncc_atrial] = this.ncc_atrial;
+    this.watch_list_slow[this.ncc_ventricular] = this.ncc_ventricular;
   }
 
   clear_watchlist() {
@@ -74,11 +74,10 @@ export default class DataCollector {
     this.clear_data();
 
     // empty the watch list
-    this.watch_list = [];
+    this.watch_list = {};
 
-    // add the two always there
-    this.watch_list.push(this.ncc_atrial);
-    this.watch_list.push(this.ncc_ventricular);
+    this.watch_list[this.ncc_atrial] = this.ncc_atrial;
+    this.watch_list[this.ncc_ventricular] = this.ncc_ventricular;
   }
 
   get_model_data() {
@@ -108,9 +107,8 @@ export default class DataCollector {
 
     // check whether the property exists
     if (property.model) {
-      this.watch_list.push(property);
+      this.watch_list[property.label] = property;
     }
-    // add to the watchlist
   }
 
   add_to_watchlist_slow(property) {
@@ -118,7 +116,7 @@ export default class DataCollector {
     this.clear_data();
 
     if (property.model) {
-      this.watch_list_slow.push(property);
+      this.watch_list_slow[property.label] = property;
     }
   }
 
@@ -130,23 +128,18 @@ export default class DataCollector {
       // define a data object
       let data_object = { time: parseFloat(model_clock.toFixed(3)) };
       // iterate over the watchlist
-      for (let i = 0; i < this.watch_list_slow.length; i++) {
-        let value = this.watch_list_slow[i].model[this.watch_list_slow[i].prop];
-        if (this.watch_list_slow[i].secProp) {
-          value =
-            this.watch_list_slow[i].model[this.watch_list_slow[i].prop][
-              this.watch_list_slow[i].secProp
-            ];
+      Object.values(this.watch_list_slow).forEach((slow_item) => {
+        let value = slow_item.model[slow_item.prop];
+        if (slow_item.secProp) {
+          value = slow_item.model[slow_item.prop][slow_item.secProp];
         }
-
-        data_object[this.watch_list_slow[i].label] = value;
+        data_object[slow_item.label] = value;
         data_object["scripts"] = [];
         this._modelEngine.TaskScheduler.tasks.forEach((task) => {
           data_object["scripts"].push(task);
         });
-      }
+      });
       // add the script to the data_object
-
       this.collected_data_slow.push(data_object);
     }
 
@@ -156,17 +149,14 @@ export default class DataCollector {
       // define a data object
       let data_object = { time: parseFloat(model_clock.toFixed(3)) };
       // iterate over the watchlist
-      for (let i = 0; i < this.watch_list.length; i++) {
-        let value = this.watch_list[i].model[this.watch_list[i].prop];
-        if (this.watch_list[i].secProp) {
-          value =
-            this.watch_list[i].model[this.watch_list[i].prop][
-              this.watch_list[i].secProp
-            ];
+      Object.values(this.watch_list).forEach((fast_item) => {
+        let value = fast_item.model[fast_item.prop];
+        if (fast_item.secProp) {
+          value = fast_item.model[fast_item.prop][fast_item.secProp];
         }
         // complete the data_object
-        data_object[this.watch_list[i].label] = value;
-      }
+        data_object[fast_item.label] = value;
+      });
       this.collected_data.push(data_object);
     }
     this._interval_counter += this._t;

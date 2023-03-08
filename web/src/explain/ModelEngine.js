@@ -619,21 +619,20 @@ const buildDependencyList = function () {
 
 // clean up datacollector
 const cleanDataCollector = function () {
-  model.DataCollector.watch_list.forEach((prop, index) => {
-    console.log(
-      prop.model.Name,
-      Object.keys(model.ExecutionList).includes(prop.model.Name),
-      index
-    );
-  });
-
-  model.DataCollector.watch_list_slow.forEach((prop, index) => {
-    console.log(
-      prop.model.Name,
-      Object.keys(model.ExecutionList).includes(prop.model.Name),
-      index
-    );
-  });
+  // model.DataCollector.watch_list.forEach((prop, index) => {
+  //   console.log(
+  //     prop.model.Name,
+  //     Object.keys(model.ExecutionList).includes(prop.model.Name),
+  //     index
+  //   );
+  // });
+  // model.DataCollector.watch_list_slow.forEach((prop, index) => {
+  //   console.log(
+  //     prop.model.Name,
+  //     Object.keys(model.ExecutionList).includes(prop.model.Name),
+  //     index
+  //   );
+  // });
 };
 
 // do a realtime model step
