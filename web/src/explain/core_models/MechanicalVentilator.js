@@ -498,6 +498,7 @@ export class MechanicalVentilator extends ModelBaseClass {
     this._prevInspiration = this._inspiration;
     this._prevExpiration = this._expiration;
   }
+
   Triggering() {
     if (this.FlowSensor.Flow > 0) {
       this._trigger_counter += this.FlowSensor.Flow * this._t;
@@ -509,6 +510,7 @@ export class MechanicalVentilator extends ModelBaseClass {
       this._triggered_breath = true;
     }
   }
+
   Reporting() {
     this._vent_rate_counter += this._t;
 

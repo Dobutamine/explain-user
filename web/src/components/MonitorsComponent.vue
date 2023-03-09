@@ -61,17 +61,25 @@ export default {
         if (param.props.length > 1) {
           // two values
           for (let i = 0; i < param.props.length; i++) {
-            param.value +=
-              (this.currentData[param.props[i]] * param.factor).toFixed(
-                param.rounding
-              ) + "/";
+            if (this.currentData[param.props[i]] !== undefined) {
+              param.value +=
+                (this.currentData[param.props[i]] * param.factor).toFixed(
+                  param.rounding
+                ) + "/";
+            } else {
+              param.value = "--";
+            }
           }
           // slice off the last value, removing the /
           param.value = param.value.slice(0, -1);
         } else {
-          param.value = (
-            this.currentData[param.props[0]] * param.factor
-          ).toFixed(param.rounding);
+          if (this.currentData[param.props[0]] !== undefined) {
+            param.value = (
+              this.currentData[param.props[0]] * param.factor
+            ).toFixed(param.rounding);
+          } else {
+            param.value = "-";
+          }
         }
       });
     },
