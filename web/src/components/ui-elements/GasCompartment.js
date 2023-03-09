@@ -135,6 +135,11 @@ export default class GasCompartment {
     this.sprite.rotation = this.layout.rotation;
     this.text.rotation = this.layout.rotation;
     this.text.scale.set(scaleFont, scaleFont);
+    this.text.alpha = 1.0;
+    if (isNaN(this.to2)) {
+      this.text.alpha = 0.1;
+    }
+
     this.sprite.tint = this.calculateColor(this.to2);
   }
   onDragStart(e) {
@@ -255,6 +260,9 @@ export default class GasCompartment {
   }
 
   calculateColor(to2) {
+    if (isNaN(to2)) {
+      return 0x666666;
+    }
     if (to2 > 7.6) {
       to2 = 7.6;
     }

@@ -220,7 +220,9 @@ export default class BloodConnector {
     }
 
     if (noData) {
-      this.sprite.tint = 0x000000;
+      this.sprite.alpha = 0.0;
+    } else {
+      this.sprite.alpha = 1.0;
     }
 
     // get the position of the dbc's

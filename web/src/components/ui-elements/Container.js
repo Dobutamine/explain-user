@@ -118,6 +118,7 @@ export default class Container {
     this.sprite.rotation = this.layout.rotation;
     this.text.rotation = this.layout.rotation;
     this.text.scale.set(scaleFont, scaleFont);
+    this.text.alpha = 1.0;
   }
   setEditingMode(newMode) {
     this.editingMode = newMode;

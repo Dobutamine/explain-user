@@ -116,6 +116,11 @@ export default class GasExchanger {
     });
     if (isNaN(difO2)) {
       difO2 = 0.0;
+      this.text.alpha = 0.1;
+      this.sprite.tint = 0x666666;
+    } else {
+      this.sprite.tint = 0xbbbbbb;
+      this.text.alpha = 1.0;
     }
 
     // calculate factors

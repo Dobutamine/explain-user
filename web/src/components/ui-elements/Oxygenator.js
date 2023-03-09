@@ -255,6 +255,9 @@ export default class Oxygenator {
     return _radius;
   }
   calculateColor(to2) {
+    if (isNaN(to2)) {
+      return 0x666666;
+    }
     if (to2 > 7.6) {
       to2 = 7.6;
     }
