@@ -16,6 +16,7 @@
             <q-tab name="play" label="play" />
             <q-tab name="ventilator" label="ventilator" />
             <q-tab name="ecls" label="ecls" />
+            <q-tab name="aw" label="aw" />
             <q-tab name="build" label="build" />
           </q-tabs>
           <q-separator></q-separator>
@@ -32,6 +33,9 @@
             </q-tab-panel>
             <q-tab-panel name="ecls">
               <EclsComponent></EclsComponent>
+            </q-tab-panel>
+            <q-tab-panel name="aw">
+              <ArtificialWhombComponent></ArtificialWhombComponent>
             </q-tab-panel>
             <q-tab-panel name="build">
               <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
@@ -157,7 +161,7 @@ import TimeChartComponentVue from "../components/charts/TimeChartComponent.vue";
 import PatientMonitor from "src/components/PatientMonitor.vue";
 import MechanicalVentilator from "src/components/MechanicalVentilator.vue";
 import EclsComponent from "src/components/EclsComponent.vue";
-
+import ArtificialWhombComponent from "src/components/ArtificialWhombComponent.vue";
 import TrendsMonitor from "src/components/TrendsMonitor.vue";
 import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
@@ -179,6 +183,7 @@ export default {
     TrendsMonitor,
     PatientMonitor,
     MechanicalVentilator,
+    ArtificialWhombComponent,
     EclsComponent,
     InterventionsComponent,
     ScriptComponentVue: ScriptsComponentVue,

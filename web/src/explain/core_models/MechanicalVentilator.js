@@ -191,7 +191,6 @@ export class MechanicalVentilator extends ModelBaseClass {
         this.Fn2Dry,
         this.FotherDry
       );
-      console.log(this._modelEngine.Models.TubingIn);
     }
 
     if (!this._modelEngine.Models.TubingOut) {
