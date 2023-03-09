@@ -118,11 +118,12 @@ export default class GasCompartment {
       let factor = volumes[i] / volume;
       this.to2 += factor * to2s[i];
     }
-    if (isNaN(volume)) {
-      volume = 0.01;
-    }
 
-    this.volume = this.calculateRadius(volume);
+    if (isNaN(volume)) {
+      this.volume = 0.15 / this.layout.scale.x;
+    } else {
+      this.volume = this.calculateRadius(volume);
+    }
 
     this.sprite.scale.set(
       this.volume * this.layout.scale.x,

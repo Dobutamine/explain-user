@@ -151,10 +151,11 @@ export default class BloodPump {
     }
 
     if (isNaN(volume)) {
-      volume = 0.01;
+      this.volume = 0.15 / this.layout.scale.x;
+    } else {
+      this.volume = this.calculateRadius(volume);
     }
 
-    this.volume = this.calculateRadius(volume);
     this.sprite.scale.set(
       this.volume * this.layout.scale.x,
       this.volume * this.layout.scale.y
