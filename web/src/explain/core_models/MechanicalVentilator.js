@@ -79,23 +79,12 @@ export class MechanicalVentilator extends ModelBaseClass {
   Synchronized = false;
 
   // delcare objects holding the ventilator components
-  VentIn = {};
-  TubingIn = {};
-  YPiece = {};
-  TubingOut = {};
-  EtTube = {};
-  ValveInsp = {};
-  ValveExp = {};
-  TubingIn_YPiece = {};
-  YPiece_EtTube = {};
-  YPiece_TubingOut = {};
-  EtTube_DS = {};
-  TubingOut_VentOut = {};
+
   FlowSensor = {};
   PressureSensor = {};
 
   Enable() {
-    this.IsEnabled = true;
+    this._modelEngine.Models.MechanicalVentilator.IsEnabled = true;
     this._modelEngine.Models.VentIn.IsEnabled = true;
     this._modelEngine.Models.ValveInsp.IsEnabled = true;
     this._modelEngine.Models.TubingIn.IsEnabled = true;
@@ -110,7 +99,7 @@ export class MechanicalVentilator extends ModelBaseClass {
   }
 
   Disable() {
-    this.IsEnabled = false;
+    this._modelEngine.Models.MechanicalVentilator.IsEnabled = false;
     this._modelEngine.Models.VentIn.IsEnabled = false;
     this._modelEngine.Models.ValveInsp.IsEnabled = false;
     this._modelEngine.Models.TubingIn.IsEnabled = false;
@@ -130,18 +119,43 @@ export class MechanicalVentilator extends ModelBaseClass {
       this[arg["key"]] = arg["value"];
     });
 
+    // set the dependencies
     this.Dependencies = [];
     this.Dependencies.push("DS");
     this.Dependencies.push("OUT");
 
-    // instantiate the internal ventilator compliance
+    // gas compliances
     if (!this._modelEngine.Models.VentIn) {
+      // build a new ventilator in (VentIn) component
       this._modelEngine.Models.VentIn = new GasCompliance(
         this._modelEngine,
         "VentIn",
         "GasCompliance"
       );
-      this.SetVentIn();
+      // this is the internal reservoir of the ventilator which is set at a
+      // fixed composition and volume with a pressure of 200 mmHg above atmospheric pressure
+      this._modelEngine.Models.VentIn.InitModel([
+        { key: "Vol", value: 5.2 },
+        { key: "UVol", value: 5.0 },
+        { key: "ElBase", value: 1000.0 },
+        { key: "ElK", value: 0.0 },
+        { key: "Humidity", value: this.Humidity },
+        { key: "Temp", value: this.Temp },
+        { key: "FixedComposition", value: true },
+        { key: "Pres", value: this.Patm + 200.0 },
+        { key: "Pres0", value: this.Patm },
+        { key: "IsEnabled", value: this.IsEnabled },
+      ]);
+      SetAirComposition(
+        this._modelEngine.Models.VentIn,
+        this.Humidity,
+        this.Temp,
+        this.Fo2Dry,
+        this.Fco2Dry,
+        this.Fn2Dry,
+        this.FotherDry
+      );
+      this.SetFiO2(this._modelEngine.Models.VentIn, this.FiO2);
     }
 
     if (!this._modelEngine.Models.TubingIn) {
@@ -150,14 +164,69 @@ export class MechanicalVentilator extends ModelBaseClass {
         "TubingIn",
         "GasCompliance"
       );
+      this.TubingVolume =
+        Math.PI *
+        Math.pow(this.TubingDiameter / 2, 2) *
+        this.TubingLength *
+        1000;
+      this._modelEngine.Models.TubingIn.InitModel([
+        { key: "Vol", value: this.TubingVolume },
+        { key: "UVol", value: this.TubingVolume },
+        { key: "ElBase", value: this.TubingElastance },
+        { key: "ElK", value: 0.0 },
+        { key: "Humidity", value: this.Humidity },
+        { key: "Temp", value: this.Temp },
+        { key: "TargetTemp", value: this.Temp },
+        { key: "FixedComposition", value: false },
+        { key: "Pres", value: this.Patm },
+        { key: "Pres0", value: this.Patm },
+        { key: "IsEnabled", value: this.IsEnabled },
+      ]);
+      SetAirComposition(
+        this._modelEngine.Models.TubingIn,
+        this.Humidity,
+        this.Temp,
+        this.Fo2Dry,
+        this.Fco2Dry,
+        this.Fn2Dry,
+        this.FotherDry
+      );
+      console.log(this._modelEngine.Models.TubingIn);
+    }
 
+    if (!this._modelEngine.Models.TubingOut) {
       this._modelEngine.Models.TubingOut = new GasCompliance(
         this._modelEngine,
         "TubingOut",
         "GasCompliance"
       );
-
-      this.SetTubing();
+      this.TubingVolume =
+        Math.PI *
+        Math.pow(this.TubingDiameter / 2, 2) *
+        this.TubingLength *
+        1000;
+      this._modelEngine.Models.TubingOut.InitModel([
+        { key: "Vol", value: this.TubingVolume },
+        { key: "UVol", value: this.TubingVolume },
+        { key: "ElBase", value: this.TubingElastance },
+        { key: "ElK", value: 0.0 },
+        { key: "Humidity", value: this.Humidity },
+        { key: "Temp", value: this.Temp },
+        { key: "TargetTemp", value: this.Temp },
+        { key: "FixedComposition", value: false },
+        { key: "Pres", value: this.Patm },
+        { key: "Pres0", value: this.Patm },
+        { key: "IsEnabled", value: this.IsEnabled },
+      ]);
+      SetAirComposition(
+        this._modelEngine.Models.TubingOut,
+        this.Humidity,
+        this.Temp,
+        this.Fo2Dry,
+        this.Fco2Dry,
+        this.Fn2Dry,
+        this.FotherDry
+      );
     }
 
     if (!this._modelEngine.Models.YPiece) {
@@ -166,7 +235,28 @@ export class MechanicalVentilator extends ModelBaseClass {
         "YPiece",
         "GasCompliance"
       );
-      this.SetYPiece();
+      this._modelEngine.Models.YPiece.InitModel([
+        { key: "Vol", value: this.YPieceVol },
+        { key: "UVol", value: this.YPieceVol },
+        { key: "ElBase", value: this.YPieceElastance },
+        { key: "ElK", value: 0.0 },
+        { key: "Humidity", value: this.Humidity },
+        { key: "Temp", value: this.Temp },
+        { key: "TargetTemp", value: this.Temp },
+        { key: "FixedComposition", value: false },
+        { key: "Pres", value: this.Patm },
+        { key: "Pres0", value: this.Patm },
+        { key: "IsEnabled", value: this.IsEnabled },
+      ]);
+      SetAirComposition(
+        this._modelEngine.Models.YPiece,
+        this.Humidity,
+        this.Temp,
+        this.Fo2Dry,
+        this.Fco2Dry,
+        this.Fn2Dry,
+        this.FotherDry
+      );
     }
 
     if (!this._modelEngine.Models.EtTube) {
@@ -175,7 +265,86 @@ export class MechanicalVentilator extends ModelBaseClass {
         "EtTube",
         "GasCompliance"
       );
-      this.SetEtTube();
+      let radius = this.TubeDiameter / 1000 / 2;
+      let length = this.TubeLength;
+      this.TubeVolume = Math.PI * Math.pow(radius, 2) * length * 1000.0;
+      this._modelEngine.Models.EtTube.InitModel([
+        { key: "Vol", value: this.TubeVolume },
+        { key: "UVol", value: this.TubeVolume },
+        { key: "ElBase", value: this.TubeElastance },
+        { key: "ElK", value: 0.0 },
+        { key: "Humidity", value: this.Humidity },
+        { key: "Temp", value: this.Temp },
+        { key: "TargetTemp", value: this.Temp },
+        { key: "FixedComposition", value: false },
+        { key: "Pres", value: this.Patm },
+        { key: "Pres0", value: this.Patm },
+        { key: "IsEnabled", value: this.IsEnabled },
+      ]);
+      SetAirComposition(
+        this._modelEngine.Models.EtTube,
+        this.Humidity,
+        this.Temp,
+        this.Fo2Dry,
+        this.Fco2Dry,
+        this.Fn2Dry,
+        this.FotherDry
+      );
+    }
+
+    // resistors
+    if (!this._modelEngine.Models.ValveInsp) {
+      this._modelEngine.Models.ValveInsp = new GasResistor(
+        this._modelEngine,
+        "ValveInsp",
+        "GasResistor"
+      );
+      this._modelEngine.Models.ValveInsp.InitModel([
+        { key: "IsEnabled", value: this.IsEnabled },
+        { key: "RFor", value: 25000 },
+        { key: "RBack", value: 25000 },
+        { key: "Rk", value: 0.0 },
+        { key: "NoFlow", value: false },
+        { key: "NoBackFlow", value: false },
+        { key: "CompFrom", value: "VentIn" },
+        { key: "CompTo", value: "TubingIn" },
+      ]);
+    }
+
+    if (!this._modelEngine.Models.TubingIn_YPiece) {
+      this._modelEngine.Models.TubingIn_YPiece = new GasResistor(
+        this._modelEngine,
+        "TubingIn_YPiece",
+        "GasResistor"
+      );
+      this._modelEngine.Models.TubingIn_YPiece.InitModel([
+        { key: "IsEnabled", value: this.IsEnabled },
+        { key: "RFor", value: this.YPieceResistance },
+        { key: "RBack", value: this.YPieceResistance },
+        { key: "Rk", value: 0.0 },
+        { key: "NoFlow", value: false },
+        { key: "NoBackFlow", value: false },
+        { key: "CompFrom", value: "TubingIn" },
+        { key: "CompTo", value: "YPiece" },
+      ]);
+    }
+
+    if (!this._modelEngine.Models.YPiece_EtTube) {
+      this._modelEngine.Models.YPiece_EtTube = new GasResistor(
+        this._modelEngine,
+        "YPiece_EtTube",
+        "GasResistor"
+      );
+      this._modelEngine.Models.YPiece_EtTube.InitModel([
+        { key: "IsEnabled", value: this.IsEnabled },
+        { key: "RFor", value: this.YPieceResistance },
+        { key: "RBack", value: this.YPieceResistance },
+        { key: "Rk", value: 0.0 },
+        { key: "NoFlow", value: false },
+        { key: "NoBackFlow", value: false },
+        { key: "CompFrom", value: "YPiece" },
+        { key: "CompTo", value: "EtTube" },
+      ]);
     }
 
     if (!this._modelEngine.Models.EtTube_DS) {
@@ -184,7 +353,16 @@ export class MechanicalVentilator extends ModelBaseClass {
         "EtTube_DS",
         "GasResistor"
       );
-      this.SetEtTubeResistors();
+      this._modelEngine.Models.EtTube_DS.InitModel([
+        { key: "IsEnabled", value: this.IsEnabled },
+        { key: "RFor", value: this.EtTubeResistance },
+        { key: "RBack", value: this.EtTubeResistance },
+        { key: "Rk", value: 0.0 },
+        { key: "NoFlow", value: false },
+        { key: "NoBackFlow", value: false },
+        { key: "CompFrom", value: "EtTube" },
+        { key: "CompTo", value: "DS" },
+      ]);
     }
 
     if (!this._modelEngine.Models.YPiece_TubingOut) {
@@ -193,17 +371,16 @@ export class MechanicalVentilator extends ModelBaseClass {
         "YPiece_TubingOut",
         "GasResistor"
       );
-      this._modelEngine.Models.YPiece_EtTube = new GasResistor(
-        this._modelEngine,
-        "YPiece_EtTube",
-        "GasResistor"
-      );
-      this._modelEngine.Models.TubingIn_YPiece = new GasResistor(
-        this._modelEngine,
-        "TubingIn_YPiece",
-        "GasResistor"
-      );
-      this.SetYPieceResistors();
+      this._modelEngine.Models.YPiece_TubingOut.InitModel([
+        { key: "IsEnabled", value: this.IsEnabled },
+        { key: "RFor", value: this.YPieceResistance },
+        { key: "RBack", value: this.YPieceResistance },
+        { key: "Rk", value: 0.0 },
+        { key: "NoFlow", value: false },
+        { key: "NoBackFlow", value: false },
+        { key: "CompFrom", value: "YPiece" },
+        { key: "CompTo", value: "TubingOut" },
+      ]);
     }
 
     if (!this._modelEngine.Models.ValveExp) {
@@ -212,16 +389,16 @@ export class MechanicalVentilator extends ModelBaseClass {
         "ValveExp",
         "GasResistor"
       );
-      this.SetValveExp();
-    }
-
-    if (!this._modelEngine.Models.ValveInsp) {
-      this._modelEngine.Models.ValveInsp = new GasResistor(
-        this._modelEngine,
-        "ValveInsp",
-        "GasResistor"
-      );
-      this.SetValveInsp();
+      this._modelEngine.Models.ValveExp.InitModel([
+        { key: "IsEnabled", value: this.IsEnabled },
+        { key: "RFor", value: 25.0 },
+        { key: "RBack", value: 25.0 },
+        { key: "Rk", value: 0.0 },
+        { key: "NoFlow", value: false },
+        { key: "NoBackFlow", value: false },
+        { key: "CompFrom", value: "TubingOut" },
+        { key: "CompTo", value: "OUT" },
+      ]);
     }
 
     this.FlowSensor = this._modelEngine.Models["YPiece_EtTube"];
@@ -230,18 +407,18 @@ export class MechanicalVentilator extends ModelBaseClass {
     // set the flag to model is initialized
     this._is_initialized = true;
   }
-  SetFiO2() {
+  SetFiO2(model, fio2) {
     let co2Factor = this.Fco2Dry / (1.0 - this.Fo2Dry);
     let n2Factor = this.Fn2Dry / (1.0 - this.Fo2Dry);
     let otherFactor = this.FotherDry / (1.0 - this.Fo2Dry);
 
-    let newFo2 = this.FiO2;
+    let newFo2 = fio2;
     let newFco2 = co2Factor * (1.0 - this.FiO2);
     let newFn2 = n2Factor * (1.0 - this.FiO2);
     let newFother = otherFactor * (1.0 - this.FiO2);
 
     SetAirComposition(
-      this._modelEngine.Models["VentIn"],
+      model,
       this.Humidity,
       this.Temp,
       newFo2,
@@ -250,6 +427,7 @@ export class MechanicalVentilator extends ModelBaseClass {
       newFother
     );
   }
+
   CalcModel() {
     // set the correct FiO2
     // calculate the expiration time
@@ -335,7 +513,7 @@ export class MechanicalVentilator extends ModelBaseClass {
     this._vent_rate_counter += this._t;
 
     if (this._prevExpiration && this._inspiration) {
-      this.SetFiO2();
+      this.SetFiO2(this._modelEngine.Models.VentIn, this.FiO2);
 
       this.TubeResistance();
       // report vent rate
@@ -576,196 +754,5 @@ export class MechanicalVentilator extends ModelBaseClass {
         this._modelEngine.Models.ValveExp.NoFlow = true;
       }
     }
-  }
-  SetVentIn() {
-    // this is the internal reservoir of the ventilator which is set at a
-    // fixed composition and volume with a pressure of 200 mmHg above atmospheric pressure
-    this._modelEngine.Models.VentIn.InitModel([
-      { key: "Vol", value: 5.2 },
-      { key: "UVol", value: 5.0 },
-      { key: "ElBase", value: 1000.0 },
-      { key: "ElK", value: 0.0 },
-      { key: "Humidity", value: this.Humidity },
-      { key: "Temp", value: this.Temp },
-      { key: "FixedComposition", value: true },
-      { key: "Pres", value: this.Patm + 200.0 },
-      { key: "Pres0", value: this.Patm },
-      { key: "IsEnabled", value: this.IsEnabled },
-    ]);
-    SetAirComposition(
-      this._modelEngine.Models.VentIn,
-      this.Humidity,
-      this.Temp,
-      this.Fo2Dry,
-      this.Fco2Dry,
-      this.Fn2Dry,
-      this.FotherDry
-    );
-  }
-  SetTubing() {
-    this.TubingVolume =
-      Math.PI * Math.pow(this.TubingDiameter / 2, 2) * this.TubingLength * 1000;
-    this._modelEngine.Models.TubingIn.InitModel([
-      { key: "Vol", value: this.TubingVolume },
-      { key: "UVol", value: this.TubingVolume },
-      { key: "ElBase", value: this.TubingElastance },
-      { key: "ElK", value: 0.0 },
-      { key: "Humidity", value: this.Humidity },
-      { key: "Temp", value: this.Temp },
-      { key: "TargetTemp", value: this.Temp },
-      { key: "FixedComposition", value: false },
-      { key: "Pres", value: this.Patm },
-      { key: "Pres0", value: this.Patm },
-      { key: "IsEnabled", value: this.IsEnabled },
-    ]);
-    SetAirComposition(
-      this._modelEngine.Models.TubingIn,
-      this.Humidity,
-      this.Temp,
-      this.Fo2Dry,
-      this.Fco2Dry,
-      this.Fn2Dry,
-      this.FotherDry
-    );
-    this._modelEngine.Models.TubingOut.InitModel([
-      { key: "Vol", value: this.TubingVolume },
-      { key: "UVol", value: this.TubingVolume },
-      { key: "ElBase", value: this.TubingElastance },
-      { key: "ElK", value: 0.0 },
-      { key: "Humidity", value: this.Humidity },
-      { key: "Temp", value: this.Temp },
-      { key: "TargetTemp", value: this.Temp },
-      { key: "FixedComposition", value: false },
-      { key: "Pres", value: this.Patm },
-      { key: "Pres0", value: this.Patm },
-      { key: "IsEnabled", value: this.IsEnabled },
-    ]);
-    SetAirComposition(
-      this._modelEngine.Models.TubingOut,
-      this.Humidity,
-      this.Temp,
-      this.Fo2Dry,
-      this.Fco2Dry,
-      this.Fn2Dry,
-      this.FotherDry
-    );
-  }
-  SetYPiece() {
-    this._modelEngine.Models.YPiece.InitModel([
-      { key: "Vol", value: this.YPieceVol },
-      { key: "UVol", value: this.YPieceVol },
-      { key: "ElBase", value: this.YPieceElastance },
-      { key: "ElK", value: 0.0 },
-      { key: "Humidity", value: this.Humidity },
-      { key: "Temp", value: this.Temp },
-      { key: "TargetTemp", value: this.Temp },
-      { key: "FixedComposition", value: false },
-      { key: "Pres", value: this.Patm },
-      { key: "Pres0", value: this.Patm },
-      { key: "IsEnabled", value: this.IsEnabled },
-    ]);
-    SetAirComposition(
-      this._modelEngine.Models.YPiece,
-      this.Humidity,
-      this.Temp,
-      this.Fo2Dry,
-      this.Fco2Dry,
-      this.Fn2Dry,
-      this.FotherDry
-    );
-  }
-  SetEtTube() {
-    this.TubeVolume =
-      Math.PI * Math.pow(this.TubeDiameter / 2, 2) * this.TubeLength * 1000;
-    this._modelEngine.Models.EtTube.InitModel([
-      { key: "Vol", value: this.TubeVolume },
-      { key: "UVol", value: this.TubeVolume },
-      { key: "ElBase", value: this.TubeElastance },
-      { key: "ElK", value: 0.0 },
-      { key: "Humidity", value: this.Humidity },
-      { key: "Temp", value: this.Temp },
-      { key: "TargetTemp", value: this.Temp },
-      { key: "FixedComposition", value: false },
-      { key: "Pres", value: this.Patm },
-      { key: "Pres0", value: this.Patm },
-      { key: "IsEnabled", value: this.IsEnabled },
-    ]);
-    SetAirComposition(
-      this._modelEngine.Models.EtTube,
-      this.Humidity,
-      this.Temp,
-      this.Fo2Dry,
-      this.Fco2Dry,
-      this.Fn2Dry,
-      this.FotherDry
-    );
-  }
-  SetEtTubeResistors() {
-    this._modelEngine.Models.EtTube_DS.InitModel([
-      { key: "IsEnabled", value: this.IsEnabled },
-      { key: "RFor", value: this.EtTubeResistance },
-      { key: "RBack", value: this.EtTubeResistance },
-      { key: "Rk", value: 0.0 },
-      { key: "NoFlow", value: false },
-      { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "EtTube" },
-      { key: "CompTo", value: "DS" },
-    ]);
-  }
-  SetYPieceResistors() {
-    this._modelEngine.Models.YPiece_EtTube.InitModel([
-      { key: "IsEnabled", value: this.IsEnabled },
-      { key: "RFor", value: this.YPieceResistance },
-      { key: "RBack", value: this.YPieceResistance },
-      { key: "Rk", value: 0.0 },
-      { key: "NoFlow", value: false },
-      { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "YPiece" },
-      { key: "CompTo", value: "EtTube" },
-    ]);
-    this._modelEngine.Models.TubingIn_YPiece.InitModel([
-      { key: "IsEnabled", value: this.IsEnabled },
-      { key: "RFor", value: this.YPieceResistance },
-      { key: "RBack", value: this.YPieceResistance },
-      { key: "Rk", value: 0.0 },
-      { key: "NoFlow", value: false },
-      { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "TubingIn" },
-      { key: "CompTo", value: "YPiece" },
-    ]);
-    this._modelEngine.Models.YPiece_TubingOut.InitModel([
-      { key: "IsEnabled", value: this.IsEnabled },
-      { key: "RFor", value: this.YPieceResistance },
-      { key: "RBack", value: this.YPieceResistance },
-      { key: "Rk", value: 0.0 },
-      { key: "NoFlow", value: false },
-      { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "YPiece" },
-      { key: "CompTo", value: "TubingOut" },
-    ]);
-  }
-  SetValveInsp() {
-    this._modelEngine.Models.ValveInsp.InitModel([
-      { key: "IsEnabled", value: this.IsEnabled },
-      { key: "RFor", value: 25000 },
-      { key: "RBack", value: 25000 },
-      { key: "Rk", value: 0.0 },
-      { key: "NoFlow", value: false },
-      { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "VentIn" },
-      { key: "CompTo", value: "TubingIn" },
-    ]);
-  }
-  SetValveExp() {
-    this._modelEngine.Models.ValveExp.InitModel([
-      { key: "IsEnabled", value: this.IsEnabled },
-      { key: "RFor", value: 25.0 },
-      { key: "RBack", value: 25.0 },
-      { key: "Rk", value: 0.0 },
-      { key: "NoFlow", value: false },
-      { key: "NoBackFlow", value: false },
-      { key: "CompFrom", value: "TubingOut" },
-      { key: "CompTo", value: "OUT" },
-    ]);
   }
 }
