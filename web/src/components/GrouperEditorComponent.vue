@@ -2,6 +2,12 @@
   <q-card class="q-ma-sm">
     <div class="q-ma-sm">
       <div v-for="(grouperItem, index) in grouperItems" :key="index">
+        <AbsoluteComponent
+          v-if="grouperItem.properties.typeGrouper == 'abs'"
+          :grouperItem="grouperItem"
+          @grouperItemUpdateDirect="updateGrouperItemFromChildDirect"
+          @removegrouperitemdirect="removeGrouperItemDirect"
+        ></AbsoluteComponent>
         <SliderComponentVue
           v-if="grouperItem.properties.typeGrouper == 'slider'"
           :grouperItem="grouperItem"
@@ -58,6 +64,7 @@ import { useConfigStore } from "src/stores/config";
 import { useDefinitionStore } from "src/stores/definition";
 import SliderComponentVue from "./groupers/SliderComponent.vue";
 import SwitchComponent from "./groupers/SwitchComponent.vue";
+import AbsoluteComponent from "./groupers/AbsoluteComponent.vue";
 
 export default {
   setup() {
@@ -72,6 +79,7 @@ export default {
   },
   components: {
     SliderComponentVue,
+    AbsoluteComponent,
     SwitchComponent,
   },
   props: {
@@ -84,6 +92,7 @@ export default {
       grouperItemsList: [],
       processedGrouperItems: {},
       updateList: {},
+      updateListDirect: {},
     };
   },
   methods: {
@@ -139,6 +148,24 @@ export default {
 
         this.translateGrouper(group, prop, value, update);
       }
+
+      let directUpdatePropObject = [];
+      Object.entries(this.updateListDirect).forEach(([name, value]) => {
+        let [model, prop] = name.split(".");
+        if (value != explain.modelState.Models[model][prop]) {
+          counter += 1;
+
+          directUpdatePropObject.push({
+            m: model,
+            p: prop,
+            v: value,
+            it: 0.0,
+            at: 0.0,
+          });
+          explain.setModelProperties(directUpdatePropObject);
+        }
+      });
+
       if (counter > 0) {
         // display the status message
         this.statusMessage = "groupers updated";
@@ -179,6 +206,25 @@ export default {
           });
         }
       }
+
+      Object.entries(this.updateListDirect).forEach(([name, value]) => {
+        let [model, prop] = name.split(".");
+        console.log(model, prop, value);
+        if (value != explain.modelState.Models[model][prop]) {
+          counter += 1;
+          this.script.script.push({
+            m: model,
+            p: prop,
+            o: explain.modelState.Models[model][prop],
+            v: value,
+            it: 5.0,
+            at: 0.0,
+            t: "",
+            state: "pending",
+          });
+        }
+      });
+
       if (counter > 0) {
         this.statusMessage = "property change added to script";
         setTimeout(() => (this.statusMessage = ""), 1500);
@@ -186,6 +232,11 @@ export default {
         this.statusMessage = "nothing changed!";
         setTimeout(() => (this.statusMessage = ""), 1500);
       }
+    },
+    updateGrouperItemFromChildDirect(props) {
+      Object.entries(props).forEach(([name, value]) => {
+        this.updateListDirect[name] = value;
+      });
     },
     updateGrouperItemFromChild(grouper, grouperItem, value) {
       let key = grouper + "." + grouperItem;
@@ -195,6 +246,18 @@ export default {
       let key = grouper + "." + grouperItem;
       // delete from updatelist
       delete this.updateList[key];
+      //propagate
+      this.$emit("removegrouperitem", grouper, grouperItem);
+    },
+    removeGrouperItemDirect(grouper, grouperItem) {
+      // delete from updatelist
+      this.uiConfig.groupers[grouper][grouperItem].properties.forEach(
+        (item) => {
+          let key = item.model + "." + item.modelProp;
+          delete this.updateListDirect[key];
+        }
+      );
+
       //propagate
       this.$emit("removegrouperitem", grouper, grouperItem);
     },

@@ -1,6 +1,5 @@
 import ModelBaseClass from "../helpers/ModelBaseClass";
 
-import { BloodResistor } from "./BloodResistor";
 import { BloodCompliance } from "./BloodCompliance";
 import { Diffusor } from "./Diffusor";
 
@@ -56,9 +55,37 @@ export class Placenta extends ModelBaseClass {
   _uAOut = {};
 
   _maternalPlacenta = {};
-  _fetalPlacenta = {};
-  _maternalPlacenta = {};
   _gasExchangerPlacenta = {};
+
+  Enable() {
+    this._modelEngine.Models["Placenta"].IsEnabled = true;
+    this._modelEngine.Models["AD_UA"].IsEnabled = true;
+    this._modelEngine.Models["AD_UA"].NoFlow = false;
+    this._modelEngine.Models["UA"].IsEnabled = true;
+    this._modelEngine.Models["UA_PLF"].IsEnabled = true;
+    this._modelEngine.Models["PLF"].IsEnabled = true;
+    this._modelEngine.Models["PLF_UV"].IsEnabled = true;
+    this._modelEngine.Models["UV"].IsEnabled = true;
+    this._modelEngine.Models["UV_IVCI"].IsEnabled = true;
+    this._modelEngine.Models["UV_IVCI"].NoFlow = false;
+    this._maternalPlacenta.IsEnabled = true;
+    this._gasExchangerPlacenta.IsEnabled = true;
+  }
+
+  Disable() {
+    this._modelEngine.Models["Placenta"].IsEnabled = false;
+    this._modelEngine.Models["AD_UA"].IsEnabled = false;
+    this._modelEngine.Models["AD_UA"].NoFlow = true;
+    this._modelEngine.Models["UA"].IsEnabled = false;
+    this._modelEngine.Models["UA_PLF"].IsEnabled = false;
+    this._modelEngine.Models["PLF"].IsEnabled = false;
+    this._modelEngine.Models["PLF_UV"].IsEnabled = false;
+    this._modelEngine.Models["UV"].IsEnabled = false;
+    this._modelEngine.Models["UV_IVCI"].IsEnabled = false;
+    this._modelEngine.Models["UV_IVCI"].NoFlow = true;
+    this._maternalPlacenta.IsEnabled = false;
+    this._gasExchangerPlacenta.IsEnabled = false;
+  }
 
   // model initializer
   InitModel(args) {
@@ -70,17 +97,17 @@ export class Placenta extends ModelBaseClass {
     this.Dependencies = [];
     this.Dependencies.push("AD");
     this.Dependencies.push("IVCI");
-    this.Dependencies.push("PL");
+    this.Dependencies.push("PLF");
     this.Dependencies.push("UA");
     this.Dependencies.push("UV");
     this.Dependencies.push("AD_UA");
-    this.Dependencies.push("UA_PL");
-    this.Dependencies.push("PL_UV");
+    this.Dependencies.push("UA_PLF");
+    this.Dependencies.push("PLF_UV");
     this.Dependencies.push("UV_IVCI");
 
     this._maternalPlacenta = new BloodCompliance(
       this._modelEngine,
-      "MaternalPlacenta",
+      "PLM",
       "BloodCompliance"
     );
 
@@ -88,7 +115,7 @@ export class Placenta extends ModelBaseClass {
 
     this._gasExchangerPlacenta = new Diffusor(
       this._modelEngine,
-      "GasExchangerPlacenta",
+      "GASEX_PL",
       "Diffusor"
     );
 
@@ -102,8 +129,8 @@ export class Placenta extends ModelBaseClass {
     this._gasExchangerPlacenta.InitModel([
       { key: "Description", value: "gas exchanger placenta" },
       { key: "IsEnabled", value: this.IsEnabled },
-      { key: "CompBlood1", value: "PL" },
-      { key: "CompBlood2", value: "MaternalPlacenta" },
+      { key: "CompBlood1", value: "PLF" },
+      { key: "CompBlood2", value: "PLM" },
       { key: "DifO2", value: 0.01 },
       { key: "DifCo2", value: 0.01 },
     ]);
@@ -115,6 +142,8 @@ export class Placenta extends ModelBaseClass {
       this._modelEngine.Models[this._gasExchangerPlacenta.Name] =
         this._gasExchangerPlacenta;
     }
+
+    console.log(this._gasExchangerPlacenta);
   }
 
   SetMaternalPlacenta() {
@@ -126,7 +155,7 @@ export class Placenta extends ModelBaseClass {
     // mean placental volume of the maternal side was 470 cc in 109 pregnancies studied.
 
     this._maternalPlacenta.InitModel([
-      { key: "Description", value: "umbilical veins" },
+      { key: "Description", value: "maternal placenta" },
       { key: "IsEnabled", value: this.IsEnabled },
       { key: "Vol", value: 0.5 },
       { key: "UVol", value: 0.5 },
@@ -144,14 +173,13 @@ export class Placenta extends ModelBaseClass {
         this._maternalPlacenta;
     }
   }
-
-  // program a root finding procedure
-
   // override the base class CalcModel method
   CalcModel() {
     this.PlacentalGasExchange();
   }
+
   PlacentalGasExchange() {
     this._maternalPlacenta.To2 = 7.8;
+    this._maternalPlacenta.Tco2 = 27.4;
   }
 }

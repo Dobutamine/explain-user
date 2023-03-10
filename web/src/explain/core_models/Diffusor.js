@@ -35,9 +35,8 @@ export class Diffusor extends ModelBaseClass {
     let tco2_blood1 = this._modelEngine.Models[this.CompBlood1].Tco2;
 
     // calculate the partial pressures of oxygen and carbon dioxide from the total content
-    let ab1 = this._modelEngine.Models.AcidBase.calc_acid_base(tco2_blood1);
-    let oxy1 =
-      this._modelEngine.Models.Oxygenation.calc_oxygenation(to2_blood1);
+    let ab1 = this._modelEngine.Models.AcidBase.CalcAcidBase(tco2_blood1);
+    let oxy1 = this._modelEngine.Models.Oxygenation.CalcOxygenation(to2_blood1);
 
     let po2_blood1 = 0;
     let pco2_blood1 = 0;
@@ -62,9 +61,8 @@ export class Diffusor extends ModelBaseClass {
     let tco2_blood2 = this._modelEngine.Models[this.CompBlood2].Tco2;
 
     // calculate the partial pressures of oxygen and carbon dioxide from the total content
-    let ab2 = this._modelEngine.Models.AcidBase.calc_acid_base(tco2_blood2);
-    let oxy2 =
-      this._modelEngine.Models.Oxygenation.calc_oxygenation(to2_blood2);
+    let ab2 = this._modelEngine.Models.AcidBase.CalcAcidBase(tco2_blood2);
+    let oxy2 = this._modelEngine.Models.Oxygenation.CalcOxygenation(to2_blood2);
 
     let po2_blood2 = 0;
     let pco2_blood2 = 0;

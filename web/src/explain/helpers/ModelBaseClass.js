@@ -61,10 +61,12 @@ export default class ModelBaseClass {
   // this method enables the model. It can be overriden if the model contains submodels which should be enabled
   Enable() {
     this.IsEnabled = true;
+    console.log(`${this.Name} is enabled.`);
   }
 
   // this method disables the model. It can be overriden if the model contains submodels which should be disabled
   Disable() {
     this.IsEnabled = false;
+    console.log(`${this.Name} is disabled.`);
   }
 }

@@ -35,6 +35,7 @@
               <EclsComponent></EclsComponent>
             </q-tab-panel>
             <q-tab-panel name="aw">
+              <PlacentaComponent></PlacentaComponent>
               <ArtificialWhombComponent></ArtificialWhombComponent>
             </q-tab-panel>
             <q-tab-panel name="build">
@@ -162,6 +163,7 @@ import PatientMonitor from "src/components/PatientMonitor.vue";
 import MechanicalVentilator from "src/components/MechanicalVentilator.vue";
 import EclsComponent from "src/components/EclsComponent.vue";
 import ArtificialWhombComponent from "src/components/ArtificialWhombComponent.vue";
+import PlacentaComponent from "src/components/PlacentaComponent.vue";
 import TrendsMonitor from "src/components/TrendsMonitor.vue";
 import { useUserStore } from "src/stores/user";
 import { useConfigStore } from "src/stores/config";
@@ -184,6 +186,7 @@ export default {
     PatientMonitor,
     MechanicalVentilator,
     ArtificialWhombComponent,
+    PlacentaComponent,
     EclsComponent,
     InterventionsComponent,
     ScriptComponentVue: ScriptsComponentVue,

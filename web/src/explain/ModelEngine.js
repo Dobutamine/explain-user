@@ -327,6 +327,14 @@ const setProperties = function (payload) {
   payload.forEach((newProp) => {
     // hand the property change to the task scheduler
     if (newProp.at === 0 && newProp.it === 0) {
+      if (newProp.p === "IsEnabled") {
+        if (newProp.v === true) {
+          model.Models[newProp.m].Enable();
+        }
+        if (newProp.v === false) {
+          model.Models[newProp.m].Disable();
+        }
+      }
       model.Models[newProp.m][newProp.p] = newProp.v;
     } else {
       model["TaskScheduler"].PropChange(newProp);

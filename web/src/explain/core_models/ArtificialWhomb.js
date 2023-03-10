@@ -120,8 +120,6 @@ export class ArtificialWhomb extends ModelBaseClass {
     );
     this.SetTubingIn();
 
-    console.log(this._tubingIn);
-
     // initialize the bloodPump
     this._bloodPump = new BloodPump(this._modelEngine, "AwPump", "BloodPump");
     this.SetBloodPump();
