@@ -23,10 +23,23 @@
 
           <q-tab-panels v-model="tab_left" keep-alive>
             <q-tab-panel name="play">
-              <InterventionsComponent></InterventionsComponent>
-              <GroupersComponent></GroupersComponent>
-              <CaseStudiesComponent></CaseStudiesComponent>
-              <BuildModelComponent></BuildModelComponent>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <InterventionsComponent></InterventionsComponent>
+                <GroupersComponent></GroupersComponent>
+                <CaseStudiesComponent></CaseStudiesComponent>
+                <BuildModelComponent></BuildModelComponent>
+              </q-scroll-area>
             </q-tab-panel>
             <q-tab-panel name="ventilator">
               <MechanicalVentilator></MechanicalVentilator>
@@ -115,14 +128,27 @@
             </q-tab-panel>
 
             <q-tab-panel name="numerics">
-              <div v-for="(monitor, index) in monitors" :key="index">
-                <MonitorComponentVue
-                  :title="monitor.title"
-                  :collapsed="monitor.collapsed"
-                  :data_type="monitor.data_type"
-                  :parameters="monitor.parameters"
-                ></MonitorComponentVue>
-              </div>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <div v-for="(monitor, index) in monitors" :key="index">
+                  <MonitorComponentVue
+                    :title="monitor.title"
+                    :collapsed="monitor.collapsed"
+                    :data_type="monitor.data_type"
+                    :parameters="monitor.parameters"
+                  ></MonitorComponentVue>
+                </div>
+              </q-scroll-area>
             </q-tab-panel>
             <q-tab-panel name="probes">
               <div v-for="(chart, index) in charts" :key="index">
@@ -205,10 +231,15 @@ export default {
       monitors: [],
       charts: [],
       models: [],
+      screen_height: 870,
+      screen_offset: 120,
     };
   },
   methods: {
     tabLeftChanged() {
+      let h = this.$q.screen.height - this.screen_offset;
+      this.screen_height = "height: " + h + "px";
+      console.log(this.screen_height);
       if (this.tab_left === "ventilator") {
         this.$bus.emit("ventilator_on");
       } else {
@@ -216,6 +247,9 @@ export default {
       }
     },
     tabRightChanged() {
+      let h = this.$q.screen.height - this.screen_offset;
+      this.screen_height = "height: " + h + "px";
+      console.log(this.screen_height);
       if (this.tab_right === "monitor") {
         this.$bus.emit("monitors_on");
       } else {
@@ -241,6 +275,8 @@ export default {
         this.charts.push(this.uiConfig.charts[key]);
       }
     }
+    let h = this.$q.screen.height - this.screen_offset;
+    this.screen_height = "height: " + h + "px";
   },
 };
 </script>
