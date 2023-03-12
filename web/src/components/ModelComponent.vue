@@ -233,6 +233,8 @@ export default {
           this.modelTypeNames.push(modelType);
         }
       }
+      // sort the modelnames
+      this.modelNames.sort();
     },
   },
   beforeUnmount() {

@@ -317,7 +317,7 @@ export default {
       }
 
       if (this.autoscale_counter > this.autoscale_interval) {
-        this.autoscale_interval = 3;
+        this.autoscale_interval = 2;
         this.autoscale_counter = 0;
         this.autoscale();
       }

@@ -421,6 +421,7 @@ export default {
           this.diagramComponentNames.push(component);
         });
       }
+      this.diagramComponentNames.sort();
     },
     saveDiagramComponent() {
       let layoutType = "rel";
@@ -1145,6 +1146,7 @@ export default {
           this.compModels.push(model);
         }
       });
+      this.compModels.sort();
     },
     selectModelType(modeltype) {
       // search the properties needed for this modeltype in the uiconfig

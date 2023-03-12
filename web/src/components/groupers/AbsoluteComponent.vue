@@ -1,6 +1,6 @@
 <template>
-  <q-card class="q-mt-xs" bordered dark :style="{ width: '100%' }">
-    <div class="row q-pa-xs" :style="{ width: '100%' }">
+  <q-card class="q-mt-xs" bordered dark>
+    <div class="row q-pa-xs">
       <div :style="{ 'font-size': '12px', width: '100%' }">
         <div class="items-left row">
           <q-badge
@@ -12,7 +12,7 @@
           </q-badge>
         </div>
         <div
-          class="q-gutter-sm"
+          class="q-gutter-xs"
           v-for="(prop, index) in properties"
           :key="index"
         >
