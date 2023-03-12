@@ -3,7 +3,7 @@
     <q-card class="q-pb-sm q-ma-sm bg-black" bordered>
       <div :style="visible" class="q-ma-sm">
         <div class="chart" :id="chartId"></div>
-        <div class="font-size-9 q-mt-sm text-center">
+        <div class="font-size-9 q-xs text-center">
           <q-btn-toggle
             v-model="loopMode"
             outline
@@ -316,7 +316,7 @@ export default {
         chartsXY[this.chartId].chart3.dispose();
       } else {
         chartsXY[this.chartId].dashboard.setRowHeight(0, 0.5);
-
+        chartsXY[this.chartId].chart1YAxis.setTitle("Pres (cmH2O)");
         chartsXY[this.chartId].chart1XAxis
           .setTitleFillStyle(emptyFill)
           .setTickStrategy(AxisTickStrategies.Empty)
