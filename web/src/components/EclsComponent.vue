@@ -124,7 +124,7 @@
         v-if="advanced"
         class="q-ma-sm q-mt-md row gutter text-overline justify-center"
       >
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="drainageSite"
             stack-label
@@ -139,7 +139,7 @@
             @update:model-value="changeDrainageSite"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="drainageCannula"
             stack-label
@@ -154,7 +154,7 @@
             @update:model-value="changeDrainageCannulaDiameter"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="returnSite"
             stack-label
@@ -169,7 +169,7 @@
             @update:model-value="changeReturnSite"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="returnCannula"
             stack-label
@@ -184,7 +184,7 @@
             @update:model-value="changeReturnCannulaDiameter"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="tubingSize"
             stack-label
@@ -198,7 +198,7 @@
             @update:model-value="changeTubingDiameter"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-input
             v-model="tubingLength"
             stack-label
@@ -215,7 +215,7 @@
             @update:model-value="changeTubingLength"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-input
             v-model="tubingElastance"
             stack-label
@@ -232,7 +232,7 @@
             @update:model-value="changeTubingElastance"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-input
             v-model="height"
             stack-label

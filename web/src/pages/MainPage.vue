@@ -9,15 +9,15 @@
             class="text-white"
             active-color="primary"
             indicator-color="primary"
-            align="justify"
             narrow-indicator
+            outside-arrows
             @update:model-value="tabLeftChanged"
           >
             <q-tab name="play" label="play" />
-            <q-tab name="ventilator" label="ventilator" />
-            <q-tab name="ecls" label="ecls" />
-            <q-tab name="aw" label="aw" />
             <q-tab name="build" label="build" />
+            <q-tab name="ventilator" label="vent" />
+            <q-tab name="ecls" label="ecls" />
+            <q-tab name="aw" label="fetal" />
           </q-tabs>
           <q-separator></q-separator>
 
@@ -120,6 +120,7 @@
             indicator-color="primary"
             align="justify"
             narrow-indicator
+            outside-arrows
           >
             <q-tab name="scripts" label="Scripts" />
             <q-tab name="charts" label="Charts" />
@@ -205,6 +206,7 @@
             indicator-color="primary"
             align="justify"
             narrow-indicator
+            outside-arrows
             @update:model-value="tabRightChanged"
           >
             <q-tab name="monitor" label="monitor" />

@@ -18,7 +18,7 @@
             @update:model-value="togglePlacenta"
           />
         </div>
-        <div class="q-ml-md">
+        <div v-if="placenta" class="q-ml-md">
           <q-toggle
             v-model="clamp"
             label="clamp"
@@ -39,35 +39,33 @@
 
       <div class="q-ma-sm row gutter text-overline justify-center">
         <div>
-          <div class="row justify-center">RPM</div>
+          <div class="row justify-center">ART</div>
           <q-knob
-            v-model="rpm"
-            :min="0"
-            :max="5000"
-            :step="50"
-            show-value
+            v-model="uaResistance"
+            :min="20"
+            :max="100000"
+            :step="1"
             size="50px"
             :thickness="0.22"
             color="secondary"
             track-color="grey-3"
             class="row"
-            @update:model-value="changeRpm"
+            @update:model-value="changeUaResistance"
           ></q-knob>
         </div>
         <div class="q-ml-md">
-          <div class="row justify-center">FiO2</div>
+          <div class="row justify-center">VEN</div>
           <q-knob
-            v-model="fio2"
-            :min="21"
-            :max="100"
+            v-model="uvResistance"
+            :min="20"
+            :max="100000"
             :step="1"
-            show-value
             size="50px"
             :thickness="0.22"
             color="secondary"
             track-color="grey-3"
             class="row"
-            @update:model-value="changeFiO2"
+            @update:model-value="changeUvResistance"
           />
         </div>
         <div class="q-ml-md">
@@ -124,7 +122,7 @@
         v-if="advanced"
         class="q-ma-sm q-mt-md row gutter text-overline justify-center"
       >
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="drainageSite"
             stack-label
@@ -139,7 +137,7 @@
             @update:model-value="changeDrainageSite"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="drainageCannula"
             stack-label
@@ -154,7 +152,7 @@
             @update:model-value="changeDrainageCannulaDiameter"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="returnSite"
             stack-label
@@ -169,7 +167,7 @@
             @update:model-value="changeReturnSite"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="returnCannula"
             stack-label
@@ -184,7 +182,7 @@
             @update:model-value="changeReturnCannulaDiameter"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-select
             v-model="tubingSize"
             stack-label
@@ -198,7 +196,7 @@
             @update:model-value="changeTubingDiameter"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-input
             v-model="tubingLength"
             stack-label
@@ -215,7 +213,7 @@
             @update:model-value="changeTubingLength"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-input
             v-model="tubingElastance"
             stack-label
@@ -232,7 +230,7 @@
             @update:model-value="changeTubingElastance"
           />
         </div>
-        <div class="q-ml-lg q-mt-sm">
+        <div class="q-ml-xs q-mt-sm">
           <q-input
             v-model="height"
             stack-label
@@ -277,6 +275,10 @@ export default {
       collapsed: false,
       isEnabled: true,
       currentData: {},
+      uaResistance: 20.0,
+      uvResistance: 20.0,
+      uaResistanceSlider: 0,
+      uaResistanceFactor: 1,
       rpm: 1500,
       flow: 500,
       fio2: 21,
@@ -450,12 +452,39 @@ export default {
         },
       ]);
     },
-    changeRpm() {
+    changeUvResistance() {
+      //this.uaResistanceFactor = this.translateSlider(this.uaResistanceSlider);
       explain.setModelProperties([
         {
-          m: "ArtificialWhomb",
-          p: "Rpm",
-          v: this.rpm,
+          m: "PLF_UV",
+          p: "RFor",
+          v: this.uvResistance,
+          at: 0.0,
+          it: 0.0,
+        },
+        {
+          m: "PLF_UV",
+          p: "RBack",
+          v: this.uvResistance,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeUaResistance() {
+      //this.uaResistanceFactor = this.translateSlider(this.uaResistanceSlider);
+      explain.setModelProperties([
+        {
+          m: "UA_PLF",
+          p: "RFor",
+          v: this.uaResistance,
+          at: 0.0,
+          it: 0.0,
+        },
+        {
+          m: "UA_PLF",
+          p: "RBack",
+          v: this.uaResistance,
           at: 0.0,
           it: 0.0,
         },
@@ -465,7 +494,14 @@ export default {
     toggleClamp() {
       explain.setModelProperties([
         {
-          m: "AwTubingOut_Return",
+          m: "AD_UA",
+          p: "NoFlow",
+          v: this.clamp,
+          at: 0.0,
+          it: 0.0,
+        },
+        {
+          m: "UV_IVCI",
           p: "NoFlow",
           v: this.clamp,
           at: 0.0,
@@ -473,31 +509,27 @@ export default {
         },
       ]);
     },
+    translateFactor(f) {
+      let sv = 0.0;
+      if (f < 1.0) {
+        sv = -(1.0 / f);
+      }
+      if (f > 1.0) {
+        sv = f;
+      }
+      return sv;
+    },
+    translateSlider(s) {
+      let f = 1.0;
+      if (s > 0.1) {
+        f = s;
+      }
+      if (s < -0.1) {
+        f = -(1.0 / s);
+      }
+      return f;
+    },
     togglePlacenta() {
-      // explain.setModelProperties([
-      //   {
-      //     m: "AwDrainage_TubingIn",
-      //     p: "NoFlow",
-      //     v: !this.aw,
-      //     at: 0.0,
-      //     it: 0.0,
-      //   },
-      //   {
-      //     m: "AwTubingOut_Return",
-      //     p: "NoFlow",
-      //     v: !this.aw,
-      //     at: 0.0,
-      //     it: 0.0,
-      //   },
-      //   {
-      //     m: "Placenta",
-      //     p: "Rpm",
-      //     v: this.rpm,
-      //     at: 0.0,
-      //     it: 0.0,
-      //   },
-      // ]);
-
       if (this.placenta) {
         this.diagram.updateDataCollector();
         explain.enable("Placenta");
@@ -518,12 +550,11 @@ export default {
         }
       });
 
-      if (
-        explain.modelState.Models["AwDrainage_TubingIn"].NoFlow &&
-        explain.modelState.Models["AwTubingOut_Return"].NoFlow
-      ) {
-        this.aw = false;
-      }
+      this.placenta = explain.modelState.Models["Placenta"].IsEnabled;
+      this.uaResistance = explain.modelState.Models["UA_PLF"].RFor;
+      this.uvResistance = explain.modelState.Models["PLF_UV"].RFor;
+      this.uaResistanceFactor = explain.modelState.Models["AD_UA"].RForFactor;
+      this.uaResistanceSlider = this.translateFactor(this.uaResistanceFactor);
 
       this.tubingElastance =
         explain.modelState.Models["ArtificialWhomb"].TubingElastance;
