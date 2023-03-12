@@ -41,19 +41,72 @@
                 <BuildModelComponent></BuildModelComponent>
               </q-scroll-area>
             </q-tab-panel>
+
             <q-tab-panel name="ventilator">
-              <MechanicalVentilator></MechanicalVentilator>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <MechanicalVentilator></MechanicalVentilator>
+              </q-scroll-area>
             </q-tab-panel>
             <q-tab-panel name="ecls">
-              <EclsComponent></EclsComponent>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <EclsComponent></EclsComponent>
+              </q-scroll-area>
             </q-tab-panel>
             <q-tab-panel name="aw">
-              <PlacentaComponent></PlacentaComponent>
-              <ArtificialWhombComponent></ArtificialWhombComponent>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <PlacentaComponent></PlacentaComponent>
+                <ArtificialWhombComponent></ArtificialWhombComponent>
+              </q-scroll-area>
             </q-tab-panel>
             <q-tab-panel name="build">
-              <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
-              <BuildModelComponent></BuildModelComponent>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <ModelDiagramEditorComponent></ModelDiagramEditorComponent>
+                <BuildModelComponent></BuildModelComponent>
+              </q-scroll-area>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -77,30 +130,69 @@
 
           <q-tab-panels v-model="tab" keep-alive>
             <q-tab-panel name="scripts">
-              <ScriptComponentVue></ScriptComponentVue>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <ScriptComponentVue></ScriptComponentVue>
+              </q-scroll-area>
             </q-tab-panel>
             <q-tab-panel name="diagram">
-              <DiagramComponent></DiagramComponent>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <DiagramComponent></DiagramComponent>
+              </q-scroll-area>
             </q-tab-panel>
 
             <q-tab-panel name="charts">
-              <div v-for="(chart, index) in charts" :key="index">
-                <TimeChartComponentVue
-                  v-if="chart.position === 2"
-                  :id="chart._id"
-                  :caption="chart.caption"
-                  :models="chart.models"
-                  :props="chart.props"
-                  :channels="chart.channels"
-                  :collapsed="chart.collapsed"
-                  :enabled="chart.enabled"
-                  :analysisEnabled="chart.analysisEnabled"
-                  :autoscaleEnabled="chart.autoscaleEnabled"
-                  :multipliersEnabled="chart.multipliersEnabled"
-                  :exportEnabled="chart.exportEnabled"
-                ></TimeChartComponentVue>
-              </div>
-              <ScriptComponentVue></ScriptComponentVue>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <div v-for="(chart, index) in charts" :key="index">
+                  <TimeChartComponentVue
+                    v-if="chart.position === 2"
+                    :id="chart._id"
+                    :caption="chart.caption"
+                    :models="chart.models"
+                    :props="chart.props"
+                    :channels="chart.channels"
+                    :collapsed="chart.collapsed"
+                    :enabled="chart.enabled"
+                    :analysisEnabled="chart.analysisEnabled"
+                    :autoscaleEnabled="chart.autoscaleEnabled"
+                    :multipliersEnabled="chart.multipliersEnabled"
+                    :exportEnabled="chart.exportEnabled"
+                  ></TimeChartComponentVue>
+                </div>
+                <ScriptComponentVue></ScriptComponentVue>
+              </q-scroll-area>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -123,8 +215,21 @@
           <q-separator />
           <q-tab-panels v-model="tab_right" keep-alive>
             <q-tab-panel name="monitor">
-              <PatientMonitor></PatientMonitor>
-              <TrendsMonitor></TrendsMonitor>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <PatientMonitor></PatientMonitor>
+                <TrendsMonitor></TrendsMonitor>
+              </q-scroll-area>
             </q-tab-panel>
 
             <q-tab-panel name="numerics">
@@ -151,22 +256,35 @@
               </q-scroll-area>
             </q-tab-panel>
             <q-tab-panel name="probes">
-              <div v-for="(chart, index) in charts" :key="index">
-                <TimeChartComponentVue
-                  v-if="chart.position === 3"
-                  :id="chart._id"
-                  :caption="chart.caption"
-                  :models="chart.models"
-                  :props="chart.props"
-                  :channels="chart.channels"
-                  :collapsed="chart.collapsed"
-                  :enabled="chart.enabled"
-                  :analysisEnabled="chart.analysisEnabled"
-                  :autoscaleEnabled="chart.autoscaleEnabled"
-                  :multipliersEnabled="chart.multipliersEnabled"
-                  :exportEnabled="chart.exportEnabled"
-                ></TimeChartComponentVue>
-              </div>
+              <q-scroll-area
+                class="q-pa-es"
+                dark
+                :style="screen_height"
+                :vertical-bar-style="{
+                  right: '5px',
+                  borderRadius: '5px',
+                  background: 'grey-10',
+                  width: '5px',
+                  opacity: 0.5,
+                }"
+              >
+                <div v-for="(chart, index) in charts" :key="index">
+                  <TimeChartComponentVue
+                    v-if="chart.position === 3"
+                    :id="chart._id"
+                    :caption="chart.caption"
+                    :models="chart.models"
+                    :props="chart.props"
+                    :channels="chart.channels"
+                    :collapsed="chart.collapsed"
+                    :enabled="chart.enabled"
+                    :analysisEnabled="chart.analysisEnabled"
+                    :autoscaleEnabled="chart.autoscaleEnabled"
+                    :multipliersEnabled="chart.multipliersEnabled"
+                    :exportEnabled="chart.exportEnabled"
+                  ></TimeChartComponentVue>
+                </div>
+              </q-scroll-area>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -239,7 +357,7 @@ export default {
     tabLeftChanged() {
       let h = this.$q.screen.height - this.screen_offset;
       this.screen_height = "height: " + h + "px";
-      console.log(this.screen_height);
+
       if (this.tab_left === "ventilator") {
         this.$bus.emit("ventilator_on");
       } else {
@@ -249,7 +367,7 @@ export default {
     tabRightChanged() {
       let h = this.$q.screen.height - this.screen_offset;
       this.screen_height = "height: " + h + "px";
-      console.log(this.screen_height);
+
       if (this.tab_right === "monitor") {
         this.$bus.emit("monitors_on");
       } else {
