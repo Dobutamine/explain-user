@@ -3,6 +3,20 @@
     <q-card class="q-pb-sm q-ma-sm bg-black" bordered>
       <div :style="visible" class="q-ma-sm">
         <div class="chart" :id="chartId"></div>
+        <div class="font-size-9 q-mt-sm text-center">
+          <q-btn-toggle
+            v-model="loopMode"
+            outline
+            dense
+            size="sm"
+            toggle-color="secondary"
+            :options="[
+              { label: 'CHARTS', value: false },
+              { label: 'LOOPS', value: true },
+            ]"
+            @update:model-value="enableLoops"
+          />
+        </div>
       </div>
     </q-card>
   </div>
@@ -56,6 +70,7 @@ export default {
   data() {
     return {
       isEnabled: true,
+      loopMode: false,
       visible: "",
       data_source: 0,
       y_min: 0,
@@ -143,8 +158,63 @@ export default {
       if (!this.isEnabled) return;
       if (!explain.modelState.Models["MechanicalVentilator"].IsEnabled) return;
       this.data_source = 1;
-      this.dataUpdate();
+      if (this.loopMode) {
+        this.dataUpdateLoopMode();
+      } else {
+        this.dataUpdate();
+      }
+
       this.data_source = 0;
+    },
+    dataUpdateLoopMode() {
+      if (!this.isEnabled) return;
+      if (!explain.modelState.Models["MechanicalVentilator"].IsEnabled) return;
+
+      if (this.data_source == 0) {
+        this.chartData1 = [];
+        this.chartData2 = [];
+        this.chartData3 = [];
+      }
+
+      this.lineSeries1.clear();
+      this.lineSeries2.clear();
+      this.lineSeries3.clear();
+
+      explain.modelData.forEach((data) => {
+        this.chartData1.push({
+          x: parseFloat(data["MechanicalVentilator.Pres"] - 760.0) * 1.3595,
+          y: parseFloat(data["MechanicalVentilator.Volume"] * 1000),
+        });
+        if (this.data_source === 1) {
+          this.chartData1.shift();
+        }
+
+        let y2 = parseFloat(data["MechanicalVentilator.Flow"]) * 60.0;
+
+        this.chartData2.push({
+          x: parseFloat(data["MechanicalVentilator.Volume"] * 1000),
+          y: y2,
+        });
+        if (this.data_source === 1) {
+          this.chartData2.shift();
+        }
+
+        let y3 = parseFloat(data["MechanicalVentilator.Volume"]) * 1000;
+
+        this.chartData3.push({
+          x: data.time,
+          y: y3,
+        });
+        if (this.data_source === 1) {
+          this.chartData3.shift();
+        }
+      });
+
+      this.lineSeries1.add(this.chartData1);
+
+      this.lineSeries2.add(this.chartData2);
+
+      this.lineSeries3.add(this.chartData3);
     },
     dataUpdate() {
       if (!this.isEnabled) return;
@@ -198,6 +268,111 @@ export default {
 
       this.lineSeries3.add(this.chartData3);
     },
+    enableLoops() {
+      this.lineSeries1.clear();
+      this.lineSeries2.clear();
+      if (this.loopMode) {
+        chartsXY[this.chartId].dashboard.setRowHeight(0, 1.5);
+        chartsXY[this.chartId].chart1XAxis.setTitle("Pres (cmH2O)");
+        chartsXY[this.chartId].chart1YAxis.setTitle("Vol (mL)");
+        chartsXY[this.chartId].chart1XAxis
+          .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ffffff") }))
+          .setTitleFont(new FontSettings({ size: 8, style: "normal" }));
+
+        chartsXY[this.chartId].chart2XAxis.setTitle("Vol (mL)");
+        chartsXY[this.chartId].chart2YAxis.setTitle("Flow (l/min)");
+        chartsXY[this.chartId].chart2XAxis
+          .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ffffff") }))
+          .setTitleFont(new FontSettings({ size: 8, style: "normal" }));
+
+        chartsXY[this.chartId].chart1XAxis
+          .setTickStrategy(AxisTickStrategies.Numeric)
+          .setTickStyle((a) =>
+            a.setMajorTickStyle((b) =>
+              b.setLabelFont((font) => font.setSize(8))
+            )
+          )
+          .setTickStyle((a) =>
+            a.setMinorTickStyle((b) =>
+              b.setLabelFont((font) => font.setSize(8))
+            )
+          )
+          .setScrollStrategy(AxisScrollStrategies.fitting);
+        chartsXY[this.chartId].dashboard.setRowHeight(1, 1.5);
+        chartsXY[this.chartId].chart2XAxis
+          .setTickStrategy(AxisTickStrategies.Numeric)
+          .setTickStyle((a) =>
+            a.setMajorTickStyle((b) =>
+              b.setLabelFont((font) => font.setSize(8))
+            )
+          )
+          .setTickStyle((a) =>
+            a.setMinorTickStyle((b) =>
+              b.setLabelFont((font) => font.setSize(8))
+            )
+          )
+          .setScrollStrategy(AxisScrollStrategies.fitting);
+        chartsXY[this.chartId].dashboard.setRowHeight(2, 0.1);
+        chartsXY[this.chartId].chart3.dispose();
+      } else {
+        chartsXY[this.chartId].dashboard.setRowHeight(0, 0.5);
+
+        chartsXY[this.chartId].chart1XAxis
+          .setTitleFillStyle(emptyFill)
+          .setTickStrategy(AxisTickStrategies.Empty)
+          .setScrollStrategy(AxisScrollStrategies.fitting)
+          .setAnimationScroll(false);
+        chartsXY[this.chartId].chart2XAxis
+          .setTitleFillStyle(emptyFill)
+          .setTickStrategy(AxisTickStrategies.Empty)
+          .setScrollStrategy(AxisScrollStrategies.fitting)
+          .setAnimationScroll(false);
+        chartsXY[this.chartId].dashboard.setRowHeight(1, 0.5);
+        chartsXY[this.chartId].dashboard.setRowHeight(2, 0.5);
+        this.createChart3();
+      }
+    },
+    createChart3() {
+      chartsXY[this.chartId].chart3 = chartsXY[this.chartId].dashboard
+        .createChartXY({ rowIndex: 2, columnIndex: 0 })
+        .setPadding({ bottom: 4, top: 4, right: 4, left: 4 })
+        .setMouseInteractions(false)
+        .setAutoCursorMode(AutoCursorModes.disabled)
+        .setTitleFillStyle(emptyFill);
+      chartsXY[this.chartId].chart3XAxis = chartsXY[this.chartId].chart3
+        .getDefaultAxisX()
+        .setTickStrategy(AxisTickStrategies.Numeric)
+        .setTickStyle((a) =>
+          a.setMajorTickStyle((b) => b.setLabelFont((font) => font.setSize(6)))
+        )
+        .setTickStyle((a) =>
+          a.setMinorTickStyle((b) => b.setLabelFont((font) => font.setSize(6)))
+        )
+        .setScrollStrategy(AxisScrollStrategies.fitting)
+        .setAnimationScroll(false);
+      chartsXY[this.chartId].chart3YAxis = chartsXY[this.chartId].chart3
+        .getDefaultAxisY()
+        .setTitle("Vol (mL)")
+        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ffffff") }))
+        .setTitleFont(new FontSettings({ size: 8, style: "normal" }))
+        .setTickStrategy(AxisTickStrategies.Numeric)
+        .setTickStyle((a) =>
+          a.setMajorTickStyle((b) => b.setLabelFont((font) => font.setSize(8)))
+        )
+        .setTickStyle((a) =>
+          a.setMinorTickStyle((b) => b.setLabelFont((font) => font.setSize(8)))
+        )
+        .setScrollStrategy(AxisScrollStrategies.fitting);
+
+      this.lineSeries3 = chartsXY[this.chartId].chart3
+        .addLineSeries()
+        .setName(this.lineTitle);
+      this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
+      this.lineSeries3.setStrokeStyle((style) =>
+        style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
+      );
+    },
+
     createDashboard() {
       let chart_object = {
         dashboard: null,
@@ -451,6 +626,7 @@ export default {
       this.selected_prim_prop_name3 = this.props[2];
       this.selected_sec_prop_name2 = "";
       explain.watchModelProperties([
+        "MechanicalVentilator.Vol",
         this.selected_component_name1 + "." + this.selected_prim_prop_name1,
         this.selected_component_name1 + "." + this.selected_prim_prop_name2,
         this.selected_component_name1 + "." + this.selected_prim_prop_name3,
@@ -465,7 +641,13 @@ export default {
     // get the model state
     explain.getModelState();
     document.addEventListener("rt", this.rtUpdate);
-    document.addEventListener("data", this.dataUpdate);
+    document.addEventListener("data", () => {
+      if (this.loopMode) {
+        this.dataUpdateLoopMode();
+      } else {
+        this.dataUpdate();
+      }
+    });
     document.addEventListener("state", this.stateUpdate);
     //this.toggleVisibility();
     this.chartData1 = [];

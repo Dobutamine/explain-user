@@ -111,13 +111,11 @@
 <script>
 import { explain } from "../boot/explain";
 import ModelEditorComponent from "./ModelEditorComponent.vue";
-import NewModelComponent from "./NewModelComponent.vue";
 import { useDefinitionStore } from "src/stores/definition";
 import { useEngineStore } from "src/stores/engine";
 export default {
   components: {
     ModelEditorComponent,
-    //NewModelComponent,
   },
   setup() {
     const definition = useDefinitionStore();

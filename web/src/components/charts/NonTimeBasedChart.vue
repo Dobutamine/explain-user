@@ -5,7 +5,7 @@
         class="q-mt-es row gutter text-overline justify-center"
         @click="toggleVisibility"
       >
-        XY BASED CHART
+        {{ caption }}
         <q-icon
           v-if="!isEnabled"
           class="q-ml-sm q-mt-sm"
@@ -20,53 +20,22 @@
       <div :style="visible">
         <div class="row q-mt-sm">
           <div class="col">
-            <div class="q-gutter-md row justify-center q-mb-sm">
-              <q-select
-                label-color="red-6"
-                v-model="comp_namex"
-                :options="component_names"
-                hide-bottom-space
-                dense
-                label="x"
-                style="width: 100px; font-size: 12px"
-                @update:model-value="selectComponentX"
-              />
-              <q-select
-                v-if="prim_prop_visible_x"
-                label-color="red-6"
-                v-model="selected_prim_prop_name_x"
-                :options="prim_prop_names_x"
-                hide-bottom-space
-                dense
-                label="prop1"
-                style="width: 100px; font-size: 12px"
-                @update:model-value="selectPrimPropX"
-              />
-              <q-select
-                v-if="sec_prop_visible_x"
-                label-color="red-6"
-                v-model="selected_sec_prop_name_x"
-                :options="sec_prop_names_x"
-                hide-bottom-space
-                dense
-                square
-                label="prop2"
-                style="width: 100px; font-size: 12px"
-                @update:model-value="selectSecPropX"
-              />
-
+            <div
+              v-if="!fixedProp"
+              class="q-gutter-md row justify-center q-mb-sm"
+            >
               <q-select
                 label-color="red-6"
                 v-model="comp_name1"
                 :options="component_names"
                 hide-bottom-space
                 dense
-                label="y"
+                label="y1"
                 style="width: 100px; font-size: 12px"
                 @update:model-value="selectComponent1"
               />
               <q-select
-                v-if="prim_prop_visible1"
+                v-if="prim_prop_visible1 && prim_prop_names1.length > 1"
                 label-color="red-6"
                 v-model="selected_prim_prop_name1"
                 :options="prim_prop_names1"
@@ -83,10 +52,80 @@
                 :options="sec_prop_names1"
                 hide-bottom-space
                 dense
-                square
                 label="prop2"
                 style="width: 100px; font-size: 12px"
                 @update:model-value="selectSecProp1"
+              />
+              <q-select
+                v-if="this.channels > 1"
+                class="q-ml-md"
+                label-color="green-6"
+                v-model="comp_name2"
+                :options="component_names"
+                hide-bottom-space
+                dense
+                label="y2"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectComponent2"
+              />
+
+              <q-select
+                v-if="prim_prop_visible2 && prim_prop_names2.length > 1"
+                label-color="green-6"
+                v-model="selected_prim_prop_name2"
+                :options="prim_prop_names2"
+                hide-bottom-space
+                dense
+                label="prop1"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectPrimProp2"
+              />
+              <q-select
+                v-if="sec_prop_visible2"
+                label-color="green-6"
+                v-model="selected_sec_prop_name2"
+                :options="sec_prop_names2"
+                hide-bottom-space
+                dense
+                label="prop2"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectSecProp2"
+              />
+
+              <q-select
+                v-if="this.channels > 2"
+                class="q-ml-md"
+                label-color="blue-6"
+                v-model="comp_name3"
+                :options="component_names"
+                hide-bottom-space
+                dense
+                label="y3"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectComponent3"
+              />
+
+              <q-select
+                v-if="prim_prop_visible3 && prim_prop_names3.length > 1"
+                label-color="blue-6"
+                v-model="selected_prim_prop_name3"
+                :options="prim_prop_names3"
+                hide-bottom-space
+                dense
+                label="prop1"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectPrimProp3"
+              />
+              <q-select
+                v-if="sec_prop_visible3"
+                label-color="blue-6"
+                v-model="selected_sec_prop_name3"
+                :options="sec_prop_names3"
+                hide-bottom-space
+                dense
+                label="prop2"
+                style="width: 100px; font-size: 12px"
+                @update:model-value="selectSecProp3"
               />
             </div>
           </div>
@@ -96,8 +135,9 @@
 
         <div class="row q-mt-sm">
           <div class="col">
-            <div class="q-gutter-sm row justify-center">
+            <div v-if="!fixedProp" class="q-gutter-sm row justify-center">
               <q-checkbox
+                v-if="analysisEnabled"
                 v-model="show_summary"
                 @update:model-value="analyzeData"
                 dense
@@ -105,6 +145,7 @@
                 style="font-size: 12px"
               />
               <q-checkbox
+                v-if="autoscaleEnabled"
                 v-model="autoscale"
                 dense
                 label="autoscale"
@@ -113,32 +154,10 @@
               />
               <q-input
                 v-if="!autoscale"
-                v-model.number="x_min_axis"
-                type="number"
-                @update:model-value="autoscaling"
-                label="x min"
-                filled
-                dense
-                hide-bottom-space
-                style="width: 100px; font-size: 12px"
-              />
-              <q-input
-                v-if="!autoscale"
-                v-model.number="x_max_axis"
-                type="number"
-                @update:model-value="autoscaling"
-                label="x max"
-                filled
-                dense
-                hide-bottom-space
-                style="width: 100px; font-size: 12px"
-              />
-              <q-input
-                v-if="!autoscale"
                 v-model.number="y_min"
                 type="number"
                 @update:model-value="autoscaling"
-                label="y min"
+                label="min"
                 filled
                 dense
                 hide-bottom-space
@@ -149,7 +168,7 @@
                 v-model.number="y_max"
                 type="number"
                 @update:model-value="autoscaling"
-                label="y max"
+                label="max"
                 filled
                 dense
                 hide-bottom-space
@@ -157,6 +176,7 @@
               />
 
               <q-checkbox
+                v-if="multipliersEnabled"
                 v-model="scaling"
                 dense
                 label="multipliers"
@@ -164,24 +184,53 @@
               />
               <q-input
                 v-if="scaling"
-                v-model.number="chartx_factor"
+                v-model.number="chart1_factor"
                 type="number"
-                label="x"
+                label="y1"
                 outlined
                 dense
                 style="width: 75px; font-size: 10px"
               />
               <q-input
                 v-if="scaling"
-                v-model.number="chart1_factor"
+                v-model.number="chart2_factor"
                 type="number"
-                label="y"
+                label="y2"
                 outlined
                 dense
                 style="width: 75px; font-size: 10px"
               />
+              <q-input
+                v-if="scaling"
+                v-model.number="chart3_factor"
+                type="number"
+                label="y3"
+                outlined
+                dense
+                style="width: 75px; font-size: 10px"
+              />
+              <q-checkbox
+                v-model="mLEnabled"
+                dense
+                label="ml"
+                style="font-size: 12px"
+                @click="toggleMl"
+              />
+              <q-checkbox
+                v-model="minEnabled"
+                dense
+                label="min"
+                style="font-size: 12px"
+                @click="toggleMin"
+              />
 
-              <q-btn color="black" size="sm" @click="exportData">EXPORT</q-btn>
+              <q-btn
+                v-if="exportEnabled"
+                color="black"
+                size="sm"
+                @click="exportData"
+                >EXPORT</q-btn
+              >
             </div>
           </div>
         </div>
@@ -193,71 +242,11 @@
           >
             <q-input
               color="black"
-              v-model="x_max"
-              outlined
-              dense
-              square
-              label="x max"
-              style="width: 100px; font-size: 12px"
-            />
-            <q-input
-              color="black"
-              v-model="x_min"
-              outlined
-              dense
-              square
-              label="x min"
-              style="width: 100px; font-size: 12px"
-            />
-
-            <q-input
-              color="black"
-              v-model="x_perbeat"
-              outlined
-              dense
-              square
-              label="x max-min"
-              style="width: 100px; font-size: 12px"
-            />
-            <q-input
-              color="black"
-              v-model="x_mean"
-              outlined
-              dense
-              square
-              label="x mean"
-              style="width: 100px; font-size: 12px"
-            />
-            <q-input
-              color="black"
-              v-model="x_sd"
-              outlined
-              dense
-              square
-              label="x sd"
-              style="width: 100px; font-size: 12px"
-            />
-            <q-input
-              color="black"
-              v-model="x_perminute"
-              outlined
-              dense
-              square
-              label="x /min"
-              style="width: 100px; font-size: 12px"
-            />
-          </div>
-          <div
-            v-if="chart1_enabled"
-            class="q-gutter-xs row justify-center q-mt-xs"
-          >
-            <q-input
-              color="black"
               v-model="y1_max"
               outlined
               dense
               square
-              label="y max"
+              label="y1 max"
               style="width: 100px; font-size: 12px"
             />
             <q-input
@@ -266,7 +255,7 @@
               outlined
               dense
               square
-              label="y min"
+              label="y1 min"
               style="width: 100px; font-size: 12px"
             />
 
@@ -276,17 +265,16 @@
               outlined
               dense
               square
-              label="y max-min"
+              label="y1 max-min"
               style="width: 100px; font-size: 12px"
             />
-
             <q-input
               color="black"
               v-model="y1_mean"
               outlined
               dense
               square
-              label="y mean"
+              label="y1 mean"
               style="width: 100px; font-size: 12px"
             />
             <q-input
@@ -295,17 +283,140 @@
               outlined
               dense
               square
-              label="y sd"
+              label="y1 sd"
               style="width: 100px; font-size: 12px"
             />
-
             <q-input
               color="black"
               v-model="y1_perminute"
               outlined
               dense
               square
-              label="y /min"
+              label="y1 /min"
+              style="width: 100px; font-size: 12px"
+            />
+          </div>
+          <div
+            v-if="chart2_enabled"
+            class="q-gutter-xs row justify-center q-mt-xs"
+          >
+            <q-input
+              color="black"
+              v-model="y2_max"
+              outlined
+              dense
+              square
+              label="y2 max"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="y2_min"
+              outlined
+              dense
+              square
+              label="y2 min"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y2_perbeat"
+              outlined
+              dense
+              square
+              label="y2 max-min"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y2_mean"
+              outlined
+              dense
+              square
+              label="y2 mean"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="y2_sd"
+              outlined
+              dense
+              square
+              label="y2 sd"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y2_perminute"
+              outlined
+              dense
+              square
+              label="y2 /min"
+              style="width: 100px; font-size: 12px"
+            />
+          </div>
+          <div
+            v-if="chart3_enabled"
+            class="q-gutter-xs row justify-center q-mt-xs"
+          >
+            <q-input
+              color="black"
+              v-model="y3_max"
+              outlined
+              dense
+              square
+              label="y3 max"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="y3_min"
+              outlined
+              dense
+              square
+              label="y3 min"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y3_perbeat"
+              outlined
+              dense
+              square
+              label="y3 max-min"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y3_mean"
+              outlined
+              dense
+              square
+              label="y3 mean"
+              style="width: 100px; font-size: 12px"
+            />
+            <q-input
+              color="black"
+              v-model="y3_sd"
+              outlined
+              dense
+              square
+              label="y3 sd"
+              style="width: 100px; font-size: 12px"
+            />
+
+            <q-input
+              color="black"
+              v-model="y3_perminute"
+              outlined
+              dense
+              square
+              label="y3 /min"
               style="width: 100px; font-size: 12px"
             />
           </div>
@@ -320,6 +431,8 @@
 let chartsXY = {};
 import { explain } from "src/boot/explain";
 import * as Stat from "simple-statistics";
+import { useConfigStore } from "src/stores/config";
+import { useEngineStore } from "src/stores/engine";
 import {
   lightningChart,
   emptyFill,
@@ -330,117 +443,173 @@ import {
   AxisScrollStrategies,
   FontSettings,
   Themes,
+  _themeLoaderDuskInLapland,
 } from "@arction/lcjs";
-
 export default {
-  setup() {},
+  setup() {
+    const uiConfig = useConfigStore();
+    const engine = useEngineStore();
+    return {
+      uiConfig,
+      engine,
+    };
+  },
   props: {
-    model: String,
+    id: String,
+    caption: String,
+    models: Array,
+    props: Array,
+    channels: Number,
     collapsed: Boolean,
-    prim_prop: String,
-    sec_prop: String,
+    enabled: Boolean,
+    analysisEnabled: Boolean,
+    autoscaleEnabled: Boolean,
+    multipliersEnabled: Boolean,
+    exportEnabled: Boolean,
+    fixedProp: Boolean,
   },
   data() {
     return {
+      mLEnabled: false,
+      minEnabled: false,
+      mlFactor1: 1,
+      minFactor1: 1,
+      mlFactor2: 1,
+      minFactor2: 1,
+      mlFactor3: 1,
+      minFactor3: 1,
       isEnabled: true,
       visible: "",
       data_source: 0,
-      x_min: 0,
-      x_max: 0,
-      x_mean: 0,
-      x_sd: 0,
-      x_perminute: 0,
-      x_perbeat: 0,
       y1_min: 0,
       y1_max: 0,
       y1_mean: 0,
       y1_sd: 0,
       y1_perminute: 0,
       y1_perbeat: 0,
+      y2_min: 0,
+      y2_max: 0,
+      y2_mean: 0,
+      y2_sd: 0,
+      y2_perminute: 0,
+      y2_perbeat: 0,
+      y3_min: 0,
+      y3_max: 0,
+      y3_mean: 0,
+      y3_sd: 0,
+      y3_perminute: 0,
+      y3_perbeat: 0,
       show_summary: false,
       export_file_name: "",
-      x_min_axis: 0,
-      x_max_axis: 100,
       y_min: 0,
       y_max: 100,
       autoscale: true,
       scaling: false,
       chart1_factor: 1.0,
-      chartx_factor: 1.0,
+      chart2_factor: 1.0,
+      chart3_factor: 1.0,
       component_names: [],
       comp_name1: "",
-      comp_namex: "",
-      selected_component_name_x: "",
-      selected_prim_prop_name_x: "",
-      selected_sec_prop_name_x: "",
-      prim_prop_visible_x: false,
-      sec_prop_visible_x: false,
+      comp_name2: "",
+      comp_name3: "",
       selected_component_name1: "",
       selected_prim_prop_name1: "",
       selected_sec_prop_name1: "",
       prim_prop_visible1: false,
       sec_prop_visible1: false,
-      prim_prop_names_x: [],
-      sec_prop_names_x: [],
+      selected_component_name2: "",
+      selected_prim_prop_name2: "",
+      selected_sec_prop_name2: "",
+      prim_prop_visible2: false,
+      sec_prop_visible2: false,
+      selected_component_name3: "",
+      selected_prim_prop_name3: "",
+      selected_sec_prop_name3: "",
+      prim_prop_visible3: false,
+      sec_prop_visible3: false,
+      selected_component_name4: "",
+      selected_prim_prop_name4: "",
+      selected_sec_prop_name4: "",
+      prim_prop_visible4: false,
+      sec_prop_visible4: false,
+      selected_component_name5: "",
+      selected_prim_prop_name5: "",
+      selected_sec_prop_name5: "",
+      prim_prop_visible5: false,
+      sec_prop_visible5: false,
       prim_prop_names1: [],
       sec_prop_names1: [],
+      prim_prop_names2: [],
+      sec_prop_names2: [],
+      prim_prop_names3: [],
+      sec_prop_names3: [],
+      prim_prop_names4: [],
+      sec_prop_names4: [],
+      prim_prop_names5: [],
+      sec_prop_names5: [],
       chartId: "chart",
       chartData: [],
       chart1_enabled: false,
+      chart2_enabled: false,
+      chart3_enabled: false,
       autoscaleX: false,
       autoscaleY: false,
       title: "Title",
       lineTitle: "LineTitle",
       yLabel: "",
-      xLabel: "",
+      xLabel: "time(s)",
       width: "100%",
       height: "300px",
       first_run: true,
       lineSeries1: null,
+      lineSeries2: null,
+      lineSeries3: null,
       exportFileName: "data.csv",
+      unit1: "",
+      unit2: "",
+      unit3: "",
     };
   },
   methods: {
+    toggleMl() {},
+    toggleMin() {},
     toggleVisibility() {
       this.isEnabled = !this.isEnabled;
       if (this.isEnabled) {
-        this.visible = "visibility: visible; height: 350px";
+        this.visible = "visibility: visible;";
       } else {
         this.visible = "visibility: collapse; height: 0px";
       }
     },
     resetAnalysisResults() {
-      this.x_max = 0;
-      this.x_min = 0;
-      this.x_mean = 0;
-      this.x_perbeat = 0;
-      this.x_perminute = 0;
-      this.x_sd = 0;
       this.y1_max = 0;
       this.y1_min = 0;
       this.y1_mean = 0;
       this.y1_perbeat = 0;
       this.y1_perminute = 0;
       this.y1_sd = 0;
+      this.y2_max = 0;
+      this.y2_min = 0;
+      this.y2_mean = 0;
+      this.y2_perbeat = 0;
+      this.y2_perminute = 0;
+      this.y2_sd = 0;
+      this.y3_max = 0;
+      this.y3_min = 0;
+      this.y3_mean = 0;
+      this.y3_perbeat = 0;
+      this.y3_perminute = 0;
+      this.y3_sd = 0;
     },
     analyzeData() {
       this.resetAnalysisResults();
-      const x_values = [];
       const y1_values = [];
+      const y2_values = [];
+      const y3_values = [];
       if (this.chart1_enabled) {
         this.chartData1.forEach((datapoint) => {
-          x_values.push(datapoint.x);
           y1_values.push(datapoint.y);
         });
-        this.x_min = Stat.min(x_values).toFixed(4);
-        this.x_max = Stat.max(x_values).toFixed(4);
-        this.x_mean = Stat.mean(x_values).toFixed(4);
-        this.x_sd = Stat.standardDeviation(x_values).toFixed(4);
-        this.x_perminute = (
-          (Stat.sum(x_values) / parseFloat(x_values.length)) *
-          60.0
-        ).toFixed(4);
-        this.x_perbeat = (this.x_max - this.x_min).toFixed(4);
         this.y1_min = Stat.min(y1_values).toFixed(4);
         this.y1_max = Stat.max(y1_values).toFixed(4);
         this.y1_mean = Stat.mean(y1_values).toFixed(4);
@@ -451,22 +620,61 @@ export default {
         ).toFixed(4);
         this.y1_perbeat = (this.y1_max - this.y1_min).toFixed(4);
       }
+      if (this.chart2_enabled) {
+        this.chartData2.forEach((datapoint) => {
+          y2_values.push(datapoint.y);
+        });
+        this.y2_min = Stat.min(y2_values).toFixed(4);
+        this.y2_max = Stat.max(y2_values).toFixed(4);
+        this.y2_mean = Stat.mean(y2_values).toFixed(4);
+        this.y2_sd = Stat.standardDeviation(y2_values).toFixed(4);
+        this.y2_perminute = (
+          (Stat.sum(y2_values) / parseFloat(y2_values.length)) *
+          60.0
+        ).toFixed(4);
+        this.y2_perbeat = (this.y2_max - this.y2_min).toFixed(4);
+      }
+      if (this.chart3_enabled) {
+        this.chartData3.forEach((datapoint) => {
+          y3_values.push(datapoint.y);
+        });
+        this.y3_min = Stat.min(y3_values).toFixed(4);
+        this.y3_max = Stat.max(y3_values).toFixed(4);
+        this.y3_mean = Stat.mean(y3_values).toFixed(4);
+        this.y3_sd = Stat.standardDeviation(y3_values).toFixed(4);
+        this.y3_perminute = (
+          (Stat.sum(y3_values) / parseFloat(y3_values.length)) *
+          60.0
+        ).toFixed(4);
+        this.y3_perbeat = (this.y3_max - this.y3_min).toFixed(4);
+      }
     },
     exportData() {
       let header = "";
       let t = new Date().toLocaleString();
       if (this.chart1_enabled) {
         header =
-          this.selected_component_name_x +
-          this.selected_prim_prop_name_x +
-          this.selected_sec_prop_name_x +
-          "_vs_" +
           this.selected_component_name1 +
           this.selected_prim_prop_name1 +
-          this.selected_sec_prop_name1 +
-          ".csv";
-        this.exportFileName = `${header}_${t}.csv`;
-        this.writeDataToDisk(this.chartData1, header);
+          this.selected_sec_prop_name1;
+        this.exportFileName = `time_vs_${header}_${t}.csv`;
+        this.writeDataToDisk(this.chartData1, "time," + header);
+      }
+      if (this.chart2_enabled) {
+        header =
+          this.selected_component_name2 +
+          this.selected_prim_prop_name2 +
+          this.selected_sec_prop_name2;
+        this.exportFileName = `time_vs_${header}_${t}.csv`;
+        this.writeDataToDisk(this.chartData2, "time," + header);
+      }
+      if (this.chart3_enabled) {
+        header =
+          this.selected_component_name3 +
+          this.selected_prim_prop_name3 +
+          this.selected_sec_prop_name3;
+        this.exportFileName = `time_vs_${header}_${t}.csv`;
+        this.writeDataToDisk(this.chartData3, "time," + header);
       }
     },
     writeDataToDisk(data_object, header) {
@@ -505,49 +713,88 @@ export default {
     },
     autoscaling() {
       if (this.autoscale) {
-        chartsXY[this.chartId].chartXAxis.setScrollStrategy(
-          AxisScrollStrategies.fitting
-        );
         chartsXY[this.chartId].chartYAxis.setScrollStrategy(
           AxisScrollStrategies.fitting
         );
       } else {
-        chartsXY[this.chartId].chartXAxis.setScrollStrategy(
-          AxisScrollStrategies.Numeric
-        );
-        chartsXY[this.chartId].chartXAxis.setInterval(
-          this.x_min_axis,
-          this.x_max_axis
-        );
         chartsXY[this.chartId].chartYAxis.setScrollStrategy(
           AxisScrollStrategies.Numeric
         );
         chartsXY[this.chartId].chartYAxis.setInterval(this.y_min, this.y_max);
       }
     },
+
     selectSecProp1() {
-      if (this.selected_component_name1 && this.selected_prim_prop_name1) {
-        explain.watchModelProperty(
-          this.selected_component_name1,
-          this.selected_prim_prop_name1,
-          this.selected_sec_prop_name1
-        );
+      this.uiConfig.charts[this.id].selectedSecProp1 =
+        this.selected_sec_prop_name1;
+    },
+    findUnit(comp_name, prop_name) {
+      let unit = "";
+      let mt = explain.modelState.Models[comp_name].ModelType;
+      // find the unit
+      Object.keys(this.engine.core_models[mt].inputs).forEach((input) => {
+        if (input === prop_name) {
+          unit = this.engine.core_models[mt].inputs[prop_name].unit;
+        }
+      });
+      Object.keys(this.engine.core_models[mt].outputs).forEach((output) => {
+        if (output === prop_name) {
+          unit = this.engine.core_models[mt].outputs[prop_name].unit;
+        }
+      });
+
+      return unit;
+    },
+    unitConversion(current_unit, desired_unit) {
+      let factor = 1;
+      switch (desired_unit) {
+        case "l/s":
+          factor = 1000;
+          break;
+        case "ml/min":
+          factor = 60.0;
+          break;
       }
+      return factor;
     },
     selectPrimProp1(selection) {
+      // find the unit
+      this.unit1 = this.findUnit(this.selected_component_name1, selection);
+      // split the unit
+      if (this.mLEnabled) {
+        this.mlFactor1 = 1000;
+        this.unit1 = "ml/sec";
+      }
+      if (this.minEnabled) {
+        this.minFactor1 = 60.0;
+      }
+      // set the label
+      this.yLabel = this.unit1;
+      // add the chart to the global chartsXY array
+      chartsXY[this.chartId].chartYAxis
+        .setTitle(this.yLabel)
+        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ff0000") }));
+
+      // stop the realtime model
+      this.$bus.emit("stop_rt");
+      // store the current selection
+      this.uiConfig.charts[this.id].selectedPrimProp1 =
+        this.selected_prim_prop_name1;
       // reset the secondary property names
       this.sec_prop_names1 = [];
       // clear the currently selected secundary prop name
       this.selected_sec_prop_name1 = "";
+      // update the store
+      this.uiConfig.charts[this.id].selectedSecProp1 = "";
       // find any secondary property names
       Object.keys(
-        explain.modelState[this.selected_component_name1][selection]
+        explain.modelState.Models[this.selected_component_name1][selection]
       ).forEach((key) => {
         if (
-          typeof explain.modelState[this.selected_component_name1][
+          typeof explain.modelState.Models[this.selected_component_name1][
             selection
           ] !== "string" &&
-          typeof explain.modelState[this.selected_component_name1][
+          typeof explain.modelState.Models[this.selected_component_name1][
             selection
           ] !== "boolean"
         ) {
@@ -564,94 +811,158 @@ export default {
       } else {
         // hide the secundary property
         this.sec_prop_visible1 = false;
-        // add to watcher
-        // add to watcher
-        if (this.selected_component_name1 && this.selected_prim_prop_name1) {
-          explain.watchModelProperty(
-            this.selected_component_name1,
-            this.selected_prim_prop_name1,
-            this.selected_sec_prop_name1
-          );
-        }
       }
     },
-    selectSecPropX() {
-      if (this.selected_component_name_x && this.selected_prim_prop_name_x) {
-        explain.watchModelProperty(
-          this.selected_component_name_x,
-          this.selected_prim_prop_name_x,
-          this.selected_sec_prop_name_x
-        );
-      }
+
+    selectSecProp2() {
+      this.uiConfig.charts[this.id].selectedSecProp2 =
+        this.selected_sec_prop_name2;
     },
-    selectPrimPropX(selection) {
+    selectPrimProp2(selection) {
+      // find the unit
+      this.unit2 = this.findUnit(this.selected_component_name2, selection);
+      console.log(this.selected_component_name1);
+      console.log(this.selected_prim_prop_name1);
+
+      if (this.selected_component_name1 === "") {
+        // set the label only if the first prop1 is empty
+        this.yLabel = this.unit2;
+        // add the chart to the global chartsXY array
+        chartsXY[this.chartId].chartYAxis
+          .setTitle(this.yLabel)
+          .setTitleFillStyle(new SolidFill({ color: ColorHEX("#00ff00") }));
+      }
+
+      // stop the realtime model
+      this.$bus.emit("stop_rt");
+      // store the current selection
+      this.uiConfig.charts[this.id].selectedPrimProp2 =
+        this.selected_prim_prop_name2;
       // reset the secondary property names
-      this.sec_prop_names_x = [];
+      this.sec_prop_names2 = [];
       // clear the currently selected secundary prop name
-      this.selected_sec_prop_name_x = "";
+      this.selected_sec_prop_name2 = "";
+      // update the store
+      this.uiConfig.charts[this.id].selectedSecProp2 = "";
       // find any secondary property names
       Object.keys(
-        explain.modelState[this.selected_component_name_x][selection]
+        explain.modelState.Models[this.selected_component_name2][selection]
       ).forEach((key) => {
         if (
-          typeof explain.modelState[this.selected_component_name_x][
+          typeof explain.modelState.Models[this.selected_component_name2][
             selection
           ] !== "string" &&
-          typeof explain.modelState[this.selected_component_name_x][
+          typeof explain.modelState.Models[this.selected_component_name2][
             selection
           ] !== "boolean"
         ) {
           // add the property to the list
-          this.sec_prop_names_x.push(key);
+          this.sec_prop_names2.push(key);
         }
       });
       // sort the list of any items are on it
-      if (this.sec_prop_names_x.length > 0) {
+      if (this.sec_prop_names2.length > 0) {
         // make the secondary property visible
-        this.sec_prop_visible_x = true;
+        this.sec_prop_visible2 = true;
         // sort th elist
-        this.sec_prop_names_x.sort();
+        this.sec_prop_names2.sort();
       } else {
         // hide the secundary property
-        this.sec_prop_visible_x = false;
-        // add to watcher
-        if (this.selected_component_name_x && this.selected_prim_prop_name_x) {
-          explain.watchModelProperty(
-            this.selected_component_name_x,
-            this.selected_prim_prop_name_x,
-            this.selected_sec_prop_name_x
-          );
-        }
+        this.sec_prop_visible2 = false;
       }
     },
-    selectComponent1(selection) {
-      if (selection === "") {
-        if (this.selected_component_name1 && this.selected_prim_prop_name1) {
-          explain.unwatchModelProperty(
-            this.selected_component_name1,
-            this.selected_prim_prop_name1,
-            this.selected_sec_prop_name1
-          );
-        }
+
+    selectSecProp3() {
+      this.uiConfig.charts[this.id].selectedSecProp2 =
+        this.selected_sec_prop_name2;
+    },
+    selectPrimProp3(selection) {
+      // find the unit
+      this.unit3 = this.findUnit(this.selected_component_name3, selection);
+      if (
+        this.selected_component_name1 === "" &&
+        this.selected_component_name2 === ""
+      ) {
+        // set the label only if the first prop1 is empty
+        this.yLabel = this.unit3;
+        // add the chart to the global chartsXY array
+        chartsXY[this.chartId].chartYAxis
+          .setTitle(this.yLabel)
+          .setTitleFillStyle(new SolidFill({ color: ColorHEX("#0000ff") }));
       }
+      // stop the realtime model
+      this.$bus.emit("stop_rt");
+      // store the current selection
+      this.uiConfig.charts[this.id].selectedPrimProp3 =
+        this.selected_prim_prop_name3;
+      // reset the secondary property names
+      this.sec_prop_names3 = [];
+
+      // clear the currently selected secundary prop name
+      this.selected_sec_prop_name3 = "";
+      // update the store
+      this.uiConfig.charts[this.id].selectedSecProp3 = "";
+      // find any secondary property names
+      Object.keys(
+        explain.modelState.Models[this.selected_component_name3][selection]
+      ).forEach((key) => {
+        if (
+          typeof explain.modelState.Models[this.selected_component_name3][
+            selection
+          ] !== "string" &&
+          typeof explain.modelState.Models[this.selected_component_name3][
+            selection
+          ] !== "boolean"
+        ) {
+          // add the property to the list
+          this.sec_prop_names3.push(key);
+        }
+      });
+      // sort the list of any items are on it
+      if (this.sec_prop_names3.length > 0) {
+        // make the secondary property visible
+        this.sec_prop_visible3 = true;
+        // sort th elist
+        this.sec_prop_names3.sort();
+      } else {
+        // hide the secundary property
+        this.sec_prop_visible3 = false;
+        // add to the watcher
+      }
+    },
+
+    selectComponent1(selection) {
       this.selected_component_name1 = selection;
       // component1 has been selected, clear the primary and secundary property lists
+      this.uiConfig.charts[this.id].selectedModel1 =
+        this.selected_component_name1;
+
       this.prim_prop_names1 = [];
       this.sec_prop_names1 = [];
       // component1 has been selected, clear the primary and secundary selected properties
       this.selected_prim_prop_name1 = "";
       this.selected_sec_prop_name1 = "";
+      this.uiConfig.charts[this.id].selectedPrimProp1 =
+        this.selected_prim_prop_name1;
+      this.uiConfig.charts[this.id].selectedSecProp1 =
+        this.selected_sec_prop_name1;
       // hide secondary properties as we don't know if they exist yet
       this.sec_prop_visible1 = false;
       this.prim_prop_visible1 = false;
       // find the primary properties of the selected component
       if (selection) {
-        Object.keys(explain.modelState[selection]).forEach((key) => {
+        Object.keys(explain.modelState.Models[selection]).forEach((key) => {
           if (
-            typeof explain.modelState[selection][key] !== "string" &&
-            typeof explain.modelState[selection][key] !== "boolean"
+            typeof explain.modelState.Models[selection][key] !== "string" &&
+            typeof explain.modelState.Models[selection][key] !== "boolean"
           ) {
-            this.prim_prop_names1.push(key);
+            if (this.props.length > 0) {
+              if (this.props.includes(key)) {
+                this.prim_prop_names1.push(key);
+              }
+            } else {
+              this.prim_prop_names1.push(key);
+            }
           }
         });
         // if the propery list is not empty then sort the list alphabetically
@@ -660,94 +971,164 @@ export default {
           // show the primary properties as we selected a component
           this.prim_prop_visible1 = true;
         }
-      }
-    },
-    selectComponentX(selection) {
-      if (selection === "") {
-        if (this.selected_component_name_x && this.selected_prim_prop_name_x) {
-          explain.unwatchModelProperty(
-            this.selected_component_name_x,
-            this.selected_prim_prop_name_x,
-            this.selected_sec_prop_name_x
-          );
+        if (this.prim_prop_names1.length == 1) {
+          this.selected_prim_prop_name1 = this.prim_prop_names1[0];
+          this.selectPrimProp1(this.selected_prim_prop_name1);
         }
       }
-      this.selected_component_name_x = selection;
+    },
+    selectComponent2(selection) {
+      this.selected_component_name2 = selection;
+      this.uiConfig.charts[this.id].selectedModel2 =
+        this.selected_component_name2;
+
       // component1 has been selected, clear the primary and secundary property lists
-      this.prim_prop_names_x = [];
-      this.sec_prop_names_x = [];
+      this.prim_prop_names2 = [];
+      this.sec_prop_names2 = [];
       // component1 has been selected, clear the primary and secundary selected properties
-      this.selected_prim_prop_name_x = "";
-      this.selected_sec_prop_name_x = "";
+      this.selected_prim_prop_name2 = "";
+      this.selected_sec_prop_name2 = "";
+      this.uiConfig.charts[this.id].selectedPrimProp2 =
+        this.selected_prim_prop_name2;
+      this.uiConfig.charts[this.id].selectedSecProp2 =
+        this.selected_sec_prop_name2;
       // hide secondary properties as we don't know if they exist yet
-      this.sec_prop_visible_x = false;
+      this.sec_prop_visible2 = false;
       // show the primary properties as we selected a component
-      this.prim_prop_visible_x = false;
+      this.prim_prop_visible2 = false;
       if (selection) {
         // find the primary properties of the selected component
-        Object.keys(explain.modelState[selection]).forEach((key) => {
+        Object.keys(explain.modelState.Models[selection]).forEach((key) => {
           if (
-            typeof explain.modelState[selection][key] !== "string" &&
-            typeof explain.modelState[selection][key] !== "boolean"
+            typeof explain.modelState.Models[selection][key] !== "string" &&
+            typeof explain.modelState.Models[selection][key] !== "boolean"
           ) {
-            this.prim_prop_names_x.push(key);
+            if (this.props.length > 0) {
+              if (this.props.includes(key)) {
+                this.prim_prop_names2.push(key);
+              }
+            } else {
+              this.prim_prop_names2.push(key);
+            }
           }
         });
         // if the propery list is not empty then sort the list alphabetically
-        if (this.prim_prop_names_x.length > 0) {
-          this.prim_prop_names_x.sort();
-          this.prim_prop_visible_x = true;
+        if (this.prim_prop_names2.length > 0) {
+          this.prim_prop_names2.sort();
+          this.prim_prop_visible2 = true;
+        }
+        if (this.prim_prop_names2.length == 1) {
+          this.selected_prim_prop_name2 = this.prim_prop_names2[0];
+          this.selectPrimProp2(this.selected_prim_prop_name2);
         }
       }
     },
+    selectComponent3(selection) {
+      this.selected_component_name3 = selection;
+      this.uiConfig.charts[this.id].selectedModel3 =
+        this.selected_component_name3;
+      // component1 has been selected, clear the primary and secundary property lists
+      this.prim_prop_names3 = [];
+      this.sec_prop_names3 = [];
+      // component1 has been selected, clear the primary and secundary selected properties
+      this.selected_prim_prop_name3 = "";
+      this.selected_sec_prop_name3 = "";
+      this.uiConfig.charts[this.id].selectedPrimProp3 =
+        this.selected_prim_prop_name3;
+      this.uiConfig.charts[this.id].selectedSecProp3 =
+        this.selected_sec_prop_name3;
+      // hide secondary properties as we don't know if they exist yet
+      this.sec_prop_visible3 = false;
+      // show the primary properties as we selected a component
+      this.prim_prop_visible3 = false;
+      if (selection) {
+        // find the primary properties of the selected component
+        Object.keys(explain.modelState.Models[selection]).forEach((key) => {
+          if (
+            typeof explain.modelState.Models[selection][key] !== "string" &&
+            typeof explain.modelState.Models[selection][key] !== "boolean"
+          ) {
+            if (this.props.length > 0) {
+              if (this.props.includes(key)) {
+                this.prim_prop_names3.push(key);
+              }
+            } else {
+              this.prim_prop_names3.push(key);
+            }
+          }
+        });
+        // if the propery list is not empty then sort the list alphabetically
+        if (this.prim_prop_names3.length > 0) {
+          this.prim_prop_names3.sort();
+          this.prim_prop_visible3 = true;
+        }
+        if (this.prim_prop_names3.length == 1) {
+          this.selected_prim_prop_name3 = this.prim_prop_names3[0];
+          this.selectPrimProp3(this.selected_prim_prop_name3);
+        }
+      }
+    },
+
     stateUpdate() {
       // reset the component names as the model state is updated
       this.component_names = [""];
       // read all model components
-      Object.keys(explain.modelState).forEach((key) => {
-        this.component_names.push(key);
+      Object.keys(explain.modelState.Models).forEach((key) => {
+        let mt = explain.modelState.Models[key].ModelType;
+        if (this.models.length > 0) {
+          if (this.models.includes(mt)) {
+            this.component_names.push(key);
+          }
+        } else {
+          this.component_names.push(key);
+        }
       });
       // sort the model components alphabetically
       this.component_names.sort();
     },
     clearPrimaryProperties() {
       // hide all primary properties
-      this.prim_prop_visible_x = false;
       this.prim_prop_visible1 = false;
+      this.prim_prop_visible2 = false;
+      this.prim_prop_visible3 = false;
+      this.prim_prop_visible4 = false;
+      this.prim_prop_visible5 = false;
     },
     clearSecondaryProperties() {
       // hide all secundary properties
-      this.sec_prop_visible_x = false;
       this.sec_prop_visible1 = false;
+      this.sec_prop_visible2 = false;
+      this.sec_prop_visible3 = false;
+      this.sec_prop_visible4 = false;
+      this.sec_prop_visible5 = false;
     },
     rtUpdate() {
+      if (!this.isEnabled) return;
       this.data_source = 1;
       this.dataUpdate();
       this.data_source = 0;
     },
     dataUpdate() {
-      if (this.data_source === 0) {
+      if (!this.isEnabled) return;
+
+      if (this.data_source == 0) {
         this.chartData1 = [];
+        this.chartData2 = [];
+        this.chartData3 = [];
       }
       this.lineSeries1.clear();
-      if (!this.scaling) {
-        this.chartx_factor = 1.0;
-        this.chart2_factor = 1.0;
+      if (this.lineSeries2) {
+        this.lineSeries2.clear();
       }
-      let prop_x = "";
-      let postFix_x = "";
-      this.chart1_enabled = false;
-      if (this.selected_component_name_x && this.selected_prim_prop_name_x) {
-        this.chart1_enabled = true;
-        prop_x =
-          this.selected_component_name_x + "." + this.selected_prim_prop_name_x;
-        if (this.selected_sec_prop_name_x) {
-          prop_x += "." + this.selected_sec_prop_name_x;
-        }
-        postFix_x = "";
-        if (this.selected_prim_prop_name_x === "compounds") {
-          postFix_x = "conc";
-        }
+
+      if (this.lineSeries3) {
+        this.lineSeries3.clear();
+      }
+
+      if (!this.scaling) {
+        this.chart1_factor = 1.0;
+        this.chart2_factor = 1.0;
+        this.chart3_factor = 1.0;
       }
       let prop1 = "";
       let postFix1 = "";
@@ -764,27 +1145,111 @@ export default {
           postFix1 = "conc";
         }
       }
+      let prop2 = "";
+      let postFix2 = "";
+      this.chart2_enabled = false;
+      if (this.selected_component_name2 && this.selected_prim_prop_name2) {
+        this.chart2_enabled = true;
+        prop2 =
+          this.selected_component_name2 + "." + this.selected_prim_prop_name2;
+        if (this.selected_sec_prop_name2) {
+          prop2 += "." + this.selected_sec_prop_name2;
+        }
+        postFix2 = "";
+        if (this.selected_prim_prop_name2 === "compounds") {
+          postFix2 = "conc";
+        }
+      }
+      let prop3 = "";
+      let postFix3 = "";
+      this.chart3_enabled = false;
+      if (this.selected_component_name3 && this.selected_prim_prop_name3) {
+        this.chart3_enabled = true;
+        prop3 =
+          this.selected_component_name3 + "." + this.selected_prim_prop_name3;
+        if (this.selected_sec_prop_name3) {
+          prop3 += "." + this.selected_sec_prop_name3;
+        }
+        postFix3 = "";
+        if (this.selected_prim_prop_name2 === "compounds") {
+          postFix3 = "conc";
+        }
+      }
+
       explain.modelData.forEach((data) => {
         if (this.chart1_enabled) {
-          let x1 = parseFloat(data[prop_x]) * this.chartx_factor;
-          let y1 = parseFloat(data[prop1]) * this.chart1_factor;
+          let y1 =
+            parseFloat(data[prop1]) *
+            this.chart1_factor *
+            this.mlFactor1 *
+            this.minFactor1;
           if (postFix1) {
-            y1 = parseFloat(data[prop1][postFix1]) * this.chart1_factor;
-          }
-          if (postFix_x) {
-            x1 = parseFloat(data[prop_x][postFix_x]) * this.chartx_factor;
+            y1 =
+              parseFloat(data[prop1][postFix1]) *
+              this.chart1_factor *
+              this.mlFactor1 *
+              this.minFactor1;
           }
           this.chartData1.push({
-            x: x1,
+            x: data.time,
             y: y1,
           });
           if (this.data_source === 1) {
             this.chartData1.shift();
           }
         }
+        if (this.chart2_enabled) {
+          let y2 =
+            parseFloat(data[prop2]) *
+            this.chart2_factor *
+            this.mlFactor2 *
+            this.minFactor2;
+          if (postFix2) {
+            y2 =
+              parseFloat(data[prop2][postFix2]) *
+              this.chart2_factor *
+              this.mlFactor2 *
+              this.minFactor2;
+          }
+          this.chartData2.push({
+            x: data.time,
+            y: y2,
+          });
+          if (this.data_source === 1) {
+            this.chartData2.shift();
+          }
+        }
+        if (this.chart3_enabled) {
+          let y3 =
+            parseFloat(data[prop3]) *
+            this.chart3_factor *
+            this.mlFactor3 *
+            this.minFactor3;
+          if (postFix3) {
+            y3 =
+              parseFloat(data[prop3][postFix3]) *
+              this.chart3_factor *
+              this.mlFactor3 *
+              this.minFactor3;
+          }
+          this.chartData3.push({
+            x: data.time,
+            y: y3,
+          });
+          if (this.data_source === 1) {
+            this.chartData3.shift();
+          }
+        }
       });
+
       if (this.chart1_enabled) {
         this.lineSeries1.add(this.chartData1);
+      }
+      if (this.chart2_enabled) {
+        this.lineSeries2.add(this.chartData2);
+      }
+      if (this.chart3_enabled) {
+        this.lineSeries3.add(this.chartData3);
       }
       if (this.show_summary) {
         this.analyzeData();
@@ -798,6 +1263,7 @@ export default {
       }
       this.resetAnalysisResults();
     },
+
     createChart() {
       let chart_object = {
         chart: null,
@@ -842,7 +1308,7 @@ export default {
       chart_object.chartYAxis = chart_object.chart.getDefaultAxisY();
       chart_object.chartYAxis
         .setTitle(this.yLabel)
-        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#fff") }))
+        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ff0000") }))
         .setTitleFont(new FontSettings({ size: 12, style: "normal" }))
         .setTickStrategy(AxisTickStrategies.Numeric)
         .setTickStyle((a) =>
@@ -852,18 +1318,7 @@ export default {
           a.setMinorTickStyle((b) => b.setLabelFont((font) => font.setSize(8)))
         )
         .setScrollStrategy(AxisScrollStrategies.fitting);
-      //.setAnimationScroll(false);
-      /*  Axis.setScrollStrategy | configure automatic scrolling behavior.
-          Axis.setInterval | configure active axis interval.
-          Axis.getInterval | get active axis interval.
-          Axis.fit | fit axis interval to contain all attached series boundaries.
-          Axis.stop | stop automatic scrolling momentarily.
-          Axis.onScaleChange | trigger a custom action whenever axis scale changes.
-          Axis.setAnimationScroll | Enable/disable automatic scrolling animation.
-          Axis.disableAnimations | Disable all animations for the Axis.
-      */
-      // https://lightningchart.com/lightningchart-js-api-documentation/v3.4.0/classes/axis.html
-      //   dummy data
+
       this.lineSeries1 = chart_object.chart
         .addLineSeries()
         .setName(this.lineTitle);
@@ -871,7 +1326,27 @@ export default {
       this.lineSeries1.setStrokeStyle((style) =>
         style.setFillStyle(new SolidFill({ color: ColorRGBA(200, 0, 0) }))
       );
-      //this.lineSeries.add(this.points);
+
+      if (this.channels > 1) {
+        this.lineSeries2 = chart_object.chart
+          .addLineSeries()
+          .setName(this.lineTitle);
+        this.lineSeries2.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries2.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
+        );
+      }
+
+      if (this.channels > 2) {
+        this.lineSeries3 = chart_object.chart
+          .addLineSeries()
+          .setName(this.lineTitle);
+        this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries3.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 0, 200) }))
+        );
+      }
+
       // add the chart to the global chartsXY array
       chartsXY[this.chartId] = chart_object;
     },
@@ -879,27 +1354,53 @@ export default {
   beforeUnmount() {
     // remove the current chart from the chartsXY array (which is a global object)
     delete chartsXY[this.chartId];
-    document.removeEventListener("rt", this.rtUpdate);
     document.removeEventListener("data", this.dataUpdate);
     document.removeEventListener("state", this.stateUpdate);
+    document.removeEventListener("rt", this.rtUpdate);
   },
   beforeMount() {
     // generate a unique chartID
     this.chartId = "chart" + Math.floor(Math.random() * 10000);
   },
   mounted() {
+    // remove handlers
     try {
       document.removeEventListener("data", this.dataUpdate);
       document.removeEventListener("state", this.stateUpdate);
       document.removeEventListener("rt", this.rtUpdate);
     } catch {}
+
+    if (this.fixedProp) {
+      this.selected_component_name1 = this.models[0];
+      this.selected_prim_prop_name1 = this.props[0];
+      this.selected_sec_prop_name1 = "";
+      this.selected_component_name2 = this.models[0];
+      this.selected_prim_prop_name2 = this.props[1];
+      this.selected_component_name3 = this.models[0];
+      this.selected_prim_prop_name3 = this.props[2];
+      this.selected_sec_prop_name2 = "";
+      explain.watchModelProperties([
+        this.selected_component_name1 + "." + this.selected_prim_prop_name1,
+        this.selected_component_name1 + "." + this.selected_prim_prop_name2,
+        this.selected_component_name1 + "." + this.selected_prim_prop_name3,
+      ]);
+      this.height = "100px";
+    }
+
     // create the chart
     this.createChart();
+
     // get the model state
     explain.getModelState();
     document.addEventListener("rt", this.rtUpdate);
     document.addEventListener("data", this.dataUpdate);
     document.addEventListener("state", this.stateUpdate);
+    //this.toggleVisibility();
+    this.chartData1 = [];
+    this.chartData2 = [];
+    this.chartData3 = [];
+    // get the visibilty
+    this.isEnabled = this.collapsed;
     this.toggleVisibility();
   },
 };
@@ -909,7 +1410,7 @@ export default {
 .chart {
   background: black;
   width: 100%;
-  height: 250px;
+  height: 200px;
   align-self: flex-start;
 }
 </style>

@@ -205,11 +205,7 @@ export default {
       // reset the updateProps list
       this.updateList = {};
     },
-    addToModel() {
-      if (this.newModelName === "") {
-        alert("Give your model component a name!");
-      }
-    },
+
     cancel() {
       this.$emit("cancel");
     },

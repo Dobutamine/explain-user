@@ -25,29 +25,29 @@
               class="q-gutter-md row justify-center q-mb-sm"
             >
               <q-select
-                label-color="red-6"
+                :label-color="labelColor"
                 v-model="comp_name1"
                 :options="component_names"
                 hide-bottom-space
                 dense
-                label="y1"
+                :label="labelY1"
                 style="width: 100px; font-size: 12px"
                 @update:model-value="selectComponent1"
               />
               <q-select
                 v-if="prim_prop_visible1 && prim_prop_names1.length > 1"
-                label-color="red-6"
+                :label-color="labelColor"
                 v-model="selected_prim_prop_name1"
                 :options="prim_prop_names1"
                 hide-bottom-space
                 dense
-                label="prop1"
+                :label="labelProp1"
                 style="width: 100px; font-size: 12px"
                 @update:model-value="selectPrimProp1"
               />
               <q-select
                 v-if="sec_prop_visible1"
-                label-color="red-6"
+                :label-color="labelColor"
                 v-model="selected_sec_prop_name1"
                 :options="sec_prop_names1"
                 hide-bottom-space
@@ -470,6 +470,11 @@ export default {
   },
   data() {
     return {
+      loopMode: false,
+      loopModeXAxis: "Pres",
+      labelY1: "y1",
+      labelProp1: "prop1",
+      labelColor: "red-6",
       mLEnabled: false,
       minEnabled: false,
       mlFactor1: 1,
@@ -768,12 +773,28 @@ export default {
       if (this.minEnabled) {
         this.minFactor1 = 60.0;
       }
-      // set the label
-      this.yLabel = this.unit1;
-      // add the chart to the global chartsXY array
-      chartsXY[this.chartId].chartYAxis
-        .setTitle(this.yLabel)
-        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ff0000") }));
+
+      if (this.loopMode) {
+        // set the label
+        this.xLabel =
+          this.selected_component_name1 +
+          "." +
+          this.selected_prim_prop_name1 +
+          "(" +
+          this.unit1 +
+          ")";
+        // add the chart to the global chartsXY array
+        chartsXY[this.chartId].chartXAxis
+          .setTitle(this.xLabel)
+          .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ffffff") }));
+      } else {
+        // set the label only if the first prop1 is empty
+        this.yLabel = this.unit2;
+        // add the chart to the global chartsXY array
+        chartsXY[this.chartId].chartYAxis
+          .setTitle(this.yLabel)
+          .setTitleFillStyle(new SolidFill({ color: ColorHEX("#00ff00") }));
+      }
 
       // stop the realtime model
       this.$bus.emit("stop_rt");
@@ -824,8 +845,8 @@ export default {
       console.log(this.selected_component_name1);
       console.log(this.selected_prim_prop_name1);
 
-      if (this.selected_component_name1 === "") {
-        // set the label only if the first prop1 is empty
+      // set the label only if the first prop1 is empty
+      if (this.loopMode || this.selected_sec_prop_name1 == "") {
         this.yLabel = this.unit2;
         // add the chart to the global chartsXY array
         chartsXY[this.chartId].chartYAxis
@@ -1105,8 +1126,132 @@ export default {
     rtUpdate() {
       if (!this.isEnabled) return;
       this.data_source = 1;
-      this.dataUpdate();
+      if (this.loopMode) {
+        this.dataUpdateLoopMode();
+      } else {
+        this.dataUpdate();
+      }
       this.data_source = 0;
+    },
+    dataUpdateLoopMode() {
+      if (!this.isEnabled) return;
+
+      if (this.data_source == 0) {
+        this.chartData2 = [];
+        this.chartData3 = [];
+      }
+      if (this.lineSeries2) {
+        this.lineSeries2.clear();
+      }
+
+      if (this.lineSeries3) {
+        this.lineSeries3.clear();
+      }
+
+      if (!this.scaling) {
+        this.chart2_factor = 1.0;
+        this.chart3_factor = 1.0;
+      }
+      let prop1 = "";
+      let postFix1 = "";
+      this.chart1_enabled = false;
+      if (this.selected_component_name1 && this.selected_prim_prop_name1) {
+        this.chart1_enabled = true;
+        prop1 =
+          this.selected_component_name1 + "." + this.selected_prim_prop_name1;
+        if (this.selected_sec_prop_name1) {
+          prop1 += "." + this.selected_sec_prop_name1;
+        }
+        postFix1 = "";
+        if (this.selected_prim_prop_name1 === "compounds") {
+          postFix1 = "conc";
+        }
+      }
+      let prop2 = "";
+      let postFix2 = "";
+      this.chart2_enabled = false;
+      if (this.selected_component_name2 && this.selected_prim_prop_name2) {
+        this.chart2_enabled = true;
+        prop2 =
+          this.selected_component_name2 + "." + this.selected_prim_prop_name2;
+        if (this.selected_sec_prop_name2) {
+          prop2 += "." + this.selected_sec_prop_name2;
+        }
+        postFix2 = "";
+        if (this.selected_prim_prop_name2 === "compounds") {
+          postFix2 = "conc";
+        }
+      }
+      let prop3 = "";
+      let postFix3 = "";
+      this.chart3_enabled = false;
+      if (this.selected_component_name3 && this.selected_prim_prop_name3) {
+        this.chart3_enabled = true;
+        prop3 =
+          this.selected_component_name3 + "." + this.selected_prim_prop_name3;
+        if (this.selected_sec_prop_name3) {
+          prop3 += "." + this.selected_sec_prop_name3;
+        }
+        postFix3 = "";
+        if (this.selected_prim_prop_name2 === "compounds") {
+          postFix3 = "conc";
+        }
+      }
+
+      explain.modelData.forEach((data) => {
+        if (this.chart2_enabled) {
+          let y2 =
+            parseFloat(data[prop2]) *
+            this.chart2_factor *
+            this.mlFactor2 *
+            this.minFactor2;
+          if (postFix2) {
+            y2 =
+              parseFloat(data[prop2][postFix2]) *
+              this.chart2_factor *
+              this.mlFactor2 *
+              this.minFactor2;
+          }
+          this.chartData2.push({
+            x: data[prop1],
+            y: y2,
+          });
+          if (this.data_source === 1) {
+            this.chartData2.shift();
+          }
+        }
+        if (this.chart3_enabled) {
+          let y3 =
+            parseFloat(data[prop3]) *
+            this.chart3_factor *
+            this.mlFactor3 *
+            this.minFactor3;
+          if (postFix3) {
+            y3 =
+              parseFloat(data[prop3][postFix3]) *
+              this.chart3_factor *
+              this.mlFactor3 *
+              this.minFactor3;
+          }
+          this.chartData3.push({
+            x: data[prop1],
+            y: y3,
+          });
+          if (this.data_source === 1) {
+            this.chartData3.shift();
+          }
+        }
+      });
+
+      if (this.chart2_enabled) {
+        this.lineSeries2.add(this.chartData2);
+      }
+      if (this.chart3_enabled) {
+        this.lineSeries3.add(this.chartData3);
+      }
+      if (this.show_summary) {
+        this.analyzeData();
+      }
     },
     dataUpdate() {
       if (!this.isEnabled) return;
@@ -1275,10 +1420,13 @@ export default {
         container: this.chartId,
         theme: Themes.darkGold,
         antialias: true,
-        disableAnimations: false,
-        responsive: true,
+        disableAnimations: true,
+        responsive: false,
         maintainAspectRatio: false,
+        interactions: false,
       });
+      chart_object.chart.setMouseInteractions(false);
+      //chart_object.chart.setInteractions(false);
       // chart_object.chart.setTitle(this.title);
       // chart_object.chart.setTitleFont(
       //   new FontSettings({ size: 12, style: "normal" })
@@ -1363,6 +1511,13 @@ export default {
     this.chartId = "chart" + Math.floor(Math.random() * 10000);
   },
   mounted() {
+    console.log(this.id);
+    if (this.id === "loops") {
+      this.loopMode = true;
+      this.labelY1 = "x";
+      this.labelProp1 = "x prop";
+      this.labelColor = "white";
+    }
     // remove handlers
     try {
       document.removeEventListener("data", this.dataUpdate);
@@ -1393,7 +1548,13 @@ export default {
     // get the model state
     explain.getModelState();
     document.addEventListener("rt", this.rtUpdate);
-    document.addEventListener("data", this.dataUpdate);
+    document.addEventListener("data", () => {
+      if (this.loopMode) {
+        this.dataUpdateLoopMode();
+      } else {
+        this.dataUpdate();
+      }
+    });
     document.addEventListener("state", this.stateUpdate);
     //this.toggleVisibility();
     this.chartData1 = [];
