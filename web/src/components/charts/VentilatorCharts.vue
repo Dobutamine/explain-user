@@ -316,14 +316,6 @@ export default {
           .setScrollStrategy(AxisScrollStrategies.fitting);
         chartsXY[this.chartId].dashboard.setRowHeight(2, 0.1);
 
-        this.lineSeries1 = chartsXY[this.chartId].chart1
-          .addLineSeries()
-          .setName(this.lineTitle);
-        this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
-        this.lineSeries1.setStrokeStyle((style) =>
-          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
-        );
-
         chartsXY[this.chartId].chart3.dispose();
       } else {
         chartsXY[this.chartId].dashboard.setRowHeight(0, 0.5);
@@ -342,14 +334,11 @@ export default {
         chartsXY[this.chartId].dashboard.setRowHeight(2, 0.5);
 
         this.lineSeries1 = chartsXY[this.chartId].chart1
-          .addAreaSeries({ type: AreaSeriesPositive })
+          .addLineSeries()
           .setName(this.lineTitle);
         this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
         this.lineSeries1.setStrokeStyle((style) =>
           style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
-        );
-        this.lineSeries1.setFillStyle(
-          new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
         );
 
         this.createChart3();
@@ -388,14 +377,11 @@ export default {
         .setScrollStrategy(AxisScrollStrategies.fitting);
 
       this.lineSeries3 = chartsXY[this.chartId].chart3
-        .addAreaSeries({ type: AreaSeriesPositive })
+        .addLineSeries()
         .setName(this.lineTitle);
       this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
       this.lineSeries3.setStrokeStyle((style) =>
         style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
-      );
-      this.lineSeries3.setFillStyle(
-        new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
       );
     },
 
@@ -452,14 +438,11 @@ export default {
         .setScrollStrategy(AxisScrollStrategies.fitting);
 
       this.lineSeries1 = chartsXY[this.chartId].chart1
-        .addAreaSeries({ type: AreaSeriesPositive })
+        .addLineSeries()
         .setName(this.lineTitle);
       this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
       this.lineSeries1.setStrokeStyle((style) =>
         style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
-      );
-      this.lineSeries1.setFillStyle(
-        new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
       );
 
       chartsXY[this.chartId].chart2 = chartsXY[this.chartId].dashboard
@@ -530,14 +513,11 @@ export default {
         .setScrollStrategy(AxisScrollStrategies.fitting);
 
       this.lineSeries3 = chartsXY[this.chartId].chart3
-        .addAreaSeries({ type: AreaSeriesTypes.Positive })
+        .addLineSeries()
         .setName(this.lineTitle);
       this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
       this.lineSeries3.setStrokeStyle((style) =>
         style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
-      );
-      this.lineSeries3.setFillStyle(
-        new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
       );
     },
   },

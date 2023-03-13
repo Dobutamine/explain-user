@@ -17,14 +17,10 @@
           name="fa-solid fa-chevron-up"
         ></q-icon>
       </div>
-      <q-btn @click="areaLineSeries">test</q-btn>
       <div :style="visible">
         <div class="row q-mt-sm">
           <div class="col">
-            <div
-              v-if="!fixedProp"
-              class="q-gutter-md row justify-center q-mb-sm"
-            >
+            <div class="q-gutter-md row justify-center q-mb-sm">
               <q-select
                 :label-color="labelColor"
                 v-model="comp_name1"
@@ -136,7 +132,7 @@
 
         <div class="row q-mt-sm">
           <div class="col">
-            <div v-if="!fixedProp" class="q-gutter-sm row justify-center">
+            <div class="q-gutter-sm row justify-center">
               <q-checkbox
                 v-if="analysisEnabled"
                 v-model="show_summary"
@@ -209,20 +205,6 @@
                 outlined
                 dense
                 style="width: 75px; font-size: 10px"
-              />
-              <q-checkbox
-                v-model="mLEnabled"
-                dense
-                label="ml"
-                style="font-size: 12px"
-                @click="toggleMl"
-              />
-              <q-checkbox
-                v-model="minEnabled"
-                dense
-                label="min"
-                style="font-size: 12px"
-                @click="toggleMin"
               />
 
               <q-btn
