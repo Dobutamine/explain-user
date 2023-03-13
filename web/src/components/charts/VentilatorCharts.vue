@@ -42,6 +42,8 @@ import {
   _themeLoaderDuskInLapland,
   AutoCursorModes,
   emptyTick,
+  AreaSeriesTypes,
+  AreaSeriesPositive,
 } from "@arction/lcjs";
 import { MechanicalVentilator } from "src/explain/ModelIndex";
 export default {
@@ -313,6 +315,15 @@ export default {
           )
           .setScrollStrategy(AxisScrollStrategies.fitting);
         chartsXY[this.chartId].dashboard.setRowHeight(2, 0.1);
+
+        this.lineSeries1 = chartsXY[this.chartId].chart1
+          .addLineSeries()
+          .setName(this.lineTitle);
+        this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries1.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
+        );
+
         chartsXY[this.chartId].chart3.dispose();
       } else {
         chartsXY[this.chartId].dashboard.setRowHeight(0, 0.5);
@@ -329,6 +340,18 @@ export default {
           .setAnimationScroll(false);
         chartsXY[this.chartId].dashboard.setRowHeight(1, 0.5);
         chartsXY[this.chartId].dashboard.setRowHeight(2, 0.5);
+
+        this.lineSeries1 = chartsXY[this.chartId].chart1
+          .addAreaSeries({ type: AreaSeriesPositive })
+          .setName(this.lineTitle);
+        this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries1.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
+        );
+        this.lineSeries1.setFillStyle(
+          new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
+        );
+
         this.createChart3();
       }
     },
@@ -365,16 +388,19 @@ export default {
         .setScrollStrategy(AxisScrollStrategies.fitting);
 
       this.lineSeries3 = chartsXY[this.chartId].chart3
-        .addLineSeries()
+        .addAreaSeries({ type: AreaSeriesPositive })
         .setName(this.lineTitle);
       this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
       this.lineSeries3.setStrokeStyle((style) =>
         style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
       );
+      this.lineSeries3.setFillStyle(
+        new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
+      );
     },
 
     createDashboard() {
-      let chart_object = {
+      chartsXY[this.chartId] = {
         dashboard: null,
         chart1: null,
         chart2: null,
@@ -387,32 +413,31 @@ export default {
         chart3YAxis: null,
       };
 
-      chart_object.dashboard = lightningChart()
+      chartsXY[this.chartId].dashboard = lightningChart()
         .Dashboard({
           numberOfRows: 3,
           numberOfColumns: 1,
           disableAnimations: true,
           container: this.chartId,
-          // theme: Themes.darkGold
         })
         .setRowHeight(0, 0.5)
         .setRowHeight(1, 0.5)
         .setRowHeight(2, 0.6);
 
       // chart 1
-      chart_object.chart1 = chart_object.dashboard
+      chartsXY[this.chartId].chart1 = chartsXY[this.chartId].dashboard
         .createChartXY({ rowIndex: 0, columnIndex: 0 })
         .setPadding({ bottom: 4, top: 4, right: 4, left: 4 })
         .setMouseInteractions(false)
         .setAutoCursorMode(AutoCursorModes.disabled)
         .setTitleFillStyle(emptyFill);
-      chart_object.chart1XAxis = chart_object.chart1
+      chartsXY[this.chartId].chart1XAxis = chartsXY[this.chartId].chart1
         .getDefaultAxisX()
         .setTitleFillStyle(emptyFill)
         .setTickStrategy(AxisTickStrategies.Empty)
         .setScrollStrategy(AxisScrollStrategies.fitting)
         .setAnimationScroll(false);
-      chart_object.chart1YAxis = chart_object.chart1
+      chartsXY[this.chartId].chart1YAxis = chartsXY[this.chartId].chart1
         .getDefaultAxisY()
         .setTitle("Pres (cmH2O)")
         .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ffffff") }))
@@ -426,27 +451,30 @@ export default {
         )
         .setScrollStrategy(AxisScrollStrategies.fitting);
 
-      this.lineSeries1 = chart_object.chart1
-        .addLineSeries()
+      this.lineSeries1 = chartsXY[this.chartId].chart1
+        .addAreaSeries({ type: AreaSeriesPositive })
         .setName(this.lineTitle);
       this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
       this.lineSeries1.setStrokeStyle((style) =>
         style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
       );
+      this.lineSeries1.setFillStyle(
+        new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
+      );
 
-      chart_object.chart2 = chart_object.dashboard
+      chartsXY[this.chartId].chart2 = chartsXY[this.chartId].dashboard
         .createChartXY({ rowIndex: 1, columnIndex: 0 })
         .setPadding({ bottom: 4, top: 4, right: 4, left: 4 })
         .setMouseInteractions(false)
         .setAutoCursorMode(AutoCursorModes.disabled)
         .setTitleFillStyle(emptyFill);
-      chart_object.chart2XAxis = chart_object.chart2
+      chartsXY[this.chartId].chart2XAxis = chartsXY[this.chartId].chart2
         .getDefaultAxisX()
         .setTitleFillStyle(emptyFill)
         .setTickStrategy(AxisTickStrategies.Empty)
         .setScrollStrategy(AxisScrollStrategies.fitting)
         .setAnimationScroll(false);
-      chart_object.chart2YAxis = chart_object.chart2
+      chartsXY[this.chartId].chart2YAxis = chartsXY[this.chartId].chart2
         .getDefaultAxisY()
         .setTitle("Flow (l/min)")
         .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ffffff") }))
@@ -460,7 +488,7 @@ export default {
         )
         .setScrollStrategy(AxisScrollStrategies.fitting);
 
-      this.lineSeries2 = chart_object.chart2
+      this.lineSeries2 = chartsXY[this.chartId].chart2
         .addLineSeries()
         .setName(this.lineTitle);
       this.lineSeries2.setStrokeStyle((style) => style.setThickness(2));
@@ -468,13 +496,14 @@ export default {
         style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
       );
 
-      chart_object.chart3 = chart_object.dashboard
+      chartsXY[this.chartId].chart3 = chartsXY[this.chartId].dashboard
         .createChartXY({ rowIndex: 2, columnIndex: 0 })
         .setPadding({ bottom: 4, top: 4, right: 4, left: 4 })
         .setMouseInteractions(false)
         .setAutoCursorMode(AutoCursorModes.disabled)
         .setTitleFillStyle(emptyFill);
-      chart_object.chart3XAxis = chart_object.chart3
+
+      chartsXY[this.chartId].chart3XAxis = chartsXY[this.chartId].chart3
         .getDefaultAxisX()
         .setTickStrategy(AxisTickStrategies.Numeric)
         .setTickStyle((a) =>
@@ -485,7 +514,8 @@ export default {
         )
         .setScrollStrategy(AxisScrollStrategies.fitting)
         .setAnimationScroll(false);
-      chart_object.chart3YAxis = chart_object.chart3
+
+      chartsXY[this.chartId].chart3YAxis = chartsXY[this.chartId].chart3
         .getDefaultAxisY()
         .setTitle("Vol (mL)")
         .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ffffff") }))
@@ -499,102 +529,16 @@ export default {
         )
         .setScrollStrategy(AxisScrollStrategies.fitting);
 
-      this.lineSeries3 = chart_object.chart3
-        .addLineSeries()
+      this.lineSeries3 = chartsXY[this.chartId].chart3
+        .addAreaSeries({ type: AreaSeriesTypes.Positive })
         .setName(this.lineTitle);
       this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
       this.lineSeries3.setStrokeStyle((style) =>
         style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
       );
-
-      // add chart object
-      chartsXY[this.chartId] = chart_object;
-    },
-    createChart() {
-      let chart_object = {
-        chart: null,
-        chartXAxis: null,
-        chartYAxis: null,
-      };
-      // Set up chart
-      chart_object.chart = lightningChart().ChartXY({
-        container: this.chartId,
-        theme: Themes.darkGold,
-        antialias: true,
-        disableAnimations: false,
-        responsive: true,
-        maintainAspectRatio: false,
-      });
-      // chart_object.chart.setTitle(this.title);
-      // chart_object.chart.setTitleFont(
-      //   new FontSettings({ size: 12, style: "normal" })
-      // );
-      chart_object.chart.setTitleFillStyle(emptyFill);
-      chart_object.chart.setPadding({
-        top: 10,
-        bottom: 0,
-        left: 15,
-        right: 30,
-      });
-      // Set up axes
-      chart_object.chartXAxis = chart_object.chart.getDefaultAxisX();
-      chart_object.chartXAxis
-        .setTitle(this.xLabel)
-        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#fff") }))
-        .setTitleFont(new FontSettings({ size: 12, style: "normal" }))
-        .setTickStrategy(AxisTickStrategies.Numeric)
-        .setTickStyle((a) =>
-          a.setMajorTickStyle((b) => b.setLabelFont((font) => font.setSize(10)))
-        )
-        .setTickStyle((a) =>
-          a.setMinorTickStyle((b) => b.setLabelFont((font) => font.setSize(8)))
-        )
-        .setScrollStrategy(AxisScrollStrategies.fitting)
-        .setAnimationScroll(false);
-      chart_object.chartYAxis = chart_object.chart.getDefaultAxisY();
-      chart_object.chartYAxis
-        .setTitle(this.yLabel)
-        .setTitleFillStyle(new SolidFill({ color: ColorHEX("#ff0000") }))
-        .setTitleFont(new FontSettings({ size: 12, style: "normal" }))
-        .setTickStrategy(AxisTickStrategies.Numeric)
-        .setTickStyle((a) =>
-          a.setMajorTickStyle((b) => b.setLabelFont((font) => font.setSize(10)))
-        )
-        .setTickStyle((a) =>
-          a.setMinorTickStyle((b) => b.setLabelFont((font) => font.setSize(8)))
-        )
-        .setScrollStrategy(AxisScrollStrategies.fitting);
-
-      this.lineSeries1 = chart_object.chart
-        .addLineSeries()
-        .setName(this.lineTitle);
-      this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
-      this.lineSeries1.setStrokeStyle((style) =>
-        style.setFillStyle(new SolidFill({ color: ColorRGBA(200, 0, 0) }))
+      this.lineSeries3.setFillStyle(
+        new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
       );
-
-      if (this.channels > 1) {
-        this.lineSeries2 = chart_object.chart
-          .addLineSeries()
-          .setName(this.lineTitle);
-        this.lineSeries2.setStrokeStyle((style) => style.setThickness(2));
-        this.lineSeries2.setStrokeStyle((style) =>
-          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
-        );
-      }
-
-      if (this.channels > 2) {
-        this.lineSeries3 = chart_object.chart
-          .addLineSeries()
-          .setName(this.lineTitle);
-        this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
-        this.lineSeries3.setStrokeStyle((style) =>
-          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 0, 200) }))
-        );
-      }
-
-      // add the chart to the global chartsXY array
-      chartsXY[this.chartId] = chart_object;
     },
   },
   beforeUnmount() {
@@ -616,26 +560,7 @@ export default {
       document.removeEventListener("rt", this.rtUpdate);
     } catch {}
 
-    if (this.fixedProp) {
-      this.selected_component_name1 = this.models[0];
-      this.selected_prim_prop_name1 = this.props[0];
-      this.selected_sec_prop_name1 = "";
-      this.selected_component_name2 = this.models[0];
-      this.selected_prim_prop_name2 = this.props[1];
-      this.selected_component_name3 = this.models[0];
-      this.selected_prim_prop_name3 = this.props[2];
-      this.selected_sec_prop_name2 = "";
-      explain.watchModelProperties([
-        "MechanicalVentilator.Vol",
-        this.selected_component_name1 + "." + this.selected_prim_prop_name1,
-        this.selected_component_name1 + "." + this.selected_prim_prop_name2,
-        this.selected_component_name1 + "." + this.selected_prim_prop_name3,
-      ]);
-      this.height = "100px";
-    }
-
-    // create the chart
-    //this.createChart();
+    // create the dashboard
     this.createDashboard();
 
     // get the model state
@@ -658,12 +583,10 @@ export default {
     this.toggleVisibility();
 
     this.$bus.on("ventilator_on", () => {
-      console.log("ventilator screen on");
       this.isEnabled = true;
     });
 
     this.$bus.on("ventilator_off", () => {
-      console.log("ventilator screen off");
       this.isEnabled = false;
     });
   },

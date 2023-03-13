@@ -39,6 +39,12 @@ export class Placenta extends ModelBaseClass {
   Humidity = 0.5;
   Temp = 20.0;
 
+  // flow
+  UaFlow = 0.0;
+  UaVelocity = 0.0;
+  UaVelocity10 = 0.0;
+  UaDiameter = 3.0;
+
   // local parameters
   _temp_max_pres = -1000.0;
   _temp_min_pres = 1000.0;
@@ -70,6 +76,9 @@ export class Placenta extends ModelBaseClass {
     this._modelEngine.Models["UV_IVCI"].NoFlow = false;
     this._maternalPlacenta.IsEnabled = true;
     this._gasExchangerPlacenta.IsEnabled = true;
+    this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaFlow");
+    this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaVelocity");
+    this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaVelocity10");
   }
 
   Disable() {
@@ -85,6 +94,9 @@ export class Placenta extends ModelBaseClass {
     this._modelEngine.Models["UV_IVCI"].NoFlow = true;
     this._maternalPlacenta.IsEnabled = false;
     this._gasExchangerPlacenta.IsEnabled = false;
+    this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaFlow");
+    this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaVelocity");
+    this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaVelocity10");
   }
 
   // model initializer
@@ -175,6 +187,15 @@ export class Placenta extends ModelBaseClass {
   }
   // override the base class CalcModel method
   CalcModel() {
+    this.UaFlow = this._modelEngine.Models["AD_UA"].Flow;
+
+    // calculate the radius in meters
+    let radius_meters = this.UaDiameter / 2 / 1000.0;
+
+    this.UaVelocity =
+      this.UaFlow / 1000.0 / (Math.PI * Math.pow(radius_meters, 2.0));
+    this.UaVelocity10 = this.UaVelocity * 10.0;
+
     this.PlacentalGasExchange();
   }
 

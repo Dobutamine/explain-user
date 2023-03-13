@@ -17,6 +17,7 @@
           name="fa-solid fa-chevron-up"
         ></q-icon>
       </div>
+      <q-btn @click="areaLineSeries">test</q-btn>
       <div :style="visible">
         <div class="row q-mt-sm">
           <div class="col">
@@ -441,10 +442,12 @@ import {
   ColorHEX,
   AxisTickStrategies,
   AxisScrollStrategies,
+  AreaSeriesTypes,
   FontSettings,
   Themes,
   _themeLoaderDuskInLapland,
 } from "@arction/lcjs";
+
 export default {
   setup() {
     const uiConfig = useConfigStore();
@@ -466,7 +469,6 @@ export default {
     autoscaleEnabled: Boolean,
     multipliersEnabled: Boolean,
     exportEnabled: Boolean,
-    fixedProp: Boolean,
   },
   data() {
     return {
@@ -573,6 +575,7 @@ export default {
       unit1: "",
       unit2: "",
       unit3: "",
+      areaLineType: false,
     };
   },
   methods: {
@@ -728,7 +731,6 @@ export default {
         chartsXY[this.chartId].chartYAxis.setInterval(this.y_min, this.y_max);
       }
     },
-
     selectSecProp1() {
       this.uiConfig.charts[this.id].selectedSecProp1 =
         this.selected_sec_prop_name1;
@@ -892,7 +894,6 @@ export default {
         this.sec_prop_visible2 = false;
       }
     },
-
     selectSecProp3() {
       this.uiConfig.charts[this.id].selectedSecProp2 =
         this.selected_sec_prop_name2;
@@ -1089,7 +1090,6 @@ export default {
         }
       }
     },
-
     stateUpdate() {
       // reset the component names as the model state is updated
       this.component_names = [""];
@@ -1408,7 +1408,30 @@ export default {
       }
       this.resetAnalysisResults();
     },
-
+    areaLineSeries() {
+      this.areaLineType = !this.areaLineType;
+      this.lineSeries1.clear();
+      if (this.areaLineType) {
+        this.lineSeries1 = chartsXY[this.chartId].chart
+          .addAreaSeries({ type: AreaSeriesTypes.Positive })
+          .setName(this.lineTitle);
+        this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries1.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(200, 0, 0) }))
+        );
+        this.lineSeries1.setFillStyle(
+          new SolidFill({ color: ColorRGBA(200, 0, 0, 127) })
+        );
+      } else {
+        this.lineSeries1 = chartsXY[this.chartId].chart
+          .addLineSeries()
+          .setName(this.lineTitle);
+        this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries1.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(200, 0, 0) }))
+        );
+      }
+    },
     createChart() {
       let chart_object = {
         chart: null,
@@ -1425,6 +1448,7 @@ export default {
         maintainAspectRatio: false,
         interactions: false,
       });
+
       chart_object.chart.setMouseInteractions(false);
       //chart_object.chart.setInteractions(false);
       // chart_object.chart.setTitle(this.title);
@@ -1511,7 +1535,6 @@ export default {
     this.chartId = "chart" + Math.floor(Math.random() * 10000);
   },
   mounted() {
-    console.log(this.id);
     if (this.id === "loops") {
       this.loopMode = true;
       this.labelY1 = "x";
@@ -1524,23 +1547,6 @@ export default {
       document.removeEventListener("state", this.stateUpdate);
       document.removeEventListener("rt", this.rtUpdate);
     } catch {}
-
-    if (this.fixedProp) {
-      this.selected_component_name1 = this.models[0];
-      this.selected_prim_prop_name1 = this.props[0];
-      this.selected_sec_prop_name1 = "";
-      this.selected_component_name2 = this.models[0];
-      this.selected_prim_prop_name2 = this.props[1];
-      this.selected_component_name3 = this.models[0];
-      this.selected_prim_prop_name3 = this.props[2];
-      this.selected_sec_prop_name2 = "";
-      explain.watchModelProperties([
-        this.selected_component_name1 + "." + this.selected_prim_prop_name1,
-        this.selected_component_name1 + "." + this.selected_prim_prop_name2,
-        this.selected_component_name1 + "." + this.selected_prim_prop_name3,
-      ]);
-      this.height = "100px";
-    }
 
     // create the chart
     this.createChart();
