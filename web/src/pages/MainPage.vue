@@ -190,6 +190,7 @@
                     :autoscaleEnabled="chart.autoscaleEnabled"
                     :multipliersEnabled="chart.multipliersEnabled"
                     :exportEnabled="chart.exportEnabled"
+                    :loopMode="chart.loopMode"
                   ></TimeChartComponentVue>
                 </div>
               </q-scroll-area>
@@ -283,6 +284,7 @@
                     :autoscaleEnabled="chart.autoscaleEnabled"
                     :multipliersEnabled="chart.multipliersEnabled"
                     :exportEnabled="chart.exportEnabled"
+                    :loopMode="chart.loopMode"
                   ></TimeChartComponentVue>
                 </div>
               </q-scroll-area>

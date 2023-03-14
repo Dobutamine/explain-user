@@ -451,10 +451,10 @@ export default {
     autoscaleEnabled: Boolean,
     multipliersEnabled: Boolean,
     exportEnabled: Boolean,
+    loopMode: Boolean,
   },
   data() {
     return {
-      loopMode: false,
       loopModeXAxis: "Pres",
       labelY1: "y1",
       labelProp1: "prop1",
@@ -1080,10 +1080,14 @@ export default {
         let mt = explain.modelState.Models[key].ModelType;
         if (this.models.length > 0) {
           if (this.models.includes(mt)) {
-            this.component_names.push(key);
+            if (explain.modelState.Models[key].IsEnabled) {
+              this.component_names.push(key);
+            }
           }
         } else {
-          this.component_names.push(key);
+          if (explain.modelState.Models[key].IsEnabled) {
+            this.component_names.push(key);
+          }
         }
       });
       // sort the model components alphabetically
@@ -1517,8 +1521,7 @@ export default {
     this.chartId = "chart" + Math.floor(Math.random() * 10000);
   },
   mounted() {
-    if (this.id === "loops") {
-      this.loopMode = true;
+    if (this.loopMode) {
       this.labelY1 = "x";
       this.labelProp1 = "x prop";
       this.labelColor = "white";
