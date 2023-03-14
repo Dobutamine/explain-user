@@ -191,6 +191,7 @@
                     :multipliersEnabled="chart.multipliersEnabled"
                     :exportEnabled="chart.exportEnabled"
                     :loopMode="chart.loopMode"
+                    :areaMode="chart.areaMode"
                   ></TimeChartComponentVue>
                 </div>
               </q-scroll-area>
@@ -285,6 +286,7 @@
                     :multipliersEnabled="chart.multipliersEnabled"
                     :exportEnabled="chart.exportEnabled"
                     :loopMode="chart.loopMode"
+                    :areaMode="chart.areaMode"
                   ></TimeChartComponentVue>
                 </div>
               </q-scroll-area>

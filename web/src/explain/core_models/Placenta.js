@@ -4,61 +4,18 @@ import { BloodCompliance } from "./BloodCompliance";
 import { Diffusor } from "./Diffusor";
 
 export class Placenta extends ModelBaseClass {
-  // independent variables
-  Vol = 0.0;
-  UVol = 0.0;
-  ElBase = 0.0;
-  ElK = 0.0;
-  Pres0 = 0;
-  PresMus = 0;
-  PresExt = 0;
-  PresCc = 0;
-  Solutes = {};
-
-  // dependent variables
-  Pres = 0.0;
-  PresInlet = 0;
-  PresOutlet = 0;
-  VolMax = 0.0;
-  VolMin = 0.0;
-  PresMax = 0.0;
-  PresMin = 0.0;
-  To2 = 0;
-  Po2 = 0.0;
-  So2 = 0.0;
-  Tco2 = 0.0;
-  Pco2 = 0.0;
-  Ph = 0.0;
-  Hco3 = 0.0;
-
-  PAtm = 760.0;
-  Fo2Dry = 0.205;
-  Fco2Dry = 0.000392;
-  Fn2Dry = 0.794608;
-  FotherDry = 0;
-  Humidity = 0.5;
-  Temp = 20.0;
+  MaternalTo2 = 7.8;
+  MaternalTco2 = 27.4;
+  DifO2 = 0.01;
+  DifCo2 = 0.01;
+  Resistance = 250;
+  Elastance = 5000;
 
   // flow
   UaFlow = 0.0;
+  UaInFlow = 0.0;
   UaVelocity = 0.0;
-  UaVelocity10 = 0.0;
   UaDiameter = 3.0;
-
-  // local parameters
-  _temp_max_pres = -1000.0;
-  _temp_min_pres = 1000.0;
-  _temp_max_vol = -1000.0;
-  _temp_min_vol = 1000.0;
-  _update_counter = 0.0;
-  _update_interval = 1.0;
-
-  _umbilicalVein = {};
-  _umbilicalArteries = {};
-  _uVIn = {};
-  _uVOut = {};
-  _uAIn = {};
-  _uAOut = {};
 
   _maternalPlacenta = {};
   _gasExchangerPlacenta = {};
@@ -78,6 +35,7 @@ export class Placenta extends ModelBaseClass {
     this._gasExchangerPlacenta.IsEnabled = true;
     this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaFlow");
     this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaVelocity");
+    this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaInFlow");
     this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaVelocity10");
   }
 
@@ -95,6 +53,7 @@ export class Placenta extends ModelBaseClass {
     this._maternalPlacenta.IsEnabled = false;
     this._gasExchangerPlacenta.IsEnabled = false;
     this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaFlow");
+    this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaInFlow");
     this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaVelocity");
     this._modelEngine.DataCollector.add_to_watchlist("Placenta.UaVelocity10");
   }
@@ -187,20 +146,26 @@ export class Placenta extends ModelBaseClass {
   }
   // override the base class CalcModel method
   CalcModel() {
+    // set the resistance of the placenta
+    this._modelEngine.Models["UA_PLF"].RFor = this.Resistance;
+    this._modelEngine.Models["UA_PLF"].RBack = this.Resistance;
+    this._modelEngine.Models["PLF_UV"].RFor = this.Resistance;
+    this._modelEngine.Models["PLF_UV"].RBack = this.Resistance;
+    this._modelEngine.Models["PLF"].ElBase = this.Elastance;
+
+    // get the umbilical artery flow
     this.UaFlow = this._modelEngine.Models["AD_UA"].Flow;
+    this.UaInFlow = this._modelEngine.Models["AD_UA"].FlowForwardSec;
 
     // calculate the radius in meters
     let radius_meters = this.UaDiameter / 2 / 1000.0;
 
+    // calculate the umbilical artery flow velocity
     this.UaVelocity =
       this.UaFlow / 1000.0 / (Math.PI * Math.pow(radius_meters, 2.0));
-    this.UaVelocity10 = this.UaVelocity * 10.0;
 
-    this.PlacentalGasExchange();
-  }
-
-  PlacentalGasExchange() {
-    this._maternalPlacenta.To2 = 7.8;
-    this._maternalPlacenta.Tco2 = 27.4;
+    // set the maternal placenta o2 and co2 concentrations
+    this._maternalPlacenta.To2 = this.MaternalTo2;
+    this._maternalPlacenta.Tco2 = this.MaternalTco2;
   }
 }

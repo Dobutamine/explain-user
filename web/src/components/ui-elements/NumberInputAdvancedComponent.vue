@@ -6,6 +6,7 @@
     :label="name"
     hide-hint
     type="number"
+    :step="0.1"
     dense
     dark
     stack-label

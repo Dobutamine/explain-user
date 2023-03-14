@@ -45,6 +45,7 @@ export class Pda extends ModelBaseClass {
       this.Flow = 0.0;
       this.Velocity = 0.0;
       this._pda.NoFlow = true;
+      console.log("closed");
       return;
     }
 
@@ -67,7 +68,6 @@ export class Pda extends ModelBaseClass {
 
     // transfer the resistance to the ductus arteriosus blood connector and enable flow
     this._pda.IsEnabled = this.IsEnabled;
-    this._pda.NoFlow = !this.IsEnabled;
     this._pda.RFor = this._res;
     this._pda.RBack = this._res;
 

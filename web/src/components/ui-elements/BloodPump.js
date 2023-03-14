@@ -305,10 +305,10 @@ export default class BloodPump {
     if (isNaN(to2)) {
       return 0x666666;
     }
-    if (to2 > 7.6) {
-      to2 = 7.6;
+    if (to2 > 7.4) {
+      to2 = 7.4;
     }
-    let remap = this.remap(to2, 0, 7.6, -10, 1);
+    let remap = this.remap(to2, 0, 7.4, -10, 1);
     if (remap < 0) remap = 0;
     const red = (remap * 210).toFixed(0);
     const green = (remap * 80).toFixed(0);

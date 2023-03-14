@@ -31,7 +31,7 @@
 
       <div class="q-ma-sm row gutter text-overline justify-center">
         <div>
-          <div class="row justify-center">Resistance</div>
+          <div class="row justify-center">Res</div>
           <q-knob
             v-model="resistance"
             :min="15"
@@ -41,8 +41,55 @@
             :thickness="0.22"
             color="secondary"
             track-color="grey-3"
-            class="row q-ml-sm"
+            class="row"
             @update:model-value="changeResistance"
+          ></q-knob>
+        </div>
+        <div>
+          <div class="row justify-center q-ml-md">Elas</div>
+          <q-knob
+            v-model="elastance"
+            :min="1000"
+            :max="50000"
+            :step="1"
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row q-ml-lg"
+            @update:model-value="changeElastance"
+          ></q-knob>
+        </div>
+        <div>
+          <div class="row justify-center q-ml-md">To2</div>
+          <q-knob
+            v-model="to2"
+            :min="0"
+            :max="10"
+            :step="0.1"
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            track-color="grey-3"
+            class="row q-ml-lg"
+            show-value
+            @update:model-value="changeTo2"
+          ></q-knob>
+        </div>
+        <div>
+          <div class="row justify-center q-ml-md">Tco2</div>
+          <q-knob
+            v-model="tco2"
+            :min="24"
+            :max="35"
+            :step="0.1"
+            size="50px"
+            :thickness="0.22"
+            color="secondary"
+            show-value
+            track-color="grey-3"
+            class="row q-ml-lg"
+            @update:model-value="ChangeTco2"
           ></q-knob>
         </div>
       </div>
@@ -74,39 +121,55 @@ export default {
       collapsed: false,
       isEnabled: true,
       currentData: {},
-      resistance: 20.0,
+      resistance: 250.0,
+      elastance: 5000,
       placenta: false,
       clamp: false,
       advanced: false,
+      to2: 7.8,
+      tco2: 27.4,
     };
   },
   methods: {
+    changeTo2() {
+      explain.setModelProperties([
+        {
+          m: "Placenta",
+          p: "MaternalTo2",
+          v: this.to2,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    ChangeTco2() {
+      explain.setModelProperties([
+        {
+          m: "Placenta",
+          p: "MaternalTco2",
+          v: this.tco2,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+    changeElastance() {
+      explain.setModelProperties([
+        {
+          m: "Placenta",
+          p: "Elastance",
+          v: this.elastance,
+          at: 0.0,
+          it: 0.0,
+        },
+      ]);
+    },
+
     changeResistance() {
       explain.setModelProperties([
         {
-          m: "PLF_UV",
-          p: "RFor",
-          v: this.resistance,
-          at: 0.0,
-          it: 0.0,
-        },
-        {
-          m: "PLF_UV",
-          p: "RBack",
-          v: this.resistance,
-          at: 0.0,
-          it: 0.0,
-        },
-        {
-          m: "UA_PLF",
-          p: "RFor",
-          v: this.resistance,
-          at: 0.0,
-          it: 0.0,
-        },
-        {
-          m: "UA_PLF",
-          p: "RBack",
+          m: "Placenta",
+          p: "Resistance",
           v: this.resistance,
           at: 0.0,
           it: 0.0,
@@ -174,7 +237,10 @@ export default {
       });
 
       this.placenta = explain.modelState.Models["Placenta"].IsEnabled;
-      this.resistance = explain.modelState.Models["UA_PLF"].RFor;
+      this.resistance = explain.modelState.Models["Placenta"].Resistance;
+      this.elastance = explain.modelState.Models["Placenta"].Elastance;
+      this.to2 = explain.modelState.Models["Placenta"].MaternalTo2;
+      this.tco2 = explain.modelState.Models["Placenta"].MaternalTco2;
     },
   },
   beforeUnmount() {

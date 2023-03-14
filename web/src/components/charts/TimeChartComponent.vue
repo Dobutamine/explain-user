@@ -452,6 +452,7 @@ export default {
     multipliersEnabled: Boolean,
     exportEnabled: Boolean,
     loopMode: Boolean,
+    areaMode: Boolean,
   },
   data() {
     return {
@@ -1477,32 +1478,64 @@ export default {
         )
         .setScrollStrategy(AxisScrollStrategies.fitting);
 
-      this.lineSeries1 = chart_object.chart
-        .addLineSeries()
-        .setName(this.lineTitle);
-      this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
-      this.lineSeries1.setStrokeStyle((style) =>
-        style.setFillStyle(new SolidFill({ color: ColorRGBA(200, 0, 0) }))
-      );
-
-      if (this.channels > 1) {
-        this.lineSeries2 = chart_object.chart
+      if (!this.areaMode) {
+        this.lineSeries1 = chart_object.chart
           .addLineSeries()
           .setName(this.lineTitle);
-        this.lineSeries2.setStrokeStyle((style) => style.setThickness(2));
-        this.lineSeries2.setStrokeStyle((style) =>
-          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
+        this.lineSeries1.setStrokeStyle((style) => style.setThickness(2));
+        this.lineSeries1.setStrokeStyle((style) =>
+          style.setFillStyle(new SolidFill({ color: ColorRGBA(200, 0, 0) }))
         );
-      }
 
-      if (this.channels > 2) {
-        this.lineSeries3 = chart_object.chart
-          .addLineSeries()
-          .setName(this.lineTitle);
-        this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
-        this.lineSeries3.setStrokeStyle((style) =>
-          style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 0, 200) }))
-        );
+        if (this.channels > 1) {
+          this.lineSeries2 = chart_object.chart
+            .addLineSeries()
+            .setName(this.lineTitle);
+          this.lineSeries2.setStrokeStyle((style) => style.setThickness(2));
+          this.lineSeries2.setStrokeStyle((style) =>
+            style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
+          );
+        }
+
+        if (this.channels > 2) {
+          this.lineSeries3 = chart_object.chart
+            .addLineSeries()
+            .setName(this.lineTitle);
+          this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
+          this.lineSeries3.setStrokeStyle((style) =>
+            style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 0, 200) }))
+          );
+        }
+      } else {
+        this.lineSeries1 = chart_object.chart.addAreaSeries({
+          type: AreaSeriesTypes.Bipolar,
+        });
+
+        if (this.channels > 1) {
+          this.lineSeries2 = chart_object.chart
+            .addAreaSeries({ type: AreaSeriesTypes.Positive })
+            .setName(this.lineTitle);
+          this.lineSeries2.setStrokeStyle((style) => style.setThickness(2));
+          this.lineSeries2.setStrokeStyle((style) =>
+            style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 200, 0) }))
+          );
+          this.lineSeries2.setFillStyle(
+            new SolidFill({ color: ColorRGBA(0, 100, 0, 127) })
+          );
+        }
+
+        if (this.channels > 2) {
+          this.lineSeries3 = chart_object.chart
+            .addAreaSeries({ type: AreaSeriesTypes.Positive })
+            .setName(this.lineTitle);
+          this.lineSeries3.setStrokeStyle((style) => style.setThickness(2));
+          this.lineSeries3.setStrokeStyle((style) =>
+            style.setFillStyle(new SolidFill({ color: ColorRGBA(0, 0, 200) }))
+          );
+          this.lineSeries3.setFillStyle(
+            new SolidFill({ color: ColorRGBA(0, 0, 100, 127) })
+          );
+        }
       }
 
       // add the chart to the global chartsXY array
